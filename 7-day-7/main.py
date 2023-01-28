@@ -1,5 +1,6 @@
-#Step 5
-
+import os
+def cls():
+    os.system('cls' if os.name=='nt' else 'clear')
 import random
 
 #TODO-1: - Update the word list to use the 'word_list' from hangman_words.py
@@ -17,7 +18,7 @@ from hangman_art import logo
 print(logo)
 
 #Testing code
-print(f'Pssst, the solution is {chosen_word}.')
+# print(f'Pssst, the solution is {chosen_word}.')
 
 #Create blanks
 display = []
@@ -26,6 +27,8 @@ for _ in range(word_length):
 
 while not end_of_game:
     guess = input("Guess a letter: ").lower()
+
+    cls()
 
     #TODO-4: - If the user has entered a letter they've already guessed, print the letter and let them know.
     if guess in display:
