@@ -1,6 +1,6 @@
 def cls():
     os.system('cls' if os.name=='nt' else 'clear')
-from art import logoCalculator
+from art import logo
 
 def add(n1, n2):
   return n1 + n2
@@ -22,7 +22,7 @@ operations = {
 }
 
 def calculator():
-  print(logoCalculator)
+  print(logo)
 
   num1 = float(input("What's the first number?: "))
   for symbol in operations:
