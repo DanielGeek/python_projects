@@ -1,11 +1,12 @@
 from django.shortcuts import render, HttpResponse
+from django.views import View
 
 # Create your views here.
 def home(request):
-    return HttpResponse('This is the home page')
+    return render(request, 'app/hr_dashboard.html')
 
-def about(request):
-    return HttpResponse('This is the about page')
+class NewJob(View):
+    
+    def get(self, request):
+        return render(request, 'app/new_job.html')
 
-def services(request):
-    return HttpResponse('This is the services page')
