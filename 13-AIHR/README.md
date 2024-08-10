@@ -12,6 +12,8 @@
 - `django-admin startproject AIHumanResource`
 - `python3 manage.py startapp HumanResource`
 - `python3 manage.py runserver`
+- `python3 manage.py makemigrations`
+- `python3 manage.py migrate`
 
 ## Fron-end template URL
 https://www.bootstrapdash.com/product/purple-free-admin-template
