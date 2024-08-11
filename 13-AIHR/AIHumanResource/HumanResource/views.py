@@ -22,7 +22,7 @@ def home(request):
             'posted': posted
         }
     
-    return render(request, 'app/hr_dashboard.html', {'job_data': job_data})
+    return render(request, 'app/hr_dashboard.html', {'job_data': job_data, 'total_jobs': Job.objects.all().count()})
 
 class NewJob(View):
     
@@ -80,3 +80,7 @@ class NewJob(View):
 
         return render(request, 'app/new_job.html')
 
+class EditJob(View):
+    def get(self, request, job_id):
+        job = Job.objects.filter(id=job_id)[0]
+        return render(request, 'app/edit_job.html', locals())
