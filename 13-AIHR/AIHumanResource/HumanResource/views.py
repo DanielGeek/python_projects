@@ -84,3 +84,101 @@ class EditJob(View):
     def get(self, request, job_id):
         job = Job.objects.filter(id=job_id)[0]
         return render(request, 'app/edit_job.html', locals())
+
+    def post(self, request, job_id):
+        job = Job.objects.filter(id=job_id)[0]
+
+        job_title = request.POST.get('jobTitle')
+        department = request.POST.get('department')
+        salary = request.POST.get('salary')
+        location = request.POST.get('location')
+        introduction = request.POST.get('introduction')
+        description = request.POST.get('description')
+        responsabilities = request.POST.get('responsabilities')
+        qualifications = request.POST.get('qualifications')
+        is_active = request.POST.get('recruiting')
+
+        if job_title:
+            if department:
+                if salary != '' and int(salary) > 0:
+                    if location:
+                        if introduction:
+                            if description:
+                                if responsabilities:
+                                    if qualifications:
+                                        # Update job to db
+
+                                        try:
+                                            job.job_title = job_title
+                                            job.department = department
+                                            job.salary = salary
+                                            job.location = location
+                                            job.introduction = introduction
+                                            job.brief_posting_description = description
+                                            job.responsabilities = responsabilities
+                                            job.qualifications = qualifications
+                                            job.is_active = is_active
+                                            job.save()
+                                            messages.success(request, 'Job Updated Successfully')
+                                            return redirect('home')
+
+                                        except Exception as e:
+                                            print(e)
+                                            messages.warning(request, 'Job Update not successful')
+
+                                    else:
+                                        messages.warning(request, 'Enter qualifications')
+                                else:
+                                    messages.warning(request, 'Enter responsibilities')
+
+                            else:
+                                messages.warning(request, 'Enter description')
+                        else:
+                            messages.warning(request, 'Enter an introduction')
+                    else:
+                        messages.warning(request, 'Enter a valid location')
+                else:
+                    messages.warning(request, 'Enter a valid salary')
+            else:
+                messages.warning(request, 'Please add a department')
+        else:
+            messages.warning(request, 'Please add a job title')
+
+        return render(request, 'app/edit_job.html')
+    
+def careers(request):
+    jobs = Job.objects.filter(is_active=True)
+    return render(request, 'app/careers.html', locals())
+
+def job_detail_page(request, job_id):
+    try:
+        job = Job.objects.filter(id=job_id)[0]
+        return render(request, 'app/job_detail.html', locals())
+    
+    except Exception as e:
+        print(e)
+        return HttpResponse('Job Not Found')
+
+class ApplyJob(View):
+    def get(self, request, job_id):
+        try:
+            job = Job.objects.filter(id=job_id)[0]
+            return render(request, 'app/apply_job.html', locals())
+        except Exception as e:
+            print(e)
+            return HttpResponse('Job Not Found')
+        
+    def post(self, request, job_id):
+        try:
+            job = Job.objects.get(id=job_id)
+
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            gender = request.POST.get('gender')
+            email = request.POST.get('email')
+            locaction = request.POST.get('location')
+            cv = request.FILES.get('cv')
+
+        except Exception as e:
+            print(e)
+        return render(request, 'app/apply_job.html', locals())
