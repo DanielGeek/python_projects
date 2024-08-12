@@ -17,7 +17,7 @@ genders = (('Male', 'Male'), ('Female', 'Female'), ('Prefer not to say', 'Prefer
 
 def validate_pdf(value):
     if not value.name.endswith('.pdf'):
-        raise validationError('Only PDF files are allowed as CV')
+        raise ValidationError('Only PDF files are allowed as CV')
 
 
 class Job(models.Model):
@@ -46,7 +46,7 @@ class Applicant(models.Model):
     email = models.EmailField()
     location = models.CharField(max_length=100, choices=locations)
     cv = models.FileField(upload_to='cvs/', validators=[validate_pdf])
-    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_query_name='applicants')
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applicants')
 
     def __str__(self):
         return self.first_name
