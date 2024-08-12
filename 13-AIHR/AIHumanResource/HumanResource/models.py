@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
@@ -13,6 +14,10 @@ locations = (('Nairobi, Kenya', 'Nairobi, Kenya'), ('California, US', 'Californi
              ('Cape Town, SA', 'Cape Town, SA'))
 
 genders = (('Male', 'Male'), ('Female', 'Female'), ('Prefer not to say', 'Prefer not to say'))
+
+def validate_pdf(value):
+    if not value.name.endswith('.pdf'):
+        raise validationError('Only PDF files are allowed as CV')
 
 
 class Job(models.Model):
@@ -31,3 +36,17 @@ class Job(models.Model):
     def __str__(self):
         return self.job_title
 
+# job = Job.object.get(id=1)
+# job.applicants
+
+class Applicant(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    gender = models.CharField(max_length=20, choices=genders)
+    email = models.EmailField()
+    location = models.CharField(max_length=100, choices=locations)
+    cv = models.FileField(upload_to='cvs/', validators=[validate_pdf])
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_query_name='applicants')
+
+    def __str__(self):
+        return self.first_name
