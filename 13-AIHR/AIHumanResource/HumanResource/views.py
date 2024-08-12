@@ -2,7 +2,7 @@ import datetime
 from django.shortcuts import redirect, render, HttpResponse
 from django.views import View
 from django.contrib import messages
-from .models import Job, Applicant
+from .models import Job, Applicant, ShortList
 
 # Create your views here.
 def home(request):
@@ -15,13 +15,15 @@ def home(request):
         upper_bound = j.salary * 1.1
         posted = (datetime.datetime.today().date() - j.date_posted).days
         applicants = j.applicants.all().count()
+        shortlisted = j.shortlist.all().count()
 
         job_data[j.id] = {
             'job': j,
             'lower_bound': lower_bound,
             'upper_bound': upper_bound,
             'posted': posted,
-            'applicants': applicants
+            'applicants': applicants,
+            'shortlisted': shortlisted
         }
     
     return render(request, 'app/hr_dashboard.html', {'job_data': job_data, 'total_jobs': Job.objects.all().count()})
@@ -196,3 +198,12 @@ class ApplyJob(View):
         except Exception as e:
             print(e)
         return render(request, 'app/apply_job.html', locals())
+
+def shortlist(request, job_id):
+    job = Job.objects.get(id=job_id)
+
+    short_list = job.shortlist.all().order_by('-score')
+
+    shortlisted = short_list.count()
+
+    return render(request, 'app/shortlist.html', locals())
