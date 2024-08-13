@@ -14,6 +14,14 @@
 - `python3 manage.py runserver`
 - `python3 manage.py makemigrations`
 - `python3 manage.py migrate`
+- `pip install groq`
+- `pip install python-dotenv`
 
 ## Fron-end template URL
 https://www.bootstrapdash.com/product/purple-free-admin-template
+
+## AI api
+- https://groq.com/
+
+## Tutorial reference
+- https://www.youtube.com/watch?v=wqQLtImdT0k
