@@ -21,8 +21,8 @@ def home(request):
 
         job_data[j.id] = {
             'job': j,
-            'lower_bound': lower_bound,
-            'upper_bound': upper_bound,
+            'lower_bound': f"{lower_bound:.2f}",
+            'upper_bound': f"{upper_bound:.2f}",
             'posted': posted,
             'applicants': applicants,
             'shortlisted': shortlisted
