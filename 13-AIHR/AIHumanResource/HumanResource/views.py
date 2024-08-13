@@ -1,8 +1,10 @@
 import datetime
+import json
 from django.shortcuts import redirect, render, HttpResponse
 from django.views import View
 from django.contrib import messages
 from .models import Job, Applicant, ShortList
+from .utils import consult_ai
 
 # Create your views here.
 def home(request):
@@ -207,3 +209,39 @@ def shortlist(request, job_id):
     shortlisted = short_list.count()
 
     return render(request, 'app/shortlist.html', locals())
+
+def shortlist_candidates(request, job_id):
+    try:
+        job = Job.objects.get(id=job_id)
+    except Exception as e:
+        print(e)
+        return HttpResponse('Job Not Found')
+    
+    try:
+        ShortList.objects.filter(job=job_id).delete()
+        applicants = job.applicants.all()
+        for applicant in applicants:
+            response_str = consult_ai(job=job, cv_path=applicant.cv)
+            # print(f'Raw response for {applicant.first_name}:', response_str)
+            try:
+                json_start = response_str.find('{')
+                json_end = response_str.rfind('}') + 1
+                if json_start != -1 and json_end != -1:
+                    json_str = response_str[json_start:json_end]
+                    response = json.loads(json_str)
+                    print(type(response))
+                    print(f'Parsed response for {applicant.first_name}:', response)
+                    if response['score'] >= 80:
+                        new_shortlist = ShortList.objects.create(job=job, applicant=applicant, score=response['score'],
+                                                                 summary=response['summary'])
+                        new_shortlist.save()
+                else:
+                    raise json.JSONDecodeError("No JSON object could be decoded", response_str, 0)
+            except json.JSONDecodeError as e:
+                print(f'Error parsing JSON for {applicant.first_name}:', e)
+                messages.warning(request, f'Unable to parse response for {applicant.first_name}')
+    except Exception as e:
+        print(e)
+        messages.warning(request, 'Unable to shortlist candidates')
+
+    return redirect('shortlist', job_id=job_id)
