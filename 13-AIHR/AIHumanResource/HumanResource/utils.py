@@ -1,4 +1,5 @@
 import os
+import json
 from groq import Groq
 from dotenv import load_dotenv
 from pypdf import PdfReader
@@ -59,17 +60,24 @@ def consult_ai(job, cv_path):
         stop=None,
     )
 
-    data = ''
-
+    response_data = ''
     for chunk in completion:
         try:
-            data += chunk.choices[0].delta.content
+            response_data += chunk.choices[0].delta.content
         except Exception as e:
+            print(f"Error reading chunk: {e}")
             pass
 
-    # data = data.replace("\'", "\"")
+    response_data = response_data.replace("'", "\"")
+    
+    # Validar JSON antes de devolverlo
+    try:
+        json.loads(response_data)
+    except json.JSONDecodeError as e:
+        print(f'Error parsing JSON: {e}')
+        return json.dumps({"score": 0, "summary": "Invalid JSON response"})
 
-    return data
+    return response_data
 
 # consult_ai()
 

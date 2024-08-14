@@ -213,8 +213,8 @@ def shortlist(request, job_id):
 def shortlist_candidates(request, job_id):
     try:
         job = Job.objects.get(id=job_id)
-    except Exception as e:
-        print(e)
+    except Job.DoesNotExist:
+        messages.error(request, 'Job Not Found')
         return HttpResponse('Job Not Found')
     
     try:
@@ -222,19 +222,27 @@ def shortlist_candidates(request, job_id):
         applicants = job.applicants.all()
         for applicant in applicants:
             response_str = consult_ai(job=job, cv_path=applicant.cv)
-            # print(f'Raw response for {applicant.first_name}:', response_str)
+            if not response_str:
+                messages.warning(request, f'No response for {applicant.first_name}')
+                continue
+
             try:
                 json_start = response_str.find('{')
                 json_end = response_str.rfind('}') + 1
                 if json_start != -1 and json_end != -1:
                     json_str = response_str[json_start:json_end]
                     response = json.loads(json_str)
-                    print(type(response))
                     print(f'Parsed response for {applicant.first_name}:', response)
-                    if response['score'] >= 80:
-                        new_shortlist = ShortList.objects.create(job=job, applicant=applicant, score=response['score'],
-                                                                 summary=response['summary'])
+                    if response.get('score', 0) >= 80:
+                        new_shortlist = ShortList.objects.create(
+                            job=job, 
+                            applicant=applicant, 
+                            score=response['score'],
+                            summary=response['summary']
+                        )
                         new_shortlist.save()
+                    else:
+                        messages.info(request, f'{applicant.first_name} did not meet the score threshold')
                 else:
                     raise json.JSONDecodeError("No JSON object could be decoded", response_str, 0)
             except json.JSONDecodeError as e:
@@ -242,6 +250,6 @@ def shortlist_candidates(request, job_id):
                 messages.warning(request, f'Unable to parse response for {applicant.first_name}')
     except Exception as e:
         print(e)
-        messages.warning(request, 'Unable to shortlist candidates')
+        messages.error(request, 'Unable to shortlist candidates')
 
     return redirect('shortlist', job_id=job_id)
