@@ -30,13 +30,69 @@ Organized by day, this repository follows a project-based learning style (inspir
 
 ## 🧪 Testing & Real-World Projects
 
-### 🧬 AIHR: Candidate Screening (Basic HR Automation)
+### 🧬 AIHR: AI-Powered HR Management System
 
-- Folder: `13-AIHR`
-- Simple data handling and logic to filter candidate profiles using Python.
-- Includes unit testing using `pytest`.
+- **Folder:** `13-AIHR`
+- **Description:** A comprehensive HR management system that leverages AI for candidate screening and job application processing.
+- **Features:**
+  - Job posting and management for HR personnel
+  - Career page for applicants to browse and apply for jobs
+  - AI-powered candidate shortlisting using Meta's Llama 3 70B LLM
+  - Application tracking system
+  - User-friendly admin interface
 
+#### 🛠️ Tech Stack
+- **Backend:** Django
+- **Frontend:** Bootstrap 5 (Purple Admin Template)
+- **AI Integration:** Groq API with Meta's Llama 3 70B
+- **Environment:** Python 3.x
+
+#### 🚀 Getting Started
+
+1. **Clone the repository**
+   ```bash
+   git clone [your-repo-url]
+   cd python_projects/13-AIHR
+   ```
+
+2. **Set up the environment**
+   ```bash
+   virtualenv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+3. **Set up environment variables**
+   Create a `.env` file and add your Groq API key:
+   ```
+   GROQ_API_KEY=your_api_key_here
+   ```
+
+4. **Run migrations**
+   ```bash
+   python manage.py migrate
+   ```
+
+5. **Start the development server**
+   ```bash
+   python manage.py runserver
+   ```
+
+6. **Access the application**
+   - HR Dashboard: `http://127.0.0.1:8000/admin/`
+   - Careers Page: `http://127.0.0.1:8000/`
+
+#### 🧪 Testing
+Run tests using pytest:
 ```bash
-pip install pytest
+pip install pytest pytest-django
 pytest
 ```
+
+#### 📚 Resources
+- [Bootstrap Admin Template](https://www.bootstrapdash.com/product/purple-free-admin-template)
+- [Groq API](https://groq.com/)
+- [Django Documentation](https://docs.djangoproject.com/)
+
+#### 📝 License
+This project is open source and available under the MIT License.
