@@ -3,9 +3,8 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
-import { useNavigate } from "react-router-dom";
-
 import api from "../api";
+import Note from "../components/Note";
 
 function Home() {
     const [notes, setNotes] = useState([]);
@@ -42,48 +41,79 @@ function Home() {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-background">
-            <Card className="w-[350px]">
-                <CardHeader>
-                    <CardTitle>Welcome Home!</CardTitle>
-                    <CardDescription>
-                        You are successfully logged in to your account.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <p className="text-sm text-muted-foreground">
-                        This is your dashboard where you can create notes.
-                    </p>
-                    <form onSubmit={createNote}>
-                        <div className="space-y-2">
-                            <Input
-                                type="text"
-                                id="title"
-                                name="title"
-                                required
-                                placeholder="Title"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                            />
-                            <Textarea
-                                id="content"
-                                name="content"
-                                required
-                                placeholder="Content"
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                            />
+        <div className="min-h-screen bg-background p-6">
+            <div className="max-w-6xl mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Create Note Card */}
+                    <div className="lg:col-span-1">
+                        <Card className="w-full">
+                            <CardHeader>
+                                <CardTitle>Create Note</CardTitle>
+                                <CardDescription>
+                                    Add a new note to your collection
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <form onSubmit={createNote}>
+                                    <div className="space-y-4">
+                                        <Input
+                                            type="text"
+                                            id="title"
+                                            name="title"
+                                            required
+                                            placeholder="Title"
+                                            value={title}
+                                            onChange={(e) => setTitle(e.target.value)}
+                                        />
+                                        <Textarea
+                                            id="content"
+                                            name="content"
+                                            required
+                                            placeholder="Content"
+                                            value={content}
+                                            onChange={(e) => setContent(e.target.value)}
+                                            className="min-h-[120px]"
+                                        />
+                                    </div>
+                                    <Button
+                                        type="submit"
+                                        className="w-full mt-4"
+                                    >
+                                        Create Note
+                                    </Button>
+                                </form>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Notes List */}
+                    <div className="lg:col-span-2">
+                        <div className="mb-6">
+                            <h2 className="text-2xl font-bold">Your Notes</h2>
+                            <p className="text-muted-foreground">
+                                Manage and view all your notes
+                            </p>
                         </div>
-                        <br />
-                        <Button
-                            type="submit"
-                            className="w-full"
-                        >
-                            Create Note
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
+                        {notes.length === 0 ? (
+                            <Card>
+                                <CardContent className="flex items-center justify-center h-32">
+                                    <p className="text-muted-foreground">No notes yet. Create your first note!</p>
+                                </CardContent>
+                            </Card>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {notes.map((note) => (
+                                    <Note
+                                        key={note.id}
+                                        note={note}
+                                        onDelete={deleteNote}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
