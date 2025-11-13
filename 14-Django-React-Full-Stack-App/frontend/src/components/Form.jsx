@@ -1,7 +1,11 @@
 import { useState } from "react";
+import PropTypes from 'prop-types';
 import api from "../api";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 
 function Form({ route, method }) {
     const [username, setUsername] = useState("");
@@ -36,28 +40,53 @@ function Form({ route, method }) {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h1>{name}</h1>
-            <input
-                className="form-input"
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-            />
-            <input
-                className="form-input"
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-            <button
-                className="form-button"
-                type="submit"
-            >
-                {name}
-            </button>
-        </form>
+        <div className="flex items-center justify-center min-h-screen bg-background">
+            <Card className="w-[350px]">
+                <CardHeader>
+                    <CardTitle>{name}</CardTitle>
+                    <CardDescription>
+                        {method === "login" 
+                            ? "Enter your credentials to access your account" 
+                            : "Create a new account to get started"}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="space-y-2">
+                            <Input
+                                type="text"
+                                placeholder="Username"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                disabled={loading}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Input
+                                type="password"
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                disabled={loading}
+                            />
+                        </div>
+                        <Button 
+                            type="submit" 
+                            className="w-full" 
+                            disabled={loading}
+                        >
+                            {loading ? "Loading..." : name}
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
+        </div>
     )
 }
+
+Form.propTypes = {
+    route: PropTypes.string.isRequired,
+    method: PropTypes.oneOf(['login', 'register']).isRequired
+};
+
+export default Form;
