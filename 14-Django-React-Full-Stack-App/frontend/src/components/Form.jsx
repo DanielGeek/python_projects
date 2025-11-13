@@ -6,6 +6,7 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Spinner } from "./ui/spinner";
 
 function Form({ route, method }) {
     const [username, setUsername] = useState("");
@@ -45,8 +46,8 @@ function Form({ route, method }) {
                 <CardHeader>
                     <CardTitle>{name}</CardTitle>
                     <CardDescription>
-                        {method === "login" 
-                            ? "Enter your credentials to access your account" 
+                        {method === "login"
+                            ? "Enter your credentials to access your account"
                             : "Create a new account to get started"}
                     </CardDescription>
                 </CardHeader>
@@ -70,12 +71,12 @@ function Form({ route, method }) {
                                 disabled={loading}
                             />
                         </div>
-                        <Button 
-                            type="submit" 
-                            className="w-full" 
+                        <Button
+                            type="submit"
+                            className="w-full"
                             disabled={loading}
                         >
-                            {loading ? "Loading..." : name}
+                            {loading ? <Spinner /> : name}
                         </Button>
                     </form>
                 </CardContent>
