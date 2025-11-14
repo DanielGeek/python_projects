@@ -9,3 +9,5 @@ endpoints:
       networkVisibilities:
         - Project
         - Public
+      security:
+        - type: none
