@@ -23,6 +23,8 @@ A modern React frontend application built with Vite, featuring authentication, u
 - **shadcn/ui** - High-quality component library
 - **PropTypes** - Type checking for React components
 - **JWT Decode** - JWT token parsing
+- **Lucide React** - Modern icon library
+- **Vitest** - Testing framework
 
 ## 📦 Installation
 
@@ -77,7 +79,8 @@ frontend/
 │   │   │   ├── button.jsx
 │   │   │   ├── button-variants.js
 │   │   │   ├── card.jsx
-│   │   │   └── input.jsx
+│   │   │   ├── input.jsx
+│   │   │   └── spinner.jsx    # Loading spinner component
 │   │   ├── Form.jsx      # Authentication form component
 │   │   └── ProtectedRoute.jsx  # Route protection
 │   ├── pages/            # Page components
@@ -131,10 +134,12 @@ The project includes the following shadcn/ui components:
 - **Button**: Customizable button with multiple variants
 - **Card**: Container component with header, content, and footer
 - **Input**: Form input with validation states
+- **Spinner**: Loading spinner with Lucide React icons
 
 ### Custom Components
 
-- **Form**: Reusable authentication form for login/registration
+- **Form**: Reusable authentication form for login/registration with loading states
+- **Spinner**: Loading spinner component with PropTypes validation
 - **ProtectedRoute**: HOC for protecting authenticated routes
 - **Home**: Dashboard component for authenticated users
 - **Login/Register**: Page components using the Form component
@@ -193,7 +198,31 @@ npm run lint
 
 ## 🧪 Testing
 
-The project is set up for testing. Tests should be placed in the `src/tests` directory and follow the naming convention `*.test.js` or `*.spec.js`.
+The project uses Vitest for testing with React Testing Library:
+
+### Testing Setup
+
+```bash
+# Run tests
+npm run test
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+### Test Structure
+
+Tests should be placed in the `src/tests` directory and follow the naming convention `*.test.js` or `*.spec.js`.
+
+### Testing Dependencies
+
+- **Vitest**: Fast testing framework
+- **React Testing Library**: Component testing utilities
+- **Jest DOM**: Custom DOM matchers
+- **Testing Library User Event**: User interaction simulation
 
 ## 🔄 API Integration
 
@@ -218,6 +247,9 @@ The frontend communicates with the Django backend through:
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
+- `npm run test` - Run tests with Vitest
+- `npm run test:ui` - Run tests with visual interface
+- `npm run test:coverage` - Run tests with coverage report
 
 ## 🤝 Contributing
 

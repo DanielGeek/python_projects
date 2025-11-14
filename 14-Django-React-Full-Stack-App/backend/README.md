@@ -10,6 +10,8 @@ A Django REST API backend providing authentication, user management, and secure 
 - **CORS Support**: Cross-Origin Resource Sharing configuration
 - **RESTful API**: Clean REST API endpoints following best practices
 - **Database Integration**: SQLite database with Django ORM
+- **PostgreSQL Support**: Production-ready PostgreSQL configuration
+- **Deployment Ready**: Procfile and environment configuration for cloud deployment
 - **Security**: Password hashing, token validation, and secure headers
 - **Error Handling**: Comprehensive error responses and validation
 
@@ -20,8 +22,9 @@ A Django REST API backend providing authentication, user management, and secure 
 - **Simple JWT** - JWT authentication for Django REST Framework
 - **Django CORS Headers** - CORS handling for Django
 - **SQLite** - Database (development)
-- **PostgreSQL** - Database (production ready)
-- **Python-dotenv** - Environment variable management
+- **PostgreSQL** - Database (production)
+- **psycopg2-binary** - PostgreSQL adapter for Python
+- **python-dotenv** - Environment variable management
 
 ## 📦 Installation
 
@@ -151,12 +154,19 @@ CORS_ALLOWED_ORIGINS = [
 
 ### Environment Variables
 
-Optional environment variables for `.env` file:
+Create a `.env` file based on `.env.template`:
 
 ```env
+# Development
 DEBUG=True
 SECRET_KEY=your-secret-key-here
-DATABASE_URL=sqlite:///db.sqlite3
+
+# Production Database (PostgreSQL)
+DB_HOST="your-db-host"
+DB_PORT="your-db-port"
+DB_USER="your-db-user"
+DB_NAME="your-db-name"
+DB_PWD="your-db-pwd"
 ```
 
 ## 📚 API Endpoints
@@ -164,33 +174,36 @@ DATABASE_URL=sqlite:///db.sqlite3
 ### Authentication Endpoints
 
 - **POST** `/api/token/` - Obtain JWT tokens
-  ```json
-  {
-    "username": "string",
-    "password": "string"
-  }
-  ```
+
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
 
 - **POST** `/api/token/refresh/` - Refresh access token
-  ```json
-  {
-    "refresh": "string"
-  }
-  ```
+
+```json
+{
+  "refresh": "string"
+}
+```
 
 - **POST** `/api/user/register/` - Register new user
-  ```json
-  {
-    "username": "string",
-    "password": "string"
-  }
-  ```
+
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
 
 ### Protected Endpoints
 
 All endpoints except authentication require a valid JWT token in the Authorization header:
 
-```
+```http
 Authorization: Bearer <access_token>
 ```
 
@@ -267,14 +280,58 @@ class UserRegistrationTest(TestCase):
 
 ## 🚀 Deployment
 
+### Deployment Services
+
+The application is configured for deployment on:
+
+- **Choreo**: Use `.choreo/endpoints.yaml` for API configuration
+- **Railway**: PostgreSQL + Django deployment ready
+- **Render**: PostgreSQL + Django deployment ready
+- **Heroku**: Uses provided `Procfile`
+
+### Deployment Files
+
+- `Procfile` - Heroku/Choreo deployment configuration
+- `.env.template` - Environment variables template
+- `.choreo/endpoints.yaml` - Choreo API endpoint configuration
+
 ### Production Settings
 
 1. Set `DEBUG=False` in settings
-2. Configure production database (PostgreSQL recommended)
+2. Configure production database (PostgreSQL)
 3. Set proper `SECRET_KEY`
 4. Configure `ALLOWED_HOSTS`
 5. Set up static files serving
 6. Configure HTTPS
+
+### Database Configuration
+
+**Development (SQLite):**
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+```
+
+**Production (PostgreSQL):**
+
+```python
+import os
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PWD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
+    }
+}
+```
 
 ### Environment-Specific Settings
 
