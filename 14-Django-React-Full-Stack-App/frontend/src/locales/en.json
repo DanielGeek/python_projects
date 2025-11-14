@@ -1,0 +1,30 @@
+{
+  "home": {
+    "title": "Create Note",
+    "description": "Add a new note to your collection",
+    "titlePlaceholder": "Title",
+    "contentPlaceholder": "Content",
+    "createButton": "Create Note",
+    "noNotes": "No notes available",
+    "deleteButton": "Delete",
+    "yourNotes": "Your Notes",
+    "manageNotes": "Manage and view all your notes",
+    "alerts": {
+      "noteCreated": "Note created!",
+      "failedToCreateNote": "Failed to create note.",
+      "noteDeleted": "Note deleted!",
+      "failedToDeleteNote": "Failed to delete note."
+    }
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "loginDescription": "Enter your credentials to access your account",
+    "registerDescription": "Create a new account to get started",
+    "username": "Username",
+    "password": "Password"
+  },
+  "app": {
+    "title": "Notes App"
+  }
+}

@@ -7,14 +7,17 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Spinner } from "./ui/spinner";
+import LanguageSelector from "./LanguageSelector";
+import { useTranslation } from "react-i18next";
 
 function Form({ route, method }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
-    const name = method === "login" ? "Login" : "Register";
+    const name = t(`auth.${method}`);
 
     const handleSubmit = async (e) => {
         setLoading(true);
@@ -44,11 +47,12 @@ function Form({ route, method }) {
         <div className="flex items-center justify-center min-h-screen bg-background">
             <Card className="w-[350px]">
                 <CardHeader>
-                    <CardTitle>{name}</CardTitle>
+                    <div className="flex justify-between items-center mb-4">
+                        <CardTitle>{name}</CardTitle>
+                        <LanguageSelector />
+                    </div>
                     <CardDescription>
-                        {method === "login"
-                            ? "Enter your credentials to access your account"
-                            : "Create a new account to get started"}
+                        {t(`auth.${method}Description`)}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -56,7 +60,7 @@ function Form({ route, method }) {
                         <div className="space-y-2">
                             <Input
                                 type="text"
-                                placeholder="Username"
+                                placeholder={t('auth.username')}
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 disabled={loading}
@@ -65,7 +69,7 @@ function Form({ route, method }) {
                         <div className="space-y-2">
                             <Input
                                 type="password"
-                                placeholder="Password"
+                                placeholder={t('auth.password')}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 disabled={loading}

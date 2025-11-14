@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
-import { Button } from "../components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Textarea } from "../components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import api from "../api";
 import Note from "../components/Note";
+import LanguageSelector from "../components/LanguageSelector";
+import { useTranslation } from "react-i18next";
 
 function Home() {
     const [notes, setNotes] = useState([]);
     const [content, setContent] = useState("");
     const [title, setTitle] = useState("");
+    const { t } = useTranslation();
 
     useEffect(() => {
         getNotes();
@@ -25,8 +28,8 @@ function Home() {
     const deleteNote = (id) => {
         api.delete(`/api/notes/delete/${id}/`)
             .then((res) => {
-                if (res.status === 204) alert("Note deleted!");
-                else alert("Failed to delete note.");
+                if (res.status === 204) alert(t('home.alerts.noteDeleted'));
+                else alert(t('home.alerts.failedToDeleteNote'));
                 getNotes();
             }).catch((error) => alert(error));
     };
@@ -34,8 +37,8 @@ function Home() {
     const createNote = (e) => {
         e.preventDefault();
         api.post("/api/notes/", { content, title }).then((res) => {
-            if (res.status === 201) alert("Note created!")
-            else alert("Failed to create note.")
+            if (res.status === 201) alert(t('home.alerts.noteCreated'));
+            else alert(t('home.alerts.failedToCreateNote'));
             getNotes();
         }).catch((err) => alert(err));
     }
@@ -43,14 +46,18 @@ function Home() {
     return (
         <div className="min-h-screen bg-background p-6">
             <div className="max-w-6xl mx-auto">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-3xl font-bold">{t('app.title')}</h1>
+                    <LanguageSelector />
+                </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Create Note Card */}
                     <div className="lg:col-span-1">
                         <Card className="w-full">
                             <CardHeader>
-                                <CardTitle>Create Note</CardTitle>
+                                <CardTitle>{t('home.title')}</CardTitle>
                                 <CardDescription>
-                                    Add a new note to your collection
+                                    {t('home.description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -61,7 +68,7 @@ function Home() {
                                             id="title"
                                             name="title"
                                             required
-                                            placeholder="Title"
+                                            placeholder={t('home.titlePlaceholder')}
                                             value={title}
                                             onChange={(e) => setTitle(e.target.value)}
                                         />
@@ -69,7 +76,7 @@ function Home() {
                                             id="content"
                                             name="content"
                                             required
-                                            placeholder="Content"
+                                            placeholder={t('home.contentPlaceholder')}
                                             value={content}
                                             onChange={(e) => setContent(e.target.value)}
                                             className="min-h-[120px]"
@@ -79,7 +86,7 @@ function Home() {
                                         type="submit"
                                         className="w-full mt-4"
                                     >
-                                        Create Note
+                                        {t('home.createButton')}
                                     </Button>
                                 </form>
                             </CardContent>
@@ -94,13 +101,7 @@ function Home() {
                                 Manage and view all your notes
                             </p>
                         </div>
-                        {notes.length === 0 ? (
-                            <Card>
-                                <CardContent className="flex items-center justify-center h-32">
-                                    <p className="text-muted-foreground">No notes yet. Create your first note!</p>
-                                </CardContent>
-                            </Card>
-                        ) : (
+                        {notes.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {notes.map((note) => (
                                     <Note
@@ -109,6 +110,10 @@ function Home() {
                                         onDelete={deleteNote}
                                     />
                                 ))}
+                            </div>
+                        ) : (
+                            <div className="col-span-full text-center text-muted-foreground py-12">
+                                {t('home.noNotes')}
                             </div>
                         )}
                     </div>

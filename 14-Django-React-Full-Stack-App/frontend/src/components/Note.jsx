@@ -1,10 +1,10 @@
-
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import PropTypes from 'prop-types';
+import { useTranslation } from "react-i18next";
 
 function Note({ note, onDelete }) {
+    const { t } = useTranslation();
     const formattedDate = new Date(note.create_at).toLocaleDateString("en-US", {
         year: 'numeric',
         month: 'long',
@@ -27,7 +27,7 @@ function Note({ note, onDelete }) {
                     className="mt-4"
                     onClick={() => onDelete(note.id)}
                 >
-                    Delete
+                    {t('home.deleteButton')}
                 </Button>
             </CardContent>
         </Card>
