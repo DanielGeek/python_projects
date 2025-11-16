@@ -37,7 +37,7 @@ def create_story(
 
     job = StoryJob(
         job_id=job_id,
-        sessions=session_id,
+        session_id=session_id,
         theme=request.theme,
         status="pending",
     )
