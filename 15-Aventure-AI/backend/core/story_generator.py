@@ -1,24 +1,23 @@
-from sqlalchemy import Session
-from core.config import Settings
-
-from langchain_openai import ChatOpenAI
-# from langchain_anthropic import ChatAnthropic
-# from langchain_google_genai import ChatGoogleGenerativeAI
+from sqlalchemy.orm import Session
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 
 from core.prompts import STORY_PROMPT
 from models.story import Story, StoryNode
 from core.models import StoryLLMResponse, StoryNodeLLM
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class StoryGenerator:
 
     @classmethod
     def _get_llm(cls):
-        return ChatOpenAI(model="gpt-4-turbo")
+        return ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+        # return ChatOpenAI(model="gpt-4-turbo")
         # return ChatAnthropic(model="claude-3-5-sonnet-20241022")
-        # return ChatGoogleGenerativeAI(model="gemini-1.5-pro")
 
     @classmethod
     def generate_story(cls, db: Session, session_id: str, theme: str = "fantasy") -> Story:
