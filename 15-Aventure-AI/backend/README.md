@@ -47,6 +47,13 @@ Welcome to the backend of Adventure AI, a powerful AI-powered application built 
    uvicorn main:app --reload
    ```
 
+## 📚 API Documentation
+
+Once the server is running, you can access the API documentation at:
+
+- **Interactive API Docs (Swagger UI)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Alternative API Docs (ReDoc)**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

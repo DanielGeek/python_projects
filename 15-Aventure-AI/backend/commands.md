@@ -19,3 +19,9 @@ uv init .
 ```bash
 uv add fastapi[all] langchain langchain-openai python-dotenv sqlalchemy uvicorn psycopg2-binary
 ```
+
+### uv run
+
+```bash
+uv run main.py
+```
