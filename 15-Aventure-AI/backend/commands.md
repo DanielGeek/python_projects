@@ -14,7 +14,13 @@ uv --version
 uv init .
 ```
 
-### uv install
+### install dependencies
+
+```bash
+uv sync
+```
+
+### add dependencies
 
 ```bash
 uv add fastapi[all] langchain langchain-openai python-dotenv sqlalchemy uvicorn psycopg2-binary
