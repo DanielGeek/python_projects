@@ -468,13 +468,21 @@ async def call_mcp_tool(tool_name: str, arguments: Dict) -> Any:
                             result = json.loads(json_str)
                             logger.info(f"Respuesta parseada: {result.keys()}")
                             
-                            # Extraer texto del resultado
+                            # Extraer structuredContent si existe (FastMCP lo genera automáticamente)
                             if "result" in result:
-                                if "content" in result["result"]:
-                                    content = result["result"]["content"]
-                                    if isinstance(content, list) and len(content) > 0:
-                                        return content[0].get("text", "")
-                                return result["result"]
+                                result_data = result["result"]
+                                
+                                # Si FastMCP envolvió la respuesta, extraer structuredContent
+                                if isinstance(result_data, dict) and "structuredContent" in result_data:
+                                    return result_data["structuredContent"]
+                                
+                                # Si no, retornar el resultado directo
+                                return result_data
+                            elif "error" in result:
+                                return {
+                                    "success": False,
+                                    "error": result["error"]
+                                }
                             
                             return result
                         except json.JSONDecodeError as e:
@@ -485,28 +493,49 @@ async def call_mcp_tool(tool_name: str, arguments: Dict) -> Any:
                 result = response.json()
                 logger.info(f"Respuesta exitosa: {result.keys()}")
                 
-                # Extraer texto del resultado
+                # Extraer structuredContent si existe (FastMCP lo genera automáticamente)
                 if "result" in result:
-                    if "content" in result["result"]:
-                        content = result["result"]["content"]
-                        if isinstance(content, list) and len(content) > 0:
-                            return content[0].get("text", "")
-                    return result["result"]
+                    result_data = result["result"]
+                    
+                    # Si FastMCP envolvió la respuesta, extraer structuredContent
+                    if isinstance(result_data, dict) and "structuredContent" in result_data:
+                        return result_data["structuredContent"]
+                    
+                    # Si no, retornar el resultado directo
+                    return result_data
+                elif "error" in result:
+                    return {
+                        "success": False,
+                        "error": result["error"]
+                    }
                 
                 return result
         else:
             error_msg = f"❌ Error MCP ({response.status_code}): {response.text}"
             logger.error(error_msg)
-            return {"error": error_msg}
+            return {
+                "success": False,
+                "error_type": "HTTPError",
+                "error_message": error_msg,
+                "status_code": response.status_code
+            }
             
     except requests.exceptions.Timeout:
         error_msg = f"⏲️ Timeout llamando MCP tool: {tool_name}"
         logger.error(error_msg)
-        return {"error": error_msg}
+        return {
+            "success": False,
+            "error_type": "TimeoutError",
+            "error_message": error_msg
+        }
     except Exception as e:
         error_msg = f"❌ Error general llamando MCP: {str(e)}"
         logger.error(error_msg)
-        return {"error": error_msg}
+        return {
+            "success": False,
+            "error_type": type(e).__name__,
+            "error_message": error_msg
+        }
 
 async def process_meeting_with_mcp(meeting_id: str, recording_url: str, host_id: str):
     """
@@ -525,39 +554,85 @@ async def process_meeting_with_mcp(meeting_id: str, recording_url: str, host_id:
     try:
         # 1. TRANSCRIBIR
         logger.info("📝 Transcribiendo audio...")
-        transcript = await call_mcp_tool("transcribe_audio", {
+        transcript_result = await call_mcp_tool("transcribe_audio", {
             "video_url": recording_url
         })
         
         # Verificar si hay error
-        if isinstance(transcript, dict) and "error" in transcript:
+        if not transcript_result.get("success"):
+            logger.error(f"Error en transcripción: {transcript_result.get('error')}")
             update_meeting_status(meeting_id, "error_transcription")
+            MEETINGS_DB[meeting_id]["error"] = transcript_result.get("error")
             return
+        
+        # Extraer el texto de la transcripción
+        transcript_data = transcript_result.get("data", {})
+        if isinstance(transcript_data, dict) and "content" in transcript_data:
+            transcript = transcript_data["content"][0].get("text", "") if isinstance(transcript_data["content"], list) else ""
+        else:
+            transcript = str(transcript_data)
         
         # 2. TRADUCIR (opcional - si transcript está en inglés)
         logger.info("🌐 Traduciendo a español...")
-        translated = await call_mcp_tool("translate_text", {
+        translated_result = await call_mcp_tool("translate_text", {
             "text": transcript,
             "target_language": "es"
         })
         
+        translated = ""
+        if translated_result.get("success"):
+            translated_data = translated_result.get("data", {})
+            if isinstance(translated_data, dict) and "content" in translated_data:
+                translated = translated_data["content"][0].get("text", "") if isinstance(translated_data["content"], list) else ""
+            else:
+                translated = str(translated_data)
+        
         # 3. RESUMIR
         logger.info("📋 Generando resumen...")
-        summary = await call_mcp_tool("summarize_meeting", {
+        summary_result = await call_mcp_tool("summarize_meeting", {
             "transcript": translated or transcript
         })
+        
+        summary = ""
+        # Ahora summary_result ya es el structuredContent directo
+        if isinstance(summary_result, dict):
+            if summary_result.get("success"):
+                summary = summary_result.get("summary", "")
+            else:
+                # Error estructurado
+                error_info = {
+                    "error_type": summary_result.get("error_type"),
+                    "error_message": summary_result.get("error_message"),
+                    "error_details": summary_result.get("error_details")
+                }
+                summary = f"Error: {json.dumps(error_info)}"
+                logger.error(f"Error en resumen: {error_info}")
+        else:
+            summary = str(summary_result)
         
         # 4. EXTRAER ACCIONES
         logger.info("✅ Extrayendo acciones...")
-        actions = await call_mcp_tool("extract_action_items", {
+        actions_result = await call_mcp_tool("extract_action_items", {
             "transcript": translated or transcript
         })
         
+        actions = ""
+        if actions_result.get("success"):
+            actions_data = actions_result.get("data", {})
+            if isinstance(actions_data, dict) and "content" in actions_data:
+                actions = actions_data["content"][0].get("text", "") if isinstance(actions_data["content"], list) else ""
+            else:
+                actions = str(actions_data)
+        
         # 5. ANALIZAR SENTIMIENTO (opcional)
         logger.info("📈 Analizando sentimiento...")
-        sentiment = await call_mcp_tool("analyze_sentiment", {
+        sentiment_result = await call_mcp_tool("analyze_sentiment", {
             "transcript": translated or transcript
         })
+        
+        sentiment = {}
+        if sentiment_result.get("success"):
+            sentiment = sentiment_result.get("data", {})
         
         # 6. GUARDAR EN BD
         save_processed_meeting(
@@ -566,10 +641,10 @@ async def process_meeting_with_mcp(meeting_id: str, recording_url: str, host_id:
             platform=MEETINGS_DB[meeting_id].get("platform", "unknown"),
             recording_url=recording_url,
             transcript=transcript,
-            translated=translated if isinstance(translated, str) else "",
-            summary=summary if isinstance(summary, str) else "",
-            actions=actions if isinstance(actions, str) else "",
-            sentiment=json.dumps(sentiment) if isinstance(sentiment, dict) else ""
+            translated=translated,
+            summary=summary,
+            actions=actions,
+            sentiment=json.dumps(sentiment) if sentiment else ""
         )
         
         # 7. ACTUALIZAR ESTADO

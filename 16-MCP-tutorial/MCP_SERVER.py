@@ -734,15 +734,35 @@ def translate_text(text: str, target_language: str = "es") -> str:
     return translate_text_tool(text, target_language)
 
 @mcp.tool(name="summarize_meeting")
-def summarize_meeting_mcp(transcript: str) -> str:
+def summarize_meeting_mcp(transcript: str) -> dict:
     """Generate a concise summary of meeting transcript"""
     try:
         # Llamar a la función de implementación real
         result = summarize_text_openai(transcript)
-        return result
+        return {
+            "success": True,
+            "summary": result,
+            "transcript_length": len(transcript)
+        }
     except Exception as e:
         logger.error(f"❌ Error en herramienta summarize_meeting: {str(e)}")
-        return f"Error: {str(e)}"
+        
+        # Parsear error de OpenAI si es posible
+        error_dict = {
+            "success": False,
+            "error_type": type(e).__name__,
+            "error_message": str(e)
+        }
+        
+        # Si es un error de OpenAI, extraer detalles
+        if hasattr(e, 'response'):
+            try:
+                error_dict["status_code"] = e.response.status_code
+                error_dict["error_details"] = e.response.json()
+            except:
+                pass
+        
+        return error_dict
 
 @mcp.tool()
 def extract_action_items(transcript: str) -> str:
