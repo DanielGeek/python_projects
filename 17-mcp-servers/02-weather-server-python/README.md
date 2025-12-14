@@ -1,12 +1,17 @@
-# A Simple MCP weather Server written in TypeScript
+# A Simple MCP Weather Server written in Python
 
 See the [Quickstart](https://modelcontextprotocol.io/quickstart) tutorial for more information.
 
 ## Installation
 
 ```bash
-npm install
-npm run build
+uv sync
+```
+
+## Running the Server
+
+```bash
+uv run python weather.py
 ```
 
 ## Testing the Server
@@ -14,7 +19,8 @@ npm run build
 ### Local Testing
 
 ```bash
-node src/test/test.js | grep -A 50 "📥 Response from MCP server"
+# Run the local test script
+uv run python test_weather.py
 ```
 
 ### MCP Inspector
@@ -24,7 +30,7 @@ node src/test/test.js | grep -A 50 "📥 Response from MCP server"
 npm install -g @modelcontextprotocol/inspector
 
 # Run with inspector
-mcp-inspector node build/index.js
+mcp-inspector uv run python weather.py
 ```
 
 ## Available Tools
@@ -32,6 +38,10 @@ mcp-inspector node build/index.js
 **1. get-alerts** - Get weather alerts for a US state (e.g., "CA", "NY")
 
 **2. get-forecast** - Get weather forecast for coordinates (latitude, longitude)
+
+## Communication Method
+
+**STDIO (Standard Input/Output)** transport using JSON-RPC 2.0 protocol
 
 ## MCP Configuration
 
@@ -42,10 +52,14 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
 ```json
 {
   "mcpServers": {
-    "weather": {
-      "command": "node",
+    "weather-python": {
+      "command": "/ABSOLUTE/PATH/TO/uv",
       "args": [
-        "/ABSOLUTE/PATH/TO/01-weather-server-typescript/build/index.js"
+        "run",
+        "--directory",
+        "/ABSOLUTE/PATH/TO/02-weather-server-python",
+        "python",
+        "weather.py"
       ],
       "disabled": false
     }
@@ -60,14 +74,18 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "weather": {
-      "command": "/ABSOLUTE/PATH/TO/node",
+    "weather-python": {
+      "command": "/ABSOLUTE/PATH/TO/uv",
       "args": [
-        "/ABSOLUTE/PATH/TO/01-weather-server-typescript/build/index.js"
+        "run",
+        "--directory",
+        "/ABSOLUTE/PATH/TO/02-weather-server-python",
+        "python",
+        "weather.py"
       ]
     }
   }
 }
 ```
 
-**Note:** Replace `/ABSOLUTE/PATH/TO/` with your actual paths. Use `which node` to find your Node.js path.
+**Note:** Replace `/ABSOLUTE/PATH/TO/` with your actual paths. Use `which uv` to find your uv path.
