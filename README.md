@@ -14,11 +14,13 @@ Welcome to my comprehensive Python portfolio showcasing progressive mastery from
 
 ## 📊 Portfolio Overview
 
-This repository demonstrates my journey through **14 structured learning modules** and **2 production-scale projects**, encompassing:
+This repository demonstrates my journey through **14 structured learning modules** and **4 production-scale projects**, encompassing:
 
 - **🎯 50+ Python programs** ranging from basic algorithms to complex systems
 - **🤖 AI-Powered HR Management System** with Llama 3 integration
 - **⚡ Full-Stack Django-React Application** with JWT authentication
+- **🤖 AI-Powered Meeting System** with real-time transcription and analysis
+- **🌤️ MCP Weather Servers** in TypeScript and Python with Claude Desktop integration
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -118,6 +120,108 @@ api.interceptors.response.use(
 - `/api/token/` - JWT token authentication
 - `/api/token/refresh/` - Token rotation system
 - Protected routes with middleware authentication
+
+---
+
+### 3. 🤖 AI-Powered Meeting System
+
+A comprehensive meeting automation platform with real-time transcription, AI analysis, and multi-platform integration
+
+#### 🎯 Meeting System Key Features
+
+- **Real-time Transcription**: OpenAI Whisper integration for live meeting transcription
+- **AI-Powered Analysis**: GPT-4 for meeting summaries, action items, and sentiment analysis
+- **Multi-Platform Support**: Zoom, Google Meet, and Teams integration via Playwright automation
+- **Bot Recorder**: Automated meeting recording without requiring platform SDKs
+- **WebSockets**: Live transcription streaming to connected clients
+- **OAuth Integration**: Secure authentication with meeting platforms
+
+#### 🛠️ Meeting System Technical Implementation
+
+```python
+# AI-powered meeting processing with MCP
+async def process_meeting_audio(audio_file: str):
+    # Transcribe with Whisper
+    transcript = await openai.Audio.transcribe("whisper-1", audio_file)
+    
+    # Analyze with GPT-4
+    summary = await analyze_with_gpt4(transcript)
+    actions = await extract_action_items(transcript)
+    sentiment = await analyze_sentiment(transcript)
+    
+    return {
+        "transcript": transcript,
+        "summary": summary,
+        "actions": actions,
+        "sentiment": sentiment
+    }
+```
+
+#### 📋 Meeting System Tech Stack
+
+- **Backend**: FastAPI, WebSockets, Playwright
+- **AI/ML**: OpenAI Whisper, GPT-4, FastMCP
+- **Automation**: Playwright browser automation
+- **Real-time**: WebSockets for live transcription
+- **Authentication**: OAuth 2.0 for meeting platforms
+
+#### 🚀 Meeting System Production Features
+
+- Multi-threaded processing for concurrent meetings
+- Secure file upload and processing
+- Real-time WebSocket communication
+- Comprehensive error handling and logging
+- Production-ready deployment configuration
+
+---
+
+### 4. 🌤️ MCP Weather Servers
+
+Model Context Protocol (MCP) weather servers providing seamless integration with AI assistants like Claude Desktop
+
+#### 🎯 Weather Servers Key Features
+
+- **Dual Implementation**: TypeScript and Python versions for different ecosystems
+- **MCP Protocol**: JSON-RPC 2.0 communication via stdio
+- **Weather Data**: Integration with National Weather Service API
+- **AI Assistant Integration**: Works with Claude Desktop and Windsurf
+- **Real-time Data**: Weather alerts and forecasts for any US location
+- **Cross-platform**: Compatible with Windows, macOS, and Linux
+
+#### 🛠️ Weather Servers Technical Implementation
+
+```python
+# Python MCP Server with FastMCP
+@mcp.tool(name="get-forecast")
+async def get_forecast(latitude: float, longitude: float) -> str:
+    """Get weather forecast for coordinates."""
+    url = f"{NWS_API_BASE}/points/{latitude},{longitude}"
+    data = await make_nws_request(url)
+    return format_forecast(data)
+
+@mcp.tool(name="get-alerts") 
+async def get_alerts(state: str) -> str:
+    """Get weather alerts for a US state."""
+    url = f"{NWS_API_BASE}/alerts/active/area/{state}"
+    data = await make_nws_request(url)
+    return format_alerts(data)
+```
+
+#### 📋 Weather Servers Tech Stack
+
+- **Python Version**: FastMCP, httpx, uv package management
+- **TypeScript Version**: Node.js, npm, TypeScript compilation
+- **Protocol**: JSON-RPC 2.0 over stdio
+- **API Integration**: National Weather Service REST API
+- **Configuration**: MCP-compliant server configuration
+
+#### 🚀 Integration Features
+
+- Claude Desktop configuration with proper paths
+- Windsurf IDE integration support
+- MCP Inspector for testing and debugging
+- Comprehensive documentation and setup guides
+- Error handling and logging for production use
 
 ---
 
@@ -235,9 +339,10 @@ Debugging: Django Debug Toolbar
 ### Code Quality Metrics
 
 - **50+ Python programs** with increasing complexity
-- **2 production-ready applications** with enterprise features
+- **4 production-ready applications** with enterprise features
 - **Comprehensive test coverage** across all major projects
 - **Documentation-first approach** with detailed READMEs
+- **Multi-language implementations** (Python, TypeScript, JavaScript)
 
 ### Technical Complexity
 
@@ -245,6 +350,10 @@ Debugging: Django Debug Toolbar
 - **Real-time AI integration** with production APIs
 - **Security-first implementation** with JWT and data validation
 - **Scalable design patterns** for enterprise applications
+- **MCP Protocol implementation** for AI assistant integration
+- **Real-time communication** with WebSockets and stdio protocols
+- **Cross-platform automation** with Playwright browser control
+- **Multi-language development** (Python, TypeScript, JavaScript)
 
 ### Learning Progression
 
@@ -284,6 +393,10 @@ ls 0*-day-*/
 cd 13-AIHR  # AI-Powered HR System
 # or
 cd 14-Django-React-Full-Stack-App  # Full-Stack App
+# or
+cd 16-MCP-tutorial  # AI-Powered Meeting System
+# or
+cd 17-mcp-servers  # MCP Weather Servers
 ```
 
 ### Installation Examples
@@ -316,6 +429,39 @@ npm install
 npm run dev
 ```
 
+#### AI-Powered Meeting System
+
+```bash
+cd 16-MCP-tutorial
+uv sync  # Install dependencies
+uv run playwright install chromium  # Install browser
+cp .env.example .env  # Configure environment
+# Add your OPENAI_API_KEY to .env
+
+# Terminal 1: MCP Server (AI processing)
+uv run MCP_SERVER.py
+
+# Terminal 2: Meeting API (orchestrator)
+uv run MEETING_API.py
+```
+
+#### MCP Weather Servers
+
+```bash
+# Python Version
+cd 17-mcp-servers/02-weather-server-python
+uv sync
+uv run python test_weather.py  # Test locally
+# Configure with Claude Desktop or Windsurf using README instructions
+
+# TypeScript Version
+cd 17-mcp-servers/01-weather-server-typescript
+npm install
+npm run build
+npm run test  # Test locally
+# Configure with Claude Desktop or Windsurf using README instructions
+```
+
 ---
 
 ## 🧪 Testing & Quality Assurance
@@ -330,6 +476,18 @@ python manage.py test  # Django-React Backend
 # React Frontend
 npm test  # Frontend unit tests
 npm run test:coverage  # Coverage reports
+
+# AI-Powered Meeting System
+uv run python test_mcp_client.py  # Test MCP server integration
+curl http://localhost:8001/docs  # API documentation testing
+
+# MCP Weather Servers
+cd 17-mcp-servers/02-weather-server-python
+uv run python test_weather.py  # Test Python MCP server
+
+cd ../01-weather-server-typescript
+npm run test  # Test TypeScript MCP server
+mcp-inspector node build/index.js  # Interactive testing
 ```
 
 ### Code Quality Standards
