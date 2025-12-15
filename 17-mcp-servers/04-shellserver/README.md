@@ -8,6 +8,7 @@ A lightweight MCP (Model Context Protocol) server that provides shell command ex
 - Download content from URLs
 - Access desktop files via MCP resources
 - Cross-platform support (macOS, Linux, Windows)
+- Docker containerization support
 
 ## Installation
 
@@ -22,6 +23,26 @@ uv sync
 
 ```bash
 pip install -r requirements.txt
+```
+
+### Using Docker (Recommended for production)
+
+Build the Docker image:
+
+```bash
+docker build -t shellserver-app .
+```
+
+Run the container:
+
+```bash
+docker run -i --rm shellserver-app
+```
+
+For development with volume mount:
+
+```bash
+docker run -i --rm -v $(pwd):/app shellserver-app
 ```
 
 ## Configuration
@@ -200,6 +221,7 @@ logging.basicConfig(level=logging.DEBUG)
 ├── server.py          # Main MCP server
 ├── requirements.txt   # Python dependencies
 ├── pyproject.toml     # Project configuration
+├── Dockerfile         # Docker configuration
 └── README.md         # This file
 ```
 
