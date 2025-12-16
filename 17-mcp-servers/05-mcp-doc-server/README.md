@@ -13,10 +13,10 @@ uv sync
 
 ### 2. Test the Server
 
-Using uvx (recommended):
+Using uv run (recommended):
 
 ```bash
-uvx --from . mcp-doc-server
+uv run python server.py
 ```
 
 Or activate the virtual environment first:
@@ -36,21 +36,55 @@ Add this to your Windsurf MCP configuration file:
 {
   "mcpServers": {
     "mcp-docs": {
-      "command": "uvx",
       "args": [
-        "--from",
+        "run",
+        "--directory",
         "/Users/thepunisher/Documents/GitHub/python_projects/17-mcp-servers/05-mcp-doc-server",
-        "mcp-doc-server"
+        "python",
+        "server.py"
       ],
+      "command": "uv",
+      "disabled": false,
       "env": {}
     }
   }
 }
 ```
 
+## 🔧 Claude configuration
+
+Add this to your Claude MCP configuration file:
+
+```json
+{
+    "mcpServers": {
+        "mcp-docs": {
+            "args": [
+                "run",
+                "--directory",
+                "/Users/thepunisher/Documents/GitHub/python_projects/17-mcp-servers/05-mcp-doc-server",
+                "python",
+                "server.py"
+            ],
+            "command": "/Users/thepunisher/.local/bin/uv",
+            "env": {}
+        }
+    }
+}
+```
+
 **Important:** Update the path in `args` to match your actual project location.
 
-## 📚 Available Tools
+## � Troubleshooting
+
+If the MCP server is not loading the new Zoom URLs:
+
+1. **Restart the MCP server:** Toggle the `mcp-docs` switch off and on in Windsurf/Claude
+2. **Clear cache:** Delete `__pycache__` and `.venv` folders, then run `uv sync`
+3. **Verify configuration:** Ensure the path in the configuration matches your project location
+4. **Restart IDE:** Completely restart Windsurf or Claude Desktop if issues persist
+
+## �📚 Available Tools
 
 ### `get_mcp_docs`
 
@@ -92,7 +126,7 @@ Lists all available documentation sources.
 
 - Real-time documentation access from multiple sources
 - Automatic HTML to Markdown conversion
-- Support for 8+ documentation sources
+- Support for 9+ documentation sources
 - Error handling and validation
 - Zoom Bot development resources
 - **Zoom SDK official documentation** (Video SDK, Meeting SDK, API Reference)
