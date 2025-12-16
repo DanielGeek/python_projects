@@ -17,6 +17,7 @@ ALLOWED_PREFIXES = [
     "https://support.zoom.com/",
     "https://www.recall.ai/",
     "https://github.com/langchain-ai/mcpdoc",
+    "https://github.com/langchain-ai/langchain-mcp-adapters",
     "https://www.mercadopago.com.ar/developers/",
     "https://developers.zoom.us/",
     "https://docs.microsoft.com/en-us/microsoftteams/",
@@ -56,6 +57,7 @@ async def get_mcp_docs(url: str = "overview") -> str:
             "- https://support.zoom.com/\n"
             "- https://www.recall.ai/\n"
             "- https://github.com/langchain-ai/mcpdoc\n"
+            "- https://github.com/langchain-ai/langchain-mcp-adapters\n"
             "- https://www.mercadopago.com.ar/developers/\n"
             "- https://developers.zoom.us/\n"
             "- https://learn.microsoft.com/en-us/microsoftteams/\n"
@@ -117,6 +119,11 @@ async def list_mcp_doc_sources() -> str:
 
 ## LangChain MCP
 - **LangChain MCP Documentation**: https://github.com/langchain-ai/mcpdoc
+
+## LangChain MCP Adapters (Agent Integration)
+- **LangChain MCP Adapters**: https://github.com/langchain-ai/langchain-mcp-adapters
+- **Installation**: pip install langchain-mcp-adapters
+- **Multi-Server Client**: Connect multiple MCP servers to LangGraph agents
 
 ## Mercado Pago MCP (Security Example)
 - **Mercado Pago MCP Server Overview**: https://www.mercadopago.com.ar/developers/es/docs/mcp-server/overview
