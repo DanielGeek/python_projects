@@ -1,6 +1,7 @@
 """MCP Documentation Server.
 
-This server provides access to MCP official documentation and Python SDK docs.
+This server provides access to MCP official documentation, Python SDK docs,
+Zoom Bot development, Recall.ai, LangChain MCP, and Mercado Pago MCP docs.
 """
 
 import httpx
@@ -12,6 +13,12 @@ server = FastMCP(name="mcp-docs")
 ALLOWED_PREFIXES = [
     "https://modelcontextprotocol.io/",
     "https://github.com/modelcontextprotocol/python-sdk",
+    "https://github.com/CoconutJJ/zoom-bot",
+    "https://support.zoom.com/",
+    "https://www.recall.ai/",
+    "https://github.com/langchain-ai/mcpdoc",
+    "https://www.mercadopago.com.ar/developers/",
+    "https://developers.zoom.us/",
 ]
 
 HTTPX_CLIENT = httpx.AsyncClient(follow_redirects=True, timeout=30.0)
@@ -24,8 +31,7 @@ async def get_mcp_docs(url: str = "overview") -> str:
     Always fetch the `overview` first to get available documentation URLs.
 
     Args:
-        url: The URL to fetch. Must start with https://modelcontextprotocol.io/
-             or https://github.com/modelcontextprotocol/python-sdk
+        url: The URL to fetch. Must start with one of the allowed prefixes
              or be "overview" for the main documentation index.
 
     Returns:
@@ -40,6 +46,12 @@ async def get_mcp_docs(url: str = "overview") -> str:
             "Error: Invalid URL. Must start with:\n"
             "- https://modelcontextprotocol.io/\n"
             "- https://github.com/modelcontextprotocol/python-sdk\n"
+            "- https://github.com/CoconutJJ/zoom-bot\n"
+            "- https://support.zoom.com/\n"
+            "- https://www.recall.ai/\n"
+            "- https://github.com/langchain-ai/mcpdoc\n"
+            "- https://www.mercadopago.com.ar/developers/\n"
+            "- https://developers.zoom.us/\n"
             'Or use "overview" for the documentation index.'
         )
 
@@ -79,6 +91,25 @@ async def list_mcp_doc_sources() -> str:
 ## Python SDK
 - **GitHub Repository**: https://github.com/modelcontextprotocol/python-sdk
 - **README**: https://github.com/modelcontextprotocol/python-sdk/blob/main/README.md
+
+## Zoom Bot Development
+- **Zoom Bot Repository**: https://github.com/CoconutJJ/zoom-bot
+- **Zoom Support Article**: https://support.zoom.com/hc/es/article?id=zm_kb&sysparm_article=KB0058271
+
+## Zoom SDK Official Documentation
+- **SDK References**: https://developers.zoom.us/docs/sdk-references/
+- **Video SDK**: https://developers.zoom.us/docs/video-sdk/
+- **Meeting SDK**: https://developers.zoom.us/docs/meeting-sdk/
+- **API Reference**: https://developers.zoom.us/docs/api/
+
+## Recall.ai
+- **How to Build a Zoom Bot**: https://www.recall.ai/blog/how-to-build-a-zoom-bot
+
+## LangChain MCP
+- **LangChain MCP Documentation**: https://github.com/langchain-ai/mcpdoc
+
+## Mercado Pago MCP (Security Example)
+- **Mercado Pago MCP Server Overview**: https://www.mercadopago.com.ar/developers/es/docs/mcp-server/overview
 
 ## Usage
 Use the `get_mcp_docs` tool with any of these URLs or use "overview" to start.
