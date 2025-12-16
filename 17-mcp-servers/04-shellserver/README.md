@@ -1,14 +1,17 @@
 # Shell MCP Server
 
-A lightweight MCP (Model Context Protocol) server that provides shell command execution capabilities and file system access for AI assistants.
+A lightweight MCP (Model Context Protocol) server that provides shell command execution capabilities and file system access for AI assistants with Docker containerization support.
 
 ## Features
 
 - Execute shell commands safely
 - Download content from URLs
 - Access desktop files via MCP resources
+- List available MCP resources via tools
+- Read desktop files directly via tools
 - Cross-platform support (macOS, Linux, Windows)
-- Docker containerization support
+- Docker containerization support with volume mounts
+- Automatic container cleanup
 
 ## Installation
 
@@ -33,23 +36,32 @@ Build the Docker image:
 docker build -t shellserver-app .
 ```
 
-Run the container:
+Run the container with Desktop access:
 
 ```bash
-docker run -i --rm shellserver-app
+docker run -i --rm --init -v /Users/thepunisher/Desktop:/host-desktop -e DOCKER_CONTAINER=true shellserver-app
 ```
 
 For development with volume mount:
 
 ```bash
-docker run -i --rm -v $(pwd):/app shellserver-app
+docker run -i --rm --init -v $(pwd):/app -v /Users/thepunisher/Desktop:/host-desktop -e DOCKER_CONTAINER=true shellserver-app
 ```
+
+**Docker Features:**
+
+- ✅ Automatic container cleanup with `--rm`
+- ✅ Proper signal handling with `--init`
+- ✅ Desktop access via volume mount at `/host-desktop`
+- ✅ Isolated environment for security
 
 ## Configuration
 
 ### Claude Desktop
 
 Add to your `claude_desktop_config.json`:
+
+**Local Server:**
 
 ```json
 {
@@ -68,9 +80,34 @@ Add to your `claude_desktop_config.json`:
 }
 ```
 
+**Docker Server (with Desktop access):**
+
+```json
+{
+    "mcpServers": {
+        "docker-shell": {
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "--init",
+                "-v",
+                "/Users/thepunisher/Desktop:/host-desktop",
+                "-e",
+                "DOCKER_CONTAINER=true",
+                "shellserver-app"
+            ]
+        }
+    }
+}
+```
+
 ### Windsurf
 
 Add to your `mcp_config.json`:
+
+**Local Server:**
 
 ```json
 {
@@ -90,6 +127,29 @@ Add to your `mcp_config.json`:
 }
 ```
 
+**Docker Server (with Desktop access):**
+```json
+{
+    "mcpServers": {
+        "docker-shell": {
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "--init",
+                "-v",
+                "/Users/thepunisher/Desktop:/host-desktop",
+                "-e",
+                "DOCKER_CONTAINER=true",
+                "shellserver-app"
+            ],
+            "disabled": false
+        }
+    }
+}
+```
+
 ## Usage
 
 ### Available Tools
@@ -100,17 +160,16 @@ Execute shell commands safely.
 
 ```bash
 # Example usage via MCP:
-run_command("ls -la ~/Desktop")
-run_command("python --version")
-run_command("git status")
+run_command("ls -la /host-desktop")  # Docker: Access Desktop
+run_command("ls -la ~/Desktop")      # Local: Access Desktop
 ```
 
-#### `download_content`
+#### `benign_tool`
 
-Download content from URLs.
+Download content from a fixed URL.
 
 ```bash
-# Example usage:
+# Example usage via MCP:
 benign_tool()
 ```
 
@@ -124,6 +183,38 @@ Access the mcpreadme.md file from your Desktop.
 # Access via MCP resource:
 read_resource("shell", "file:///mcpreadme")
 ```
+
+## Docker vs Local Server
+
+| Feature | Local Server | Docker Server |
+|---------|--------------|---------------|
+| **Desktop Access** | `~/Desktop` | `/host-desktop` |
+| **Security** | Direct system access | Isolated container |
+| **Performance** | Faster startup | Slight overhead |
+| **Portability** | System-dependent | Fully portable |
+| **Cleanup** | Manual processes | Automatic with `--rm` |
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Docker image not found**
+   ```bash
+   docker build -t shellserver-app .
+   ```
+
+2. **Desktop access denied in Docker**
+   - Verify volume mount: `-v /Users/thepunisher/Desktop:/host-desktop`
+   - Check file permissions on Desktop
+
+3. **Container not cleaning up**
+   - Ensure `--rm` flag is used
+   - Manual cleanup: `docker rm $(docker ps -aq)`
+
+4. **MCP server not connecting**
+   - Restart Claude Desktop or Windsurf
+   - Check configuration syntax
+   - Verify Docker daemon is running
 
 ## Useful Commands
 
@@ -183,34 +274,6 @@ curl -I https://example.com
 - Be careful with destructive commands (rm, mv, etc.)
 - File access is limited to your user's accessible directories
 - Always validate inputs before executing commands
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Server won't start**
-   - Check if uv is installed: `which uv`
-   - Verify the directory path is correct
-   - Check Python dependencies: `uv sync`
-
-2. **Command execution fails**
-   - Verify command syntax
-   - Check file permissions
-   - Ensure required tools are installed
-
-3. **File access issues**
-   - Check file permissions
-   - Verify file paths exist
-   - Ensure Desktop directory contains mcpreadme.md
-
-### Debug Mode
-
-To enable debug logging, modify the server.py file:
-
-```python
-import logging
-logging.basicConfig(level=logging.DEBUG)
-```
 
 ## Development
 
