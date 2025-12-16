@@ -19,6 +19,12 @@ ALLOWED_PREFIXES = [
     "https://github.com/langchain-ai/mcpdoc",
     "https://www.mercadopago.com.ar/developers/",
     "https://developers.zoom.us/",
+    "https://docs.microsoft.com/en-us/microsoftteams/",
+    "https://learn.microsoft.com/en-us/microsoftteams/",
+    "https://docs.microsoft.com/en-us/graph/",
+    "https://learn.microsoft.com/en-us/graph/",
+    "https://developers.google.com/meet",
+    "https://developers.google.com/workspace",
 ]
 
 HTTPX_CLIENT = httpx.AsyncClient(follow_redirects=True, timeout=30.0)
@@ -52,6 +58,10 @@ async def get_mcp_docs(url: str = "overview") -> str:
             "- https://github.com/langchain-ai/mcpdoc\n"
             "- https://www.mercadopago.com.ar/developers/\n"
             "- https://developers.zoom.us/\n"
+            "- https://learn.microsoft.com/en-us/microsoftteams/\n"
+            "- https://learn.microsoft.com/en-us/graph/\n"
+            "- https://developers.google.com/meet\n"
+            "- https://developers.google.com/workspace\n"
             'Or use "overview" for the documentation index.'
         )
 
@@ -110,6 +120,16 @@ async def list_mcp_doc_sources() -> str:
 
 ## Mercado Pago MCP (Security Example)
 - **Mercado Pago MCP Server Overview**: https://www.mercadopago.com.ar/developers/es/docs/mcp-server/overview
+
+## Microsoft Teams (Future Integration)
+- **Teams Platform**: https://learn.microsoft.com/en-us/microsoftteams/platform/
+- **Graph API**: https://learn.microsoft.com/en-us/graph/api/
+- **Teams SDK**: https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/using-teams-client-sdk
+
+## Google Meet (Future Integration)
+- **Meet API**: https://developers.google.com/meet
+- **Workspace APIs**: https://developers.google.com/workspace
+- **Calendar API**: https://developers.google.com/calendar
 
 ## Usage
 Use the `get_mcp_docs` tool with any of these URLs or use "overview" to start.
