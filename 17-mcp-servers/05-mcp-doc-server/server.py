@@ -26,6 +26,8 @@ ALLOWED_PREFIXES = [
     "https://learn.microsoft.com/en-us/graph/",
     "https://developers.google.com/meet",
     "https://developers.google.com/workspace",
+    "https://gofastmcp.com/getting-started/welcome",
+    "https://fastmcp.cloud/",
 ]
 
 HTTPX_CLIENT = httpx.AsyncClient(follow_redirects=True, timeout=30.0)
@@ -64,6 +66,8 @@ async def get_mcp_docs(url: str = "overview") -> str:
             "- https://learn.microsoft.com/en-us/graph/\n"
             "- https://developers.google.com/meet\n"
             "- https://developers.google.com/workspace\n"
+            "- https://gofastmcp.com/getting-started/welcome\n"
+            "- https://fastmcp.cloud/\n"
             'Or use "overview" for the documentation index.'
         )
 
@@ -137,6 +141,10 @@ async def list_mcp_doc_sources() -> str:
 - **Meet API**: https://developers.google.com/meet
 - **Workspace APIs**: https://developers.google.com/workspace
 - **Calendar API**: https://developers.google.com/calendar
+
+## FastMCP
+- **Getting Started Guide**: https://gofastmcp.com/getting-started/welcome
+- **FastMCP Cloud**: https://fastmcp.cloud/
 
 ## Usage
 Use the `get_mcp_docs` tool with any of these URLs or use "overview" to start.

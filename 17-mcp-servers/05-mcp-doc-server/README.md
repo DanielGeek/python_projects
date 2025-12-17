@@ -1,6 +1,6 @@
 # MCP Documentation Server
 
-MCP server for accessing official MCP documentation, Python SDK, Zoom Bot development, Recall.ai, LangChain MCP, Mercado Pago MCP, Microsoft Teams, and Google Meet documentation directly from Windsurf.
+MCP server for accessing official MCP documentation, Python SDK, Zoom Bot development, Recall.ai, LangChain MCP, Mercado Pago MCP, Microsoft Teams, Google Meet, and FastMCP documentation directly from Windsurf.
 
 ## 🚀 Quick Start
 
@@ -88,7 +88,7 @@ If the MCP server is not loading the new Zoom URLs:
 
 ### `get_mcp_docs`
 
-Fetches documentation from multiple sources including MCP official site, Python SDK, Zoom Bot, Zoom SDK, Recall.ai, LangChain MCP, and Mercado Pago MCP.
+Fetches documentation from multiple sources including MCP official site, Python SDK, Zoom Bot, Zoom SDK, Recall.ai, LangChain MCP, Mercado Pago MCP, FastMCP, Microsoft Teams, and Google Meet.
 
 **Usage:**
 
@@ -109,6 +109,8 @@ get_mcp_docs https://learn.microsoft.com/en-us/microsoftteams/platform/
 get_mcp_docs https://learn.microsoft.com/en-us/graph/api/
 get_mcp_docs https://developers.google.com/meet
 get_mcp_docs https://developers.google.com/workspace
+get_mcp_docs https://gofastmcp.com/getting-started/welcome
+get_mcp_docs https://fastmcp.cloud/
 ```
 
 ### `list_mcp_doc_sources`
@@ -129,15 +131,18 @@ Lists all available documentation sources.
 - **Microsoft Graph API:** <https://learn.microsoft.com/en-us/graph/>
 - **Google Meet API:** <https://developers.google.com/meet>
 - **Google Workspace APIs:** <https://developers.google.com/workspace>
+- **FastMCP Getting Started:** <https://gofastmcp.com/getting-started/welcome>
+- **FastMCP Cloud:** <https://fastmcp.cloud/>
 
 ## 💡 Features
 
 - Real-time documentation access from multiple sources
 - Automatic HTML to Markdown conversion
-- Support for 12+ documentation sources
+- Support for 14+ documentation sources
 - Error handling and validation
 - Zoom Bot development resources
 - **Zoom SDK official documentation** (Video SDK, Meeting SDK, API Reference)
 - MCP security examples (Mercado Pago MCP)
 - **Microsoft Teams and Graph API** (Future multi-platform support)
 - **Google Meet and Workspace APIs** (Future multi-platform support)
+- **FastMCP documentation** (Getting started guide and cloud platform)
