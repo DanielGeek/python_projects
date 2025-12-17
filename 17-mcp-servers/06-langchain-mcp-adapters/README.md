@@ -82,10 +82,26 @@ uv run main.py
 
 ## Run Project
 
+### Client Application
+
 ```bash
-# Test environment variables are loaded correctly
+# Run the main client application
 uv run main.py
 ```
+
+### MCP Servers
+
+The project includes example MCP servers that can be run independently:
+
+```bash
+# Run Math Server (provides add/multiply tools)
+uv run servers/math_server.py
+
+# Run Weather Server (provides weather tool)
+uv run servers/weather_server.py
+```
+
+**Note**: Run each server in a separate terminal window when testing multi-server integration.
 
 ## Code Structure
 
