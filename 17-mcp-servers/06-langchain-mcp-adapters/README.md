@@ -57,6 +57,9 @@ LANGCHAIN_PROJECT=default
 ### Quick Setup Commands
 
 ```bash
+# Create virtual environment
+uv venv
+
 # Activate virtual environment
 source .venv/bin/activate
 
@@ -69,6 +72,9 @@ cp .env.example .env
 
 # Test environment variables
 uv run main.py
+
+# Deactivate virtual environment
+deactivate
 ```
 
 ## Installed Dependencies

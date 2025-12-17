@@ -9,7 +9,8 @@ from langchain_core.messages import HumanMessage
 from langchain_mcp_adapters.tools import load_mcp_tools
 from langchain_openai import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langgraph.prebuilt import create_react_agent
+# from langgraph.prebuilt import create_react_agent // Old version
+from langchain.agents import create_agent
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
@@ -22,16 +23,15 @@ stdio_server_params = StdioServerParameters(
 )
 
 async def main():
-    print("Hello from 06-langchain-mcp-adapters!")
-    
-    # Test Google AI connection
-    try:
-        response = await llm.ainvoke("What is MCP protocol in AI?")
-        print(f"\n✅ Google AI (Gemini 2.5 Flash) working:")
-        print(f"Response: {response.content}")
-    except Exception as e:
-        print(f"\n❌ Error connecting with Google AI: {e}")
+    async with stdio_client(stdio_server_params) as (read, write):
+        async with ClientSession(read_stream=read, write_stream=write) as session:
+            await session.initialize()
+            print("Session initialized")
+            tools = await load_mcp_tools(session)
+            # tools = await session.list_tools()
 
+            # agent = create_react_agent(llm, tools) // Old version
+            agent = create_agent(llm, tools)
 
 if __name__ == "__main__":
     asyncio.run(main())
