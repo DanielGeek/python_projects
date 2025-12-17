@@ -15,7 +15,7 @@ source .venv/bin/activate
 ### 2. Install dependencies
 
 ```bash
-uv add langchain-mcp-adapters langgraph "langchain[openai]" python-dotenv
+uv add langchain-mcp-adapters langgraph "langchain[openai]" "langchain[google-genai]" python-dotenv isort
 ```
 
 ## Configuration
@@ -77,6 +77,7 @@ uv run main.py
 - **langgraph** (v1.0.5) - Framework for agents
 - **langchain** (v1.2.0) - Main framework
 - **langchain-openai** (v1.1.3) - OpenAI integration
+- **langchain-google-genai** - Google AI (Gemini) integration
 - **mcp** (v1.24.0) - MCP SDK
 - **python-dotenv** - Environment variable management
 
@@ -147,6 +148,14 @@ This setup:
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain.agents import create_agent
 
+# OpenAI
+from langchain_openai import ChatOpenAI
+llm = ChatOpenAI(model="gpt-4")
+
+# Google AI (Gemini)
+from langchain_google_genai import ChatGoogleGenerativeAI
+llm = ChatGoogleGenerativeAI(model="gemini-pro")
+
 # Connect multiple MCP servers
 client = MultiServerMCPClient({
     "zoom": {"url": "http://localhost:8000/mcp"},
@@ -155,5 +164,5 @@ client = MultiServerMCPClient({
 
 # Create agent with MCP tools
 tools = await client.get_tools()
-agent = create_agent("openai:gpt-4.1", tools)
+agent = create_agent(llm, tools)
 ```
