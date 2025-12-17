@@ -20,16 +20,55 @@ uv add langchain-mcp-adapters langgraph "langchain[openai]" python-dotenv
 
 ## Configuration
 
-### Configure OpenAI API Key
+### Environment Variables Setup
 
-```bash
-export OPENAI_API_KEY=your_api_key_here
-```
-
-Or create `.env` file:
+Create a `.env` file with your API keys:
 
 ```env
-OPENAI_API_KEY=your_api_key_here
+# Required - OpenAI API Key
+OPENAI_API_KEY=sk-your-openai-api-key-here
+
+# Required - Google API Key (for Google services)
+GOOGLE_API_KEY=your-google-api-key-here
+
+# Required - LangSmith for tracing/monitoring
+LANGCHAIN_API_KEY=lsv2_your-langsmith-api-key-here
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_ENDPOINT=https://api.smith.langchain.com
+LANGCHAIN_PROJECT=default
+```
+
+### Create LangSmith Account & API Key
+
+1. **Sign up for free**: [LangSmith](https://smith.langchain.com)
+   - Supports Google, GitHub, or email sign-in
+
+2. **Create API Key**: [Create Account & API Key](https://docs.langchain.com/langsmith/create-account-api-key)
+   - Go to Settings → API Keys
+   - Select **"Personal Access Token"** (recommended for individual development)
+   - Choose workspace scope or organization-wide
+   - Set expiration (choose "Never" for development)
+   - **Copy the key immediately** - it only shows once!
+
+3. **Configure your project**:
+   - Free plan includes 1 project, 5,000 traces/month, 14-day retention
+   - Perfect for development and learning
+
+### Quick Setup Commands
+
+```bash
+# Activate virtual environment
+source .venv/bin/activate
+
+# Install dependencies
+uv add langchain-mcp-adapters langgraph "langchain[openai]" python-dotenv
+
+# Create and edit .env file
+cp .env.example .env
+# Edit .env with your actual API keys
+
+# Test environment variables
+uv run main.py
 ```
 
 ## Installed Dependencies
@@ -44,9 +83,36 @@ OPENAI_API_KEY=your_api_key_here
 ## Run Project
 
 ```bash
-# Run basic example
+# Test environment variables are loaded correctly
 uv run main.py
 ```
+
+## Code Structure
+
+### Environment Variable Loading
+
+The project now includes automatic environment variable loading:
+
+```python
+import asyncio
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+print(os.getenv("GOOGLE_API_KEY"))
+
+async def main():
+    print("Hello from 06-langchain-mcp-adapters!")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+This setup:
+
+- ✅ **Loads environment variables** from `.env` automatically
+- ✅ **Tests API keys** are properly loaded before running
+- ✅ **Provides feedback** when configuration is successful
 
 ## Official Documentation
 
