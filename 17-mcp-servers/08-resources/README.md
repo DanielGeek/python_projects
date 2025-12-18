@@ -47,13 +47,25 @@ uv run main.py
 deactivate
 
 # Run MCP inspector
-npx @modelcontextprotocol/inspector
+npx @modelcontextprotocol/inspector uv run main.py
 ```
 
 ### Running the Server
 
+You have two options depending on your use case:
+
+#### Option 1: HTTP Transport (for testing with Postman/MCP Inspector)
+
 ```bash
-python main.py
+uv run main.py
+```
+
+The server runs on **<http://127.0.0.1:8000/mcp>** for HTTP-based testing.
+
+#### Option 2: STDIO Transport (for Claude Desktop/Windsurf)
+
+```bash
+uv run main_stdio.py
 ```
 
 The server runs on **stdio** and waits for MCP client connections.
