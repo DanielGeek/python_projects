@@ -89,11 +89,18 @@ deactivate
 
 ## Run Project
 
-### Client Application
+### Client Applications
 
+#### Main Client (Basic Setup)
 ```bash
 # Run the main client application
 uv run main.py
+```
+
+#### Multi-Server MCP Client (New)
+```bash
+# Run the multi-server MCP client with LangChain integration
+uv run langchain_client.py
 ```
 
 ### MCP Servers
@@ -101,14 +108,14 @@ uv run main.py
 The project includes example MCP servers that can be run independently:
 
 ```bash
-# Run Math Server (provides add/multiply tools)
+# Run Math Server (provides add/multiply tools) - STDIO transport
 uv run servers/math_server.py
 
-# Run Weather Server (provides weather tool)
+# Run Weather Server (provides weather tool) - SSE transport
 uv run servers/weather_server.py
 ```
 
-**Note**: Run each server in a separate terminal window when testing multi-server integration.
+**Note**: Run each server in a separate terminal window when testing multi-server integration. The weather server must be running on `http://localhost:8000/sse` for the multi-server client to work.
 
 ## Code Structure
 
@@ -136,6 +143,59 @@ This setup:
 - ✅ **Loads environment variables** from `.env` automatically
 - ✅ **Tests API keys** are properly loaded before running
 - ✅ **Provides feedback** when configuration is successful
+
+### Multi-Server MCP Client
+
+The new `langchain_client.py` demonstrates advanced MCP integration with multiple servers:
+
+```python
+from langchain_mcp_adapters.client import MultiServerMCPClient
+from langchain.agents import create_agent
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+# Configure multiple MCP servers with different transports
+client = MultiServerMCPClient({
+    "math": {
+        "command": "python",
+        "args": ["servers/math_server.py"],
+        "transport": "stdio",  # Local Python script
+    },
+    "weather": {
+        "url": "http://localhost:8000/sse",
+        "transport": "sse",    # HTTP Server-Sent Events
+    },
+})
+
+# Create agent with tools from all servers
+tools = await client.get_tools()
+agent = create_agent(llm, tools)
+
+# Use agent with combined MCP tools
+result = await agent.ainvoke({
+    "messages": "What is 54 + 2 * 3?"
+})
+```
+
+#### Key Features:
+- ✅ **Multi-server support**: Connect to multiple MCP servers simultaneously
+- ✅ **Mixed transports**: STDIO for local servers, SSE for HTTP servers
+- ✅ **LangChain integration**: Use MCP tools with LangChain agents
+- ✅ **LLM agnostic**: Works with OpenAI, Google AI, and other LangChain LLMs
+- ✅ **Automatic tool discovery**: Tools from all servers are available to the agent
+
+#### Usage Examples:
+```bash
+# Terminal 1: Start weather server
+uv run servers/weather_server.py
+
+# Terminal 2: Run multi-server client
+uv run langchain_client.py
+```
+
+The agent can now:
+- Perform mathematical calculations using the math server
+- Get weather information using the weather server
+- Combine multiple tools in complex workflows
 
 ## Official Documentation
 
