@@ -41,6 +41,7 @@ ALLOWED_PREFIXES = [
     "https://banaina.com/",
     "https://glama.ai/",
     "https://github.com/microsoft/playwright-mcp",
+    "https://github.com/microsoft/playwright",
 ]
 
 HTTPX_CLIENT = httpx.AsyncClient(follow_redirects=True, timeout=30.0)
@@ -94,6 +95,7 @@ async def get_mcp_docs(url: str = "overview") -> str:
             "- https://banaina.com/\n"
             "- https://glama.ai/\n"
             "- https://github.com/microsoft/playwright-mcp\n"
+            "- https://github.com/microsoft/playwright\n"
             'Or use "overview" for the documentation index.'
         )
 
@@ -211,6 +213,7 @@ async def list_mcp_doc_sources() -> str:
 
 #### Microsoft Playwright MCP
 - **GitHub Repository**: https://github.com/microsoft/playwright-mcp
+- **Main Playwright Repository**: https://github.com/microsoft/playwright
 
 ## Usage
 Use the `get_mcp_docs` tool with any of these URLs or use "overview" to start.
