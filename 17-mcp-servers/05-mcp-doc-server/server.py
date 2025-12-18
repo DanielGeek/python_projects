@@ -28,6 +28,17 @@ ALLOWED_PREFIXES = [
     "https://developers.google.com/workspace",
     "https://gofastmcp.com/getting-started/welcome",
     "https://fastmcp.cloud/",
+    "https://github.com/punkpeye/awesome-mcp-servers",
+    "https://www.odoo.com/",
+    "https://apps.odoo.com/",
+    "https://help.holded.com/",
+    "https://zapier.com/",
+    "https://10xerp.com/",
+    "https://apidocs.sesametime.com/",
+    "https://developers.apideck.com/",
+    "https://www.apideck.com/",
+    "https://pipedream.com/",
+    "https://banaina.com/",
 ]
 
 HTTPX_CLIENT = httpx.AsyncClient(follow_redirects=True, timeout=30.0)
@@ -68,6 +79,17 @@ async def get_mcp_docs(url: str = "overview") -> str:
             "- https://developers.google.com/workspace\n"
             "- https://gofastmcp.com/getting-started/welcome\n"
             "- https://fastmcp.cloud/\n"
+            "- https://github.com/punkpeye/awesome-mcp-servers\n"
+            "- https://www.odoo.com/\n"
+            "- https://apps.odoo.com/\n"
+            "- https://help.holded.com/\n"
+            "- https://zapier.com/\n"
+            "- https://10xerp.com/\n"
+            "- https://apidocs.sesametime.com/\n"
+            "- https://developers.apideck.com/\n"
+            "- https://www.apideck.com/\n"
+            "- https://pipedream.com/\n"
+            "- https://banaina.com/\n"
             'Or use "overview" for the documentation index.'
         )
 
@@ -145,6 +167,38 @@ async def list_mcp_doc_sources() -> str:
 ## FastMCP
 - **Getting Started Guide**: https://gofastmcp.com/getting-started/welcome
 - **FastMCP Cloud**: https://fastmcp.cloud/
+
+## ERP & Integration Systems
+### Awesome MCP Servers Collection
+- **Curated MCP Servers List**: https://github.com/punkpeye/awesome-mcp-servers
+
+### Odoo ERP
+- **Official API Documentation**: https://www.odoo.com/documentation/saas-13/api_integration.html
+- **Integrations Documentation**: https://www.odoo.com/documentation/saas-16.3/applications/general/integrations.html
+- **Odoo Connect Addon**: https://apps.odoo.com/apps/modules/16.0/odoo_connect
+- **Odoo 18.0 Documentation (Spanish)**: https://www.odoo.com/documentation/18.0/es_419/
+
+### Holded ERP
+- **API Guide**: https://help.holded.com/es/articles/6896051-como-generar-y-utilizar-la-api-de-holded
+
+### Zapier Integrations
+- **Holded + Odoo Integration**: https://zapier.com/apps/holded/integrations/odoo
+
+### Ten ERP
+- **Official Website**: https://10xerp.com/
+
+### Sesame HR
+- **API Documentation**: https://apidocs.sesametime.com/
+- **Apideck Connector**: https://developers.apideck.com/apis/hris/sesamehr
+
+### Middleware & Unified APIs
+- **Apideck Unified ERP API**: https://www.apideck.com/erp-api
+
+### Integration Examples
+- **Odoo + Holded on Pipedream**: https://pipedream.com/apps/odoo/integrations/holded
+
+### Banaina Platform
+- **Official Website**: https://banaina.com/
 
 ## Usage
 Use the `get_mcp_docs` tool with any of these URLs or use "overview" to start.

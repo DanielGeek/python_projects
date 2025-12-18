@@ -92,12 +92,14 @@ deactivate
 ### Client Applications
 
 #### Main Client (Basic Setup)
+
 ```bash
 # Run the main client application
 uv run main.py
 ```
 
 #### Multi-Server MCP Client (New)
+
 ```bash
 # Run the multi-server MCP client with LangChain integration
 uv run langchain_client.py
@@ -176,14 +178,16 @@ result = await agent.ainvoke({
 })
 ```
 
-#### Key Features:
+#### Key Features
+
 - ✅ **Multi-server support**: Connect to multiple MCP servers simultaneously
 - ✅ **Mixed transports**: STDIO for local servers, SSE for HTTP servers
 - ✅ **LangChain integration**: Use MCP tools with LangChain agents
 - ✅ **LLM agnostic**: Works with OpenAI, Google AI, and other LangChain LLMs
 - ✅ **Automatic tool discovery**: Tools from all servers are available to the agent
 
-#### Usage Examples:
+#### Usage Examples
+
 ```bash
 # Terminal 1: Start weather server
 uv run servers/weather_server.py
@@ -193,14 +197,15 @@ uv run langchain_client.py
 ```
 
 The agent can now:
+
 - Perform mathematical calculations using the math server
 - Get weather information using the weather server
 - Combine multiple tools in complex workflows
 
 ## Official Documentation
 
-- **LangChain MCP Adapters**: https://github.com/langchain-ai/langchain-mcp-adapters
-- **Examples and tutorials**: https://github.com/langchain-ai/langchain-mcp-adapters/tree/main/examples
+- **LangChain MCP Adapters**: <https://github.com/langchain-ai/langchain-mcp-adapters>
+- **Examples and tutorials**: <https://github.com/langchain-ai/langchain-mcp-adapters/tree/main/examples>
 
 ## Use Cases
 
