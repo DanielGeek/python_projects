@@ -41,6 +41,7 @@ ALLOWED_PREFIXES = [
     "https://banaina.com/",
     "https://auth0.com/",
     "https://glama.ai/",
+    "https://github.com/cloudflare/ai",
     "https://github.com/microsoft/playwright-mcp",
     "https://github.com/microsoft/playwright",
 ]
@@ -96,6 +97,7 @@ async def get_mcp_docs(url: str = "overview") -> str:
             "- https://banaina.com/\n"
             "- https://auth0.com/\n"
             "- https://glama.ai/\n"
+            "- https://github.com/cloudflare/ai\n"
             "- https://github.com/microsoft/playwright-mcp\n"
             "- https://github.com/microsoft/playwright\n"
             'Or use "overview" for the documentation index.'
@@ -210,6 +212,9 @@ async def list_mcp_doc_sources() -> str:
 
 ## Auth0
 - **Secure and Deploy Remote MCP Servers with Auth0 and Cloudflare**: https://auth0.com/blog/secure-and-deploy-remote-mcp-servers-with-auth0-and-cloudflare/
+
+## Cloudflare
+- **Cloudflare AI (GitHub)**: https://github.com/cloudflare/ai
 
 ### MCP Platforms & Tools
 #### Glama MCP
