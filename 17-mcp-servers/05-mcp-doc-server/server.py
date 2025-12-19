@@ -39,6 +39,7 @@ ALLOWED_PREFIXES = [
     "https://www.apideck.com/",
     "https://pipedream.com/",
     "https://banaina.com/",
+    "https://auth0.com/",
     "https://glama.ai/",
     "https://github.com/microsoft/playwright-mcp",
     "https://github.com/microsoft/playwright",
@@ -93,6 +94,7 @@ async def get_mcp_docs(url: str = "overview") -> str:
             "- https://www.apideck.com/\n"
             "- https://pipedream.com/\n"
             "- https://banaina.com/\n"
+            "- https://auth0.com/\n"
             "- https://glama.ai/\n"
             "- https://github.com/microsoft/playwright-mcp\n"
             "- https://github.com/microsoft/playwright\n"
@@ -205,6 +207,9 @@ async def list_mcp_doc_sources() -> str:
 
 ### Banaina Platform
 - **Official Website**: https://banaina.com/
+
+## Auth0
+- **Secure and Deploy Remote MCP Servers with Auth0 and Cloudflare**: https://auth0.com/blog/secure-and-deploy-remote-mcp-servers-with-auth0-and-cloudflare/
 
 ### MCP Platforms & Tools
 #### Glama MCP
