@@ -175,11 +175,11 @@ async def process_meeting_audio(audio_file: str):
 
 ---
 
-### 4. 🌤️ MCP Weather Servers
+### 4. 🌤️ MCP Weather Servers & AI Integration
 
-Model Context Protocol (MCP) weather servers providing seamless integration with AI assistants like Claude Desktop
+Model Context Protocol (MCP) servers providing seamless integration with AI assistants like Claude Desktop, featuring advanced authentication and real-time data processing
 
-#### 🎯 Weather Servers Key Features
+#### 🎯 MCP Servers Key Features
 
 - **Dual Implementation**: TypeScript and Python versions for different ecosystems
 - **MCP Protocol**: JSON-RPC 2.0 communication via stdio
@@ -187,8 +187,13 @@ Model Context Protocol (MCP) weather servers providing seamless integration with
 - **AI Assistant Integration**: Works with Claude Desktop and Windsurf
 - **Real-time Data**: Weather alerts and forecasts for any US location
 - **Cross-platform**: Compatible with Windows, macOS, and Linux
+- **Advanced Authentication**: OAuth 2.0 with Auth0 integration
+- **Cloudflare Workers**: Production-ready deployment on serverless platform
+- **Remote MCP**: Secure remote server connections with token management
+- **Context Engineering**: Optimized token usage and context management
+- **Agent Skills**: Multi-agent systems with specialized capabilities
 
-#### 🛠️ Weather Servers Technical Implementation
+#### 🛠️ MCP Servers Technical Implementation
 
 ```python
 # Python MCP Server with FastMCP
@@ -207,21 +212,28 @@ async def get_alerts(state: str) -> str:
     return format_alerts(data)
 ```
 
-#### 📋 Weather Servers Tech Stack
+#### 📋 MCP Servers Tech Stack
 
 - **Python Version**: FastMCP, httpx, uv package management
 - **TypeScript Version**: Node.js, npm, TypeScript compilation
 - **Protocol**: JSON-RPC 2.0 over stdio
 - **API Integration**: National Weather Service REST API
-- **Configuration**: MCP-compliant server configuration
+- **Authentication**: OAuth 2.0, Auth0, JWT token management
+- **Deployment**: Cloudflare Workers, serverless architecture
+- **Remote Access**: mcp-remote CLI tool for secure connections
+- **Context Optimization**: FastMCP 2.12.4+ with advanced features
+- **Multi-Agent**: LangChain integration with agent orchestration
 
-#### 🚀 Integration Features
+#### 🚀 Advanced Features
 
-- Claude Desktop configuration with proper paths
-- Windsurf IDE integration support
-- MCP Inspector for testing and debugging
-- Comprehensive documentation and setup guides
-- Error handling and logging for production use
+- **Auth0 Integration**: Complete OAuth 2.0 flow with PKCE
+- **Cloudflare Deployment**: Serverless MCP servers with global distribution
+- **Remote Authentication**: Secure token-based remote MCP connections
+- **Context Engineering**: Optimized token usage for AI assistants
+- **Multi-Agent Systems**: Specialized agents for different tasks
+- **Real-time Processing**: WebSocket connections for live data
+- **Production Monitoring**: Comprehensive logging and error handling
+- **Enterprise Security**: Role-based access control and audit logging
 
 ---
 
@@ -351,9 +363,15 @@ Debugging: Django Debug Toolbar
 - **Security-first implementation** with JWT and data validation
 - **Scalable design patterns** for enterprise applications
 - **MCP Protocol implementation** for AI assistant integration
+- **OAuth 2.0 authentication** with Auth0 and enterprise security
+- **Cloudflare Workers deployment** for global serverless architecture
+- **Remote MCP connections** with secure token management
+- **Context engineering optimization** for AI efficiency
+- **Multi-agent systems** with specialized task capabilities
 - **Real-time communication** with WebSockets and stdio protocols
 - **Cross-platform automation** with Playwright browser control
 - **Multi-language development** (Python, TypeScript, JavaScript)
+- **Enterprise-grade monitoring** and logging systems
 
 ### Learning Progression
 
@@ -445,21 +463,37 @@ uv run MCP_SERVER.py
 uv run MEETING_API.py
 ```
 
-#### MCP Weather Servers
+#### MCP Weather Servers & AI Integration
 
 ```bash
-# Python Version
+# Python Weather Server
 cd 17-mcp-servers/02-weather-server-python
 uv sync
 uv run python test_weather.py  # Test locally
 # Configure with Claude Desktop or Windsurf using README instructions
 
-# TypeScript Version
+# TypeScript Weather Server
 cd 17-mcp-servers/01-weather-server-typescript
 npm install
 npm run build
 npm run test  # Test locally
 # Configure with Claude Desktop or Windsurf using README instructions
+
+# Auth0 MCP Server (Production)
+cd 17-mcp-servers/09-remote-mcp-auth0/mcp-auth0-oidc
+npm run build
+npm run deploy  # Deploy to Cloudflare Workers
+# Configure Claude Desktop with OAuth authentication
+
+# Context Engineering
+cd 17-mcp-servers/10-context-engineering-mcp
+uv sync
+fastmcp dev verbose_mcp_server.py  # Development with MCP Inspector
+
+# Agent Skills
+cd 17-mcp-servers/11-agent-skills
+npm install
+npm run dev  # Next.js development server
 ```
 
 ---
