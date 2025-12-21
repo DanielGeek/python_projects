@@ -39,16 +39,25 @@ A cutting-edge HR platform leveraging Meta's Llama 3 70B for intelligent candida
 - **Application Tracking**: Comprehensive applicant workflow system
 - **File Management**: Secure CV upload and processing with PDF validation
 - **Responsive Design**: Mobile-optimized Bootstrap 5 interface
+- **Score-based Screening**: AI-powered candidate scoring (0-100 scale)
+- **JSON Response Parsing**: Structured AI responses with validation
 
 #### 🛠️ Technical Implementation
 
 ```python
 # AI-powered candidate evaluation using Llama 3
-def evaluate_candidate(applicant, job_requirements):
-    prompt = f"Evaluate this candidate for {job_requirements}"
-    response = groq_client.chat.completions.create(
+def consult_ai(job, cv_path):
+    data = get_data(job=job, cv_path=cv_path)
+    client = Groq(api_key=os.environ.get('GROQ_API_KEY'))
+    completion = client.chat.completions.create(
         model="llama3-70b-8192",
-        messages=[{"role": "user", "content": prompt}]
+        messages=[{
+            "role": "user",
+            "content": f"""You are an experienced HR assistant. 
+            Given a resume, job responsibilities and required qualifications 
+            you are supposed to rate that resume in a scale of 0 to 100 percent
+            return your response in a python dictionary format with score and summary as keys"""
+        }]
     )
     return parse_ai_response(response)
 ```
@@ -56,18 +65,20 @@ def evaluate_candidate(applicant, job_requirements):
 #### 📋 Tech Stack
 
 - **Backend**: Django 4.2, Django ORM
-- **AI/ML**: Groq API, Meta Llama 3 70B
+- **AI/ML**: Groq API, Meta Llama 3 70B, pypdf for CV processing
 - **Frontend**: Bootstrap 5, Purple Admin Template
 - **Database**: SQLite (dev), PostgreSQL ready (prod)
 - **Testing**: pytest, pytest-django
 
 #### 🚀 Production Features
 
-- Environment-based configuration
-- Secure file upload handling
+- Environment-based configuration with .env support
+- Secure file upload handling with PDF validation
 - Database migrations and model relationships
 - Admin interface for HR operations
 - RESTful API design patterns
+- Score-based candidate shortlisting (≥80 threshold)
+- JSON response validation and error handling
 
 ---
 
@@ -135,35 +146,44 @@ A comprehensive meeting automation platform with real-time transcription, AI ana
 - **Bot Recorder**: Automated meeting recording without requiring platform SDKs
 - **WebSockets**: Live transcription streaming to connected clients
 - **OAuth Integration**: Secure authentication with meeting platforms
+- **100% Python**: No Node.js or platform SDKs required
 
 #### 🛠️ Meeting System Technical Implementation
 
 ```python
 # AI-powered meeting processing with MCP
-async def process_meeting_audio(audio_file: str):
-    # Transcribe with Whisper
-    transcript = await openai.Audio.transcribe("whisper-1", audio_file)
-    
-    # Analyze with GPT-4
-    summary = await analyze_with_gpt4(transcript)
-    actions = await extract_action_items(transcript)
-    sentiment = await analyze_sentiment(transcript)
-    
+def transcribe_audio_tool(video_url: str) -> str:
+    """Transcribe meeting audio using OpenAI Whisper"""
+    audio_path = download_video(video_url)
+    transcript = transcribe_audio(audio_path)  # OpenAI Whisper
+    return transcript
+
+def summarize_meeting_tool(transcript: str) -> str:
+    """Generate meeting summary using GPT-4"""
+    summary = summarize_meeting(transcript)  # GPT-4 analysis
+    actions = extract_action_items(transcript)
     return {
         "transcript": transcript,
         "summary": summary,
-        "actions": actions,
-        "sentiment": sentiment
+        "actions": actions
     }
+
+# Bot Recorder with Playwright
+async def _join_with_playwright(self):
+    from playwright.async_api import async_playwright
+    playwright = await async_playwright().start()
+    browser = await playwright.chromium.launch()
+    # Automatically joins meeting without SDK
 ```
 
 #### 📋 Meeting System Tech Stack
 
 - **Backend**: FastAPI, WebSockets, Playwright
 - **AI/ML**: OpenAI Whisper, GPT-4, FastMCP
-- **Automation**: Playwright browser automation
-- **Real-time**: WebSockets for live transcription
+- **Automation**: Playwright browser automation (100% Python)
+- **Real-time**: WebSockets for live transcription (`/ws/transcript/{meeting_id}`)
 - **Authentication**: OAuth 2.0 for meeting platforms
+- **Architecture**: 2-file system (MCP_SERVER.py + MEETING_API.py)
 
 #### 🚀 Meeting System Production Features
 
@@ -172,6 +192,8 @@ async def process_meeting_audio(audio_file: str):
 - Real-time WebSocket communication
 - Comprehensive error handling and logging
 - Production-ready deployment configuration
+- No platform SDKs required (Playwright-based approach)
+- OAuth integration with Zoom, Google Meet, Teams
 
 ---
 
@@ -412,7 +434,7 @@ cd 13-AIHR  # AI-Powered HR System
 # or
 cd 14-Django-React-Full-Stack-App  # Full-Stack App
 # or
-cd 16-MCP-tutorial  # AI-Powered Meeting System
+cd 16-MCP-meetings  # AI-Powered Meeting System
 # or
 cd 17-mcp-servers  # MCP Weather Servers
 ```
@@ -450,11 +472,9 @@ npm run dev
 #### AI-Powered Meeting System
 
 ```bash
-cd 16-MCP-tutorial
-uv sync  # Install dependencies
-uv run playwright install chromium  # Install browser
-cp .env.example .env  # Configure environment
-# Add your OPENAI_API_KEY to .env
+cd 16-MCP-meetings
+uv sync
+source .venv/bin/activate
 
 # Terminal 1: MCP Server (AI processing)
 uv run MCP_SERVER.py
