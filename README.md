@@ -14,13 +14,14 @@ Welcome to my comprehensive Python portfolio showcasing progressive mastery from
 
 ## 📊 Portfolio Overview
 
-This repository demonstrates my journey through **14 structured learning modules** and **4 production-scale projects**, encompassing:
+This repository demonstrates my journey through **14 structured learning modules** and **5 production-scale projects**, encompassing:
 
 - **🎯 50+ Python programs** ranging from basic algorithms to complex systems
 - **🤖 AI-Powered HR Management System** with Llama 3 integration
 - **⚡ Full-Stack Django-React Application** with JWT authentication
 - **🤖 AI-Powered Meeting System** with real-time transcription and analysis
 - **🌤️ MCP Weather Servers** in TypeScript and Python with Claude Desktop integration
+- **🤖 AI Data Generator Agent** with LangChain and Google Gemini for sample data generation
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -259,6 +260,85 @@ async def get_alerts(state: str) -> str:
 
 ---
 
+### 5. 🤖 AI Data Generator Agent
+
+An intelligent AI agent built with LangChain that generates realistic sample user data for applications and testing purposes, featuring natural language processing and structured JSON output generation.
+
+#### 🎯 AI Data Generator Key Features
+
+- **Natural Language Interface**: Conversational commands for data generation using Google Gemini 2.5 Flash
+- **Structured JSON Output**: Complete user profiles with ID, names, email, username, age, registration dates
+- **Smart Parameter Inference**: Automatically fills in names, domains, and age ranges based on context
+- **File Operations**: Read/write JSON files with proper formatting and validation
+- **Customizable Data**: Control age ranges, email domains, specific names, and more
+- **Real-time Processing**: Instant data generation with AI-powered understanding
+- **Production Ready**: Error handling, logging, and comprehensive documentation
+
+#### 🛠️ AI Data Generator Technical Implementation
+
+```python
+# AI-powered data generation with LangChain
+@tool
+def generate_sample_users(
+    first_names: List[str],
+    last_names: List[str],
+    domains: List[str],
+    min_age: int,
+    max_age: int
+) -> dict:
+    """Generate sample user data with complete profiles"""
+    users = []
+    for i in range(len(first_names)):
+        user = {
+            "id": i + 1,
+            "firstName": first_names[i],
+            "lastName": last_names[i % len(last_names)],
+            "email": f"{first_names[i].lower()}.{last_names[i % len(last_names)].lower()}@{domains[i % len(domains)]}",
+            "username": f"{first_names[i].lower()}{random.randint(100, 999)}",
+            "age": random.randint(min_age, max_age),
+            "registeredAt": (datetime.now() - timedelta(days=random.randint(1, 365))).isoformat()
+        }
+        users.append(user)
+    return {"users": users, "count": len(users)}
+
+# Natural language processing with Google Gemini
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+agent = create_agent(llm, TOOLS, system_prompt=SYSTEM_MESSAGE)
+```
+
+#### 📋 AI Data Generator Tech Stack
+
+- **AI Framework**: LangChain with Google Gemini 2.5 Flash integration
+- **Data Processing**: Pydantic for validation, JSON for structured output
+- **Package Management**: UV for modern Python dependency management
+- **Natural Language**: Advanced prompt engineering for context understanding
+- **File Operations**: JSON read/write with error handling and validation
+- **Architecture**: Tool-based design with extensible function system
+
+#### 🚀 AI Data Generator Production Features
+
+- Conversational interface for non-technical users
+- Automatic parameter inference from natural language
+- Comprehensive error handling and user feedback
+- Extensible tool system for additional data types
+- Production-ready logging and monitoring
+- Complete documentation and examples
+- Cross-platform compatibility (Windows, macOS, Linux)
+
+#### 💡 Example Usage
+
+```bash
+# Start the agent
+uv run main.py
+
+# Natural language commands
+You: generate 5 random users
+You: make users aged 25-35 with company.com emails and save 3 of them to users.json
+You: what is the oldest user in users.json?
+```
+
+---
+
 ## 🎓 Learning Progression & Technical Skills
 
 ### 📚 Foundations (Days 1-6)
@@ -373,7 +453,7 @@ Debugging: Django Debug Toolbar
 ### Code Quality Metrics
 
 - **50+ Python programs** with increasing complexity
-- **4 production-ready applications** with enterprise features
+- **5 production-ready applications** with enterprise features
 - **Comprehensive test coverage** across all major projects
 - **Documentation-first approach** with detailed READMEs
 - **Multi-language implementations** (Python, TypeScript, JavaScript)
@@ -437,6 +517,8 @@ cd 14-Django-React-Full-Stack-App  # Full-Stack App
 cd 16-MCP-meetings  # AI-Powered Meeting System
 # or
 cd 17-mcp-servers  # MCP Weather Servers
+# or
+cd 18-AI-agent  # AI Data Generator Agent
 ```
 
 ### Installation Examples
@@ -489,31 +571,41 @@ uv run MEETING_API.py
 # Python Weather Server
 cd 17-mcp-servers/02-weather-server-python
 uv sync
-uv run python test_weather.py  # Test locally
+uv run python test_weather.py
 # Configure with Claude Desktop or Windsurf using README instructions
 
 # TypeScript Weather Server
 cd 17-mcp-servers/01-weather-server-typescript
 npm install
 npm run build
-npm run test  # Test locally
+npm run test
 # Configure with Claude Desktop or Windsurf using README instructions
 
 # Auth0 MCP Server (Production)
 cd 17-mcp-servers/09-remote-mcp-auth0/mcp-auth0-oidc
 npm run build
-npm run deploy  # Deploy to Cloudflare Workers
+npm run deploy
 # Configure Claude Desktop with OAuth authentication
 
 # Context Engineering
 cd 17-mcp-servers/10-context-engineering-mcp
 uv sync
-fastmcp dev verbose_mcp_server.py  # Development with MCP Inspector
+fastmcp dev verbose_mcp_server.py
+# Development with MCP Inspector
 
 # Agent Skills
 cd 17-mcp-servers/11-agent-skills
 npm install
-npm run dev  # Next.js development server
+npm run dev
+# Next.js development server
+
+# AI Data Generator Agent
+cd 18-AI-agent
+uv sync
+cp .env.example .env
+# Edit .env with your Google AI API key
+uv run main.py
+# Start the AI agent
 ```
 
 ---
