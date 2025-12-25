@@ -38,6 +38,13 @@ cp .env.example .env
 ### Basic RAG Example
 ```bash
 uv run python main.py
+# or
+uv run uvicorn main:app
+```
+
+### Run Inngest
+```bash
+npx inngest-cli@latest dev -u http://127.0.0.1:8000/api/inngest --no-discovery
 ```
 
 ### Add Documents
