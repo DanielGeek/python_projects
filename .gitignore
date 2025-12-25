@@ -8,3 +8,5 @@
 
 17-mcp-servers/06-langchain-mcp-adapters/.env
 18-AI-agent/.env
+20-MCP_stytch/backend/__pycache__/database.cpython-314.pyc
+20-MCP_stytch/backend/database.db
