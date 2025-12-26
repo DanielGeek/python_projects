@@ -47,6 +47,11 @@ uv run uvicorn main:app
 npx inngest-cli@latest dev -u http://127.0.0.1:8000/api/inngest --no-discovery
 ```
 
+### Run Qdrant
+```bash
+docker run -d --name qdrantRagDb -p 6333:6366 -v "$(pwd)/qdrant_storage:/qdrant/storage" qdrant/qdrant
+```
+
 ### Add Documents
 1. Create a `data/` directory
 2. Add your documents (PDF, TXT, MD files)
