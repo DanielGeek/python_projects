@@ -39,7 +39,7 @@ cp .env.example .env
 ```bash
 uv run python main.py
 # or
-uv run uvicorn main:app
+uv run uvicorn main:app --reload
 ```
 
 ### Run Inngest
