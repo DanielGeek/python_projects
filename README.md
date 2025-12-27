@@ -14,7 +14,7 @@ Welcome to my comprehensive Python portfolio showcasing progressive mastery from
 
 ## 📊 Portfolio Overview
 
-This repository demonstrates my journey through **14 structured learning modules** and **5 production-scale projects**, encompassing:
+This repository demonstrates my journey through **14 structured learning modules** and **6 production-scale projects**, encompassing:
 
 - **🎯 50+ Python programs** ranging from basic algorithms to complex systems
 - **🤖 AI-Powered HR Management System** with Llama 3 integration
@@ -22,6 +22,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🤖 AI-Powered Meeting System** with real-time transcription and analysis
 - **🌤️ MCP Weather Servers** in TypeScript and Python with Claude Desktop integration
 - **🤖 AI Data Generator Agent** with LangChain and Google Gemini for sample data generation
+- **🧠 21-RAG-AI Advanced RAG System** with Google Gemini, Inngest, and Streamlit
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -339,6 +340,88 @@ You: what is the oldest user in users.json?
 
 ---
 
+### 6. 🧠 21-RAG-AI: Advanced Retrieval-Augmented Generation System
+
+A sophisticated event-driven RAG application demonstrating modern AI integration patterns with Google Gemini, Inngest, Qdrant, and Streamlit for intelligent document processing and querying.
+
+#### 🎯 RAG System Key Features
+
+- **Google Gemini 2.5 Flash Integration**: Advanced LLM for intelligent responses with text-embedding-004
+- **Event-Driven Architecture**: Scalable processing with Inngest for async workflows
+- **Vector Database**: Qdrant for high-performance similarity search and storage
+- **Real-time Processing**: Live PDF ingestion, chunking, and embedding generation
+- **Beautiful UI**: Streamlit frontend for document upload and intelligent querying
+- **Semantic Search**: Advanced embedding-based retrieval with source attribution
+- **Production Ready**: Type safety, error handling, and comprehensive logging
+
+#### 🛠️ RAG System Technical Implementation
+
+```python
+# Event-driven PDF ingestion with Inngest
+@inngest_client.create_function(
+    fn_id="RAG: Ingest PDF",
+    trigger=inngest.TriggerEvent(event="rag/ingest_pdf"),
+)
+async def rag_ingest_pdf(ctx: inngest.Context):
+    # Load and chunk PDF
+    chunks_and_src = await ctx.step.run("load-and-chunk", lambda: _load(ctx))
+    # Generate embeddings and store in Qdrant
+    ingested = await ctx.step.run("embed-and-upsert", lambda: _upsert(chunks_and_src))
+    return ingested.model_dump()
+
+# Intelligent querying with context
+@inngest_client.create_function(
+    fn_id="RAG: Query PDF", 
+    trigger=inngest.TriggerEvent(event="rag/query_pdf_ai"),
+)
+async def rag_query_pdf_ai(ctx: inngest.Context):
+    # Embed question and search vectors
+    found = await ctx.step.run("embed-and-search", lambda: _search(question, top_k))
+    # Generate contextual response with Gemini
+    answer = await ctx.step.run("llm-answer", lambda: _generate_answer(user_content))
+    return {"answer": answer, "sources": found.sources}
+```
+
+#### 📋 RAG System Tech Stack
+
+- **AI/ML**: Google Gemini 2.5 Flash, text-embedding-004 (768 dimensions)
+- **Backend**: FastAPI with async/await, Inngest for event-driven processing
+- **Vector DB**: Qdrant for similarity search and vector storage
+- **Frontend**: Streamlit for beautiful, responsive web interface
+- **Package Management**: UV for modern Python dependency management
+- **Architecture**: Event-driven microservices with type safety
+
+#### 🚀 RAG System Production Features
+
+- Multi-terminal architecture (FastAPI + Inngest + Qdrant + Streamlit)
+- Real-time PDF processing with automatic chunking and embedding
+- Semantic search with configurable retrieval parameters
+- Comprehensive error handling and status monitoring
+- Type-safe implementation with Pydantic models
+- Hot reloading for fast development cycles
+- Docker-ready deployment configuration
+
+#### 💡 Example Usage
+
+```bash
+# Terminal 1: Start Qdrant vector database
+docker run -d --name qdrant-rag -p 6333:6333 qdrant/qdrant:latest
+
+# Terminal 2: Start FastAPI backend with Inngest
+uv run uvicorn main:app --reload
+
+# Terminal 3: Start Inngest dev server
+npx inngest-cli@latest dev -u http://127.0.0.1:8000/api/inngest
+
+# Terminal 4: Start Streamlit frontend
+uv run streamlit run streamlit_app.py
+
+# Use the web interface at http://localhost:8501
+# Upload PDFs and ask intelligent questions about your documents
+```
+
+---
+
 ## 🎓 Learning Progression & Technical Skills
 
 ### 📚 Foundations (Days 1-6)
@@ -519,6 +602,8 @@ cd 16-MCP-meetings  # AI-Powered Meeting System
 cd 17-mcp-servers  # MCP Weather Servers
 # or
 cd 18-AI-agent  # AI Data Generator Agent
+# or
+cd 21-RAG-AI  # Advanced RAG System
 ```
 
 ### Installation Examples

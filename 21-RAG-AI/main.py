@@ -16,6 +16,10 @@ from google import genai
 
 load_dotenv()
 
+# Initialize Google GenAI client (same as in data_loader.py)
+# Automatically reads GOOGLE_API_KEY from environment
+genai_client = genai.Client()
+
 inngest_client = inngest.Inngest(
     app_id="rag_app",
     logger=logging.getLogger("uvicorn"),
@@ -74,9 +78,7 @@ async def rag_query_pdf_ai(ctx: inngest.Context):
 
     # Google Gemini - Direct call (Inngest does not have an adapter for Gemini)
     def _generate_answer(user_content: str) -> str:
-        client = genai.Client()
-        
-        response = client.models.generate_content(
+        response = genai_client.models.generate_content(
             model="gemini-2.5-flash",
             contents=user_content,
             config={
