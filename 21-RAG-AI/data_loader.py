@@ -29,7 +29,7 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
     for text in texts:
         response = client.models.embed_content(
             model=EMBED_MODEL,
-            content=text
+            contents=text
         )
-        embeddings.append(response.embedding)
+        embeddings.append(response.embeddings[0].values)
     return embeddings

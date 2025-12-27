@@ -1,5 +1,5 @@
 from qdrant_client import QdrantClient
-from qdrant_cient.models import VectorParams, Distance, PointStruct
+from qdrant_client.models import VectorParams, Distance, PointStruct
 
 class QdrantStorage:
     def __init__(self, url="http://localhost:6333", collection="docs", dim=768):
@@ -8,7 +8,7 @@ class QdrantStorage:
         if not self.client.collection_exists(self.collection):
             self.client.create_collection(
                 collection_name=self.collection,
-                vector_config=VectorParams(size=dim, distance=Distance.COSINE)
+                vectors_config=VectorParams(size=dim, distance=Distance.COSINE)
             )
 
     def upsert(self, ids, vectors, payloads):

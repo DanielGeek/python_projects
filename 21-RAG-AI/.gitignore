@@ -1,2 +1,28 @@
 .env
 __pycache__
+
+# Qdrant data
+collections/
+qdrant_storage/
+
+# Data directory
+data/
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environment
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
