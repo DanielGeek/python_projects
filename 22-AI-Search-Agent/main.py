@@ -6,7 +6,7 @@ from langchain.chat_models import init_chat_model
 # from langchain_google_genai import ChatGoogleGenerativeAI
 from typing_extensions import TypedDict
 from pydantic import BaseModel, Field
-from web_operations import serp_search
+from web_operations import serp_search, reddit_search_api
 
 
 load_dotenv()
@@ -55,7 +55,8 @@ def reddit_search(state: State):
     user_question = state.get("user_question", "")
     print(f"Searching Reddit for: {user_question}")
     
-    reddit_results = []
+    reddit_results = reddit_search_api(user_question)
+    print(reddit_results)
     
     return {"reddit_results": reddit_results}
 

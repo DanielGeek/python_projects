@@ -1,7 +1,9 @@
 from dotenv import load_dotenv
 import os
+from pydantic.v1.datetime_parse import parse_date
 import requests
 from urllib.parse import quote_plus
+from snapshot_operations import download_snapshot, poll_snapshot_status
 
 load_dotenv()
 
@@ -62,14 +64,18 @@ def _trigger_and_download_snapshot(trigger_url, params, data, operation_name="op
     if not snapshot_id:
         return None
 
-    # TODO: poll the snapshot
+    if not poll_snapshot_status(snapshot_id):
+        return None
 
-def reddit_search(keyword, date="All Time", sort_by="Hot", num_of_posts=75):
+    raw_data = download_snapshot(snapshot_id)
+    return raw_data
+
+def reddit_search_api(keyword, date="All time", sort_by="Hot", num_of_posts=75):
     trigger_url = "https://api.brightdata.com/datasets/v3/trigger"
 
     params = {
         "dataset_id": dataset_id,
-        "include_errors": true,
+        "include_errors": True,
         "type": "discover_new",
         "discover_by": "keyword"
     }
@@ -83,10 +89,19 @@ def reddit_search(keyword, date="All Time", sort_by="Hot", num_of_posts=75):
         }
     ]
 
-    raw_data = None
+    raw_data = _trigger_and_download_snapshot(
+        trigger_url, params, data, operation_name="reddit"
+    )
 
     if not raw_data:
         return None
 
-    # TODO: parse raw data
-    return None
+    parsed_data = []
+    for post in raw_data:
+        parsed_post = {
+            "title": post.get("title"),
+            "url": post.get("url")
+        }
+        parsed_data.append(parsed_post)
+
+    return {"parsed_posts": parsed_data, "total_found": len(parsed_data)}
