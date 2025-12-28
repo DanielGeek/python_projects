@@ -7,7 +7,8 @@ from snapshot_operations import download_snapshot, poll_snapshot_status
 
 load_dotenv()
 
-dataset_id = os.getenv("DATASET_ID")
+posts_dataset_id = os.getenv("POSTS_DATASET_ID")
+comments_dataset_id = os.getenv("COMMENTS_DATASET_ID")
 
 def _make_api_request(url, **kwargs):
     api_key = os.getenv("BRIGHTDATA_API_KEY")
@@ -74,7 +75,7 @@ def reddit_search_api(keyword, date="All time", sort_by="Hot", num_of_posts=75):
     trigger_url = "https://api.brightdata.com/datasets/v3/trigger"
 
     params = {
-        "dataset_id": dataset_id,
+        "dataset_id": posts_dataset_id,
         "include_errors": True,
         "type": "discover_new",
         "discover_by": "keyword"
@@ -105,3 +106,44 @@ def reddit_search_api(keyword, date="All time", sort_by="Hot", num_of_posts=75):
         parsed_data.append(parsed_post)
 
     return {"parsed_posts": parsed_data, "total_found": len(parsed_data)}
+
+def reddit_post_retrieval(urls, days_back=10, load_all_replies=False, comment_limit=""):
+    if not urls:
+        return None
+    
+    trigger_url = "https://api.brightdata.com/datasets/v3/trigger"
+
+    params = {
+        "dataset_id": comments_dataset_id,
+        "include_errors": "true",
+    }
+
+    data = [
+        {
+            "url": url,
+            "days_back": days_back,
+            "load_all_replies": load_all_replies,
+            "comment_limit": comment_limit
+        }
+        for url in urls
+    ]
+    
+    raw_data = _trigger_and_download_snapshot(
+        trigger_url, params, data, operation_name="reddit comments"
+    )
+
+    if not raw_data:
+        return None
+
+    parsed_comments = []
+    for comment in raw_data:
+        parsed_comment = {
+            "comment_id": comment.get("comment_id"),
+            "content": comment.get("content"),
+            "date": comment.get("date"),
+            "parent_comment_id": comment.get("parent_comment_id"),
+            "post_title": comment.get("post_title"),
+        }
+        parsed_comments.append(parsed_comment)
+
+    return {"comments": parsed_comments, "total_retrieved": len(parsed_comments)}
