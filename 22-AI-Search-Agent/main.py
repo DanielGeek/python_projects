@@ -138,10 +138,34 @@ def analyze_bing_results(state: State):
     return {"bing_analysis": reply.content}
 
 def analyze_reddit_results(state: State):
-    return {"reddit_analysis": ""}
+    print("Analyzing reddit search results")
+
+    user_question = state.get("user_question", "")
+    reddit_results = state.get("reddit_results", "")
+    reddit_post_data = state.get("reddit_post_data", "")
+
+    messages = get_reddit_analysis_messages(user_question, reddit_results, reddit_post_data)
+    reply = llm.invoke(messages)
+    
+    return {"reddit_analysis": reply.content}
 
 def synthesize_analyses(state: State):
-    return {"final_answer": ""}
+    print("Combine all results together")
+
+    user_question = state.get("user_question", "")
+    google_analysis = state.get("google_analysis")
+    bing_analysis = state.get("bing_analysis")
+    reddit_analysis = state.get("reddit_analysis")
+
+    messages = get_synthesis_messages(
+        user_question,google_analysis, bing_analysis, reddit_analysis
+    )
+
+    reply = llm.invoke(messages)
+    final_answer = reply.content
+    
+    return {"final_answer": final_answer, "messages": [{"role": "assistant", "content": final_answer}]}
+
 
 graph_builder = StateGraph(State)
 

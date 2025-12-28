@@ -14,7 +14,7 @@ Welcome to my comprehensive Python portfolio showcasing progressive mastery from
 
 ## 📊 Portfolio Overview
 
-This repository demonstrates my journey through **14 structured learning modules** and **6 production-scale projects**, encompassing:
+This repository demonstrates my journey through **14 structured learning modules** and **7 production-scale projects**, encompassing:
 
 - **🎯 50+ Python programs** ranging from basic algorithms to complex systems
 - **🤖 AI-Powered HR Management System** with Llama 3 integration
@@ -23,6 +23,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🌤️ MCP Weather Servers** in TypeScript and Python with Claude Desktop integration
 - **🤖 AI Data Generator Agent** with LangChain and Google Gemini for sample data generation
 - **🧠 21-RAG-AI Advanced RAG System** with Google Gemini, Inngest, and Streamlit
+- **🔍 22-AI-Search-Agent Multi-Source Research Agent** with Bright Data, Google Gemini, and Reddit integration
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -422,6 +423,85 @@ uv run streamlit run streamlit_app.py
 
 ---
 
+### 7. 🔍 22-AI-Search-Agent: Multi-Source Research Agent
+
+An intelligent multi-source research agent that leverages multiple search engines and social media platforms to provide comprehensive, well-analyzed answers to user queries.
+
+#### 🎯 AI Search Agent Key Features
+
+- **Multi-Source Intelligence**: Google, Bing, and Reddit search with unified analysis
+- **Bright Data Integration**: Professional-grade web scraping with SERP and Reddit APIs
+- **LangGraph Workflow**: Complex multi-step research orchestration with state management
+- **Google Gemini AI**: Advanced reasoning and synthesis from multiple data sources
+- **Structured Data Processing**: Pydantic models for type-safe data handling
+- **Real-time Progress Tracking**: Asynchronous snapshot polling and download management
+- **Comprehensive Analysis**: Individual source analysis with final intelligent synthesis
+
+#### 🛠️ AI Search Agent Technical Implementation
+
+```python
+# Multi-source search orchestration with LangGraph
+def search_google(state: State):
+    query = state.get("user_question", "")
+    google_results = serp_search(query, engine="google")
+    return {"google_results": google_results}
+
+def search_bing(state: State):
+    query = state.get("user_question", "")
+    bing_results = serp_search(query, engine="bing")
+    return {"bing_results": bing_results}
+
+def search_reddit(state: State):
+    query = state.get("user_question", "")
+    reddit_results = reddit_search_api(query)
+    return {"reddit_results": reddit_results}
+
+# AI-powered URL selection and content extraction
+def analyze_reddit_urls(state: State):
+    reddit_results = state.get("reddit_results", "")
+    messages = get_reddit_url_analysis_messages(reddit_results)
+    structured_llm = llm.with_structured_output(RedditURLAnalysis)
+    analysis = structured_llm.invoke(messages)
+    return {"selected_reddit_urls": analysis.selected_urls}
+```
+
+#### 📋 AI Search Agent Tech Stack
+
+- **AI Framework**: LangChain with Google Gemini 2.5 Flash integration
+- **Workflow Orchestration**: LangGraph for complex multi-step processes
+- **Web Scraping**: Bright Data SERP API and Reddit Datasets API
+- **Data Processing**: Pydantic models, structured outputs, JSON handling
+- **Package Management**: UV for modern Python dependency management
+- **Architecture**: State-based workflow with parallel processing
+
+#### 🚀 AI Search Agent Production Features
+
+- Parallel multi-source data collection for faster results
+- Configurable retry logic and timeout handling for API reliability
+- Intelligent URL selection using structured LLM outputs
+- Comprehensive error handling with graceful degradation
+- Real-time progress tracking and user feedback
+- Type-safe implementation with full Pydantic validation
+- Extensible architecture for additional search sources
+
+#### 💡 Example Usage
+
+```bash
+# Setup and run the multi-source research agent
+cd 22-AI-Search-Agent
+uv sync
+cp .env.example .env
+# Edit .env with Bright Data and Google API keys
+uv run main.py
+
+# Example research queries
+Ask me anything: invest in NVIDIA
+Ask me anything: best programming languages for AI development
+Ask me anything: climate change impact on technology
+```
+
+---
+
 ## 🎓 Learning Progression & Technical Skills
 
 ### 📚 Foundations (Days 1-6)
@@ -604,6 +684,8 @@ cd 17-mcp-servers  # MCP Weather Servers
 cd 18-AI-agent  # AI Data Generator Agent
 # or
 cd 21-RAG-AI  # Advanced RAG System
+# or
+cd 22-AI-Search-Agent  # Multi-Source Research Agent
 ```
 
 ### Installation Examples
@@ -691,6 +773,14 @@ cp .env.example .env
 # Edit .env with your Google AI API key
 uv run main.py
 # Start the AI agent
+
+# Multi-Source Research Agent
+cd 22-AI-Search-Agent
+uv sync
+cp .env.example .env
+# Edit .env with Bright Data and Google API keys
+uv run main.py
+# Start the multi-source research agent
 ```
 
 ---
@@ -757,11 +847,11 @@ mcp-inspector node build/index.js  # Interactive testing
 
 ## 📞 Connect & Explore
 
-**🔗 Live Demonstrations Available Upon Request**
+### 🔗 Live Demonstrations Available Upon Request
 
-**📧 Contact for recruitment opportunities and technical discussions**
+### 📧 Contact for recruitment opportunities and technical discussions
 
-**🌟 Open to challenging roles in Full-Stack Development, AI Engineering, and Backend Systems**
+### 🌟 Open to challenging roles in Full-Stack Development, AI Engineering, and Backend Systems
 
 ---
 
