@@ -56,7 +56,7 @@ def serp_search(query, engine="google"):
 
     return extracted_data
 
-def _trigger_and_download_snapshot(trigger_url, params, data, operation_name="operation"):
+def _trigger_and_download_snapshot(trigger_url, params, data, operation_name="operation", max_attempts=60):
     trigger_result = _make_api_request(trigger_url, params=params, json=data)
     if not trigger_result:
         return None
@@ -65,7 +65,7 @@ def _trigger_and_download_snapshot(trigger_url, params, data, operation_name="op
     if not snapshot_id:
         return None
 
-    if not poll_snapshot_status(snapshot_id):
+    if not poll_snapshot_status(snapshot_id, max_attempts=max_attempts):
         return None
 
     raw_data = download_snapshot(snapshot_id)
@@ -129,7 +129,7 @@ def reddit_post_retrieval(urls, days_back=10, load_all_replies=False, comment_li
     ]
     
     raw_data = _trigger_and_download_snapshot(
-        trigger_url, params, data, operation_name="reddit comments"
+        trigger_url, params, data, operation_name="reddit comments", max_attempts=120
     )
 
     if not raw_data:

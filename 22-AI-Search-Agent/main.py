@@ -116,10 +116,26 @@ def retrieve_reddit_posts(state: State):
     return {"reddit_post_data": reddit_post_data}
 
 def analyze_google_results(state: State):
-    return {"google_analysis": ""}
+    print("Analyzing google search results")
+
+    user_question = state.get("user_question", "")
+    google_results = state.get("google_results", "")
+
+    messages = get_google_analysis_messages(user_question, google_results)
+    reply = llm.invoke(messages)
+    
+    return {"google_analysis": reply.content}
 
 def analyze_bing_results(state: State):
-    return {"bing_analysis": ""}
+    print("Analyzing bing search results")
+
+    user_question = state.get("user_question", "")
+    bing_results = state.get("bing_results", "")
+
+    messages = get_bing_analysis_messages(user_question, bing_results)
+    reply = llm.invoke(messages)
+    
+    return {"bing_analysis": reply.content}
 
 def analyze_reddit_results(state: State):
     return {"reddit_analysis": ""}
