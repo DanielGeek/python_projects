@@ -40,7 +40,6 @@ def google_search(state: State):
     print(f"Searching Google for: {user_question}")
     
     google_results = serp_search(user_question, engine="google")
-    print(google_results)
     
     return {"google_results": google_results}
 
@@ -49,7 +48,6 @@ def bing_search(state: State):
     print(f"Searching Bing for: {user_question}")
     
     bing_results = serp_search(user_question, engine="bing")
-    print(bing_results)
     
     return {"bing_results": bing_results}
 

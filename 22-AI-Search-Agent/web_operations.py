@@ -5,6 +5,8 @@ from urllib.parse import quote_plus
 
 load_dotenv()
 
+dataset_id = os.getenv("DATASET_ID")
+
 def _make_api_request(url, **kwargs):
     api_key = os.getenv("BRIGHTDATA_API_KEY")
 
@@ -50,3 +52,41 @@ def serp_search(query, engine="google"):
     }
 
     return extracted_data
+
+def _trigger_and_download_snapshot(trigger_url, params, data, operation_name="operation"):
+    trigger_result = _make_api_request(trigger_url, params=params, json=data)
+    if not trigger_result:
+        return None
+
+    snapshot_id = trigger_result.get("snapshot_id")
+    if not snapshot_id:
+        return None
+
+    # TODO: poll the snapshot
+
+def reddit_search(keyword, date="All Time", sort_by="Hot", num_of_posts=75):
+    trigger_url = "https://api.brightdata.com/datasets/v3/trigger"
+
+    params = {
+        "dataset_id": dataset_id,
+        "include_errors": true,
+        "type": "discover_new",
+        "discover_by": "keyword"
+    }
+
+    data = [
+        {
+            "keyword": keyword,
+            "date": date,
+            "sort_by": sort_by,
+            "num_of_posts": num_of_posts
+        }
+    ]
+
+    raw_data = None
+
+    if not raw_data:
+        return None
+
+    # TODO: parse raw data
+    return None
