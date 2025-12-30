@@ -1,8 +1,11 @@
+import os
+import json
 from dotenv import load_dotenv
 from openai import OpenAI
+from anthropic import Anthropic
+from IPython.display import Markdown, display
 
 load_dotenv(override=True)
-import os
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
@@ -11,27 +14,57 @@ if openai_api_key:
 else:
     print("OpenAI API key not set - please add a valid API key to the .env file")
 
+request = "Please come up with a challenging, nunced question that I can ask a number of LLMs to evaluate their intelligence."
+request += "Answer only with the question, no explanation."
+messages = [{"role": "user", "content": request}]
 
 openai = OpenAI()
-
-question = "Please propose a hard, challenging question to assess someone's IQ. Respond only with the question."
-messages = [{"role": "user", "content": question}]
-
 response = openai.chat.completions.create(
     model="gpt-4o-mini",
     messages=messages
 )
-
 question = response.choices[0].message.content
 
-answer = openai.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[{"role": "user", "content": question}]
-)
+competitors = []
+answers = []
+messages = [{"role": "user", "content": question}]
+
+model_name = "gpt-4o-mini"
+
+response = openai.chat.completions.create(model=model_name, messages=messages)
+answer = response.choices[0].message.content
+
+competitors.append(model_name)
+answers.append(answer)
 
 def main():
-    print(f"Question: {question}")
-    print(f"Answer: {answer.choices[0].message.content}")
+    # Check if running in Jupyter/IPython environment
+    try:
+        from IPython import get_ipython
+        if get_ipython() is not None:
+            # Running in Jupyter/IPython - use display
+            display(Markdown("## QUESTION:\n\n" + question))
+            display(Markdown("## ANSWER:\n\n" + answer))
+        else:
+            # Running in terminal - fallback to print
+            print("\n" + "="*50)
+            print("QUESTION:")
+            print("="*50)
+            print(question)
+            print("\n" + "="*50)
+            print("ANSWER:")
+            print("="*50)
+            print(answer)
+    except ImportError:
+        # IPython not available - fallback to print
+        print("\n" + "="*50)
+        print("QUESTION:")
+        print("="*50)
+        print(question)
+        print("\n" + "="*50)
+        print("ANSWER:")
+        print("="*50)
+        print(answer)
 
 
 if __name__ == "__main__":
