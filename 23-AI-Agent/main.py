@@ -23,6 +23,9 @@ else:
     print("Google API key not set - please add a valid API key to the .env file")
     google_client = None
 
+# Ollama client setup
+ollama_client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+
 request = "Please come up with a challenging, nunced question that I can ask a number of LLMs to evaluate their intelligence."
 request += "Answer only with the question, no explanation."
 messages = [{"role": "user", "content": request}]
@@ -53,41 +56,47 @@ answer = response.candidates[0].content.parts[0].text
 competitors.append(model_name)
 answers.append(answer)
 
-def main():
-    # Check if running in Jupyter/IPython environment
-    try:
-        from IPython import get_ipython
-        if get_ipython() is not None:
-            # Running in Jupyter/IPython - use display
-            display(Markdown("## QUESTION:\n\n" + question))
-            
-            for i, (competitor, answer) in enumerate(zip(competitors, answers)):
-                display(Markdown(f"## ANSWER FROM {competitor.upper()}:\n\n" + answer))
-        else:
-            # Running in terminal - fallback to print
-            print("\n" + "="*50)
-            print("QUESTION:")
-            print("="*50)
-            print(question)
-            
-            for i, (competitor, answer) in enumerate(zip(competitors, answers)):
-                print("\n" + "="*50)
-                print(f"ANSWER FROM {competitor.upper()}:")
-                print("="*50)
-                print(answer)
-    except ImportError:
-        # IPython not available - fallback to print
-        print("\n" + "="*50)
-        print("QUESTION:")
-        print("="*50)
-        print(question)
-        
-        for i, (competitor, answer) in enumerate(zip(competitors, answers)):
-            print("\n" + "="*50)
-            print(f"ANSWER FROM {competitor.upper()}:")
-            print("="*50)
-            print(answer)
+# Ollama response
+model_name = "llama3.2"
+response = ollama_client.chat.completions.create(model=model_name, messages=messages)
+answer = response.choices[0].message.content
+competitors.append(model_name)
+answers.append(answer)
 
+together = ""
+for index, answer in enumerate(answers):
+    together += f"# Response from competitor {index+1}\n\n"
+    together += answer + "\n\n"
+
+judge = f"""You are judging a competition between {len(competitors)} competitors. Each model has been given this question:
+{question}
+
+You job is to evaluate each response for clarity and strength of argument, and rank then in order of best to worst.
+Response with JSON, and only JSON, with the following format:
+{{"results": ["best competitor number", "second best competitor number", "third best competitor number", ...]}}
+
+Here are the responses from each competitor:
+{together}
+
+Now response with JSON with the ranked order of the competitors, nothing else. Do not include markdown formatting or code blocks."""
+
+judge_messages = [{"role": "user", "content": judge}]
+openai_judge = OpenAI()
+judge_response = openai_judge.chat.completions.create(
+    model="o3-mini",
+    messages=judge_messages
+)
+
+results = judge_response.choices[0].message.content
+
+results_dict = json.loads(results)
+ranks = results_dict["results"]
+for index, result in enumerate(ranks):
+    competitor = competitors[int(result)-1]
+    print(f"Rank {index+1}: {competitor}")
+
+def main():
+    print(results)
 
 if __name__ == "__main__":
     main()
