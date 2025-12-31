@@ -1,0 +1,13 @@
+[project]
+name = "24-ai-career-assistant"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "dotenv>=0.9.9",
+    "gradio>=6.2.0",
+    "openai>=2.14.0",
+    "pypdf>=6.5.0",
+    "requests>=2.32.5",
+]
