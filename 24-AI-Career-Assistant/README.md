@@ -5,23 +5,27 @@ An intelligent AI assistant that acts as a professional career representative, f
 ## 🚀 Features
 
 ### **Professional AI Assistant**
+
 - **Career Representation**: Acts as a professional representative for career-related interactions
 - **Context-Aware Responses**: Integrates personal resume and LinkedIn profile data
 - **Professional Tone**: Engages with potential clients and employers appropriately
 - **Business Development**: Steers conversations toward professional connections
 
 ### **Tool Use Architecture**
+
 - **Function Calling**: OpenAI-powered tool calling for extensible functionality
 - **User Interest Recording**: Captures email addresses and conversation context
 - **Question Tracking**: Records unanswered questions for follow-up
 - **Dynamic Tool Resolution**: Elegant system for adding new tools without code changes
 
 ### **Real-Time Notifications**
+
 - **Pushover Integration**: Instant mobile notifications for user interactions
 - **Real-Time Alerts**: Immediate notification when users express interest or ask questions
 - **Mobile Accessibility**: Monitor career assistant activity from anywhere
 
 ### **Document Processing**
+
 - **PDF Resume Parsing**: Extracts professional information from PDF resumes
 - **LinkedIn Integration**: Processes LinkedIn profile data for context
 - **Text Summarization**: Integrates personal summary for enhanced responses
@@ -30,7 +34,7 @@ An intelligent AI assistant that acts as a professional career representative, f
 
 ### **Core Components**
 
-```
+```text
 24-AI-Career-Assistant/
 ├── main.py              # Main application with Me class and chat interface
 ├── me/                  # Personal data directory
@@ -430,5 +434,7 @@ For questions, issues, or contributions:
 - Check the configuration examples in this README
 
 ---
+
+## 🙏 Acknowledgments
 
 **Built with ❤️ using Python, OpenAI, and modern AI technologies**
