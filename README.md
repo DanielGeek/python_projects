@@ -14,7 +14,7 @@ Welcome to my comprehensive Python portfolio showcasing progressive mastery from
 
 ## 📊 Portfolio Overview
 
-This repository demonstrates my journey through **14 structured learning modules** and **7 production-scale projects**, encompassing:
+This repository demonstrates my journey through **14 structured learning modules** and **8 production-scale projects**, encompassing:
 
 - **🎯 50+ Python programs** ranging from basic algorithms to complex systems
 - **🤖 AI-Powered HR Management System** with Llama 3 integration
@@ -24,6 +24,8 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🤖 AI Data Generator Agent** with LangChain and Google Gemini for sample data generation
 - **🧠 21-RAG-AI Advanced RAG System** with Google Gemini, Inngest, and Streamlit
 - **🔍 22-AI-Search-Agent Multi-Source Research Agent** with Bright Data, Google Gemini, and Reddit integration
+- **🔧 23-AI-Agent Multi-LLM Evaluation System** with OpenAI, Google Gemini, Ollama, and real-time evaluation
+- **🤝 24-AI-Career-Assistant Professional AI Assistant** with tool use, Pushover notifications, and contextual responses
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -500,6 +502,135 @@ Ask me anything: best programming languages for AI development
 Ask me anything: climate change impact on technology
 ```
 
+### 8. 🤝 24-AI-Career-Assistant: Professional AI Assistant with Tool Use
+
+A sophisticated AI career assistant featuring OpenAI function calling, real-time Pushover notifications, and contextual responses based on personal resume and LinkedIn data.
+
+#### 🎯 Key Features
+
+- **Professional AI Representation**: Acts as career representative for client/employer interactions
+- **OpenAI Tool Calling**: Dynamic function calling for extensible functionality
+- **Real-Time Notifications**: Pushover integration for instant mobile alerts
+- **Context-Aware Responses**: Integrates PDF resume and LinkedIn profile data
+- **Business Development**: Steers conversations toward professional connections
+- **Document Processing**: PDF parsing for professional context extraction
+
+#### 🛠️ Technical Implementation
+
+```python
+# Class-based architecture with tool calling
+class Me:
+    def __init__(self):
+        self.openai = OpenAI()
+        self.name = "Daniel Ángel Barreto"
+        self.linkedin = self._parse_pdf_resume()
+        self.summary = self._load_summary()
+    
+    def handle_tool_call(self, tool_calls):
+        # Dynamic tool resolution without if-else chains
+        results = []
+        for tool_call in tool_calls:
+            tool_name = tool_call.function.name
+            arguments = json.loads(tool_call.function.arguments)
+            tool = globals().get(tool_name)
+            result = tool(**arguments) if tool else {}
+            results.append({
+                "role": "tool",
+                "content": json.dumps(result),
+                "tool_call_id": tool_call.id
+            })
+        return results
+    
+    def chat(self, message, history):
+        # Main chat with OpenAI tool calling
+        messages = [{"role": "system", "content": self.system_prompt()}] + history + [{"role": "user", "content": message}]
+        
+        done = False
+        while not done:
+            response = self.openai.chat.completions.create(
+                model="gpt-4o-mini", 
+                messages=messages, 
+                tools=tools
+            )
+            
+            if response.choices[0].finish_reason == "tool_calls":
+                message = response.choices[0].message
+                tool_calls = message.tool_calls
+                results = self.handle_tool_call(tool_calls)
+                messages.append(message)
+                messages.extend(results)
+            else:
+                done = True
+        
+        return response.choices[0].message.content
+```
+
+#### 🔧 Tool Use Architecture
+
+**Available Tools:**
+- `record_user_details`: Captures email addresses and conversation context
+- `record_unknown_question`: Logs questions that cannot be answered from available context
+
+**Pushover Integration:**
+```python
+def push(text):
+    requests.post(
+        "https://api.pushover.net/1/messages.json",
+        data={
+            "token": os.getenv("PUSHOVER_TOKEN"),
+            "user": os.getenv("PUSHOVER_USER"),
+            "message": text,
+        }
+    )
+
+def record_user_details(email, name="Name not provided", notes="not provided"):
+    push(f"Recording {name} with email {email} and notes {notes}")
+    return {"recorded": "ok"}
+```
+
+#### 🚀 AI Career Assistant Features
+
+**Professional Persona:**
+- Context-aware responses based on resume and LinkedIn data
+- Business development focus with client engagement
+- Professional tone for employer/client interactions
+- Email capture and relationship building
+
+**Document Processing:**
+- PDF resume parsing using PyPDF
+- LinkedIn profile integration
+- Personal summary for enhanced context
+- Dynamic system prompt generation
+
+**Real-Time Notifications:**
+- Instant mobile alerts for user interactions
+- Question tracking for follow-up research
+- Business opportunity notifications
+- Mobile accessibility for career management
+
+#### 💡 Example Usage
+
+```bash
+# Setup and run the AI career assistant
+cd 24-AI-Career-Assistant
+uv sync
+cp .env.example .env
+# Edit .env with OpenAI and Pushover API keys
+uv run main.py
+
+# Example interactions:
+# "What experience do you have with AI projects?"
+# "I'm interested in discussing a potential collaboration"
+# "How can I reach you for consulting opportunities?"
+```
+
+#### 🎯 Production Applications
+
+- **Professional Website Chat**: Career representative for personal website
+- **Business Development**: Automated lead capture and qualification
+- **Consulting Services**: Client engagement and relationship management
+- **Career Coaching**: Professional guidance with contextual responses
+
 ---
 
 ## 🎓 Learning Progression & Technical Skills
@@ -781,6 +912,22 @@ cp .env.example .env
 # Edit .env with Bright Data and Google API keys
 uv run main.py
 # Start the multi-source research agent
+
+# Multi-LLM Evaluation System
+cd 23-AI-Agent
+uv sync
+cp .env.example .env
+# Edit .env with OpenAI and Google API keys
+uv run main.py
+# Compare responses from OpenAI, Gemini, and Ollama
+
+# AI Career Assistant with Tool Use
+cd 24-AI-Career-Assistant
+uv sync
+cp .env.example .env
+# Edit .env with OpenAI and Pushover API keys
+uv run main.py
+# Launch professional career assistant with real-time notifications
 ```
 
 ---
