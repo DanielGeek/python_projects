@@ -110,10 +110,10 @@ PUSHOVER_USER=your_pushover_user_key
 
 ```bash
 # Start the chatbot
-python daniel-chatbot.py
+python appi.py
 
 # Or using uv (recommended)
-uv run daniel-chatbot.py
+uv run appi.py
 ```
 
 The application will be available at:
@@ -201,7 +201,7 @@ This project serves as Daniel's professional AI assistant. Contributions for imp
 pip install -r requirements-dev.txt
 
 # Run with debug mode
-python daniel-chatbot.py --debug
+python appi.py --debug
 ```
 
 ## 📄 License
@@ -214,7 +214,7 @@ This project is part of Daniel Ángel Barreto's professional portfolio and showc
 
 ## � Live Demo
 
-**Try the chatbot now:** [https://huggingface.co/spaces/DanielGeekAI/daniel-chatbot](https://huggingface.co/spaces/DanielGeekAI/daniel-chatbot)
+**Try the chatbot now:** [Daniel Ángel Bot assistant](https://huggingface.co/spaces/DanielGeekAI/daniel-chatbot)
 
 ## 📦 Deployment to HuggingFace Spaces
 
