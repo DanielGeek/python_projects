@@ -1,440 +1,213 @@
-# 24-AI-Career-Assistant: Professional AI Career Assistant with Tool Use
+# 🤖 Daniel's AI Career Assistant
 
-An intelligent AI assistant that acts as a professional career representative, featuring tool use capabilities, real-time push notifications, and contextual responses based on personal resume and LinkedIn data.
+An intelligent chatbot powered by Google Gemini models that acts as Daniel Ángel Barreto's AI assistant, showcasing his expertise in Python, AI/ML, and Blockchain development.
 
-## 🚀 Features
+## ✨ Features
 
-### **Professional AI Assistant**
+### 🎯 Core Functionality
 
-- **Career Representation**: Acts as a professional representative for career-related interactions
-- **Context-Aware Responses**: Integrates personal resume and LinkedIn profile data
-- **Professional Tone**: Engages with potential clients and employers appropriately
-- **Business Development**: Steers conversations toward professional connections
+- **Multi-Model AI Chat**: Intelligent conversation using Google's free Gemini models
+- **Career Showcase**: Displays Daniel's 12+ years of experience in software development
+- **Smart Tool Integration**: Automatically detects and processes various user intents
 
-### **Tool Use Architecture**
+### 🔄 Advanced API Management
 
-- **Function Calling**: OpenAI-powered tool calling for extensible functionality
-- **User Interest Recording**: Captures email addresses and conversation context
-- **Question Tracking**: Records unanswered questions for follow-up
-- **Dynamic Tool Resolution**: Elegant system for adding new tools without code changes
+- **4-Model Rotation**: Automatic switching between Gemini models for optimal performance
+  - `gemini-2.5-flash` (Best quality, hybrid reasoning)
+  - `gemini-2.0-flash` (Multimodal, agent-ready)
+  - `gemini-2.5-flash-lite` (Cost-effective, high throughput)
+  - `gemini-2.0-flash-lite` (Fastest, most economical)
+- **Smart Rate Limiting**: Exponential backoff with automatic retry logic
+- **Usage Tracking**: Per-model usage counters with real-time monitoring
 
-### **Real-Time Notifications**
+### 📱 Push Notifications
 
-- **Pushover Integration**: Instant mobile notifications for user interactions
-- **Real-Time Alerts**: Immediate notification when users express interest or ask questions
-- **Mobile Accessibility**: Monitor career assistant activity from anywhere
+- **Session Tracking**: Unique session IDs for user interaction tracking
+- **Real-time Alerts**: Instant notifications for:
+  - Unknown questions requiring attention
+  - Contact requests with user details
+  - Job offers with compensation information
+- **API Usage Stats**: Complete usage analytics included in every notification
 
-### **Document Processing**
+### 🎨 Modern UI/UX
 
-- **PDF Resume Parsing**: Extracts professional information from PDF resumes
-- **LinkedIn Integration**: Processes LinkedIn profile data for context
-- **Text Summarization**: Integrates personal summary for enhanced responses
+- **Gradio Interface**: Clean, responsive web interface
+- **Enhanced Visibility**: Optimized color scheme for better readability
+- **Professional Design**: Tailored for professional networking
 
-## 🏗️ Architecture
+## 🛠️ Technical Architecture
 
-### **Core Components**
+### API Management System
 
-```text
-24-AI-Career-Assistant/
-├── main.py              # Main application with Me class and chat interface
-├── me/                  # Personal data directory
-│   ├── DanielGeek.pdf  # Professional resume/CV
-│   └── summary.txt     # Personal summary
-├── .env.example         # Environment variables template
-├── pyproject.toml       # Dependencies and project config
-└── README.md            # This file
-```
+- **Rotation Logic**: Automatic key and model switching on quota exhaustion
+- **Backoff Strategy**: Exponential backoff (1min → 30min) for rate limiting
+- **Usage Monitoring**: Real-time tracking per model+key combination
+- **Error Recovery**: Comprehensive error handling with automatic retry
 
-### **Class-Based Architecture**
+### Tool Functions
+The chatbot includes intelligent tool detection:
 
-```python
-class Me:
-    def __init__(self):
-        self.openai = OpenAI()
-        self.name = "Daniel Ángel Barreto"
-        self.linkedin = self._parse_pdf_resume()
-        self.summary = self._load_summary()
-    
-    def system_prompt(self):
-        # Generates contextual system prompt with personal data
-    
-    def handle_tool_call(self, tool_calls):
-        # Processes OpenAI tool calls dynamically
-    
-    def chat(self, message, history):
-        # Main chat function with tool calling support
-```
+1. **`record_unknown_question`** - Captures questions outside Daniel's expertise
+2. **`record_user_details`** - Handles contact information and networking requests
+3. **`record_job_offer`** - Processes job opportunities with compensation details
 
-## 🛠️ Technical Implementation
+### Session Management
 
-### **Dependencies**
-```toml
-[dependencies]
-openai = "2.14.0"
-python-dotenv = "1.2.1"
-requests = "2.32.5"
-pypdf = "6.5.0"
-gradio = "6.2.0"
-anthropic = "0.75.0"
-google-genai = "1.56.0"
-ipython = "9.8.0"
-```
-
-### **Tool Use Implementation**
-
-#### **Tool Definitions**
-```python
-record_user_details_json = {
-    "name": "record_user_details",
-    "description": "Use this tool to record that a user is interested in being in touch",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "email": {"type": "string", "description": "The user's email address"},
-            "name": {"type": "string", "description": "The user's name"},
-            "notes": {"type": "string", "description": "Additional context information"}
-        },
-        "required": ["email"],
-        "additionalProperties": False
-    }
-}
-
-record_unknown_question_json = {
-    "name": "record_unknown_question",
-    "description": "Record any question that couldn't be answered",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "question": {"type": "string", "description": "The unanswered question"}
-        },
-        "required": ["question"],
-        "additionalProperties": False
-    }
-}
-```
-
-#### **Dynamic Tool Call Handler**
-```python
-def handle_tool_call(self, tool_calls):
-    results = []
-    for tool_call in tool_calls:
-        tool_name = tool_call.function.name
-        arguments = json.loads(tool_call.function.arguments)
-        print(f"Tool called: {tool_name}", flush=True)
-        tool = globals().get(tool_name)
-        result = tool(**arguments) if tool else {}
-        results.append({
-            "role": "tool",
-            "content": json.dumps(result),
-            "tool_call_id": tool_call.id
-        })
-    return results
-```
-
-### **Pushover Integration**
-
-#### **Notification System**
-```python
-def push(text):
-    requests.post(
-        "https://api.pushover.net/1/messages.json",
-        data={
-            "token": os.getenv("PUSHOVER_TOKEN"),
-            "user": os.getenv("PUSHOVER_USER"),
-            "message": text,
-        }
-    )
-
-def record_user_details(email, name="Name not provided", notes="not provided"):
-    push(f"Recording {name} with email {email} and notes {notes}")
-    return {"recorded": "ok"}
-
-def record_unknown_question(question):
-    push(f"Recording {question}")
-    return {"recorded": "ok"}
-```
-
-### **OpenAI Tool Calling**
-
-#### **Chat Function with Tools**
-```python
-def chat(self, message, history):
-    messages = [
-        {"role": "system", "content": self.system_prompt()}
-    ] + history + [{"role": "user", "content": message}]
-    
-    done = False
-    while not done:
-        response = self.openai.chat.completions.create(
-            model="gpt-4o-mini", 
-            messages=messages, 
-            tools=tools
-        )
-        
-        if response.choices[0].finish_reason == "tool_calls":
-            message = response.choices[0].message
-            tool_calls = message.tool_calls
-            results = self.handle_tool_call(tool_calls)
-            messages.append(message)
-            messages.extend(results)
-        else:
-            done = True
-    
-    return response.choices[0].message.content
-```
-
-### **Document Processing**
-
-#### **PDF Resume Parser**
-```python
-def __init__(self):
-    reader = PdfReader("me/DanielGeek.pdf")
-    self.linkedin = ""
-    for page in reader.pages:
-        text = page.extract_text()
-        if text:
-            self.linkedin += text
-```
-
-#### **System Prompt Generation**
-```python
-def system_prompt(self):
-    system_prompt = f"You are acting as {self.name}. You are answering questions on {self.name}'s website, \
-    particularly questions related to {name}'s career, background, skills and experience. \
-    Your responsibility is to represent {name} for interactions on the website as faithfully as possible. \
-    You are given a summary of {name}'s background and LinkedIn profile which you can use to answer questions. \
-    Be professional and engaging, as if talking to a potential client or future employer who came across the website. \
-    If you don't know the answer to any question, use your record_unknown_question tool to record the question that you couldn't answer, even if it's about something trivial or unrelated to career. \
-    If the user is engaging in discussion, try to steer them towards getting in touch via email; ask for their email and record it using your record_user_details tool. "
-    
-    system_prompt += f"\n\n## Summary:\n{self.summary}\n\n## LinkedIn Profile:\n{self.linkedin}\n\n"
-    system_prompt += f"With this context, please chat with the user, always staying in character as {self.name}."
-    return system_prompt
-```
-
-### **Gradio Interface**
-
-#### **Modern Chat Interface**
-```python
-if __name__ == "__main__":
-    me = Me()
-    gr.ChatInterface(
-        me.chat,
-        title="Career Assistant", 
-        description="Chat with a career assistant",
-        chatbot=gr.Chatbot(height=600, placeholder="Ask me anything..."),
-        textbox=gr.Textbox(placeholder="Type your message here...", container=False, scale=7),
-        submit_btn="Send"
-    ).launch()
-```
+- **Unique Sessions**: UUID-based session tracking
+- **Context Preservation**: Session data included in all notifications
+- **User Analytics**: Complete interaction tracking for follow-up
 
 ## 🚀 Quick Start
 
-### **Prerequisites**
-- Python 3.14+
-- OpenAI API key
-- Pushover account and API keys
-- Personal resume PDF and summary file
+### Prerequisites
 
-### **Installation**
+- Python 3.8+
+- Google Gemini API keys (4 keys for rotation)
+- Pushover account for notifications (optional)
 
-1. **Clone and setup environment**
+### Installation
+
 ```bash
-cd /Users/thepunisher/Documents/GitHub/python_projects/24-AI-Career-Assistant
-uv sync
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-```
+# Clone the repository
+git clone https://github.com/DanielGeek/python_projects.git
+cd python_projects/24-AI-Career-Assistant
 
-2. **Configure environment variables**
-```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up environment variables
 cp .env.example .env
-# Edit .env with your API keys:
-# OPENAI_API_KEY=your-openai-api-key
-# PUSHOVER_USER=your-pushover-user-key
-# PUSHOVER_TOKEN=your-pushover-app-token
+# Edit .env with your API keys
 ```
 
-3. **Setup Pushover**
+### Environment Configuration
+
+Create a `.env` file with the following variables:
+
+```env
+# Google Gemini API Keys (4 keys for rotation)
+GOOGLE_API_KEY=your_first_gemini_api_key
+GOOGLE_API_KEY2=your_second_gemini_api_key
+GOOGLE_API_KEY3=your_third_gemini_api_key
+GOOGLE_API_KEY4=your_fourth_gemini_api_key
+
+# Pushover Notifications (optional)
+PUSHOVER_TOKEN=your_pushover_app_token
+PUSHOVER_USER=your_pushover_user_key
+```
+
+### Running the Application
+
 ```bash
-# Visit https://pushover.net/ and sign up
-# Create an application to get your API token
-# Install Pushover app on your phone
-# Add your user key and app token to .env file
+# Start the chatbot
+python daniel-chatbot.py
+
+# Or using uv (recommended)
+uv run daniel-chatbot.py
 ```
 
-4. **Prepare personal data**
-```bash
-# Add your resume PDF to me/DanielGeek.pdf
-# Create me/summary.txt with your professional summary
-# Update name in the Me class to match your name
+The application will be available at:
+
+- **Local**: http://127.0.0.1:7860
+- **Public**: <https://[random-id].gradio.live> (temporary)
+
+## 📊 Usage Monitoring
+
+### Real-time Stats
+
+The system displays comprehensive usage statistics:
+
+```text
+🤖 Current Model: gemini-2.5-flash
+🔑 Current Key: 3
+
+Key 1: 20/20 used ⚠️ (1/4 models exhausted) (resets in 23h 59m)
+Key 2: 15/20 used ✅
+Key 3: 3/20 used ✅
+Key 4: 0/20 used ✅
 ```
 
-### **Usage Examples**
+### Push Notification Example
 
-#### **Launch Career Assistant**
-```bash
-uv run main.py
 ```
-Launches web interface at `http://localhost:7860`
+❓ Unknown Question
 
-#### **Example Interactions**
-- **Career Questions**: "What experience do you have with AI projects?"
-- **Business Inquiries**: "I'm interested in discussing a potential collaboration"
-- **Contact Capture**: "How can I reach you for consulting opportunities?"
+Question: What's your experience with quantum computing?
 
-## 📊 Tool Use Features
+========================================
+📍 Session Tracking:
+• Session ID: a1b2c3d4...
+• Timestamp: 2025-12-31 19:27:15
 
-### **Available Tools**
+🔑 Gemini API Usage:
+🤖 Current Model: gemini-2.5-flash
+🔑 Current Key: 3
 
-#### **record_user_details**
-- **Purpose**: Capture user interest and contact information
-- **Triggers**: When users express interest in collaboration or contact
-- **Data**: Email, name, and conversation context
-- **Notification**: Instant push notification with user details
-
-#### **record_unknown_question**
-- **Purpose**: Log questions that cannot be answered from available context
-- **Triggers**: When asked about information not in resume/profile
-- **Data**: The specific unanswered question
-- **Notification**: Push notification for follow-up research
-
-### **Tool Calling Flow**
-
-1. **User Input**: "Hi, I'm John and I'm interested in AI consulting"
-2. **OpenAI Analysis**: Detects interest and contact information
-3. **Tool Call**: `record_user_details(email="john@example.com", name="John", notes="AI consulting interest")`
-4. **Push Notification**: Instant alert on phone
-5. **Response**: Professional follow-up with next steps
-
-## 🔧 Configuration
-
-### **Environment Variables**
-
-| Variable         | Description                | Required |
-| ---------------- | -------------------------- | -------- |
-| `OPENAI_API_KEY` | OpenAI API authentication  | Yes      |
-| `PUSHOVER_USER`  | Pushover user key          | Yes      |
-| `PUSHOVER_TOKEN` | Pushover application token | Yes      |
-
-### **Personal Data Setup**
-
-#### **Resume PDF**
-- Place in `me/DanielGeek.pdf`
-- Should contain professional experience, skills, and background
-- Used for LinkedIn profile context extraction
-
-#### **Summary Text**
-- Create `me/summary.txt`
-- Professional summary highlighting key expertise
-- Integrated into system prompt for contextual responses
-
-#### **Name Configuration**
-```python
-class Me:
-    def __init__(self):
-        self.name = "Daniel Ángel Barreto"  # Update to your name
+Key 1: 20/20 used ⚠️ (1/4 models exhausted)
+Key 2: 15/20 used ✅
+Key 3: 3/20 used ✅
+Key 4: 0/20 used ✅
 ```
 
-## 🧪 Development & Testing
+## 🔧 Configuration Options
 
-### **Testing Tool Calls**
-```python
-# Test individual tools
-globals()["record_unknown_question"]("Test question")
-globals()["record_user_details"]("test@example.com", "Test User", "Test notes")
-```
+### Model Priority
 
-### **Debug Mode**
-```python
-# Enable verbose output
-print(f"Tool called: {tool_name}", flush=True)
-print(f"Push: {message}")
-```
+Models are ordered by quality and capabilities:
 
-### **Tool Extension**
-```python
-# Add new tools without modifying handle_tool_call
-def new_tool(param1, param2):
-    # Tool implementation
-    return {"result": "success"}
+1. **gemini-2.5-flash** - Best overall performance
+2. **gemini-2.0-flash** - Multimodal capabilities
+3. **gemini-2.5-flash-lite** - Balanced performance/cost
+4. **gemini-2.0-flash-lite** - Maximum throughput
 
-# Add to tools list
-tools.append({"type": "function", "function": new_tool_json})
-```
+### Rate Limits
 
-## 🚀 Deployment
+- **Daily Limit**: 20 requests per key per model
+- **Reset Interval**: 24 hours
+- **Backoff Strategy**: 1min → 2min → 4min → ... → 30min max
 
-### **HuggingFace Spaces Deployment**
+## 🎯 Use Cases
 
-1. **Prepare for deployment**
-```bash
-# Ensure all secrets are configured
-# Update personal data in me/ directory
-# Test locally first
-```
+### For Daniel Ángel Barreto
 
-2. **Deploy to HuggingFace**
-```bash
-uv tool install 'huggingface_hub[cli]'
-hf auth login --token YOUR_HF_TOKEN
-uv run gradio deploy
-```
+- **Professional Networking**: Automated response to career inquiries
+- **Job Opportunities**: Immediate notification of relevant positions
+- **Knowledge Gap Analysis**: Identify topics to expand expertise
 
-3. **Configure deployment secrets**
-- `OPENAI_API_KEY`: Your OpenAI API key
-- `PUSHOVER_USER`: Your Pushover user key
-- `PUSHOVER_TOKEN`: Your Pushover app token
+### For Recruiters/Networkers
 
-### **Production Considerations**
-- **Rate Limiting**: Implement API request throttling
-- **Error Handling**: Comprehensive exception management
-- **Security**: API key protection and input validation
-- **Monitoring**: Push notification tracking and analytics
-
-## 🔒 Security & Privacy
-
-- **API Key Protection**: Environment-based configuration
-- **Data Privacy**: Personal data stored locally
-- **Input Validation**: Sanitization of user inputs
-- **Push Security**: Encrypted notification delivery
+- **Instant Information**: Quick access to Daniel's background and skills
+- **Direct Contact**: Seamless connection for opportunities
+- **Expertise Showcase**: Interactive demonstration of technical knowledge
 
 ## 🤝 Contributing
 
-### **Development Guidelines**
-1. Follow PEP 8 style conventions
-2. Add comprehensive docstrings
-3. Include error handling for all API calls
-4. Update documentation for new tools
-5. Test tool calling functionality
+This project serves as Daniel's professional AI assistant. Contributions for improvements and new features are welcome.
 
-### **Feature Ideas**
-- [ ] Add calendar integration for meeting scheduling
-- [ ] Implement CRM integration for lead tracking
-- [ ] Add multi-language support
-- [ ] Create analytics dashboard for interactions
-- [ ] Add voice interaction capabilities
+### Development Setup
+
+```bash
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Run with debug mode
+python daniel-chatbot.py --debug
+```
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is part of Daniel Ángel Barreto's professional portfolio and showcases his expertise in:
+- **Python Development**: 12+ years experience
+- **AI/ML Implementation**: Production-ready systems
+- **API Integration**: Robust error handling and scaling
+- **Modern UI/UX**: User-centered design principles
 
-## 🙏 Acknowledgments
+## 🔗 Connect with Daniel
 
-- **OpenAI**: GPT-4o-mini model with function calling
-- **Pushover**: Real-time mobile notification service
-- **Gradio**: Modern web interface framework
-- **PyPDF**: PDF text extraction capabilities
-- **Python**: Core programming language
-
-## 📞 Support
-
-For questions, issues, or contributions:
-- Create an issue in the project repository
-- Review the API documentation for each integration
-- Check the configuration examples in this README
+- **LinkedIn**: [Daniel Ángel Barreto](https://linkedin.com/in/daniel-angel-barreto)
+- **GitHub**: [DanielGeek](https://github.com/DanielGeek)
+- **Email**: Through the chatbot's contact function
 
 ---
 
-## 🙏 Acknowledgments
-
-**Built with ❤️ using Python, OpenAI, and modern AI technologies**
+*Built with ❤️ using Google Gemini, Gradio, and modern Python practices*
