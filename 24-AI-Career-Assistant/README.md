@@ -1,3 +1,13 @@
+---
+title: Daniel Chatbot
+emoji: 🤖
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+sdk_version: 6.2.0
+app_file: app.py
+pinned: false
+---
 # 🤖 Daniel's AI Career Assistant
 
 An intelligent chatbot powered by Google Gemini models that acts as Daniel Ángel Barreto's AI assistant, showcasing his expertise in Python, AI/ML, and Blockchain development.
@@ -202,12 +212,163 @@ This project is part of Daniel Ángel Barreto's professional portfolio and showc
 - **API Integration**: Robust error handling and scaling
 - **Modern UI/UX**: User-centered design principles
 
-## 🔗 Connect with Daniel
+## � Live Demo
+
+**Try the chatbot now:** [https://huggingface.co/spaces/DanielGeekAI/daniel-chatbot](https://huggingface.co/spaces/DanielGeekAI/daniel-chatbot)
+
+## 📦 Deployment to HuggingFace Spaces
+
+### Prerequisites
+
+1. **HuggingFace Account**: Create an account at [huggingface.co](https://huggingface.co)
+2. **Access Token**: Generate a write token from [Settings > Access Tokens](https://huggingface.co/settings/tokens)
+3. **Git LFS**: Install Git Large File Storage for handling binary files
+
+### Step-by-Step Deployment
+
+#### 1. Install HuggingFace CLI
+
+```bash
+# Install HuggingFace Hub CLI
+uv tool install 'huggingface_hub[cli]'
+
+# Authenticate with your token
+hf auth login --token YOUR_TOKEN_HERE
+```
+
+#### 2. Create the Space
+
+```bash
+# Create a new Gradio Space
+hf repo create your-space-name --repo-type space --space-sdk gradio
+```
+
+#### 3. Prepare Your Repository
+
+```bash
+# Initialize git if not already done
+git init
+
+# Add HuggingFace Space as remote
+git remote add space https://huggingface.co/spaces/YOUR_USERNAME/your-space-name
+
+# Ensure .gitignore excludes sensitive files
+# See .gitignore section below
+```
+
+#### 4. Configure README.md Metadata
+
+Ensure your `README.md` starts with proper HuggingFace metadata:
+
+```yaml
+---
+title: Your Space Title
+emoji: 🤖
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+sdk_version: 6.2.0
+app_file: app.py
+pinned: false
+---
+```
+
+**Important**: 
+- `colorFrom` and `colorTo` must be one of: `red`, `yellow`, `green`, `blue`, `indigo`, `purple`, `pink`, `gray`
+- `app_file` must match your main Python file name (e.g., `app.py`)
+
+#### 5. Set Up requirements.txt
+
+Create a `requirements.txt` with your dependencies:
+
+```txt
+python-dotenv>=0.9.9
+gradio>=6.2.0
+openai>=2.14.0
+pypdf>=6.5.0
+requests>=2.32.5
+```
+
+#### 6. Configure Secrets (Environment Variables)
+
+In your HuggingFace Space:
+
+1. Go to **Settings** (⚙️ icon)
+2. Scroll to **Repository secrets**
+3. Add each secret:
+   - `GOOGLE_API_KEY`
+   - `GOOGLE_API_KEY2`
+   - `GOOGLE_API_KEY3`
+   - `GOOGLE_API_KEY4`
+   - `PUSHOVER_TOKEN`
+   - `PUSHOVER_USER`
+
+#### 7. Deploy Your Code
+
+```bash
+# Add all files (excluding .gitignore entries)
+git add .
+
+# Commit your changes
+git commit -m "Initial deployment to HuggingFace Spaces"
+
+# Push to HuggingFace Space
+git push space main
+```
+
+#### 8. Upload Binary Files (if needed)
+
+If you have PDF files or other large binaries:
+
+1. Go to your Space's **Files** tab
+2. Click **Add file** → **Upload files**
+3. Navigate to the folder (e.g., `me/`)
+4. Upload your files (e.g., `linkedin.pdf`)
+
+#### 9. Monitor Build Status
+
+1. Go to the **App** tab
+2. Watch the build logs
+3. Wait for status to change from **Building** to **Running**
+4. Your Space will be live at: `https://huggingface.co/spaces/YOUR_USERNAME/your-space-name`
+
+### Common Issues & Solutions
+
+**Issue**: "No application file" error
+- **Solution**: Verify `app_file` in README.md matches your Python file name
+
+**Issue**: "Module not found" error
+- **Solution**: Check `requirements.txt` includes all dependencies
+
+**Issue**: "Invalid color" error
+- **Solution**: Use only valid colors: `red`, `yellow`, `green`, `blue`, `indigo`, `purple`, `pink`, `gray`
+
+**Issue**: Binary files rejected
+- **Solution**: Upload large files (PDFs, images) via web interface, not git push
+
+### Updating Your Space
+
+```bash
+# Make changes to your code
+# Commit changes
+git add .
+git commit -m "Update: description of changes"
+
+# Pull latest changes from Space (if edited via web)
+git pull space main --rebase
+
+# Push updates
+git push space main
+```
+
+## �🔗 Connect with Daniel
 
 - **LinkedIn**: [Daniel Ángel Barreto](https://linkedin.com/in/daniel-angel-barreto)
 - **GitHub**: [DanielGeek](https://github.com/DanielGeek)
+- **Live Chatbot**: [HuggingFace Space](https://huggingface.co/spaces/DanielGeekAI/daniel-chatbot)
 - **Email**: Through the chatbot's contact function
 
 ---
 
 *Built with ❤️ using Google Gemini, Gradio, and modern Python practices*
+*Deployed on HuggingFace Spaces*
