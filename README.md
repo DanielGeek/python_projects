@@ -502,134 +502,142 @@ Ask me anything: best programming languages for AI development
 Ask me anything: climate change impact on technology
 ```
 
-### 8. 🤝 24-AI-Career-Assistant: Professional AI Assistant with Tool Use
+### 8. 🤖 24-AI-Career-Assistant: Advanced Multi-Model AI Career Assistant
 
-A sophisticated AI career assistant featuring OpenAI function calling, real-time Pushover notifications, and contextual responses based on personal resume and LinkedIn data.
+A sophisticated AI career assistant powered by Google Gemini models with advanced multi-model rotation, session tracking, and comprehensive API management system.
 
 #### 🎯 Key Features
 
-- **Professional AI Representation**: Acts as career representative for client/employer interactions
-- **OpenAI Tool Calling**: Dynamic function calling for extensible functionality
-- **Real-Time Notifications**: Pushover integration for instant mobile alerts
-- **Context-Aware Responses**: Integrates PDF resume and LinkedIn profile data
-- **Business Development**: Steers conversations toward professional connections
-- **Document Processing**: PDF parsing for professional context extraction
+- **Multi-Model AI Chat**: Intelligent conversation using Google's free Gemini models
+- **4-Model Rotation System**: Automatic switching between gemini-2.5-flash, gemini-2.0-flash, gemini-2.5-flash-lite, and gemini-2.0-flash-lite
+- **Smart Rate Limiting**: Exponential backoff with automatic retry logic (1min → 30min)
+- **Session Tracking**: UUID-based session tracking for user interaction analytics
+- **Real-time Notifications**: Pushover integration with complete API usage statistics
+- **Career Showcase**: Displays Daniel's 12+ years of software development expertise
+- **Smart Tool Integration**: Automatic detection of unknown questions, contact requests, and job offers
 
 #### 🛠️ Technical Implementation
 
 ```python
-# Class-based architecture with tool calling
-class Me:
+# Advanced API Management with Multi-Model Rotation
+class APIKeyModelManager:
     def __init__(self):
-        self.openai = OpenAI()
-        self.name = "Daniel Ángel Barreto"
-        self.linkedin = self._parse_pdf_resume()
-        self.summary = self._load_summary()
-    
-    def handle_tool_call(self, tool_calls):
-        # Dynamic tool resolution without if-else chains
-        results = []
-        for tool_call in tool_calls:
-            tool_name = tool_call.function.name
-            arguments = json.loads(tool_call.function.arguments)
-            tool = globals().get(tool_name)
-            result = tool(**arguments) if tool else {}
-            results.append({
-                "role": "tool",
-                "content": json.dumps(result),
-                "tool_call_id": tool_call.id
-            })
-        return results
-    
-    def chat(self, message, history):
-        # Main chat with OpenAI tool calling
-        messages = [{"role": "system", "content": self.system_prompt()}] + history + [{"role": "user", "content": message}]
+        self.keys = self._load_api_keys()
+        self.models = FREE_MODELS  # 4 Gemini models
+        self.usage_per_combination = {}  # Track per (key, model) usage
         
-        done = False
-        while not done:
-            response = self.openai.chat.completions.create(
-                model="gpt-4o-mini", 
-                messages=messages, 
-                tools=tools
-            )
-            
-            if response.choices[0].finish_reason == "tool_calls":
-                message = response.choices[0].message
-                tool_calls = message.tool_calls
-                results = self.handle_tool_call(tool_calls)
-                messages.append(message)
-                messages.extend(results)
-            else:
-                done = True
+    def increment_usage(self):
+        """Increment usage for current key and model combination"""
+        combo = (self.current_key_index, self.current_model_index)
+        if combo not in self.usage_per_combination:
+            self.usage_per_combination[combo] = 0
+        self.usage_per_combination[combo] += 1
         
-        return response.choices[0].message.content
+    def get_usage_stats(self):
+        """Display real-time usage statistics per model+key combination"""
+        # Shows per-model usage with proper reset on model switch
+        return comprehensive_usage_display
+
+# Session-aware tool calling with tracking
+def handle_tool_call(self, tool_calls):
+    results = []
+    for tool_call in tool_calls:
+        tool_name = tool_call.function.name
+        arguments = json.loads(tool_call.function.arguments)
+        # Add session_id to all tool calls for tracking
+        arguments['session_id'] = self.session_id
+        tool = globals().get(tool_name)
+        result = tool(**arguments) if tool else {}
+        results.append({
+            "role": "tool",
+            "content": json.dumps(result),
+            "tool_call_id": tool_call.id
+        })
+    return results
 ```
 
-#### 🔧 Tool Use Architecture
+#### 🔧 Advanced Features
 
-**Available Tools:**
-- `record_user_details`: Captures email addresses and conversation context
-- `record_unknown_question`: Logs questions that cannot be answered from available context
+**Multi-Model Rotation Logic:**
 
-**Pushover Integration:**
+- **gemini-2.5-flash**: Best quality, hybrid reasoning, 1M context
+- **gemini-2.0-flash**: Multimodal, agent-ready, 1M context  
+- **gemini-2.5-flash-lite**: Cost-effective, high throughput
+- **gemini-2.0-flash-lite**: Fastest, most economical
+
+**Session Management:**
+
 ```python
-def push(text):
-    requests.post(
-        "https://api.pushover.net/1/messages.json",
-        data={
-            "token": os.getenv("PUSHOVER_TOKEN"),
-            "user": os.getenv("PUSHOVER_USER"),
-            "message": text,
-        }
-    )
+# UUID-based session tracking
+self.session_id = str(uuid.uuid4())
 
-def record_user_details(email, name="Name not provided", notes="not provided"):
-    push(f"Recording {name} with email {email} and notes {notes}")
-    return {"recorded": "ok"}
+# Enhanced push notifications with session context
+def push(text, session_id=None, user_context=None):
+    full_message = text + "\n\n" + "="*40
+    full_message += f"\n📍 Session ID: {session_id[:8]}..."
+    full_message += f"\n• Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    full_message += f"\n\n🔑 Gemini API Usage:\n{api_manager.get_usage_stats()}"
 ```
 
-#### 🚀 AI Career Assistant Features
+**Intelligent Tool Detection:**
 
-**Professional Persona:**
-- Context-aware responses based on resume and LinkedIn data
-- Business development focus with client engagement
-- Professional tone for employer/client interactions
-- Email capture and relationship building
+- `record_unknown_question`: Captures questions outside Daniel's expertise
+- `record_user_details`: Handles contact information and networking requests  
+- `record_job_offer`: Processes job opportunities with compensation details
 
-**Document Processing:**
-- PDF resume parsing using PyPDF
-- LinkedIn profile integration
-- Personal summary for enhanced context
-- Dynamic system prompt generation
+#### 📊 Real-time Usage Monitoring
 
-**Real-Time Notifications:**
-- Instant mobile alerts for user interactions
-- Question tracking for follow-up research
-- Business opportunity notifications
-- Mobile accessibility for career management
+```text
+🤖 Current Model: gemini-2.5-flash
+🔑 Current Key: 3
+
+Key 1: 20/20 used ⚠️ (1/4 models exhausted) (resets in 23h 59m)
+Key 2: 15/20 used ✅
+Key 3: 3/20 used ✅
+Key 4: 0/20 used ✅
+```
+
+#### 🚀 Production Features
+
+**API Management:**
+
+- **Per-model usage tracking**: Independent counters for each model+key combination
+- **Automatic rotation**: Seamless switching when quotas are exhausted
+- **Backoff strategy**: Exponential backoff for rate limit handling
+- **Error recovery**: Comprehensive error handling with automatic retry
+
+**Professional Applications:**
+
+- **Career Networking**: Automated response to professional inquiries
+- **Job Opportunity Detection**: Immediate notification of relevant positions
+- **Knowledge Gap Analysis**: Identify topics to expand expertise
+- **Business Development**: Lead capture and qualification system
 
 #### 💡 Example Usage
 
 ```bash
-# Setup and run the AI career assistant
+# Setup and run the advanced AI career assistant
 cd 24-AI-Career-Assistant
 uv sync
 cp .env.example .env
-# Edit .env with OpenAI and Pushover API keys
-uv run main.py
+# Edit .env with 4 Google Gemini API keys and Pushover credentials
+uv run daniel-chatbot.py
+
+# Available at http://127.0.0.1:7860 or https://[random-id].gradio.live
 
 # Example interactions:
-# "What experience do you have with AI projects?"
-# "I'm interested in discussing a potential collaboration"
-# "How can I reach you for consulting opportunities?"
+# "What experience do you have with AI and blockchain development?"
+# "I'm recruiting for a senior Python position at JP Morgan"
+# "Can you help me understand your consulting rates and availability?"
 ```
 
-#### 🎯 Production Applications
+#### 🎯 Enterprise-Ready Capabilities
 
-- **Professional Website Chat**: Career representative for personal website
-- **Business Development**: Automated lead capture and qualification
-- **Consulting Services**: Client engagement and relationship management
-- **Career Coaching**: Professional guidance with contextual responses
+- **Multi-API Key Management**: Load balancing across 4 Gemini API keys
+- **Session Analytics**: Complete interaction tracking with UUID-based sessions
+- **Real-time Monitoring**: Live usage statistics and API quota management
+- **Professional Branding**: Tailored for Daniel's 12+ years software development experience
+- **Mobile Notifications**: Instant alerts with comprehensive usage analytics
 
 ---
 
