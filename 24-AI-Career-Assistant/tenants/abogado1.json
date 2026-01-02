@@ -1,0 +1,162 @@
+{
+    "tenant_id": "abogado1",
+    "company_name": "Bufete Lex & Asociados",
+    "industry": "legal",
+    "country": "VE",
+    "default_language": "es",
+    "supported_languages": [
+        "es",
+        "en"
+    ],
+    "language_detection": true,
+    "system_prompt_template": "Eres un asistente legal virtual del Bufete Lex & Asociados. Tu función es ayudar a potenciales clientes a entender nuestros servicios legales, capturar información inicial de casos y agendar consultas. Siempre mantén un tono profesional, empático y confidencial. Si el caso requiere asesoría legal específica, recomienda agendar una consulta con uno de nuestros abogados. IMPORTANTE: Responde en el idioma que el usuario utilice. Si escribe en inglés, responde en inglés. Si escribe en español, responde en español.",
+    "welcome_message": "⚖️ ¡Bienvenido al Bufete Lex & Asociados! Soy tu asistente legal virtual disponible 24/7. Estoy aquí para ayudarte con información sobre nuestros servicios legales, capturar los detalles de tu caso y agendar una consulta inicial. ¿En qué área legal necesitas asistencia?",
+    "ui_config": {
+        "title": "Bufete Lex & Asociados",
+        "subtitle": "Asistente Legal Virtual 24/7",
+        "description": "Tu defensa legal, nuestra prioridad. Consulta sobre casos civiles, laborales, familiares y corporativos.",
+        "avatar_emoji": "⚖️",
+        "theme": "professional",
+        "chatbot_height": 600,
+        "show_share_button": false,
+        "show_copy_button": true,
+        "placeholder_text": "Describe tu caso legal o pregunta sobre nuestros servicios...",
+        "submit_button_text": "Enviar",
+        "retry_button_text": "Reintentar",
+        "undo_button_text": "Deshacer",
+        "clear_button_text": "Limpiar chat"
+    },
+    "knowledge_base": {
+        "about": "Bufete Lex & Asociados es un despacho legal con más de 15 años de experiencia en Venezuela. Nos especializamos en brindar asesoría legal integral a personas naturales y jurídicas en diversas áreas del derecho.",
+        "services": {
+            "derecho_civil": {
+                "description": "Contratos, compraventa de inmuebles, arrendamientos, sucesiones y herencias.",
+                "precio_consulta": "$80 - $150 según complejidad",
+                "tiempo_estimado": "1-3 meses según el caso"
+            },
+            "derecho_laboral": {
+                "description": "Despidos injustificados, prestaciones sociales, contratos laborales, acoso laboral.",
+                "precio_consulta": "$100 - $200",
+                "tiempo_estimado": "2-6 meses según el caso"
+            },
+            "derecho_familiar": {
+                "description": "Divorcios, pensiones alimenticias, custodia de menores, adopciones.",
+                "precio_consulta": "$120 - $250",
+                "tiempo_estimado": "3-12 meses según el caso"
+            },
+            "derecho_corporativo": {
+                "description": "Constitución de empresas, contratos comerciales, fusiones y adquisiciones.",
+                "precio_consulta": "$200 - $500",
+                "tiempo_estimado": "1-6 meses según el caso"
+            }
+        },
+        "team": [
+            {
+                "name": "Dr. Carlos Mendoza",
+                "specialty": "Derecho Civil y Corporativo",
+                "experience": "20 años"
+            },
+            {
+                "name": "Dra. María Rodríguez",
+                "specialty": "Derecho Laboral y Familiar",
+                "experience": "15 años"
+            },
+            {
+                "name": "Dr. Luis Pérez",
+                "specialty": "Derecho Penal",
+                "experience": "12 años"
+            }
+        ],
+        "process": "1. Consulta inicial (presencial o virtual) - 2. Evaluación del caso - 3. Propuesta de honorarios - 4. Inicio del proceso legal - 5. Seguimiento constante hasta resolución",
+        "payment_methods": "Efectivo (USD/Bs), Transferencia bancaria, Zelle, PayPal",
+        "faqs": [
+            {
+                "question": "¿Cuánto cuesta la consulta inicial?",
+                "answer": "La primera consulta tiene un costo de $50 y dura 30 minutos. Si decides contratar nuestros servicios, este monto se descuenta de los honorarios totales."
+            },
+            {
+                "question": "¿Ofrecen planes de pago?",
+                "answer": "Sí, ofrecemos planes de pago flexibles según el caso. Esto se discute en la consulta inicial."
+            },
+            {
+                "question": "¿Atienden casos fuera de Caracas?",
+                "answer": "Sí, atendemos casos en todo el territorio nacional. Ofrecemos consultas virtuales y nos desplazamos según sea necesario."
+            }
+        ]
+    },
+    "tools": [
+        {
+            "name": "captura_caso_legal",
+            "description": "Captura información detallada del caso legal del cliente para pre-calificación",
+            "parameters": {
+                "nombre_completo": "string",
+                "telefono": "string",
+                "email": "string",
+                "area_legal": "string (civil, laboral, familiar, corporativo, penal)",
+                "descripcion_caso": "string",
+                "urgencia": "string (alta, media, baja)",
+                "presupuesto_estimado": "string"
+            },
+            "benefit": " Califica leads automáticamente y ahorra 20 horas/mes en consultas no viables"
+        },
+        {
+            "name": "agendar_consulta_legal",
+            "description": "Agenda consultas iniciales con disponibilidad en tiempo real",
+            "parameters": {
+                "nombre_cliente": "string",
+                "telefono": "string",
+                "email": "string",
+                "fecha_preferida": "string",
+                "hora_preferida": "string",
+                "modalidad": "string (presencial, virtual)",
+                "area_legal": "string"
+            },
+            "benefit": " Captura leads 24/7 - Recupera 30% de clientes que llaman fuera de horario"
+        },
+        {
+            "name": "consultar_honorarios",
+            "description": "Proporciona estimación de honorarios según el tipo de caso",
+            "parameters": {
+                "area_legal": "string",
+                "complejidad": "string (baja, media, alta)",
+                "tiempo_estimado": "string"
+            },
+            "benefit": " Transparencia en precios - Reduce objeciones y acelera cierre de ventas"
+        }
+    ],
+    "branding": {
+        "primary_color": "#1e40af",
+        "secondary_color": "#f59e0b",
+        "accent_color": "#ffffff",
+        "background_color": "#f8fafc",
+        "company_logo_url": "",
+        "tagline": "Tu defensa legal, nuestra prioridad",
+        "custom_css": ""
+    },
+    "plan": "professional",
+    "max_conversations_per_month": 2000,
+    "whatsapp_enabled": false,
+    "business_hours": {
+        "monday_friday": "9:00 AM - 7:00 PM",
+        "saturday": "10:00 AM - 2:00 PM",
+        "sunday": "Cerrado"
+    },
+    "contact_info": {
+        "phone": "+58 424-555-9876",
+        "email": "contacto@bufetelex.com",
+        "address": "Torre Empresarial, Piso 5, Caracas, Venezuela",
+        "website": "https://bufetelex.com"
+    },
+    "legal_areas": [
+        "Derecho Civil",
+        "Derecho Laboral",
+        "Derecho Familiar",
+        "Derecho Corporativo",
+        "Derecho Penal"
+    ],
+    "success_metrics": {
+        "casos_ganados": "95%",
+        "clientes_satisfechos": "4.8/5",
+        "años_experiencia": "15+"
+    }
+}

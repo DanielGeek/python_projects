@@ -1,0 +1,176 @@
+{
+    "tenant_id": "clinica1",
+    "company_name": "Clínica Santa Lucía",
+    "industry": "healthcare",
+    "country": "VE",
+    "default_language": "es",
+    "supported_languages": [
+        "es",
+        "en"
+    ],
+    "language_detection": true,
+    "system_prompt_template": "Eres un asistente virtual de la Clínica Santa Lucía. Tu función es ayudar a los pacientes a agendar citas, obtener información sobre servicios médicos, horarios y precios. Siempre mantén un tono amable, profesional y empático. IMPORTANTE: Responde en el idioma que el usuario utilice. Si escribe en inglés, responde en inglés. Si escribe en español, responde en español.",
+    "welcome_message": "¡Bienvenido a Clínica Santa Lucía! Soy tu asistente virtual disponible 24/7. Estoy aquí para ayudarte a agendar citas, responder preguntas sobre nuestros servicios médicos y brindarte información sobre horarios y precios. ¿En qué puedo ayudarte hoy?",
+    "ui_config": {
+        "title": "Clínica Santa Lucía",
+        "subtitle": "Asistente Médico Virtual 24/7",
+        "description": "Tu salud, nuestra prioridad. Agenda citas, consulta especialidades y obtén información médica.",
+        "avatar_emoji": "",
+        "theme": "healthcare",
+        "chatbot_height": 600,
+        "show_share_button": false,
+        "show_copy_button": true,
+        "placeholder_text": "Pregunta sobre citas, especialidades o servicios médicos...",
+        "submit_button_text": "Enviar",
+        "retry_button_text": "Reintentar",
+        "undo_button_text": "Deshacer",
+        "clear_button_text": "Limpiar chat"
+    },
+    "knowledge_base": {
+        "about": "Clínica Santa Lucía es un centro médico integral con más de 10 años sirviendo a la comunidad. Contamos con especialistas certificados y tecnología de última generación para brindarte la mejor atención médica.",
+        "specialties": {
+            "medicina_general": {
+                "description": "Consultas generales, chequeos preventivos, diagnósticos iniciales.",
+                "precio": "$30 - $50",
+                "duracion": "30 minutos",
+                "doctores": [
+                    "Dr. Juan Pérez",
+                    "Dra. Ana Martínez"
+                ]
+            },
+            "odontologia": {
+                "description": "Limpieza dental, ortodoncia, endodoncia, implantes.",
+                "precio": "$40 - $200 según tratamiento",
+                "duracion": "45-60 minutos",
+                "doctores": [
+                    "Dr. Carlos Rodríguez"
+                ]
+            },
+            "pediatria": {
+                "description": "Atención integral para niños de 0-18 años, vacunación, control de niño sano.",
+                "precio": "$35 - $60",
+                "duracion": "30 minutos",
+                "doctores": [
+                    "Dra. María González"
+                ]
+            },
+            "ginecologia": {
+                "description": "Control prenatal, planificación familiar, ecografías.",
+                "precio": "$50 - $100",
+                "duracion": "45 minutos",
+                "doctores": [
+                    "Dra. Laura Fernández"
+                ]
+            },
+            "cardiologia": {
+                "description": "Electrocardiogramas, ecocardiogramas, control de presión arterial.",
+                "precio": "$80 - $150",
+                "duracion": "60 minutos",
+                "doctores": [
+                    "Dr. Roberto Sánchez"
+                ]
+            }
+        },
+        "services": [
+            "Laboratorio clínico (resultados en 24h)",
+            "Rayos X digital",
+            "Ecografías",
+            "Electrocardiogramas",
+            "Vacunación",
+            "Farmacia interna"
+        ],
+        "insurance_accepted": [
+            "Seguros Caracas",
+            "Seguros Universales",
+            "Mapfre",
+            "Pacientes particulares"
+        ],
+        "payment_methods": "Efectivo (USD/Bs), Tarjeta de débito/crédito, Transferencia, Zelle, PayPal",
+        "emergency_protocol": "Para emergencias médicas, llame al 911 o acuda directamente a nuestra sala de emergencias abierta 24/7.",
+        "faqs": [
+            {
+                "question": "¿Necesito referencia médica para agendar?",
+                "answer": "No, puedes agendar directamente con cualquiera de nuestros especialistas sin necesidad de referencia."
+            },
+            {
+                "question": "¿Cuánto tiempo antes debo llegar a mi cita?",
+                "answer": "Te recomendamos llegar 15 minutos antes para completar el registro y actualizar tu historial médico."
+            },
+            {
+                "question": "¿Puedo cancelar o reprogramar mi cita?",
+                "answer": "Sí, puedes cancelar o reprogramar con al menos 24 horas de anticipación sin costo adicional."
+            },
+            {
+                "question": "¿Aceptan seguros médicos?",
+                "answer": "Sí, trabajamos con las principales aseguradoras. Consulta la lista de seguros aceptados."
+            }
+        ]
+    },
+    "tools": [
+        {
+            "name": "agendar_cita_medica",
+            "description": "Agenda citas médicas con disponibilidad en tiempo real y recordatorios automáticos",
+            "parameters": {
+                "nombre_paciente": "string",
+                "telefono": "string",
+                "email": "string",
+                "especialidad": "string (medicina general, odontología, pediatría, ginecología, cardiología)",
+                "fecha_preferida": "string",
+                "hora_preferida": "string",
+                "motivo_consulta": "string",
+                "primera_vez": "boolean"
+            },
+            "benefit": " Reduce no-shows en 78% con recordatorios automáticos - Recupera $1,850/mes en citas perdidas"
+        },
+        {
+            "name": "consultar_servicios_precios",
+            "description": "Proporciona información detallada sobre servicios médicos, especialidades y precios",
+            "parameters": {
+                "especialidad": "string",
+                "tipo_servicio": "string"
+            },
+            "benefit": " Responde consultas 24/7 - Libera 15 horas/semana del personal administrativo"
+        },
+        {
+            "name": "enviar_recordatorio_cita",
+            "description": "Envía recordatorios automáticos 48h y 24h antes de la cita vía WhatsApp/SMS",
+            "parameters": {
+                "paciente_id": "string",
+                "fecha_cita": "string",
+                "hora_cita": "string",
+                "doctor": "string",
+                "metodo_contacto": "string (whatsapp, sms, email)"
+            },
+            "benefit": " Automatiza recordatorios - Aumenta asistencia a citas y mejora flujo de pacientes"
+        }
+    ],
+    "branding": {
+        "primary_color": "#10b981",
+        "secondary_color": "#3b82f6",
+        "accent_color": "#ffffff",
+        "background_color": "#f0fdf4",
+        "company_logo_url": "",
+        "tagline": "Tu salud, nuestra prioridad",
+        "custom_css": ""
+    },
+    "plan": "professional",
+    "max_conversations_per_month": 2000,
+    "whatsapp_enabled": false,
+    "business_hours": {
+        "monday_friday": "8:00 AM - 8:00 PM",
+        "saturday": "9:00 AM - 2:00 PM",
+        "sunday": "Cerrado (Emergencias 24/7)"
+    },
+    "contact_info": {
+        "phone": "+58 412-555-1234",
+        "emergency_phone": "+58 412-555-9999",
+        "email": "info@clinicasantalucia.com",
+        "address": "Av. Principal, Edificio Médico, Piso 3, Caracas, Venezuela",
+        "website": "https://clinicasantalucia.com"
+    },
+    "success_metrics": {
+        "pacientes_atendidos": "10,000+",
+        "satisfaccion_pacientes": "4.9/5",
+        "años_experiencia": "10+"
+    }
+}

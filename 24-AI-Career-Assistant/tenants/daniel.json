@@ -1,0 +1,159 @@
+{
+    "tenant_id": "daniel",
+    "company_name": "Daniel Ángel - Software Engineer",
+    "industry": "tech",
+    "country": "VE",
+    "default_language": "en",
+    "supported_languages": [
+        "en",
+        "es"
+    ],
+    "language_detection": true,
+    "system_prompt_template": "You are Daniel Ángel's virtual assistant. Daniel is a Senior Software Engineer with 12+ years of experience specializing in Python, FastAPI, AI/ML solutions, and cloud infrastructure. Your goal is to help recruiters and companies learn about his professional experience, technical skills, and project portfolio. Always maintain a professional, concise tone and highlight his technical expertise. IMPORTANT: Respond in the language the user uses. If they write in Spanish, respond in Spanish. If they write in English, respond in English.",
+    "welcome_message": "👨‍💻 Hi! I'm Daniel Ángel's AI assistant. Ask me about his expertise in Python, AI/ML, Blockchain, or any project experience.",
+    "ui_config": {
+        "title": "Daniel Ángel Bot Assistant",
+        "subtitle": "Python & AI Engineer | +12 Years Experience",
+        "description": "Hi! I'm Daniel's AI assistant. Ask me about his expertise in Python, AI/ML, Blockchain, or any project experience.",
+        "avatar_emoji": "👨‍💻",
+        "theme": "tech",
+        "chatbot_height": 600,
+        "show_share_button": true,
+        "show_copy_button": true,
+        "placeholder_text": "Ask about Daniel's projects or how he can help your team...",
+        "submit_button_text": "Send",
+        "retry_button_text": "Retry",
+        "undo_button_text": "Undo",
+        "clear_button_text": "Clear chat"
+    },
+    "knowledge_base": {
+        "about": "Daniel Ángel is a Senior Software Engineer with over 12 years of experience building scalable backend systems, AI/ML solutions, and blockchain applications. He specializes in Python, FastAPI, cloud infrastructure, and modern DevOps practices.",
+        "expertise": {
+            "backend_development": {
+                "technologies": [
+                    "Python",
+                    "FastAPI",
+                    "Django",
+                    "Flask",
+                    "Node.js"
+                ],
+                "experience": "12+ years",
+                "highlights": "Built high-performance APIs handling 10M+ requests/day, microservices architecture, RESTful and GraphQL APIs"
+            },
+            "ai_ml": {
+                "technologies": [
+                    "LangChain",
+                    "OpenAI",
+                    "Google Gemini",
+                    "HuggingFace",
+                    "TensorFlow",
+                    "PyTorch"
+                ],
+                "experience": "3+ years",
+                "highlights": "Developed AI chatbots, RAG systems, document processing pipelines, and custom ML models"
+            },
+            "blockchain": {
+                "technologies": [
+                    "Ethereum",
+                    "Solidity",
+                    "Web3.py",
+                    "Smart Contracts"
+                ],
+                "experience": "4+ years",
+                "highlights": "Built DeFi applications, NFT platforms, and blockchain integrations"
+            },
+            "cloud_devops": {
+                "technologies": [
+                    "AWS",
+                    "Docker",
+                    "Kubernetes",
+                    "CI/CD",
+                    "Terraform"
+                ],
+                "experience": "8+ years",
+                "highlights": "Designed cloud-native architectures, automated deployments, infrastructure as code"
+            },
+            "databases": {
+                "technologies": [
+                    "PostgreSQL",
+                    "MongoDB",
+                    "Redis",
+                    "Elasticsearch"
+                ],
+                "experience": "12+ years",
+                "highlights": "Database design, optimization, replication, and scaling strategies"
+            }
+        },
+        "recent_projects": [
+            {
+                "name": "AI Career Assistant Chatbot",
+                "description": "Multi-tenant SaaS chatbot platform using Google Gemini, Gradio, and HuggingFace Spaces",
+                "technologies": [
+                    "Python",
+                    "Gemini AI",
+                    "Gradio",
+                    "FastAPI"
+                ],
+                "impact": "Zero-cost infrastructure, 94% profit margin, scalable to 100+ clients"
+            },
+            {
+                "name": "Quipu Token - Blockchain Platform",
+                "description": "DeFi platform with smart contracts and token economics",
+                "technologies": [
+                    "Solidity",
+                    "Web3",
+                    "React",
+                    "Node.js"
+                ],
+                "impact": "Processed $2M+ in transactions, 5000+ active users"
+            }
+        ],
+        "work_style": "Remote-first, agile methodologies, strong communicator, self-driven, continuous learner",
+        "availability": "Open to full-time remote opportunities, contract work, and consulting projects",
+        "location": "Venezuela (Remote worldwide)",
+        "languages": [
+            "Spanish (Native)",
+            "English (Professional working proficiency)"
+        ]
+    },
+    "tools": [
+        {
+            "name": "record_job_offer",
+            "description": "Captures job offer details from recruiters and companies",
+            "parameters": {
+                "company_name": "string",
+                "position": "string",
+                "job_description": "string",
+                "required_skills": "string",
+                "salary_range": "string",
+                "work_mode": "string (remote, hybrid, onsite)",
+                "contact_email": "string",
+                "additional_info": "string"
+            },
+            "benefit": "📋 Automatically captures and organizes job opportunities for Daniel's review"
+        }
+    ],
+    "branding": {
+        "primary_color": "#2563eb",
+        "secondary_color": "#10b981",
+        "accent_color": "#ffffff",
+        "background_color": "#0f172a",
+        "company_logo_url": "",
+        "tagline": "Building scalable solutions with Python & AI",
+        "custom_css": ""
+    },
+    "plan": "professional",
+    "max_conversations_per_month": 2000,
+    "whatsapp_enabled": false,
+    "contact_info": {
+        "email": "daniel.geek.ve@gmail.com",
+        "linkedin": "https://linkedin.com/in/daniel-angel-dev",
+        "github": "https://github.com/DanielGeek",
+        "portfolio": "https://huggingface.co/spaces/DanielGeekAI/daniel-chatbot"
+    },
+    "success_metrics": {
+        "years_experience": "12+",
+        "projects_completed": "50+",
+        "technologies_mastered": "20+"
+    }
+}

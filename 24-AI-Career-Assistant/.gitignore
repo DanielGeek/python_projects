@@ -53,3 +53,5 @@ uv.lock
 
 # Local files (don't commit to git, upload manually to HuggingFace)
 me/linkedin.pdf
+
+.windsurf/

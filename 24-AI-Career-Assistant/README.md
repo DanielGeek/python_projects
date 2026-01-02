@@ -114,6 +114,9 @@ python appi.py
 
 # Or using uv (recommended)
 uv run appi.py
+
+# Or using bash script
+bash run_dev.sh
 ```
 
 The application will be available at:

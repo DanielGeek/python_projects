@@ -8,12 +8,70 @@ import gradio as gr
 from datetime import datetime
 import time
 import uuid
+from tenant_manager import TenantManager
+from tenant_tools import get_tenant_tools
 
 
 load_dotenv(override=True)
 
+# Initialize tenant manager
+tenant_manager = TenantManager()
+
 # Constants
 PUSHOVER_API_URL = "https://api.pushover.net/1/messages.json"
+
+# Emergency numbers by country (ISO 3166-1 alpha-2 codes)
+EMERGENCY_NUMBERS = {
+    "VE": {  # Venezuela
+        "general": "171",
+        "police": "171",
+        "ambulance": "171",
+        "fire": "171",
+        "name": "Venezuela"
+    },
+    "US": {  # United States
+        "general": "911",
+        "police": "911",
+        "ambulance": "911",
+        "fire": "911",
+        "name": "United States"
+    },
+    "MX": {  # Mexico
+        "general": "911",
+        "police": "911",
+        "ambulance": "911",
+        "fire": "911",
+        "name": "Mexico"
+    },
+    "CO": {  # Colombia
+        "general": "123",
+        "police": "123",
+        "ambulance": "125",
+        "fire": "119",
+        "name": "Colombia"
+    },
+    "AR": {  # Argentina
+        "general": "911",
+        "police": "911",
+        "ambulance": "107",
+        "fire": "100",
+        "name": "Argentina"
+    },
+    "ES": {  # Spain
+        "general": "112",
+        "police": "091",
+        "ambulance": "061",
+        "fire": "080",
+        "name": "Spain"
+    },
+    "DEFAULT": {  # Fallback
+        "general": "112",
+        "police": "112",
+        "ambulance": "112",
+        "fire": "112",
+        "name": "International"
+    }
+}
 
 # Free Gemini models ordered from best to simplest quality
 # Source: https://ai.google.dev/pricing
@@ -495,7 +553,9 @@ tools = [{"type": "function", "function": record_user_details_json},
 
 class DanielBot:
 
-    def __init__(self):
+    def __init__(self, tenant_id: str = "daniel"):
+        self.tenant_id = tenant_id
+        
         # Using Google Gemini via OpenAI-compatible API with key + model rotation
         if not api_manager.find_working_combination():
             raise RuntimeError("All API keys and models have reached their daily limits. Please try again later.")
@@ -509,17 +569,36 @@ class DanielBot:
         # Generate unique session ID for this chat session
         self.session_id = str(uuid.uuid4())
         
-        self.name = "Daniel Ángel Barreto"
-        reader = PdfReader("me/linkedin.pdf")
-        self.linkedin = ""
-        for page in reader.pages:
-            text = page.extract_text()
-            if text:
-                self.linkedin += text
-        with open("me/summary.txt", "r", encoding="utf-8") as f:
-            self.summary = f.read()
+        # Load tenant configuration
+        self.config = tenant_manager.get_tenant_config(tenant_id)
+        self.ui_config = tenant_manager.get_ui_config(tenant_id)
+        self.knowledge_base = tenant_manager.get_knowledge_base(tenant_id)
         
-        print(f"🚀 Bot initialized with {self.current_model} + Key {api_manager.current_key_index + 1}", flush=True)
+        # Load tenant-specific tools
+        self.tools_functions, self.tools_schemas = get_tenant_tools(tenant_id)
+        
+        # For backward compatibility with daniel tenant
+        if tenant_id == "daniel":
+            self.name = "Daniel Ángel Barreto"
+            try:
+                reader = PdfReader("me/linkedin.pdf")
+                self.linkedin = ""
+                for page in reader.pages:
+                    text = page.extract_text()
+                    if text:
+                        self.linkedin += text
+                with open("me/summary.txt", "r", encoding="utf-8") as f:
+                    self.summary = f.read()
+            except:
+                self.linkedin = ""
+                self.summary = ""
+        else:
+            self.name = self.config.get('company_name', 'Assistant')
+            self.linkedin = self.knowledge_base
+            self.summary = self.knowledge_base
+        
+        print(f"🚀 Bot initialized for tenant '{tenant_id}' with {self.current_model} + Key {api_manager.current_key_index + 1}", flush=True)
+        print(f"   Tools loaded: {list(self.tools_functions.keys())}", flush=True)
     
     def refresh_client(self):
         """Refresh the Gemini client with new API key and/or model"""
@@ -538,29 +617,267 @@ class DanielBot:
         for tool_call in tool_calls:
             tool_name = tool_call.function.name
             arguments = json.loads(tool_call.function.arguments)
-            print(f"Tool called: {tool_name}", flush=True)
+            print(f"🔧 Tool called: {tool_name}", flush=True)
+            print(f"   Arguments: {arguments}", flush=True)
             
             # Add session_id to tool arguments
             arguments['session_id'] = self.session_id
             
-            tool = globals().get(tool_name)
-            result = tool(**arguments) if tool else {}
+            # Get tool function from tenant-specific tools
+            tool = self.tools_functions.get(tool_name)
+            if tool:
+                result = tool(**arguments)
+                print(f"✅ Tool result: {result.get('status', 'success')}", flush=True)
+                
+                # Send push notification for important actions
+                self._send_tool_notification(tool_name, arguments, result)
+            else:
+                result = {"error": f"Tool {tool_name} not found for tenant {self.tenant_id}"}
+                print(f"❌ Tool not found: {tool_name}", flush=True)
+            
             results.append({"role": "tool","content": json.dumps(result),"tool_call_id": tool_call.id})
         return results
     
     def system_prompt(self):
-        system_prompt = f"You are acting as {self.name}. You are answering questions on {self.name}'s website, \
-particularly questions related to {self.name}'s career, background, skills and experience. \
-Your responsibility is to represent {self.name} for interactions on the website as faithfully as possible. \
-You are given a summary of {self.name}'s background and LinkedIn profile which you can use to answer questions. \
-Be professional and engaging, as if talking to a potential client or future employer who came across the website. \
-If you don't know the answer to any question, use your record_unknown_question tool to record the question that you couldn't answer, even if it's about something trivial or unrelated to career. \
-If the user is engaging in discussion, try to steer them towards getting in touch via email; ask for their email and record it using your record_user_details tool. \
-IMPORTANT: If the user mentions ANY job offer, work opportunity, salary, compensation, hourly rate, project budget, or payment for work, you MUST use the record_job_offer tool to capture all the details. This is critical for Daniel to not miss any opportunities."
+        # Get current date and time for context
+        from datetime import datetime
+        now = datetime.now()
+        current_date = now.strftime("%A, %B %d, %Y")
+        current_time = now.strftime("%I:%M %p")
+        current_year = now.year
+        
+        # Use tenant-specific system prompt template
+        if self.tenant_id == "daniel":
+            # Backward compatibility for daniel tenant
+            system_prompt = f"You are acting as {self.name}. You are answering questions on {self.name}'s website, \
+    particularly questions related to {self.name}'s career, background, skills and experience. \
+    Your responsibility is to represent {self.name} for interactions on the website as faithfully as possible. \
+    You are given a summary of {self.name}'s background and LinkedIn profile which you can use to answer questions. \
+    Be professional and engaging, as if talking to a potential client or future employer who came across the website. \
+    If you don't know the answer to any question, use your record_unknown_question tool to record the question that you couldn't answer, even if it's about something trivial or unrelated to career. \
+    If the user is engaging in discussion, try to steer them towards getting in touch via email; ask for their email and record it using your record_user_details tool. \
+    IMPORTANT: If the user mentions ANY job offer, work opportunity, salary, compensation, hourly rate, project budget, or payment for work, you MUST use the record_job_offer tool to capture all the details. This is critical for Daniel to not miss any opportunities."
 
-        system_prompt += f"\n\n## Summary:\n{self.summary}\n\n## LinkedIn Profile:\n{self.linkedin}\n\n"
-        system_prompt += f"With this context, please chat with the user, always staying in character as {self.name}."
+            system_prompt += f"\n\n## Current Date & Time:\nToday is {current_date} at {current_time}. Current year: {current_year}.\n\n"
+            system_prompt += f"## Summary:\n{self.summary}\n\n## LinkedIn Profile:\n{self.linkedin}\n\n"
+            system_prompt += f"With this context, please chat with the user, always staying in character as {self.name}."
+        else:
+            # Use tenant's system prompt template
+            system_prompt = self.config.get('system_prompt_template', f"You are {self.name}, an AI assistant.")
+            
+            # Get country-specific emergency numbers
+            country_code = self.config.get('country', 'DEFAULT')
+            emergency_info = EMERGENCY_NUMBERS.get(country_code, EMERGENCY_NUMBERS['DEFAULT'])
+            
+            # Add current date and time context
+            system_prompt += "\n\n## Current Date & Time:\n"
+            system_prompt += f"Today is {current_date} at {current_time}.\n"
+            system_prompt += f"Current year: {current_year}\n"
+            system_prompt += "IMPORTANT: When scheduling appointments or consultations, always use the current date as reference. "
+            system_prompt += f"If a user says 'next Wednesday' or 'this Friday', calculate the correct date based on today's date ({current_date}). "
+            system_prompt += f"Always verify that dates make sense in the context of the current year ({current_year}).\n\n"
+            
+            # Add critical tool usage instructions
+            system_prompt += "## CRITICAL TOOL USAGE RULES:\n"
+            system_prompt += "YOU HAVE TOOLS AVAILABLE - YOU MUST USE THEM!\n\n"
+            system_prompt += "1. SCHEDULING: When you have ALL required data (name, phone, email, date, time, reason/area), you MUST call the scheduling tool IMMEDIATELY.\n"
+            system_prompt += "2. CONTACT CAPTURE: When a user provides their email or contact info, you MUST call record_user_details or equivalent tool IMMEDIATELY.\n"
+            system_prompt += "3. JOB OFFERS: When someone mentions a job offer with company/position/salary, you MUST call record_job_offer IMMEDIATELY.\n"
+            system_prompt += "4. UNKNOWN QUESTIONS: When asked something you cannot answer, you MUST call record_unknown_question IMMEDIATELY.\n"
+            system_prompt += "5. NEVER say 'I have registered' or 'I have recorded' or 'appointment scheduled' WITHOUT calling the tool first.\n"
+            system_prompt += "6. Tool calls are what ACTUALLY save data - your words alone do NOT save anything.\n"
+            system_prompt += "7. If you tell the user something is saved/scheduled without calling the tool, it will NOT be saved.\n"
+            system_prompt += "8. ALWAYS call the appropriate tool BEFORE confirming to the user that their data is saved.\n\n"
+            
+            # Add country-specific emergency information
+            system_prompt += f"## Emergency Contact Information ({emergency_info['name']}):\n"
+            system_prompt += f"General Emergency: {emergency_info['general']}\n"
+            if emergency_info['ambulance'] != emergency_info['general']:
+                system_prompt += f"Ambulance: {emergency_info['ambulance']}\n"
+            if emergency_info['police'] != emergency_info['general']:
+                system_prompt += f"Police: {emergency_info['police']}\n"
+            if emergency_info['fire'] != emergency_info['general']:
+                system_prompt += f"Fire: {emergency_info['fire']}\n"
+            system_prompt += "IMPORTANT: If a patient/client has a medical emergency or life-threatening situation, "
+            system_prompt += f"recommend calling {emergency_info['general']} immediately or going to the nearest emergency room. "
+            system_prompt += "Never recommend calling 911 unless the country is the United States.\n\n"
+            
+            # Add knowledge base if available
+            if self.knowledge_base:
+                system_prompt += f"## Knowledge Base:\n{self.knowledge_base}\n\n"
+            
+            # Add contact information if available
+            contact_info = self.config.get('contact_info', {})
+            if contact_info:
+                system_prompt += "## Contact Information:\n"
+                if 'phone' in contact_info:
+                    system_prompt += f"Phone: {contact_info['phone']}\n"
+                if 'emergency_phone' in contact_info:
+                    system_prompt += f"Emergency Phone: {contact_info['emergency_phone']}\n"
+                if 'email' in contact_info:
+                    system_prompt += f"Email: {contact_info['email']}\n"
+                if 'address' in contact_info:
+                    system_prompt += f"Address: {contact_info['address']}\n"
+                if 'website' in contact_info:
+                    system_prompt += f"Website: {contact_info['website']}\n"
+                system_prompt += "\n"
+            
+            # Add business hours if available
+            business_hours = self.config.get('business_hours', {})
+            if business_hours:
+                system_prompt += "## Business Hours:\n"
+                for day, hours in business_hours.items():
+                    day_formatted = day.replace('_', '-').title()
+                    system_prompt += f"{day_formatted}: {hours}\n"
+                system_prompt += "\n"
+            
+            system_prompt += "IMPORTANT: Always provide the actual contact information (phone numbers, email, address) when users ask. Never use placeholders like 'XXX-XXX-XXXX'.\n\n"
+            system_prompt += f"With this context, please chat with the user, always staying in character as {self.name}."
+        
         return system_prompt
+    
+    def _send_tool_notification(self, tool_name: str, arguments: dict, result: dict) -> None:
+        """Send push notification when important tools are called.
+        
+        Args:
+            tool_name: Name of the tool that was called
+            arguments: Arguments passed to the tool
+            result: Result returned by the tool
+        """
+        try:
+            # Build notification message based on tool type
+            # DANIEL TOOLS
+            if tool_name == "record_job_offer":
+                message = "💼 NEW JOB OFFER RECEIVED\n\n"
+                message += f"Company: {arguments.get('company_name', 'N/A')}\n"
+                message += f"Position: {arguments.get('position', 'N/A')}\n"
+                message += f"Salary: {arguments.get('salary', 'N/A')} {arguments.get('currency', 'N/A')}\n"
+                message += f"Type: {arguments.get('work_type', 'N/A')}\n"
+                if arguments.get('duration'):
+                    message += f"Duration: {arguments.get('duration')}\n"
+                if arguments.get('additional_details'):
+                    message += f"Details: {arguments.get('additional_details')}\n"
+                title = "💼 Daniel - Job Offer"
+                
+            elif tool_name == "record_user_details":
+                message = "📧 NEW CONTACT CAPTURED\n\n"
+                message += f"Name: {arguments.get('name', 'N/A')}\n"
+                message += f"Email: {arguments.get('email', 'N/A')}\n"
+                if arguments.get('notes') and arguments.get('notes') != 'not provided':
+                    message += f"Notes: {arguments.get('notes')}\n"
+                title = "📧 Daniel - New Contact"
+                
+            elif tool_name == "record_unknown_question":
+                message = "❓ UNKNOWN QUESTION RECORDED\n\n"
+                message += f"Question: {arguments.get('question', 'N/A')}\n"
+                title = "❓ Daniel - Unknown Question"
+            
+            # CLINICA1 TOOLS
+            elif tool_name == "schedule_medical_appointment":
+                message = "📅 NUEVA CITA MÉDICA AGENDADA\n\n"
+                message += f"Paciente: {arguments.get('patient_name', 'N/A')}\n"
+                message += f"Teléfono: {arguments.get('phone', 'N/A')}\n"
+                message += f"Email: {arguments.get('email', 'N/A')}\n"
+                message += f"Especialidad: {arguments.get('specialty', 'N/A')}\n"
+                message += f"Fecha: {arguments.get('preferred_date', 'N/A')}\n"
+                message += f"Hora: {arguments.get('preferred_time', 'N/A')}\n"
+                message += f"Motivo: {arguments.get('consultation_reason', 'N/A')}\n"
+                title = f"🏥 {self.name} - Nueva Cita"
+                
+            elif tool_name == "schedule_legal_consultation":
+                message = "⚖️ NUEVA CONSULTA LEGAL AGENDADA\n\n"
+                message += f"Cliente: {arguments.get('client_name', 'N/A')}\n"
+                message += f"Teléfono: {arguments.get('phone', 'N/A')}\n"
+                message += f"Email: {arguments.get('email', 'N/A')}\n"
+                message += f"Área Legal: {arguments.get('legal_area', 'N/A')}\n"
+                message += f"Fecha: {arguments.get('preferred_date', 'N/A')}\n"
+                message += f"Hora: {arguments.get('preferred_time', 'N/A')}\n"
+                message += f"Modalidad: {arguments.get('modality', 'N/A')}\n"
+                title = f"⚖️ {self.name} - Nueva Consulta"
+                
+            elif tool_name == "query_legal_fees":
+                message = "💰 CONSULTA DE HONORARIOS\n\n"
+                message += f"Área Legal: {arguments.get('legal_area', 'N/A')}\n"
+                message += f"Complejidad: {arguments.get('complexity', 'media')}\n"
+                message += f"Estimación: {result.get('estimated_fees', 'N/A')}\n"
+                title = f"💰 {self.name} - Consulta Precios"
+                
+            elif tool_name == "query_services_pricing":
+                message = "ℹ️ CONSULTA DE SERVICIOS\n\n"
+                message += f"Especialidad: {arguments.get('specialty', 'General')}\n"
+                if 'price' in result:
+                    message += f"Precio: {result.get('price', 'N/A')}\n"
+                title = f"ℹ️ {self.name} - Consulta Info"
+                
+            else:
+                # Generic notification for other tools
+                message = f"🔔 TOOL EJECUTADA: {tool_name}\n\n"
+                message += f"Tenant: {self.tenant_id}\n"
+                message += f"Status: {result.get('status', 'unknown')}\n"
+                title = f"🤖 {self.name} - Tool Call"
+            
+            # Add session info
+            message += f"\n{'='*40}\n"
+            message += "📍 Session Tracking:\n"
+            message += f"• Session ID: {self.session_id[:12]}...\n"
+            message += f"• Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+            
+            # Add API usage stats
+            message += "\n🔑 Gemini API Usage:\n"
+            message += f"🤖 Current Model: {self.current_model}\n"
+            message += f"🔑 Current Key: {api_manager.current_key_index + 1}\n\n"
+            
+            # Add stats for each key
+            for i, key in enumerate(api_manager.keys, 1):
+                used = api_manager.request_counts.get(key, 0)
+                limit = api_manager.daily_limits.get(key, 20)
+                
+                # Count exhausted models for this key
+                exhausted_count = sum(1 for (key_idx, model_idx) in api_manager.exhausted_combinations.keys() 
+                                     if key_idx == i - 1)
+                total_models = len(api_manager.models)
+                
+                # Determine status emoji
+                if used >= limit:
+                    status = "⚠️"
+                elif used >= limit * 0.8:
+                    status = "⚠️"
+                else:
+                    status = "✅"
+                
+                message += f"Key {i}: {used}/{limit} used {status}"
+                if exhausted_count > 0:
+                    message += f" ({exhausted_count}/{total_models} models exhausted)"
+                
+                # Add reset time
+                last_reset = api_manager.last_reset.get(key)
+                if last_reset:
+                    now = datetime.now()
+                    reset_time = datetime.fromtimestamp(last_reset + 86400)
+                    time_diff = reset_time - now
+                    hours = int(time_diff.total_seconds() // 3600)
+                    minutes = int((time_diff.total_seconds() % 3600) // 60)
+                    if hours >= 0 and minutes >= 0:
+                        message += f" (resets in {hours}h {minutes}m)"
+                
+                message += "\n"
+            
+            # Send notification
+            requests.post(
+                PUSHOVER_API_URL,
+                data={
+                    "token": os.getenv("PUSHOVER_TOKEN"),
+                    "user": os.getenv("PUSHOVER_USER"),
+                    "message": message,
+                    "title": title,
+                    "priority": 0
+                },
+                timeout=5
+            )
+            print(f"📱 Push notification sent for {tool_name}", flush=True)
+            
+        except Exception as e:
+            print(f"❌ Failed to send tool notification: {e}", flush=True)
     
     def _format_wait_time(self, seconds: int) -> str:
         """Format seconds into human-readable time.
@@ -622,7 +939,7 @@ IMPORTANT: If the user mentions ANY job offer, work opportunity, salary, compens
         response = self.gemini.chat.completions.create(
             model=self.current_model,
             messages=messages,
-            tools=tools
+            tools=self.tools_schemas  # Use tenant-specific tools
         )
         api_manager.reset_backoff()
         api_manager.increment_usage()
@@ -664,13 +981,18 @@ IMPORTANT: If the user mentions ANY job offer, work opportunity, salary, compens
     
     def _process_response(self, response, messages: list) -> bool:
         """Process API response. Returns True if done, False if needs more tool calls."""
-        if response.choices[0].finish_reason != "tool_calls":
+        finish_reason = response.choices[0].finish_reason
+        print(f"🔍 Finish reason: {finish_reason}", flush=True)
+        
+        if finish_reason != "tool_calls":
             return True
         
         message = response.choices[0].message
+        print(f"🔧 Processing {len(message.tool_calls)} tool call(s)", flush=True)
         results = self.handle_tool_call(message.tool_calls)
         messages.append(message)
         messages.extend(results)
+        print(f"✅ Tool results added to conversation", flush=True)
         return False
     
     def _handle_error(self, error_str: str, retry_count: int) -> str:
@@ -706,13 +1028,371 @@ IMPORTANT: If the user mentions ANY job offer, work opportunity, salary, compens
                     return error_msg
         
         content = response.choices[0].message.content
-        return content if content is not None else "I apologize, but I couldn't generate a response. Please try again."
+        if content is None:
+            print(f"⚠️ Response content is None. Finish reason: {response.choices[0].finish_reason}", flush=True)
+            # Check if we just executed a tool successfully
+            if len(messages) > 1 and messages[-1].get("role") == "tool":
+                tool_result = json.loads(messages[-1].get("content", "{}"))
+                if tool_result.get("status") == "success":
+                    print("✅ Tool executed successfully, generating confirmation message", flush=True)
+                    # Generate appropriate confirmation based on tenant
+                    if self.tenant_id == "clinica1":
+                        return "¡Perfecto! Tu cita ha sido agendada exitosamente. Recibirás una confirmación por correo electrónico con todos los detalles. ¿Hay algo más en lo que pueda ayudarte?"
+                    elif self.tenant_id == "abogado1":
+                        return "¡Excelente! Su consulta legal ha sido agendada exitosamente. Recibirá una confirmación por correo electrónico con todos los detalles. ¿Hay algo más en lo que pueda asistirle?"
+                    else:
+                        return "Great! Your request has been processed successfully. You'll receive a confirmation email shortly. Is there anything else I can help you with?"
+            print("⚠️ This usually means the model called a tool but didn't provide a text response after.", flush=True)
+            return "I apologize, but I couldn't generate a response. Please try again."
+        return content
     
 
-if __name__ == "__main__":
-    bot = DanielBot()
+def create_dynamic_interface(tenant_id: str = "daniel"):
+    """Creates a dynamic interface based on tenant configuration"""
+    try:
+        # Load tenant configuration
+        ui_config = tenant_manager.get_ui_config(tenant_id)
+        
+        # Generate dynamic CSS based on tenant branding
+        dynamic_css = f"""
+        .gradio-container {{
+            max-width: 1200px !important;
+            margin: auto !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+            background: {ui_config['background_color']} !important;
+            min-height: 100vh !important;
+        }}
+        
+        h1 {{
+            text-align: center !important;
+            color: {ui_config['primary_color']} !important;
+            font-size: 2.2rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 0.3rem !important;
+        }}
+        
+        h3 {{
+            text-align: center !important;
+            color: white !important;
+            font-weight: 600 !important;
+            margin-top: 0 !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+        }}
+        
+        .description {{
+            text-align: center !important;
+            background: linear-gradient(135deg, {ui_config['primary_color']} 0%, {ui_config['secondary_color']} 100%) !important;
+            color: white !important;
+            padding: 2rem !important;
+            border-radius: 16px !important;
+            margin-bottom: 1.5rem !important;
+            box-shadow: 0 4px 16px rgba(8, 145, 178, 0.2) !important;
+        }}
+        
+        .chatbot {{
+            border-radius: 16px !important;
+            border: 2px solid #e2e8f0 !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+        }}
+        
+        .message.user {{
+            background: linear-gradient(135deg, {ui_config['primary_color']} 0%, {ui_config['secondary_color']} 100%) !important;
+            color: white !important;
+            border-radius: 16px 16px 4px 16px !important;
+            padding: 12px 16px !important;
+            box-shadow: 0 2px 8px rgba(8, 145, 178, 0.2) !important;
+        }}
+        
+        .message.bot {{
+            background: white !important;
+            color: #1e293b !important;
+            border-radius: 16px 16px 16px 4px !important;
+            border: 1px solid #e2e8f0 !important;
+        }}
+        
+        .input-wrap {{
+            border-radius: 24px !important;
+            border: 2px solid {ui_config['primary_color']} !important;
+            background: white !important;
+            box-shadow: 0 2px 8px rgba(8, 145, 178, 0.1) !important;
+        }}
+        
+        .input-wrap:focus-within {{
+            border-color: {ui_config['secondary_color']} !important;
+            box-shadow: 0 4px 16px rgba(8, 145, 178, 0.2) !important;
+        }}
+        
+        button.primary {{
+            background: linear-gradient(135deg, {ui_config['primary_color']} 0%, {ui_config['secondary_color']} 100%) !important;
+            border: none !important;
+            border-radius: 20px !important;
+            color: white !important;
+            font-weight: 600 !important;
+            padding: 12px 28px !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 12px rgba(8, 145, 178, 0.25) !important;
+        }}
+        
+        button.primary:hover {{
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(8, 145, 178, 0.35) !important;
+        }}
+        
+        .footer {{
+            text-align: center !important;
+            color: #64748b !important;
+            margin-top: 1.5rem !important;
+            font-size: 0.9rem !important;
+            padding: 1rem !important;
+        }}
+        
+        .footer a {{
+            color: {ui_config['primary_color']} !important;
+            text-decoration: none !important;
+            font-weight: 500 !important;
+        }}
+        
+        .footer a:hover {{
+            text-decoration: underline !important;
+        }}
+        
+        {ui_config['custom_css']}
+        """
+        
+        # Create bot with tenant-specific configuration
+        bot = DanielBot(tenant_id=tenant_id)
+        
+        # Create the interface with tenant-specific theme
+        with gr.Blocks(css=dynamic_css, title=ui_config['title']) as demo:
+            gr.Markdown(
+                f"""
+                # {ui_config['avatar_emoji']} {ui_config['title']}
+                ### {ui_config['subtitle']}
+                
+                {ui_config['description']}
+                """,
+                elem_classes="description"
+            )
+            
+            chatbot = gr.Chatbot(
+                height=ui_config['chatbot_height'],
+                placeholder=ui_config['placeholder_text'],
+                show_label=False,
+                elem_classes="chatbot"
+            )
+            
+            with gr.Row():
+                msg = gr.Textbox(
+                    placeholder=ui_config['placeholder_text'],
+                    show_label=False,
+                    scale=9,
+                    container=False,
+                    elem_classes="input-wrap"
+                )
+                submit = gr.Button(ui_config['submit_button_text'], scale=1, variant="primary")
+            
+            gr.Markdown(
+                """
+                ---
+                *Powered by AI Assistant Platform*
+                """,
+                elem_classes="footer"
+            )
+            
+            # Set up the chat interface logic
+            def respond(message, chat_history):
+                # Add user message immediately
+                chat_history.append({"role": "user", "content": message})
+                
+                # Get bot response
+                bot_message = bot.chat(message, chat_history)
+                
+                # Add bot response
+                chat_history.append({"role": "assistant", "content": bot_message})
+                
+                return "", chat_history
+            
+            msg.submit(respond, [msg, chatbot], [msg, chatbot])
+            submit.click(respond, [msg, chatbot], [msg, chatbot])
+        
+        return demo
+        
+    except Exception as e:
+        # Fallback interface if tenant loading fails
+        with gr.Blocks() as demo:
+            gr.Markdown(f"# Error loading tenant: {tenant_id}")
+            gr.Markdown(f"Error: {str(e)}")
+        return demo
+
+
+def create_multi_tenant_app():
+    """Creates a multi-tenant app that detects tenant from URL query parameters"""
     
-    # Custom CSS - Professional blue/teal theme (trust & confidence)
+    def get_tenant_from_url(request: gr.Request) -> str:
+        """Extract tenant from URL query parameters"""
+        try:
+            # Get tenant from query params
+            tenant = request.query_params.get('tenant', 'daniel')
+            print(f"🎯 Detected tenant from URL: {tenant}", flush=True)
+            return tenant
+        except Exception as e:
+            print(f"⚠️  Error detecting tenant: {e}, using default 'daniel'", flush=True)
+            return "daniel"
+    
+    def load_tenant_interface(tenant_id: str, request: gr.Request):
+        """Load tenant configuration and return UI elements"""
+        try:
+            # Detect tenant from URL if not provided
+            if request:
+                url_tenant = get_tenant_from_url(request)
+                if url_tenant != tenant_id:
+                    tenant_id = url_tenant
+            
+            # Load tenant configuration
+            config = tenant_manager.get_tenant_config(tenant_id)
+            ui_config = tenant_manager.get_ui_config(tenant_id)
+            
+            # Create bot instance for this tenant
+            bot = DanielBot(tenant_id=tenant_id)
+            
+            # Return UI configuration
+            return (
+                tenant_id,
+                f"# {ui_config['avatar_emoji']} {ui_config['title']}\n### {ui_config['subtitle']}\n\n{ui_config['description']}",
+                ui_config['placeholder_text'],
+                ui_config['submit_button_text'],
+                bot
+            )
+        except Exception as e:
+            print(f"❌ Error loading tenant {tenant_id}: {e}", flush=True)
+            return (
+                "daniel",
+                "# 👨‍💻 Daniel Ángel Bot assistant\n### Python & AI Engineer | +12 Years Experience\n\nError loading tenant configuration.",
+                "Type your message here...",
+                "Send",
+                None
+            )
+    
+    # Create the main interface
+    with gr.Blocks(title="AI Assistant Platform") as demo:
+        # Hidden state to store bot instance
+        bot_state = gr.State()
+        current_tenant = gr.State(value="daniel")
+        
+        # Header section (will be updated dynamically)
+        header = gr.Markdown(
+            """
+            # 👨‍💻 Daniel Ángel Bot assistant
+            ### Python & AI Engineer | +12 Years Experience
+            
+            Hi! I'm Daniel's AI assistant. Ask me about his expertise in Python, AI/ML, Blockchain, or any project experience.
+            """,
+            elem_classes="description"
+        )
+        
+        # Chatbot with avatar images
+        chatbot = gr.Chatbot(
+            height=500,
+            placeholder="",
+            show_label=False,
+            avatar_images=(
+                "https://api.dicebear.com/7.x/avataaars/svg?seed=User",
+                "https://api.dicebear.com/7.x/bottts/svg?seed=Daniel"
+            ),
+            elem_classes="chatbot"
+        )
+        
+        # Input row
+        with gr.Row():
+            msg = gr.Textbox(
+                placeholder="Type your message here...",
+                show_label=False,
+                scale=9,
+                container=False,
+                elem_classes="input-wrap"
+            )
+            submit = gr.Button("Send", scale=1, variant="primary")
+        
+        # Footer (will be updated dynamically)
+        footer = gr.Markdown(
+            """
+            ---
+            *Powered by AI Angels*
+            """,
+            elem_classes="footer"
+        )
+        
+        # Chat logic
+        def respond(message, chat_history, bot_instance):
+            if not bot_instance:
+                return "", chat_history + [{"role": "assistant", "content": "Error: Bot not initialized. Please refresh the page."}]
+            
+            # Add user message
+            chat_history.append({"role": "user", "content": message})
+            
+            # Get bot response
+            try:
+                bot_message = bot_instance.chat(message, chat_history)
+                chat_history.append({"role": "assistant", "content": bot_message})
+            except Exception as e:
+                chat_history.append({"role": "assistant", "content": f"Error: {str(e)}"})
+            
+            return "", chat_history
+        
+        # Initialize bot on load
+        def init_bot(request: gr.Request):
+            tenant_id, header_text, placeholder_text, button_text, bot = load_tenant_interface("daniel", request)
+            
+            # Get language config to determine footer text
+            lang_config = tenant_manager.get_language_config(tenant_id)
+            default_lang = lang_config.get('default_language', 'en')
+            
+            # Set footer based on tenant and language
+            if tenant_id == 'daniel':
+                # Special footer for Daniel tenant
+                footer_text = """\n---\n🚀 **Interested in working together?** Let me know your email and I'll get in touch!\n\n*Built with Python, Gradio & Google Gemini*"""
+            elif default_lang == 'es':
+                footer_text = """\n---\n*Desarrollado por Angels*"""
+            else:
+                footer_text = """\n---\n*Powered by Angels*"""
+            
+            # Update textbox with new placeholder
+            msg_update = gr.Textbox(
+                placeholder=placeholder_text,
+                show_label=False,
+                scale=9,
+                container=False
+            )
+            
+            # Update button with new text
+            submit_update = gr.Button(button_text, scale=1, variant="primary")
+            
+            return tenant_id, header_text, msg_update, submit_update, bot, footer_text
+        
+        # Load tenant on page load
+        demo.load(
+            init_bot,
+            inputs=None,
+            outputs=[current_tenant, header, msg, submit, bot_state, footer]
+        )
+        
+        # Handle message submission
+        msg.submit(respond, [msg, chatbot, bot_state], [msg, chatbot])
+        submit.click(respond, [msg, chatbot, bot_state], [msg, chatbot])
+    
+    return demo
+
+
+if __name__ == "__main__":
+    print("🚀 Starting Multi-Tenant AI Assistant Platform", flush=True)
+    print(f"📝 Available tenants: {tenant_manager.list_available_tenants()}", flush=True)
+    print("🌐 Access different tenants by adding ?tenant=<tenant_id> to the URL", flush=True)
+    print("   Example: http://127.0.0.1:7860/?tenant=clinica1", flush=True)
+    print("   Example: http://127.0.0.1:7860/?tenant=abogado1", flush=True)
+    
+    # Original CSS from working version - Professional blue/teal theme
     custom_css = """
     .gradio-container {
         max-width: 850px !important;
@@ -722,7 +1402,7 @@ if __name__ == "__main__":
         min-height: 100vh !important;
     }
     
-    h1 {
+    .description h1 {
         text-align: center !important;
         color: #0f172a !important;
         font-size: 2.2rem !important;
@@ -730,7 +1410,7 @@ if __name__ == "__main__":
         margin-bottom: 0.3rem !important;
     }
     
-    h3 {
+    .description h3 {
         text-align: center !important;
         color: #ffffff !important;
         font-weight: 600 !important;
@@ -746,6 +1426,10 @@ if __name__ == "__main__":
         border-radius: 16px !important;
         margin-bottom: 1.5rem !important;
         box-shadow: 0 4px 16px rgba(8, 145, 178, 0.2) !important;
+    }
+    
+    .description p {
+        color: white !important;
     }
     
     .chatbot {
@@ -771,30 +1455,94 @@ if __name__ == "__main__":
         border: 1px solid #e2e8f0 !important;
     }
     
+    /* Input container and field - rounded with teal border */
+    /* Main wrapper - apply rounded border here */
     .input-wrap {
         border-radius: 24px !important;
         border: 2px solid #0891b2 !important;
         background: white !important;
-        box-shadow: 0 2px 8px rgba(8, 145, 178, 0.1) !important;
+        padding: 0 !important;
+        overflow: hidden !important;
     }
     
+    /* Remove ALL inner container backgrounds and borders */
+    .input-wrap > *,
+    .input-wrap > div,
+    .input-wrap > div > div,
+    .input-wrap .wrap,
+    .input-wrap .container,
+    .input-wrap label,
+    .input-wrap [data-testid],
+    .input-wrap .svelte-1f354aw {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+    
+    /* Style the actual textarea inside input-wrap */
+    .input-wrap textarea {
+        border: none !important;
+        background: transparent !important;
+        padding: 12px 20px !important;
+        border-radius: 24px !important;
+    }
+    
+    /* Focus state on the wrapper */
     .input-wrap:focus-within {
         border-color: #0e7490 !important;
-        box-shadow: 0 4px 16px rgba(8, 145, 178, 0.2) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.2) !important;
     }
     
-    button.primary {
+    /* General textarea fallback */
+    textarea,
+    input[type="text"] {
+        border-radius: 24px !important;
+        border: 1px solid #0891b2 !important;
+        background: white !important;
+        padding: 12px 20px !important;
+    }
+    
+    textarea:focus,
+    input[type="text"]:focus {
+        border-color: #0e7490 !important;
+        outline: none !important;
+    }
+    
+    /* Hide background container and scrollbar */
+    label:has(textarea),
+    label:has(input[type="text"]) {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Hide scrollbar */
+    textarea {
+        overflow: hidden !important;
+        resize: none !important;
+    }
+    
+    textarea::-webkit-scrollbar {
+        display: none !important;
+    }
+    
+    /* Button styling */
+    button[variant="primary"],
+    .primary {
         background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%) !important;
         border: none !important;
-        border-radius: 20px !important;
+        border-radius: 25px !important;
         color: white !important;
         font-weight: 600 !important;
-        padding: 12px 28px !important;
+        padding: 14px 32px !important;
         transition: all 0.3s ease !important;
         box-shadow: 0 4px 12px rgba(8, 145, 178, 0.25) !important;
     }
     
-    button.primary:hover {
+    button[variant="primary"]:hover,
+    .primary:hover {
         transform: translateY(-2px) !important;
         box-shadow: 0 6px 20px rgba(8, 145, 178, 0.35) !important;
     }
@@ -824,61 +1572,21 @@ if __name__ == "__main__":
     }
     """
     
-    # Create the interface with custom theme (Gradio 6.0 compatible)
-    with gr.Blocks() as demo:
-        gr.Markdown(
-            """
-            # 👨‍💻 Daniel Ángel Bot assistant
-            ### Python & AI Engineer | +12 Years Experience
-            
-            Hi! I'm Daniel's AI assistant. Ask me about his expertise in <span style="color: white; font-weight: 600;">Python</span>, <span style="color: white; font-weight: 600;">AI/ML</span>, <span style="color: white; font-weight: 600;">Blockchain</span>, or any project experience.
-            """,
-            elem_classes="description"
-        )
-        
-        chatbot = gr.Chatbot(
-            height=500,
-            placeholder="Ask about Daniel's Python projects, AI implementations, blockchain experience, or how he can help your team...",
-            show_label=False,
-            avatar_images=("https://api.dicebear.com/7.x/avataaars/svg?seed=User", "https://api.dicebear.com/7.x/bottts/svg?seed=Daniel"),
-            elem_classes="chatbot"
-        )
-        
-        with gr.Row():
-            msg = gr.Textbox(
-                placeholder="Type your message here...",
-                show_label=False,
-                scale=9,
-                container=False,
-                elem_classes="input-wrap"
-            )
-            submit = gr.Button("Send", scale=1, variant="primary")
-        
-        gr.Markdown(
-            """
-            ---
-            🚀 **Interested in working together?** Let me know your email and I'll get in touch!
-            
-            *Built with Python, Gradio & Google Gemini*
-            """,
-            elem_classes="footer"
-        )
-        
-        # Set up the chat interface logic
-        def respond(message, chat_history):
-            # Add user message immediately
-            chat_history.append({"role": "user", "content": message})
-            
-            # Get bot response
-            bot_message = bot.chat(message, chat_history)
-            
-            # Add bot response
-            chat_history.append({"role": "assistant", "content": bot_message})
-            
-            return "", chat_history
-        
-        msg.submit(respond, [msg, chatbot], [msg, chatbot])
-        submit.click(respond, [msg, chatbot], [msg, chatbot])
+    # Check if running in development mode
+    import os
+    is_dev = os.getenv("GRADIO_ENV") == "dev"
     
-    # Launch with CSS and theme parameters (Gradio 6.0)
-    demo.launch(share=True, css=custom_css)
+    try:
+        demo = create_multi_tenant_app()
+        demo.launch(
+            share=True, 
+            css=custom_css,
+            show_error=True,
+            # Enable hot reload in development
+            # Note: reload parameter may not be available in all Gradio versions
+        )
+    except Exception as e:
+        print(f"❌ Error starting application: {e}", flush=True)
+        # Fallback to simple interface
+        demo = create_dynamic_interface("daniel")
+        demo.launch(share=True, css=custom_css)
