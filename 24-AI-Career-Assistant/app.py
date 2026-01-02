@@ -1616,14 +1616,14 @@ if __name__ == "__main__":
     }
     """
     
-    # Check if running in development mode
+    # Check if running in Hugging Face Spaces
     import os
-    is_dev = os.getenv("GRADIO_ENV") == "dev"
+    is_hf_space = os.getenv("SPACE_ID") is not None
     
     try:
         demo = create_multi_tenant_app()
         demo.launch(
-            share=True, 
+            share=False if is_hf_space else True,  # Disable share on HF Spaces
             css=custom_css,
             show_error=True,
             # Enable hot reload in development
