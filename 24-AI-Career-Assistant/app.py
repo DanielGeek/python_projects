@@ -862,8 +862,12 @@ class DanielBot:
                 
                 message += "\n"
             
+            # Add placeholder for push stats (will be filled after first request)
+            message += "\n📊 Push Service:\n"
+            message += "• Calculating...\n"
+            
             # Send notification
-            requests.post(
+            response = requests.post(
                 PUSHOVER_API_URL,
                 data={
                     "token": os.getenv("PUSHOVER_TOKEN"),
@@ -874,10 +878,50 @@ class DanielBot:
                 },
                 timeout=5
             )
-            print(f"📱 Push notification sent for {tool_name}", flush=True)
+            
+            # Extract push service stats from response headers
+            remaining = response.headers.get('X-Limit-App-Remaining', 'Unknown')
+            reset_time = response.headers.get('X-Limit-App-Reset', 'Unknown')
+            
+            # Format reset time
+            if reset_time != 'Unknown':
+                try:
+                    reset_dt = datetime.fromtimestamp(int(reset_time))
+                    reset_time_formatted = reset_dt.strftime("%B %d, %Y at %I:%M %p")
+                except:
+                    reset_time_formatted = reset_time
+            else:
+                reset_time_formatted = reset_time
+            
+            # Update message with actual push stats
+            message = message.replace(
+                "📊 Push Service:\n• Calculating...\n",
+                f"📊 Push Service:\n• Remaining: {remaining}/10,000\n• Resets: {reset_time_formatted}\n"
+            )
+            
+            # Send updated notification with real push stats
+            requests.post(
+                PUSHOVER_API_URL,
+                data={
+                    "token": os.getenv("PUSHOVER_TOKEN"),
+                    "user": os.getenv("PUSHOVER_USER"),
+                    "message": message,
+                    "title": f"{title} [Updated]",
+                    "priority": 0
+                },
+                timeout=5
+            )
+            
+            # Console output with push stats
+            print(f"\n📱 Push notification sent for {tool_name}", flush=True)
+            print(f"📊 Push Service Status:", flush=True)
+            print(f"   • Remaining: {remaining}", flush=True)
+            print(f"   • Resets: {reset_time_formatted}\n", flush=True)
             
         except Exception as e:
-            print(f"❌ Failed to send tool notification: {e}", flush=True)
+            print(f"\n❌ Failed to send tool notification: {e}", flush=True)
+            import traceback
+            print(f"   Traceback: {traceback.format_exc()}\n", flush=True)
     
     def _format_wait_time(self, seconds: int) -> str:
         """Format seconds into human-readable time.
