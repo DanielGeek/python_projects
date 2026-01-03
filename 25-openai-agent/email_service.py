@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-Email service module using Resend API
+Email service module using Resend Python SDK
 Provides easy-to-use functions for sending emails in your projects
 """
 
-import requests
 import os
+import resend
 from typing import Optional, List, Dict, Any
 from dotenv import load_dotenv
 
 load_dotenv()
 
 class EmailService:
-    """Email service using Resend API"""
+    """Email service using Resend Python SDK"""
     
     def __init__(self, api_key: Optional[str] = None, from_email: Optional[str] = None):
         """
@@ -22,12 +22,14 @@ class EmailService:
             api_key: Resend API key (defaults to RESEND_API_KEY env var)
             from_email: Default sender email (defaults to FROM_EMAIL env var or onboarding@resend.dev)
         """
-        self.api_key = api_key or os.getenv("RESEND_API_KEY")
+        api_key = api_key or os.getenv("RESEND_API_KEY")
         self.from_email = from_email or os.getenv("FROM_EMAIL", "onboarding@resend.dev")
-        self.base_url = "https://api.resend.com"
         
-        if not self.api_key:
+        if not api_key:
             raise ValueError("RESEND_API_KEY is required. Set it in .env or pass it to constructor.")
+        
+        # Set API key for Resend SDK
+        resend.api_key = api_key
     
     def send_email(
         self,
@@ -43,7 +45,7 @@ class EmailService:
         attachments: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
-        Send an email using Resend API
+        Send an email using Resend Python SDK
         
         Args:
             to: Recipient email(s)
@@ -63,49 +65,42 @@ class EmailService:
         Raises:
             Exception if email fails to send
         """
-        url = f"{self.base_url}/emails"
-        
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
-        }
-        
-        # Prepare email data
-        data = {
-            "from": from_email or self.from_email,
-            "to": [to] if isinstance(to, str) else to,
-            "subject": subject
-        }
-        
-        # Add optional fields
-        if text:
-            data["text"] = text
-        if html:
-            data["html"] = html
-        if reply_to:
-            data["reply_to"] = reply_to
-        if cc:
-            data["cc"] = cc
-        if bcc:
-            data["bcc"] = bcc
-        if tags:
-            data["tags"] = tags
-        if attachments:
-            data["attachments"] = attachments
-        
-        # Send request
-        response = requests.post(url, json=data, headers=headers, timeout=10)
-        
-        if response.status_code == 200:
+        try:
+            # Prepare email params using Resend SDK format
+            params: resend.Emails.SendParams = {
+                "from": from_email or self.from_email,
+                "to": [to] if isinstance(to, str) else to,
+                "subject": subject
+            }
+            
+            # Add optional fields
+            if text:
+                params["text"] = text
+            if html:
+                params["html"] = html
+            if reply_to:
+                params["reply_to"] = reply_to
+            if cc:
+                params["cc"] = cc
+            if bcc:
+                params["bcc"] = bcc
+            if tags:
+                params["tags"] = tags
+            if attachments:
+                params["attachments"] = attachments
+            
+            # Send email using Resend SDK
+            email = resend.Emails.send(params)
+            
             return {
                 "success": True,
-                "data": response.json()
+                "data": email
             }
-        else:
+            
+        except Exception as e:
             return {
                 "success": False,
-                "error": response.text,
-                "status_code": response.status_code
+                "error": str(e)
             }
     
     def send_template_email(

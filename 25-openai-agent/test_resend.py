@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-Resend alternative for email sending (100 emails/day free, 3,000/month)
-Very developer-friendly, no credit card required
+Resend email sending test using official Python SDK
+100 emails/day free, 3,000/month - Very developer-friendly, no credit card required
 """
 
-import requests
 import os
+import resend
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
 def send_email_resend(to_email, subject, text_content, html_content=None):
-    """Send email using Resend API"""
+    """Send email using Resend Python SDK"""
     
     # Get API key from: https://resend.com/api-keys
     RESEND_API_KEY = os.getenv("RESEND_API_KEY")
@@ -21,39 +21,34 @@ def send_email_resend(to_email, subject, text_content, html_content=None):
         print("Example: export RESEND_API_KEY=re_your_actual_api_key")
         print("You can get your API key from: https://resend.com/api-keys")
         return False
-    FROM_EMAIL = os.getenv("FROM_EMAIL", "onboarding@resend.dev")  # Default test email
     
-    url = "https://api.resend.com/emails"
+    FROM_EMAIL = os.getenv("FROM_EMAIL", "onboarding@resend.dev")
     
-    headers = {
-        "Authorization": f"Bearer {RESEND_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    
-    data = {
-        "from": FROM_EMAIL,
-        "to": [to_email],
-        "subject": subject,
-        "text": text_content
-    }
-    
-    if html_content:
-        data["html"] = html_content
+    # Set API key for Resend SDK
+    resend.api_key = RESEND_API_KEY
     
     try:
-        response = requests.post(url, json=data, headers=headers, timeout=10)
+        # Prepare email params
+        params: resend.Emails.SendParams = {
+            "from": FROM_EMAIL,
+            "to": [to_email],
+            "subject": subject,
+        }
         
-        if response.status_code == 200:
-            result = response.json()
-            print(f"✅ Email sent successfully!")
-            print(f"   Email ID: {result.get('id', 'N/A')}")
-            print(f"   To: {to_email}")
-            print(f"   Subject: {subject}")
-            return True
-        else:
-            print(f"❌ Failed to send email: {response.status_code}")
-            print(f"   Response: {response.text}")
-            return False
+        # Add content (text or html)
+        if html_content:
+            params["html"] = html_content
+        if text_content:
+            params["text"] = text_content
+        
+        # Send email using Resend SDK
+        email = resend.Emails.send(params)
+        
+        print("✅ Email sent successfully!")
+        print(f"   Message ID: {email.get('id', 'N/A')}")
+        print(f"   To: {to_email}")
+        print(f"   Subject: {subject}")
+        return True
             
     except Exception as e:
         print(f"❌ Error sending email: {e}")
