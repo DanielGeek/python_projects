@@ -355,94 +355,63 @@ async def run_agent_with_execution_fallback(agent_name: str, instructions: str, 
     )
     return await Runner.run(agent, message)
 
+# Convert sales agents to tools (like in original code)
+description = "Write a cold sales email"
+
+# Create simple agents for tools (using OpenAI for reliability)
+tool_agent1 = Agent(name="DeepSeek Sales Agent", instructions=instructions1, model="gpt-4o-mini")
+tool_agent2 = Agent(name="Gemini Sales Agent", instructions=instructions2, model="gpt-4o-mini")
+tool_agent3 = Agent(name="Llama3.3 Sales Agent", instructions=instructions3, model="gpt-4o-mini")
+
+# Create tools from the agents
+tool1 = tool_agent1.as_tool(tool_name="sales_agent1", tool_description=description)
+tool2 = tool_agent2.as_tool(tool_name="sales_agent2", tool_description=description)
+tool3 = tool_agent3.as_tool(tool_name="sales_agent3", tool_description=description)
+
+# Sales Manager with tools and handoffs (original architecture)
+sales_manager_tools = [tool1, tool2, tool3]
+sales_manager_handoffs = [emailer_agent]
+
+sales_manager_instructions = """
+You are a Sales Manager at ComplAI. Your goal is to find the single best cold sales email using the sales_agent tools.
+
+Follow these steps carefully:
+1. Generate Drafts: Use all three sales_agent tools to generate three different email drafts. Do not proceed until all three drafts are ready.
+
+2. Evaluate and Select: Review the drafts and choose the single best email using your judgment of which one is most effective.
+You can use the tools multiple times if you're not satisfied with the results from the first try.
+
+3. Handoff for Sending: Pass ONLY the winning email draft to the 'Email Manager' agent. The Email Manager will take care of formatting and sending.
+
+Crucial Rules:
+- You must use the sales agent tools to generate the drafts — do not write them yourself.
+- You must hand off exactly ONE email to the Email Manager — never more than one.
+"""
+
+sales_manager = Agent(
+    name="Sales Manager",
+    instructions=sales_manager_instructions,
+    tools=sales_manager_tools,
+    handoffs=sales_manager_handoffs,
+    model="gpt-4o-mini"
+)
+
 # Sales Development Representative
 async def automated_sdr():
     print("🚀 Starting Automated SDR...")
     
-    message = "Write a cold sales email to Dear CEO from Alice"
+    message = "Send out a cold sales email addressed to Dear CEO from Alice"
+    print(f"📧 Message: {message}")
     
     with trace("Automated SDR"):
-        print("📧 Generating 3 sales emails from different agents...")
+        print("🔄 Running Sales Manager...")
+        result = await Runner.run(sales_manager, message, max_turns=20)
         
-        # Run all three sales agents sequentially (no nested traces to avoid separate workflows)
-        results = []
-        
-        # Agent 1
-        result1 = await run_agent_with_execution_fallback(
-            "sales_agent1", 
-            instructions1, 
-            message,
-            [(deepseek_model, "DeepSeek"), ("gpt-4o-mini", "OpenAI"), (gemini_model, "Gemini"), (llama3_3_model, "Llama3.3")]
-        )
-        results.append(result1)
-        
-        # Agent 2
-        result2 = await run_agent_with_execution_fallback(
-            "sales_agent2",
-            instructions2,
-            message,
-            [(gemini_model, "Gemini"), ("gpt-4o-mini", "OpenAI"), (llama3_3_model, "Llama3.3"), (deepseek_model, "DeepSeek")]
-        )
-        results.append(result2)
-        
-        # Agent 3
-        result3 = await run_agent_with_execution_fallback(
-            "sales_agent3",
-            instructions3,
-            message,
-            [(llama3_3_model, "Llama3.3"), ("gpt-4o-mini", "OpenAI"), (deepseek_model, "DeepSeek"), (gemini_model, "Gemini")]
-        )
-        results.append(result3)
-        
-        print("✅ All 3 sales agents completed!")
-        
-        # Extract email drafts
-        drafts = [result.final_output for result in results]
-        
-        # Create a picker agent to select the best email
-        sales_picker_instructions = """
-        You pick the best cold sales email from the given options.
-        Imagine you are a customer and pick the one you are most likely to respond to.
-        Reply with ONLY the complete selected email text. Do not add any explanation or commentary.
-        """
-        
-        print("🎯 Selecting best email...")
-        sales_picker = Agent(
-            name="Sales Picker",
-            instructions=sales_picker_instructions,
-            model="gpt-4o-mini"
-        )
-        
-        # Format the drafts for comparison
-        emails_text = "Cold sales emails:\n\n" + "\n\n---EMAIL---\n\n".join(drafts)
-        
-        best_result = await Runner.run(sales_picker, emails_text)
-        best_email = best_result.final_output
-        
-        print(f"✅ Best email selected!")
-        
-        # Hand off to Email Manager (will appear as nested agent)
-        print("📧 Handing off to Email Manager...")
-        print(f"📧 Email Manager will process: {best_email[:100]}...")
-        
-        # Run Email Manager with increased max_turns to ensure tools are called
-        email_manager_result = await Runner.run(
-            emailer_agent, 
-            best_email,
-            max_turns=10  # Allow multiple turns for tool calls
-        )
-        
-        print(f"✅ Email Manager completed!")
-        print(f"📤 Final output: {email_manager_result.final_output}")
-        
-        # Check if tools were actually called
-        if hasattr(email_manager_result, 'messages'):
-            tool_calls = [msg for msg in email_manager_result.messages if hasattr(msg, 'tool_calls')]
-            print(f"🔧 Tools called: {len(tool_calls)}")
-        
+        print(f"✅ Sales Manager completed!")
+        print(f"📤 Final output: {result.final_output}")
         print("✅ [AUTOMATED_SDR] Workflow completed!")
         
-        return email_manager_result
+        return result
 
 if __name__ == "__main__":
     # asyncio.run(run_sales_email())
