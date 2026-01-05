@@ -355,21 +355,69 @@ async def run_agent_with_execution_fallback(agent_name: str, instructions: str, 
     )
     return await Runner.run(agent, message)
 
-# Convert sales agents to tools (like in original code)
+# Convert sales agents to tools with fallback logic
 description = "Write a cold sales email"
 
-# Create simple agents for tools (using OpenAI for reliability)
-tool_agent1 = Agent(name="DeepSeek Sales Agent", instructions=instructions1, model="gpt-4o-mini")
-tool_agent2 = Agent(name="Gemini Sales Agent", instructions=instructions2, model="gpt-4o-mini")
-tool_agent3 = Agent(name="Llama3.3 Sales Agent", instructions=instructions3, model="gpt-4o-mini")
+# Create function tools that try multiple models with fallback
+@function_tool
+async def sales_agent1_tool(input: str) -> str:
+    """Write a professional cold sales email"""
+    models = [(deepseek_model, "DeepSeek"), ("gpt-4o-mini", "OpenAI")]
+    for model, model_name in models:
+        try:
+            print(f"  🔄 [sales_agent1] Trying {model_name}...")
+            agent = Agent(name=f"{model_name} Sales Agent", instructions=instructions1, model=model)
+            result = await Runner.run(agent, input)
+            print(f"  ✅ [sales_agent1] {model_name} succeeded!")
+            return result.final_output
+        except Exception as e:
+            print(f"  ❌ [sales_agent1] {model_name} failed: {str(e)[:80]}")
+            continue
+    # Final fallback
+    agent = Agent(name="OpenAI Sales Agent", instructions=instructions1, model="gpt-4o-mini")
+    result = await Runner.run(agent, input)
+    return result.final_output
 
-# Create tools from the agents
-tool1 = tool_agent1.as_tool(tool_name="sales_agent1", tool_description=description)
-tool2 = tool_agent2.as_tool(tool_name="sales_agent2", tool_description=description)
-tool3 = tool_agent3.as_tool(tool_name="sales_agent3", tool_description=description)
+@function_tool
+async def sales_agent2_tool(input: str) -> str:
+    """Write a humorous, engaging cold sales email"""
+    models = [(gemini_model, "Gemini"), ("gpt-4o-mini", "OpenAI")]
+    for model, model_name in models:
+        try:
+            print(f"  🔄 [sales_agent2] Trying {model_name}...")
+            agent = Agent(name=f"{model_name} Sales Agent", instructions=instructions2, model=model)
+            result = await Runner.run(agent, input)
+            print(f"  ✅ [sales_agent2] {model_name} succeeded!")
+            return result.final_output
+        except Exception as e:
+            print(f"  ❌ [sales_agent2] {model_name} failed: {str(e)[:80]}")
+            continue
+    # Final fallback
+    agent = Agent(name="OpenAI Sales Agent", instructions=instructions2, model="gpt-4o-mini")
+    result = await Runner.run(agent, input)
+    return result.final_output
+
+@function_tool
+async def sales_agent3_tool(input: str) -> str:
+    """Write a concise, to-the-point cold sales email"""
+    models = [(llama3_3_model, "Llama3.3"), ("gpt-4o-mini", "OpenAI")]
+    for model, model_name in models:
+        try:
+            print(f"  🔄 [sales_agent3] Trying {model_name}...")
+            agent = Agent(name=f"{model_name} Sales Agent", instructions=instructions3, model=model)
+            result = await Runner.run(agent, input)
+            print(f"  ✅ [sales_agent3] {model_name} succeeded!")
+            return result.final_output
+        except Exception as e:
+            print(f"  ❌ [sales_agent3] {model_name} failed: {str(e)[:80]}")
+            continue
+    # Final fallback
+    agent = Agent(name="OpenAI Sales Agent", instructions=instructions3, model="gpt-4o-mini")
+    result = await Runner.run(agent, input)
+    return result.final_output
 
 # Sales Manager with tools and handoffs (original architecture)
-sales_manager_tools = [tool1, tool2, tool3]
+sales_manager_tools = [sales_agent1_tool, sales_agent2_tool, sales_agent3_tool]
 sales_manager_handoffs = [emailer_agent]
 
 sales_manager_instructions = """
