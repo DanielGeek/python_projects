@@ -183,25 +183,56 @@ def send_email(body: str):
     email = resend.Emails.send(params)
     return {"status": "success", "id": email.get("id")}
 
-# Create the three sales agents as handoffs using OpenAI (most reliable)
-# They will appear as separate agents in the trace hierarchy
-sales_agent1_handoff = Agent(
-    name="sales_agent1",
-    instructions=instructions1 + "\n\nReturn ONLY the complete email text. Do not add any commentary.",
-    model="gpt-4o-mini"  # Using OpenAI for reliability
+# Function to create agent with fallback and return the working model name
+def create_agent_with_model_fallback(base_name: str, instructions: str, model_sequence: list):
+    """
+    Try to create an agent with each model in sequence.
+    Returns the agent with the name of the model that worked.
+    """
+    for model, model_name in model_sequence:
+        try:
+            agent = Agent(
+                name=f"{model_name} Sales Agent",
+                instructions=instructions + "\n\nReturn ONLY the complete email text. Do not add any commentary.",
+                model=model
+            )
+            print(f"✅ Created {base_name} using {model_name}")
+            return agent
+        except Exception as e:
+            print(f"⚠️  {model_name} failed for {base_name}: {str(e)[:50]}")
+            continue
+    
+    # Fallback to OpenAI if all fail
+    print(f"⚠️  All models failed for {base_name}, using OpenAI fallback")
+    return Agent(
+        name="OpenAI Sales Agent",
+        instructions=instructions + "\n\nReturn ONLY the complete email text. Do not add any commentary.",
+        model="gpt-4o-mini"
+    )
+
+# Create the three sales agents with fallback
+# Each will show the name of the model that actually worked
+print("🔧 Creating sales agents with model fallback...")
+
+sales_agent1_handoff = create_agent_with_model_fallback(
+    "sales_agent1",
+    instructions1,
+    [(deepseek_model, "DeepSeek"), ("gpt-4o-mini", "OpenAI"), (gemini_model, "Gemini"), (llama3_3_model, "Llama3.3")]
 )
 
-sales_agent2_handoff = Agent(
-    name="sales_agent2",
-    instructions=instructions2 + "\n\nReturn ONLY the complete email text. Do not add any commentary.",
-    model="gpt-4o-mini"  # Using OpenAI for reliability
+sales_agent2_handoff = create_agent_with_model_fallback(
+    "sales_agent2",
+    instructions2,
+    [(gemini_model, "Gemini"), ("gpt-4o-mini", "OpenAI"), (llama3_3_model, "Llama3.3"), (deepseek_model, "DeepSeek")]
 )
 
-sales_agent3_handoff = Agent(
-    name="sales_agent3",
-    instructions=instructions3 + "\n\nReturn ONLY the complete email text. Do not add any commentary.",
-    model="gpt-4o-mini"  # Using OpenAI for reliability
+sales_agent3_handoff = create_agent_with_model_fallback(
+    "sales_agent3",
+    instructions3,
+    [(llama3_3_model, "Llama3.3"), ("gpt-4o-mini", "OpenAI"), (deepseek_model, "DeepSeek"), (gemini_model, "Gemini")]
 )
+
+print("✅ All sales agents created successfully\n")
 
 # No tools needed for sales agents anymore
 tools = [send_email]
@@ -295,6 +326,33 @@ handoffs = [sales_agent1_handoff, sales_agent2_handoff, sales_agent3_handoff, em
 # print(sales_manager_tools)
 # print(sales_manager_handoffs)
 
+# Helper function to run agent with fallback during execution
+async def run_agent_with_execution_fallback(agent_name: str, instructions: str, message: str, model_sequence: list):
+    """Try to run agent with each model until one succeeds."""
+    for model, model_name in model_sequence:
+        try:
+            print(f"  🔄 [{agent_name}] Trying {model_name}...")
+            agent = Agent(
+                name=f"{model_name} Sales Agent",
+                instructions=instructions + "\n\nReturn ONLY the complete email text. Do not add any commentary.",
+                model=model
+            )
+            result = await Runner.run(agent, message)
+            print(f"  ✅ [{agent_name}] {model_name} succeeded!")
+            return result
+        except Exception as e:
+            print(f"  ❌ [{agent_name}] {model_name} failed: {str(e)[:80]}")
+            continue
+    
+    # Fallback to OpenAI if all fail
+    print(f"  ⚠️  [{agent_name}] All models failed, using OpenAI fallback")
+    agent = Agent(
+        name="OpenAI Sales Agent",
+        instructions=instructions + "\n\nReturn ONLY the complete email text. Do not add any commentary.",
+        model="gpt-4o-mini"
+    )
+    return await Runner.run(agent, message)
+
 # Sales Development Representative
 async def automated_sdr():
     print("🚀 Starting Automated SDR...")
@@ -304,12 +362,38 @@ async def automated_sdr():
     with trace("Automated SDR"):
         print("📧 Generating 3 sales emails from different agents...")
         
-        # Run all three sales agents directly (they will appear as nested agents in trace)
-        results = await asyncio.gather(
-            Runner.run(sales_agent1_handoff, message),
-            Runner.run(sales_agent2_handoff, message),
-            Runner.run(sales_agent3_handoff, message),
-        )
+        # Run all three sales agents sequentially with nested traces
+        results = []
+        
+        # Agent 1
+        with trace("sales_agent1"):
+            result1 = await run_agent_with_execution_fallback(
+                "sales_agent1", 
+                instructions1, 
+                message,
+                [(deepseek_model, "DeepSeek"), ("gpt-4o-mini", "OpenAI"), (gemini_model, "Gemini"), (llama3_3_model, "Llama3.3")]
+            )
+            results.append(result1)
+        
+        # Agent 2
+        with trace("sales_agent2"):
+            result2 = await run_agent_with_execution_fallback(
+                "sales_agent2",
+                instructions2,
+                message,
+                [(gemini_model, "Gemini"), ("gpt-4o-mini", "OpenAI"), (llama3_3_model, "Llama3.3"), (deepseek_model, "DeepSeek")]
+            )
+            results.append(result2)
+        
+        # Agent 3
+        with trace("sales_agent3"):
+            result3 = await run_agent_with_execution_fallback(
+                "sales_agent3",
+                instructions3,
+                message,
+                [(llama3_3_model, "Llama3.3"), ("gpt-4o-mini", "OpenAI"), (deepseek_model, "DeepSeek"), (gemini_model, "Gemini")]
+            )
+            results.append(result3)
         
         print("✅ All 3 sales agents completed!")
         
@@ -323,6 +407,7 @@ async def automated_sdr():
         Reply with ONLY the complete selected email text. Do not add any explanation or commentary.
         """
         
+        print("🎯 Selecting best email...")
         sales_picker = Agent(
             name="Sales Picker",
             instructions=sales_picker_instructions,
@@ -332,13 +417,12 @@ async def automated_sdr():
         # Format the drafts for comparison
         emails_text = "Cold sales emails:\n\n" + "\n\n---EMAIL---\n\n".join(drafts)
         
-        print("🎯 Selecting best email...")
         best_result = await Runner.run(sales_picker, emails_text)
         best_email = best_result.final_output
         
         print(f"✅ Best email selected!")
         
-        # Hand off to Email Manager
+        # Hand off to Email Manager (will appear as nested agent)
         print("📧 Handing off to Email Manager...")
         email_manager_result = await Runner.run(emailer_agent, best_email)
         
