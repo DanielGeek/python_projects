@@ -183,97 +183,28 @@ def send_email(body: str):
     email = resend.Emails.send(params)
     return {"status": "success", "id": email.get("id")}
 
-# Helper function to run agent with model rotation (async)
-async def _run_agent_with_rotation(tool_name: str, instructions: str, input_text: str, model_sequence: list) -> str:
-    """Try each model in sequence until one succeeds. Each attempt appears in traces."""
-    for i, (model, model_name) in enumerate(model_sequence):
-        try:
-            print(f"  🔄 [{tool_name}] Attempt {i+1}/4: Trying {model_name}...")
-            agent = Agent(name=f"{model_name} Sales Agent", instructions=instructions, model=model)
-            result = await Runner.run(agent, input_text)
-            print(f"  ✅ [{tool_name}] {model_name} succeeded!")
-            return result.final_output
-        except Exception as e:
-            error_msg = str(e)[:80]
-            print(f"  ❌ [{tool_name}] {model_name} failed: {error_msg}")
-            if i == len(model_sequence) - 1:  # Last model
-                print(f"  ⚠️  [{tool_name}] All 4 models failed, using fallback")
-                return f"Subject: SOC2 Compliance Solution\n\nDear CEO,\n\nComplAI reduces compliance prep time by 80%.\n\nBest,\nAlice\nComplAI"
-            continue
-    return "Fallback email content"
+# Create the three sales agents as handoffs using OpenAI (most reliable)
+# They will appear as separate agents in the trace hierarchy
+sales_agent1_handoff = Agent(
+    name="sales_agent1",
+    instructions=instructions1 + "\n\nReturn ONLY the complete email text. Do not add any commentary.",
+    model="gpt-4o-mini"  # Using OpenAI for reliability
+)
 
-# Wrapper to run async function from sync context
-def _run_async_agent(tool_name: str, instructions: str, input_text: str, model_sequence: list) -> str:
-    """Synchronous wrapper for async agent execution"""
-    import asyncio
-    try:
-        # Try to get existing event loop
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            # We're in an async context, create a new task
-            import concurrent.futures
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(
-                    asyncio.run,
-                    _run_agent_with_rotation(tool_name, instructions, input_text, model_sequence)
-                )
-                return future.result(timeout=120)
-        else:
-            return loop.run_until_complete(
-                _run_agent_with_rotation(tool_name, instructions, input_text, model_sequence)
-            )
-    except RuntimeError:
-        # No event loop, create one
-        return asyncio.run(
-            _run_agent_with_rotation(tool_name, instructions, input_text, model_sequence)
-        )
+sales_agent2_handoff = Agent(
+    name="sales_agent2",
+    instructions=instructions2 + "\n\nReturn ONLY the complete email text. Do not add any commentary.",
+    model="gpt-4o-mini"  # Using OpenAI for reliability
+)
 
-# Tool 1: DeepSeek -> OpenAI -> Gemini -> Llama3.3
-@function_tool
-def sales_agent1_with_retry(input: str) -> str:
-    """Generate a professional cold sales email. Tries DeepSeek first, then OpenAI, Gemini, Llama3.3."""
-    print("🔄 [TOOL1] Starting multi-model rotation (DeepSeek -> OpenAI -> Gemini -> Llama3.3)")
-    model_sequence = [
-        (deepseek_model, "DeepSeek"),
-        ("gpt-4o-mini", "OpenAI"),
-        (gemini_model, "Gemini"),
-        (llama3_3_model, "Llama3.3")
-    ]
-    return _run_async_agent("TOOL1", instructions1, input, model_sequence)
+sales_agent3_handoff = Agent(
+    name="sales_agent3",
+    instructions=instructions3 + "\n\nReturn ONLY the complete email text. Do not add any commentary.",
+    model="gpt-4o-mini"  # Using OpenAI for reliability
+)
 
-# Tool 2: Gemini -> OpenAI -> Llama3.3 -> DeepSeek
-@function_tool
-def sales_agent2_with_retry(input: str) -> str:
-    """Generate a humorous cold sales email. Tries Gemini first, then OpenAI, Llama3.3, DeepSeek."""
-    print("🔄 [TOOL2] Starting multi-model rotation (Gemini -> OpenAI -> Llama3.3 -> DeepSeek)")
-    model_sequence = [
-        (gemini_model, "Gemini"),
-        ("gpt-4o-mini", "OpenAI"),
-        (llama3_3_model, "Llama3.3"),
-        (deepseek_model, "DeepSeek")
-    ]
-    return _run_async_agent("TOOL2", instructions2, input, model_sequence)
-
-# Tool 3: Llama3.3 -> OpenAI -> DeepSeek -> Gemini
-@function_tool
-def sales_agent3_with_retry(input: str) -> str:
-    """Generate a concise cold sales email. Tries Llama3.3 first, then OpenAI, DeepSeek, Gemini."""
-    print("🔄 [TOOL3] Starting multi-model rotation (Llama3.3 -> OpenAI -> DeepSeek -> Gemini)")
-    model_sequence = [
-        (llama3_3_model, "Llama3.3"),
-        ("gpt-4o-mini", "OpenAI"),
-        (deepseek_model, "DeepSeek"),
-        (gemini_model, "Gemini")
-    ]
-    return _run_async_agent("TOOL3", instructions3, input, model_sequence)
-
-# Assign tools
-tool1 = sales_agent1_with_retry
-tool2 = sales_agent2_with_retry
-tool3 = sales_agent3_with_retry
-
-# Gather all tools together
-tools = [tool1, tool2, tool3, send_email]
+# No tools needed for sales agents anymore
+tools = [send_email]
 
 # print(f"tools: {tools}")
 
@@ -358,9 +289,9 @@ emailer_agent = create_agent_with_fallback(
     tools=email_manager_tools,
     handoff_description="Convert an email to HTML and send it")
 
-# Sales Manager tools and handoffs
-tools = [tool1, tool2, tool3]
-handoffs = [emailer_agent]
+# Sales Manager handoffs (sales agents + email manager)
+tools = [send_email]
+handoffs = [sales_agent1_handoff, sales_agent2_handoff, sales_agent3_handoff, emailer_agent]
 # print(sales_manager_tools)
 # print(sales_manager_handoffs)
 
@@ -368,85 +299,54 @@ handoffs = [emailer_agent]
 async def automated_sdr():
     print("🚀 Starting Automated SDR...")
     
-    sales_manager_instructions = """
-    You are a Sales Manager at ComplAI. Your job is to generate email drafts, select the best one, and hand it off.
-
-    STEP-BY-STEP PROCESS:
-
-    Step 1: Call all three email generation tools:
-    - sales_agent1_with_retry(input="Write a cold sales email to Dear CEO from Alice")
-    - sales_agent2_with_retry(input="Write a cold sales email to Dear CEO from Alice")  
-    - sales_agent3_with_retry(input="Write a cold sales email to Dear CEO from Alice")
-
-    Step 2: Review the three drafts and select the best one.
-
-    Step 3: Call transfer_to_email_manager() with the COMPLETE winning email text.
-
-    CRITICAL: You MUST call transfer_to_email_manager() to complete the task.
-    """
-
-    message = "Send out a cold sales email addressed to Dear CEO from Alice"
-    print(f"� Message: {message}")
-
-    print("🔄 Running Sales Manager with trace and fallback...")
-    print(f"📋 Available tools: {len(tools)} tools configured")
-    print(f"📋 Available handoffs: {[agent.name for agent in handoffs]}")
+    message = "Write a cold sales email to Dear CEO from Alice"
     
-    # Try each model until one succeeds
-    for attempt, (model_name, model, model_label) in enumerate(available_models, 1):
-        try:
-            print(f"\n🔄 [SALES_MGR] Attempt {attempt}/4: Trying Sales Manager with {model_label}...")
-            sales_manager = Agent(
-                name="Sales Manager",
-                instructions=sales_manager_instructions,
-                tools=tools,
-                handoffs=handoffs,
-                model=model)
-            
-            print(f"🎯 [SALES_MGR] Agent created with {len(tools)} tools and {len(handoffs)} handoffs")
-            
-            with trace("Automated SDR"):
-                print(f"🚀 [SALES_MGR] Running with max_turns=20...")
-                result = await Runner.run(sales_manager, message, max_turns=20)
-            
-            print(f"✅ [SALES_MGR] {model_label} execution completed!")
-            print(f"📤 [SALES_MGR] Final output: {result.final_output}")
-            
-            # The OpenAI Agents SDK handles handoffs automatically
-            # If the Sales Manager called transfer_to_email_manager(), the Email Manager
-            # will have already executed and sent the email
-            # We can verify this by checking if "handed off" or "Email Manager" is mentioned
-            output_lower = result.final_output.lower()
-            if "handed off" in output_lower or "email manager" in output_lower or "successfully" in output_lower:
-                print(f"✅ [SALES_MGR] Handoff successful! Sales Manager → Email Manager")
-                print(f"📧 [SALES_MGR] Email should have been processed and sent by Email Manager")
-                print(f"� [SALES_MGR] Check OpenAI dashboard trace to verify complete workflow")
-            else:
-                print(f"⚠️  [SALES_MGR] Handoff unclear - check OpenAI dashboard for confirmation")
-            
-            print("✅ [SALES_MGR] Workflow completed!")
-            return result
-            
-        except Exception as e:
-            error_msg = str(e)
-            print(f"❌ [SALES_MGR] {model_label} failed: {error_msg[:150]}")
-            
-            # Specific error handling
-            if "Max turns" in error_msg:
-                print(f"⚠️  [SALES_MGR] Max turns exceeded - Sales Manager couldn't complete task in 20 turns")
-                print(f"💡 [SALES_MGR] This usually means tools aren't returning proper content")
-            elif "402" in error_msg:
-                print(f"⚠️  [SALES_MGR] Insufficient balance - API credits exhausted")
-            elif "429" in error_msg:
-                print(f"⚠️  [SALES_MGR] Rate limit exceeded - API quota reached")
-            elif "403" in error_msg:
-                print(f"⚠️  [SALES_MGR] Access denied - API permissions issue")
-            
-            if attempt == len(available_models):  # Last model
-                print(f"❌ [SALES_MGR] All {len(available_models)} models failed for Sales Manager")
-                raise
-            print(f"🔄 [SALES_MGR] Trying next model...")
-            continue
+    with trace("Automated SDR"):
+        print("📧 Generating 3 sales emails from different agents...")
+        
+        # Run all three sales agents directly (they will appear as nested agents in trace)
+        results = await asyncio.gather(
+            Runner.run(sales_agent1_handoff, message),
+            Runner.run(sales_agent2_handoff, message),
+            Runner.run(sales_agent3_handoff, message),
+        )
+        
+        print("✅ All 3 sales agents completed!")
+        
+        # Extract email drafts
+        drafts = [result.final_output for result in results]
+        
+        # Create a picker agent to select the best email
+        sales_picker_instructions = """
+        You pick the best cold sales email from the given options.
+        Imagine you are a customer and pick the one you are most likely to respond to.
+        Reply with ONLY the complete selected email text. Do not add any explanation or commentary.
+        """
+        
+        sales_picker = Agent(
+            name="Sales Picker",
+            instructions=sales_picker_instructions,
+            model="gpt-4o-mini"
+        )
+        
+        # Format the drafts for comparison
+        emails_text = "Cold sales emails:\n\n" + "\n\n---EMAIL---\n\n".join(drafts)
+        
+        print("🎯 Selecting best email...")
+        best_result = await Runner.run(sales_picker, emails_text)
+        best_email = best_result.final_output
+        
+        print(f"✅ Best email selected!")
+        
+        # Hand off to Email Manager
+        print("📧 Handing off to Email Manager...")
+        email_manager_result = await Runner.run(emailer_agent, best_email)
+        
+        print(f"✅ Email Manager completed!")
+        print(f"📤 Final output: {email_manager_result.final_output}")
+        print("✅ [AUTOMATED_SDR] Workflow completed!")
+        
+        return email_manager_result
 
 if __name__ == "__main__":
     # asyncio.run(run_sales_email())
