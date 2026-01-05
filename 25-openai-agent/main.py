@@ -279,6 +279,7 @@ html_tool = html_converter.as_tool(tool_name="html_converter",tool_description="
 @function_tool
 def send_html_email(subject: str, html_body: str) -> Dict[str, str]:
     """ Send out an email with the given subject and HTML body to all sales prospects """
+    print(f"📧 [TOOL] send_html_email called with subject: {subject[:50]}...")
     resend.api_key = os.environ.get('RESEND_API_KEY')
     from_email = os.environ.get('FROM_EMAIL')  # Change to your verified sender
     to_email = os.environ.get('TO_EMAIL')  # Change to your recipient
@@ -291,6 +292,7 @@ def send_html_email(subject: str, html_body: str) -> Dict[str, str]:
     }
     
     email = resend.Emails.send(params)
+    print(f"✅ [TOOL] Email sent successfully! ID: {email.get('id')}")
     return {"status": "success", "id": email.get("id")}
 
 # Email Manager tools
@@ -362,38 +364,35 @@ async def automated_sdr():
     with trace("Automated SDR"):
         print("📧 Generating 3 sales emails from different agents...")
         
-        # Run all three sales agents sequentially with nested traces
+        # Run all three sales agents sequentially (no nested traces to avoid separate workflows)
         results = []
         
         # Agent 1
-        with trace("sales_agent1"):
-            result1 = await run_agent_with_execution_fallback(
-                "sales_agent1", 
-                instructions1, 
-                message,
-                [(deepseek_model, "DeepSeek"), ("gpt-4o-mini", "OpenAI"), (gemini_model, "Gemini"), (llama3_3_model, "Llama3.3")]
-            )
-            results.append(result1)
+        result1 = await run_agent_with_execution_fallback(
+            "sales_agent1", 
+            instructions1, 
+            message,
+            [(deepseek_model, "DeepSeek"), ("gpt-4o-mini", "OpenAI"), (gemini_model, "Gemini"), (llama3_3_model, "Llama3.3")]
+        )
+        results.append(result1)
         
         # Agent 2
-        with trace("sales_agent2"):
-            result2 = await run_agent_with_execution_fallback(
-                "sales_agent2",
-                instructions2,
-                message,
-                [(gemini_model, "Gemini"), ("gpt-4o-mini", "OpenAI"), (llama3_3_model, "Llama3.3"), (deepseek_model, "DeepSeek")]
-            )
-            results.append(result2)
+        result2 = await run_agent_with_execution_fallback(
+            "sales_agent2",
+            instructions2,
+            message,
+            [(gemini_model, "Gemini"), ("gpt-4o-mini", "OpenAI"), (llama3_3_model, "Llama3.3"), (deepseek_model, "DeepSeek")]
+        )
+        results.append(result2)
         
         # Agent 3
-        with trace("sales_agent3"):
-            result3 = await run_agent_with_execution_fallback(
-                "sales_agent3",
-                instructions3,
-                message,
-                [(llama3_3_model, "Llama3.3"), ("gpt-4o-mini", "OpenAI"), (deepseek_model, "DeepSeek"), (gemini_model, "Gemini")]
-            )
-            results.append(result3)
+        result3 = await run_agent_with_execution_fallback(
+            "sales_agent3",
+            instructions3,
+            message,
+            [(llama3_3_model, "Llama3.3"), ("gpt-4o-mini", "OpenAI"), (deepseek_model, "DeepSeek"), (gemini_model, "Gemini")]
+        )
+        results.append(result3)
         
         print("✅ All 3 sales agents completed!")
         
@@ -424,10 +423,23 @@ async def automated_sdr():
         
         # Hand off to Email Manager (will appear as nested agent)
         print("📧 Handing off to Email Manager...")
-        email_manager_result = await Runner.run(emailer_agent, best_email)
+        print(f"📧 Email Manager will process: {best_email[:100]}...")
+        
+        # Run Email Manager with increased max_turns to ensure tools are called
+        email_manager_result = await Runner.run(
+            emailer_agent, 
+            best_email,
+            max_turns=10  # Allow multiple turns for tool calls
+        )
         
         print(f"✅ Email Manager completed!")
         print(f"📤 Final output: {email_manager_result.final_output}")
+        
+        # Check if tools were actually called
+        if hasattr(email_manager_result, 'messages'):
+            tool_calls = [msg for msg in email_manager_result.messages if hasattr(msg, 'tool_calls')]
+            print(f"🔧 Tools called: {len(tool_calls)}")
+        
         print("✅ [AUTOMATED_SDR] Workflow completed!")
         
         return email_manager_result
