@@ -641,6 +641,116 @@ uv run daniel-chatbot.py
 
 ---
 
+### 9. 🤖 25-OpenAI-Agent: Multi-Model Automated SDR System
+
+A sophisticated multi-model AI agent system leveraging OpenAI Agents SDK for automated sales development representative (SDR) workflows with intelligent model rotation and complete email automation pipeline.
+
+#### 🎯 Key Features
+
+- **Multi-Model AI Agents**: DeepSeek, Gemini, Llama3.3, and OpenAI models with intelligent fallback rotation
+- **Automated Email Generation**: Three specialized email styles (professional, humorous, concise) with real-time generation
+- **Smart Model Rotation**: 4-attempt fallback system (Primary → OpenAI → Other1 → Other2) with comprehensive error handling
+- **Complete Email Workflow**: Generation → Selection → Subject Writing → HTML Conversion → Email Sending
+- **Input Guardrails**: Advanced name detection and validation system for security compliance
+- **Real-time Tracing**: Full OpenAI dashboard visibility for all model attempts and executions
+- **Resend Integration**: Professional email delivery with HTML formatting and delivery confirmation
+- **Enterprise Error Handling**: Graceful handling of API failures (402, 403, 429) with automatic retry logic
+
+#### 🛠️ Technical Implementation
+
+```python
+# Multi-model rotation with real execution and tracing
+async def _run_agent_with_rotation(tool_name: str, instructions: str, input_text: str, model_sequence: list) -> str:
+    """Try each model in sequence until one succeeds. Each attempt appears in traces."""
+    for i, (model, model_name) in enumerate(model_sequence):
+        try:
+            print(f"  🔄 [{tool_name}] Attempt {i+1}/4: Trying {model_name}...")
+            agent = Agent(name=f"{model_name} Sales Agent", instructions=instructions, model=model)
+            result = await Runner.run(agent, input_text)  # Real model execution
+            print(f"  ✅ [{tool_name}] {model_name} succeeded!")
+            return result.final_output
+        except Exception as e:
+            print(f"  ❌ [{tool_name}] {model_name} failed: {str(e)[:80]}")
+            continue  # Rotate to next model
+
+# Input guardrails for security
+@input_guardrail
+async def guardrail_against_name(ctx, agent, message):
+    result = await Runner.run(guardrail_agent, message, context=ctx.context)
+    is_name_in_message = result.final_output.is_name_in_message
+    return GuardrailFunctionOutput(
+        output_info={"found_name": result.final_output},
+        tripwire_triggered=is_name_in_message
+    )
+```
+
+#### 📋 Tech Stack
+
+- **AI Framework**: OpenAI Agents SDK with multi-model support
+- **Models**: DeepSeek, Gemini, Llama3.3, OpenAI gpt-4o-mini with rotation logic
+- **Email Service**: Resend API with HTML formatting and delivery tracking
+- **Security**: Input guardrails with name detection and validation
+- **Monitoring**: Real-time tracing with OpenAI dashboard integration
+- **Package Management**: UV for modern Python dependency management
+
+#### 🚀 Advanced Features
+
+**Model Rotation Strategy:**
+
+```python
+# Each tool attempts models in different orders for diversity
+TOOL1: DeepSeek → OpenAI → Gemini → Llama3.3
+TOOL2: Gemini → OpenAI → Llama3.3 → DeepSeek  
+TOOL3: Llama3.3 → OpenAI → DeepSeek → Gemini
+```
+
+**Complete Workflow:**
+
+1. **Input Validation**: Guardrail agent checks for personal information
+2. **Email Generation**: 3 sales agents create different style drafts
+3. **Model Rotation**: Each agent tries 4 models until success
+4. **Selection**: Sales Manager selects best email draft
+5. **Email Processing**: Subject writing + HTML conversion
+6. **Delivery**: Email sent via Resend with confirmation
+
+**Error Handling:**
+
+- **402 Insufficient Balance**: Automatic rotation to next model
+- **403 Access Denied**: Seamless transition to backup model
+- **429 Rate Limit**: Intelligent retry with exponential backoff
+- **Max Turns Exceeded**: Fallback to next Sales Manager model
+
+#### 💡 Example Usage
+
+```bash
+# Setup and run the multi-model automated SDR system
+cd 25-openai-agent
+uv sync
+cp .env.example .env
+# Edit .env with API keys (OpenAI, Google, DeepSeek, Groq, Resend)
+uv run main.py
+
+# Example output with model rotation:
+🔄 [TOOL1] Starting multi-model rotation (DeepSeek -> OpenAI -> Gemini -> Llama3.3)
+  🔄 [TOOL1] Attempt 1/4: Trying DeepSeek...
+  ❌ [TOOL1] DeepSeek failed: Error code: 402 - Insufficient Balance
+  🔄 [TOOL1] Attempt 2/4: Trying OpenAI...
+  ✅ [TOOL1] OpenAI succeeded!
+
+✅ [SALES_MGR] Handoff successful! Sales Manager → Email Manager
+📧 [SALES_MGR] Email should have been processed and sent by Email Manager
+```
+
+#### 🎯 Enterprise-Ready Capabilities
+
+- **Multi-API Management**: Load balancing across 4 different AI providers
+- **Real-time Monitoring**: Complete visibility into model attempts and success rates
+- **Security Compliance**: Input validation with guardrail protection
+- **Production Logging**: Comprehensive error tracking and performance metrics
+- **Email Automation**: Professional delivery with HTML formatting and tracking
+
+---
+
 ## 🎓 Learning Progression & Technical Skills
 
 ### 📚 Foundations (Days 1-6)
@@ -824,7 +934,7 @@ cd 18-AI-agent  # AI Data Generator Agent
 # or
 cd 21-RAG-AI  # Advanced RAG System
 # or
-cd 22-AI-Search-Agent  # Multi-Source Research Agent
+cd 25-openai-agent  # OpenAI Agents Automated SDR System
 ```
 
 ### Installation Examples

@@ -461,7 +461,50 @@ async def automated_sdr():
         
         return result
 
+
+class NameCheckOutput(BaseModel):
+    is_name_in_message: bool
+    name: str
+
+
+async def check_name_in_message(message: str) -> bool:
+    guardrail_agent = Agent( 
+        name="Name check",
+        instructions="Check if the user is including someone's personal name in what they want you to do.",
+        output_type=NameCheckOutput,
+        model="gpt-4o-mini"
+    )
+
+    @input_guardrail
+    async def guardrail_against_name(ctx, agent, message):
+        result = await Runner.run(guardrail_agent, message, context=ctx.context)
+        is_name_in_message = result.final_output.is_name_in_message
+        return GuardrailFunctionOutput(output_info={"found_name": result.final_output},tripwire_triggered=is_name_in_message)
+
+    careful_sales_manager = Agent(
+        name="Sales Manager",
+        instructions=sales_manager_instructions,
+        tools=sales_manager_tools + email_manager_tools,
+        handoffs=[emailer_agent],
+        model="gpt-4o-mini",
+        input_guardrails=[guardrail_against_name]
+        )
+
+    with trace("Protected Automated SDR"):
+        result = await Runner.run(careful_sales_manager, message)
+        print(f"✅ Sales Manager completed!")
+        print(f"📤 Final output: {result.final_output}")
+        print("✅ [NAME_CHECK] Workflow completed!")
+        
+        return result
+
+
+message = "Send out a cold sales email addressed to Dear CEO from Alice"
+message_safeguard = "Send out a cold sales email addressed to Dear CEO from Head of Business Development"
+
 if __name__ == "__main__":
     # asyncio.run(run_sales_email())
     # asyncio.run(run_sales_manager())
-    asyncio.run(automated_sdr())
+    # asyncio.run(automated_sdr())
+    # asyncio.run(check_name_in_message(message))
+    asyncio.run(check_name_in_message(message_safeguard))
