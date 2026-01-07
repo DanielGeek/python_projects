@@ -1,0 +1,64 @@
+# Environment variables
+.env
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Gradio
+.gradio/
+gradio/
+
+# Git
+.git/
+*.orig
+
+# Logs
+*.log
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# uv
+uv.lock
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local files (don't commit to git, upload manually to HuggingFace)
+me/linkedin.pdf
+
+# Security - Certificates and keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+.windsurf/

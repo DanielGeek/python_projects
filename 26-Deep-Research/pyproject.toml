@@ -1,0 +1,12 @@
+[project]
+name = "26-deep-research"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "dotenv>=0.9.9",
+    "ipython>=9.9.0",
+    "openai-agents>=0.6.4",
+    "resend>=2.19.0",
+]
