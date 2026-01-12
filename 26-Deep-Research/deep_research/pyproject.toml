@@ -1,0 +1,11 @@
+[project]
+name = "deep-research-ui"
+version = "0.1.0"
+description = "Deep Research UI with Gradio interface"
+requires-python = ">=3.14"
+dependencies = [
+    "dotenv>=0.9.9",
+    "openai-agents>=0.6.4",
+    "resend>=2.19.0",
+    "gradio>=5.22.0",
+]

@@ -329,7 +329,7 @@ agent = create_agent(llm, TOOLS, system_prompt=SYSTEM_MESSAGE)
 - Complete documentation and examples
 - Cross-platform compatibility (Windows, macOS, Linux)
 
-#### 💡 Example Usage
+#### 💡 CLI Agent Example Usage
 
 ```bash
 # Start the agent
@@ -404,7 +404,7 @@ async def rag_query_pdf_ai(ctx: inngest.Context):
 - Hot reloading for fast development cycles
 - Docker-ready deployment configuration
 
-#### 💡 Example Usage
+#### 💡 Vector Database Example Usage
 
 ```bash
 # Terminal 1: Start Qdrant vector database
@@ -486,7 +486,7 @@ def analyze_reddit_urls(state: State):
 - Type-safe implementation with full Pydantic validation
 - Extensible architecture for additional search sources
 
-#### 💡 Example Usage
+#### 💡 Multi-Source Example Usage
 
 ```bash
 # Setup and run the multi-source research agent
@@ -613,7 +613,7 @@ Key 4: 0/20 used ✅
 - **Knowledge Gap Analysis**: Identify topics to expand expertise
 - **Business Development**: Lead capture and qualification system
 
-#### 💡 Example Usage
+#### 💡 Career Assistant Example Usage
 
 ```bash
 # Setup and run the advanced AI career assistant
@@ -720,7 +720,7 @@ TOOL3: Llama3.3 → OpenAI → DeepSeek → Gemini
 - **429 Rate Limit**: Intelligent retry with exponential backoff
 - **Max Turns Exceeded**: Fallback to next Sales Manager model
 
-#### 💡 Example Usage
+#### 💡 Multi-Model SDR Example Usage
 
 ```bash
 # Setup and run the multi-model automated SDR system
@@ -810,6 +810,83 @@ uv run main.py
 - **Real-time Processing**: Asynchronous operations, error handling
 - **Data Processing**: File handling, PDF processing, text analysis
 - **Scalable AI Architecture**: Modular design for AI features
+
+---
+
+## 🚀 Advanced AI Agent Systems
+
+### 10. 🧠 26-Deep-Research: Multi-Agent Research System
+
+A sophisticated multi-agent research system leveraging OpenAI Agents SDK for automated deep research with web search capabilities, real-time streaming, and comprehensive report generation.
+
+#### 🎯 Core Features
+
+- **Multi-Agent Architecture**: Specialized agents for planning, searching, writing, and email delivery
+- **Real-time Web Search**: Integration with OpenAI WebSearchTool for up-to-date information
+- **Streaming Interface**: Gradio-based UI with real-time progress updates
+- **Automated Reporting**: AI-powered report generation with markdown formatting
+- **Email Integration**: Automatic email delivery of research results via Resend API
+- **Trace Monitoring**: OpenAI platform integration for debugging and monitoring
+
+#### 🏗️ Technical Implementation
+
+```python
+# Multi-agent coordination with streaming
+async def run(query: str):
+    async for chunk in ResearchManager().run(query):
+        yield chunk  # Real-time UI updates
+
+# Specialized agent workflow
+1. Planner Agent → Research strategy
+2. Search Agent → Web information gathering  
+3. Writer Agent → Report synthesis
+4. Email Agent → Automated delivery
+```
+
+#### 🛠️ Tech Stack
+
+- **AI Framework**: OpenAI Agents SDK (v0.6.4+)
+- **UI Framework**: Gradio (v6.3.0) with streaming support
+- **Web Search**: OpenAI WebSearchTool integration
+- **Email Service**: Resend API for automated delivery
+- **Package Management**: UV for modern Python dependency management
+- **Environment**: Python 3.14+ with async/await patterns
+
+#### 🚀 Quick Start
+
+```bash
+# Clone and setup
+git clone <repository>
+cd 26-Deep-Research/deep_research
+
+# Install dependencies
+uv sync
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your API keys
+
+# Run the research UI
+uv run deep_research.py
+
+# Or run CLI version
+cd .. && uv run main.py
+```
+
+#### 📊 Advanced Features
+
+- **Concurrent Search**: Parallel web searches with asyncio
+- **Intelligent Planning**: AI-driven research strategy generation
+- **Error Handling**: Robust exception management and fallbacks
+- **Real-time Tracing**: OpenAI platform integration for debugging
+- **Modular Design**: Extensible agent architecture for customization
+
+#### 🎨 User Experience
+
+- **Interactive Interface**: Clean Gradio UI with real-time updates
+- **Progress Tracking**: Live status updates during research process
+- **Report Export**: Markdown-formatted research reports
+- **Email Notifications**: Automatic delivery to specified recipients
 
 ---
 
