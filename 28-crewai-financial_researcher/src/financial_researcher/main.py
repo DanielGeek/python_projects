@@ -14,6 +14,7 @@ def run():
     """
     inputs = {
         'company': 'Tesla',
+        'year': datetime.now().year
     }
 
     try:

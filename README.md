@@ -27,6 +27,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🔧 23-AI-Agent Multi-LLM Evaluation System** with OpenAI, Google Gemini, Ollama, and real-time evaluation
 - **🤝 24-AI-Career-Assistant Professional AI Assistant** with tool use, Pushover notifications, and contextual responses
 - **🎭 27-CrewAI-Debate Multi-Agent Debate System** with CrewAI, structured argumentation, and real-time debate orchestration
+- **💰 28-CrewAI-Financial-Researcher Real-Time Financial Analysis System** with CrewAI, SerperDevTool, and live market data integration
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -841,6 +842,110 @@ The system generates comprehensive debate outputs:
 - **Intelligent Rebuttals**: Context-aware responses to opposition points
 - **Objective Analysis**: Balanced evaluation with identification of logical fallacies
 - **Trace Reports**: Detailed execution logs for debugging and improvement
+
+---
+
+### 8. 💰 28-CrewAI-Financial-Researcher: Real-Time Financial Analysis System
+
+A sophisticated financial research and analysis system powered by CrewAI that provides up-to-date company analysis using real-time web searches and professional financial reporting.
+
+#### 🎯 Key Features
+
+- **Real-Time Data Integration**: Live stock prices, recent news, earnings reports, and market analysis via SerperDevTool
+- **Multi-Agent Architecture**: Senior Financial Researcher (web search specialist) and Market Analyst (report generation)
+- **Professional Financial Reporting**: Structured reports with executive summary, current status, developments, analysis, and outlook
+- **Source Verification**: All data includes citations and publication dates for credibility
+- **Date-Specific Context**: Every data point includes temporal information for accuracy
+
+#### 🛠️ Technical Implementation
+
+```python
+# Financial research with real-time web searches
+class FinancialResearcher:
+    @agent
+    def researcher(self) -> Agent:
+        return Agent(
+            config=self.agents_config['researcher'],
+            tools=[SerperDevTool()],  # Real-time web search
+            verbose=True
+        )
+    
+    def run(self):
+        inputs = {
+            'company': 'Tesla',
+            'year': datetime.now().year  # Current year
+        }
+        return self.crew().kickoff(inputs=inputs)
+```
+
+#### 📋 Tech Stack
+
+- **Framework**: CrewAI 1.8+ with multi-agent orchestration
+- **AI/ML**: OpenAI GPT models for analysis and reporting
+- **Real-Time Search**: SerperDevTool for live financial data and news
+- **Configuration**: YAML-based agent and task definitions with mandatory search queries
+- **Output Generation**: Professional markdown reports with source citations
+
+#### 🔍 Research Process
+
+1. **Mandatory Web Searches**: Research agent performs 5 required searches:
+   - `"{company} stock price {year}"`
+   - `"{company} earnings report {year}"`
+   - `"{company} news {year}"`
+   - `"{company} financial results {year}"`
+   - `"{company} market analysis {year}"`
+
+2. **Data Collection**: Gathers current financial data, stock prices, recent news
+3. **Professional Analysis**: Creates comprehensive report with insights and projections
+
+#### 💡 Example Usage
+
+```bash
+# Setup CrewAI CLI with Python 3.12
+uv tool install crewai --python 3.12
+
+# Create and setup project
+crewai create crew financial-researcher
+cd financial-researcher
+crewai install
+
+# Configure environment
+cp .env.example .env
+# Edit .env with OPENAI_API_KEY and SERPER_API_KEY
+
+# Run financial analysis
+crewai run
+
+# Output: Comprehensive financial report with current data
+# Tesla Company Analysis Report - 2026
+# - Stock Price: $437.86 (as of January 16, 2026)
+# - Recent Financial Results: 589,000 vehicles delivered in 2025
+# - Market Analysis: Current analyst projections and trends
+```
+
+#### 🎯 Advanced Capabilities
+
+- **Customizable Companies**: Analyze any publicly traded company
+- **Year-Specific Analysis**: Focus on current year or historical periods
+- **Extensible Search**: Add custom search queries for specific financial data
+- **Professional Formatting**: Structured markdown reports with proper citations
+- **Real-Time Verification**: All data includes sources and publication dates
+
+#### 📊 Example Output
+
+The system generates professional financial reports with:
+- **Current Data**: Real-time stock prices and market metrics
+- **Recent News**: Latest announcements and developments
+- **Financial Analysis**: Professional insights and trend analysis
+- **Source Citations**: All data includes sources and dates
+- **Future Projections**: Analyst expectations and market outlook
+
+#### 🚀 Production Features
+
+- **Error Handling**: Graceful handling of API limits and search failures
+- **Data Validation**: Verification of financial data accuracy and recency
+- **Professional Output**: Structured reports suitable for business use
+- **Extensible Architecture**: Easy to add new search queries and analysis types
 
 ---
 

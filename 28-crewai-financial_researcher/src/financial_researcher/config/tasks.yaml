@@ -1,32 +1,89 @@
 research_task:
   description: >
-    Conduct thorough research on company {company}. Focus on:
-    1. Current company status and health
-    2. Historical company performance
-    3. Major challenges and opportunities
-    4. Recent news and events
-    5. Future outlook and potential developments
+    CRITICAL: You MUST use your search tools to find the most recent, up-to-date information about {company}.
+    DO NOT rely on your training data. Search the web for current {year} information.
+    
+    Conduct thorough research on company {company} with focus on the current year {year}. 
+    
+    REQUIRED SEARCHES (use your SerperDevTool for each):
+    1. "{company} stock price {year}" - Get current stock price and recent performance
+    2. "{company} earnings report {year}" - Find latest quarterly/annual earnings
+    3. "{company} news {year}" - Get recent news and announcements
+    4. "{company} financial results {year}" - Find revenue, profit, and key metrics
+    5. "{company} market analysis {year}" - Get analyst opinions and market outlook
+    
+    Research areas to cover:
+    1. Current company status and health (latest available data from {year})
+    2. Historical company performance (context leading up to {year})
+    3. Major challenges and opportunities (current situation in {year})
+    4. Recent news and events (from {year}, especially last few months)
+    5. Future outlook and potential developments (projections for {year} and beyond)
 
-    Make sure to organize your findings in a structured format with clear sections.
+    IMPORTANT INSTRUCTIONS:
+    - ALWAYS use search tools - do not use outdated training data
+    - Include specific dates with all data points (e.g., "as of January 2026")
+    - Cite sources and publication dates for all information
+    - If {year} data is limited, clearly state what's available and use latest data
+    - Organize findings in structured format with clear sections and dates
   expected_output: >
-    A comprehensive research document with well-organized sections covering
-    all the requested aspects of {company}. Include specific facts, figures,
-    and examples where relevant.
+    A comprehensive, current research document with well-organized sections covering
+    all requested aspects of {company} for {year}. Must include:
+    - Specific facts and figures with dates (e.g., "Q4 2025", "January 2026")
+    - Source citations with publication dates
+    - Clear indication of data recency
+    - Latest available information from web searches, not training data
+    All data should be from {year} or clearly marked with actual dates.
   agent: researcher
 
 analysis_task:
   description: >
-    Analyze the research findings and create a comprehensive report on {company}.
-    Your report should:
-    1. Begin with an executive summary
-    2. Include all key information from the research
-    3. Provide insightful analysis of trends and patterns
-    4. Offer a market outlook for company, noting that this should not be used for trading decisions
-    5. Be formatted in a professional, easy-to-read style with clear headings
+    Create a comprehensive, current report on {company} based on the research findings.
+    
+    CRITICAL REQUIREMENTS:
+    - Title must include "{company} Company Analysis Report - {year}"
+    - All data must be from {year} with specific dates (e.g., "as of January 18, 2026")
+    - Use ONLY the information from the research task (web searches), NOT your training data
+    - If data is from previous years, clearly label it as "Historical context from [year]"
+    
+    Your report structure:
+    1. Executive Summary
+       - State clearly: "This report analyzes {company} as of {year}"
+       - Highlight key findings from current year data
+    
+    2. Current Status (as of {year})
+       - Latest stock price and performance metrics with dates
+       - Recent financial results (Q4 2025 or Q1 2026 if available)
+       - Current market position
+    
+    3. Recent Developments ({year})
+       - News and events from {year}
+       - Latest product launches or announcements
+       - Recent strategic changes
+    
+    4. Analysis and Trends
+       - Patterns observed in {year} data
+       - Comparison with previous periods (clearly dated)
+       - Market dynamics affecting {company} in {year}
+    
+    5. Future Outlook
+       - Projections for {year} and beyond
+       - Opportunities and challenges ahead
+       - Analyst expectations (with dates and sources)
+    
+    FORMATTING:
+    - Professional, easy-to-read markdown style
+    - Clear section headings
+    - Include dates with all data points
+    - Add disclaimer: "This analysis is for informational purposes only and should not be used for trading decisions"
   expected_output: >
-    A polished, professional report on {company} that presents the research
-    findings with added analysis and insights. The report should be well-structured
-    with an executive summary, main sections, and conclusion.
+    A polished, professional markdown report titled "{company} Company Analysis Report - {year}".
+    Must include:
+    - Executive summary with {year} context
+    - All sections with current {year} data and specific dates
+    - Clear distinction between current data and historical context
+    - Source citations where applicable
+    - Professional formatting with proper headings
+    The report should reflect the MOST RECENT information available from web searches, not outdated training data.
   agent: analyst
   context:
     - research_task
