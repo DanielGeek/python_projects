@@ -26,6 +26,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🔍 22-AI-Search-Agent Multi-Source Research Agent** with Bright Data, Google Gemini, and Reddit integration
 - **🔧 23-AI-Agent Multi-LLM Evaluation System** with OpenAI, Google Gemini, Ollama, and real-time evaluation
 - **🤝 24-AI-Career-Assistant Professional AI Assistant** with tool use, Pushover notifications, and contextual responses
+- **🎭 27-CrewAI-Debate Multi-Agent Debate System** with CrewAI, structured argumentation, and real-time debate orchestration
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -748,6 +749,98 @@ uv run main.py
 - **Security Compliance**: Input validation with guardrail protection
 - **Production Logging**: Comprehensive error tracking and performance metrics
 - **Email Automation**: Professional delivery with HTML formatting and tracking
+
+---
+
+### 7. 🎭 27-CrewAI-Debate: Multi-Agent Debate System
+
+A sophisticated multi-agent debate system powered by CrewAI that simulates structured debates on complex topics with AI agents taking different positions and providing objective analysis.
+
+#### 🎯 Key Features
+
+- **Multi-Agent Architecture**: Three specialized AI agents (Pro-Regulation, Anti-Regulation, Moderator)
+- **Structured Debate Flow**: Opening arguments → Context-aware rebuttals → Final analysis
+- **Real-time Tracing**: Built-in execution tracing with CrewAI Cloud integration
+- **Customizable Topics**: Easy to modify debate subjects and agent configurations
+- **Context-Aware Responses**: Agents reference previous arguments in rebuttals
+- **Objective Moderation**: Independent moderator evaluates both sides comprehensively
+
+#### 🛠️ Technical Implementation
+
+```python
+# Crew orchestration with sequential process
+crew = Crew(
+    agents=[pro_agent, anti_agent, moderator],
+    tasks=[pro_task, anti_task, pro_rebuttal, anti_rebuttal, moderator_task],
+    process=Process.sequential,
+    verbose=True
+)
+
+# Execute debate with real-time tracing
+result = crew.kickoff()
+```
+
+#### 📋 Tech Stack
+
+- **Framework**: CrewAI 1.8+ with multi-agent orchestration
+- **AI/ML**: OpenAI GPT models (gpt-4o-mini, gpt-4, etc.)
+- **Configuration**: YAML-based agent and task definitions
+- **Tracing**: CrewAI Cloud integration for debugging and monitoring
+- **Package Management**: UV with Python 3.12 compatibility
+
+#### 🎭 Debate Structure
+
+1. **Opening Arguments** (300-400 words each)
+   - Pro-regulation advocate presents comprehensive case
+   - Anti-regulation advocate presents counter-arguments
+
+2. **Context-Aware Rebuttals** (200-300 words each)
+   - Each agent addresses specific points from opposition
+   - Builds upon previous arguments with evidence
+
+3. **Final Analysis** (400-500 words)
+   - Moderator evaluates both sides objectively
+   - Identifies strongest arguments and logical fallacies
+   - Provides balanced conclusion
+
+#### 💡 Example Usage
+
+```bash
+# Setup CrewAI CLI with Python 3.12
+uv tool install crewai --python 3.12
+
+# Create and setup project
+crewai create crew debate-ai
+cd debate-ai
+crewai install
+
+# Configure environment
+cp .env.example .env
+# Edit .env with OPENAI_API_KEY
+
+# Run structured debate
+crewai run
+
+# Enable tracing for debugging
+crewai traces enable
+```
+
+#### 🎯 Advanced Capabilities
+
+- **Extensible Architecture**: Add more agents and debate topics
+- **Knowledge Integration**: Support for external knowledge bases
+- **Real-time Monitoring**: Complete visibility into agent interactions
+- **Custom LLM Support**: Compatible with OpenAI, Anthropic, Groq, and more
+- **YAML Configuration**: Easy modification of agents and tasks without code changes
+
+#### 📊 Example Output
+
+The system generates comprehensive debate outputs:
+
+- **Structured Arguments**: Evidence-based positions with clear reasoning
+- **Intelligent Rebuttals**: Context-aware responses to opposition points
+- **Objective Analysis**: Balanced evaluation with identification of logical fallacies
+- **Trace Reports**: Detailed execution logs for debugging and improvement
 
 ---
 
