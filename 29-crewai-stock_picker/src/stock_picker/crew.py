@@ -2,8 +2,9 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from pydantic import BaseModel, Field
-from crewar_tools import SerperDevTool
 from typing import List
+from crewai_tools import SerperDevTool
+from .tools.push_tool import PushNotificationTool
 
 class TrendingCompany(BaseModel):
     """ A company that is in the news and attracting attention """
@@ -50,7 +51,8 @@ class StockPicker():
     @agent
     def stock_picker(self) -> Agent:
         return Agent(
-            config=self.agents_config['stock_picker']
+            config=self.agents_config['stock_picker'],
+            tools=[PushNotificationTool()]
         )
 
     @task
@@ -85,7 +87,7 @@ class StockPicker():
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
-            process=Process.sequential,
+            process=Process.hierarchical,
             verbose=True,
             manager_agent=manager
         )

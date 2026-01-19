@@ -1,16 +1,55 @@
 find_trending_companies:
   description: >
-    Find the top trending companies in the news in {sector} by searching the latest news. Find new companies that you've not found before.
+    Find the top trending companies in the news in {sector} of {current_year} by searching the latest news. Find new companies that you've not found before.
+    
+    CRITICAL JSON FORMAT REQUIREMENTS:
+    - Generate VALID JSON only - no trailing commas
+    - Each object must end WITHOUT a comma before the closing brace
+    - Use proper JSON syntax: {"key": "value"} not {"key": "value",}
+    - Verify JSON is valid before responding
   expected_output: >
-    A list of trending companies in {sector}
+    A list of trending companies in {sector} of {current_year} in VALID JSON format.
+    IMPORTANT: Ensure the JSON has NO trailing commas. The last item in an array should NOT have a comma after it.
+    Correct format:
+    {
+      "companies": [
+        {"name": "Company1", "ticker": "TICK1", "reason": "Reason1"},
+        {"name": "Company2", "ticker": "TICK2", "reason": "Reason2"}
+      ]
+    }
+    INCORRECT format (with trailing comma):
+    {
+      "companies": [
+        {"name": "Company1", "ticker": "TICK1", "reason": "Reason1"},
+        {"name": "Company2", "ticker": "TICK2", "reason": "Reason2"},
+      ]
+    }
   agent: trending_company_finder
   output_file: output/trending_companies.json
 
 research_trending_companies:
   description: >
-    Given a list of trending companies, provide detailed analysis of each company in a report by searching online
+    Given a list of trending companies, provide detailed analysis of each company in a report by searching online.
+    
+    CRITICAL JSON FORMAT REQUIREMENTS:
+    - Generate VALID JSON only - no trailing commas
+    - Each object must end WITHOUT a comma before the closing brace
+    - Use proper JSON syntax: {"key": "value"} not {"key": "value",}
+    - Verify JSON is valid before responding
   expected_output: >
-    A report containing detailed analysis of each company
+    A report containing detailed analysis of each company in VALID JSON format.
+    IMPORTANT: Ensure the JSON has NO trailing commas. Each company object should end like:
+    {
+      "name": "Company Name",
+      "market_position": "Description",
+      "future_outlook": "Description",
+      "investment_potential": "Description"
+    }
+    NOT like this (with trailing comma):
+    {
+      "name": "Company Name",
+      "investment_potential": "Description",
+    }
   agent: financial_researcher
   context:
     - find_trending_companies
