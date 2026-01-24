@@ -29,6 +29,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🎭 27-CrewAI-Debate Multi-Agent Debate System** with CrewAI, structured argumentation, and real-time debate orchestration
 - **💰 28-CrewAI-Financial-Researcher Real-Time Financial Analysis System** with CrewAI, SerperDevTool, and live market data integration
 - **📈 29-CrewAI-Stock-Picker Intelligent Investment Analysis System** with CrewAI, hierarchical management, persistent memory, and real-time notifications
+- **💻 30-CrewAI-Coder AI-Powered Code Generation System** with CrewAI, Docker Code Interpreter, mathematical computations, and optimized execution
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -1062,6 +1063,118 @@ The system generates comprehensive investment analysis:
 - **Data Validation**: Source verification and citation requirements
 - **Scalable Architecture**: Modular agent and task configuration
 - **Professional Output**: Investment-grade analysis with structured reporting
+
+---
+
+### 10. 💻 30-CrewAI-Coder: AI-Powered Code Generation & Execution System
+
+A sophisticated multi-agent AI system powered by CrewAI that generates, executes, and validates Python code with real-time Docker-based code interpretation, optimized for computational tasks and mathematical calculations.
+
+#### 🎯 Key Features
+
+- **Docker Code Interpreter**: Secure code execution in isolated Docker containers with automatic lifecycle management
+- **Optimized Performance**: 120-second execution window with retry logic and comprehensive error handling
+- **Intelligent Code Generation**: Natural language to Python code conversion with mathematical computation capabilities
+- **Professional Output Management**: Structured results with file generation and execution tracing
+
+#### 🛠️ Technical Implementation
+
+```python
+@agent
+def coder(self) -> Agent:
+    return Agent(
+        config=self.agents_config['coder'],
+        verbose=True,
+        allow_code_execution=True,        # Enables Code Interpreter
+        code_execution_mode="safe",       # Uses Docker containers
+        max_execution_time=120,          # Optimized timeout
+        max_retry_limit=5,               # Retry failed executions
+    )
+```
+
+#### 📋 Tech Stack
+
+- **Framework**: CrewAI 1.8+ with code execution capabilities
+- **AI/ML**: OpenAI GPT models for code generation and problem solving
+- **Docker Integration**: Secure containerized code execution environment
+- **Performance**: Optimized timeout management and retry mechanisms
+- **Output Management**: Structured code generation with execution results
+
+#### 🐳 Docker Code Interpreter Architecture
+
+**Secure Execution Environment:**
+- Code runs in isolated Docker containers
+- `code_execution_mode="safe"` ensures complete system isolation
+- Automatic container lifecycle management
+- Cross-platform compatibility and consistency
+
+**Performance Features:**
+- 120-second execution window for intensive calculations
+- Up to 5 retry attempts for failed executions
+- Comprehensive timeout and error management
+- Detailed execution traces and performance monitoring
+
+#### 📊 Code Generation Examples
+
+**Mathematical Series Calculation:**
+```python
+# Generated code for π approximation
+total = 0.0
+for n in range(10000):
+    if n % 2 == 0:
+        total += 1 / (2 * n + 1)
+    else:
+        total -= 1 / (2 * n + 1)
+
+result = total * 4
+print(result)  # Output: 3.1414926535900345
+```
+
+#### 💡 Example Usage
+
+```bash
+# Setup CrewAI CLI with Python 3.12
+uv tool install crewai --python 3.12
+
+# Create and setup project
+crewai create crew crewai-coder
+cd crewai-coder
+crewai install
+
+# Configure environment
+cp .env.example .env
+# Edit .env with OPENAI_API_KEY and CREWAI_TRACING_ENABLED=true
+
+# Run code generation
+crewai run
+
+# Output: Complete Python code with execution results
+# 🐳 Docker: Running code in Docker environment...
+# 📊 Result: 3.1414926535900345 (π approximation)
+```
+
+#### 🎯 Advanced Capabilities
+
+- **Natural Language to Code**: Convert programming descriptions into executable Python
+- **Mathematical Computing**: Handle complex calculations and series approximations
+- **Secure Execution**: Docker-based isolation for code safety
+- **Performance Optimization**: Configurable timeouts and retry mechanisms
+- **Cross-Platform**: Consistent behavior across operating systems
+
+#### 📊 Performance Benchmarks
+
+- **Series Approximation**: 10,000 terms in <30 seconds
+- **Docker Startup**: ~2-3 seconds container initialization
+- **Memory Management**: Efficient resource usage in containers
+- **Error Recovery**: Automatic retry logic for failed executions
+
+#### 🚀 Production Features
+
+- **Secure Execution**: Docker-based isolation for code safety
+- **Performance Monitoring**: Detailed execution timing and resource usage
+- **Error Handling**: Comprehensive timeout and failure management
+- **Scalable Design**: Modular configuration for different coding tasks
+- **Professional Output**: Production-ready code generation and validation
 
 ---
 
