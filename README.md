@@ -28,6 +28,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🤝 24-AI-Career-Assistant Professional AI Assistant** with tool use, Pushover notifications, and contextual responses
 - **🎭 27-CrewAI-Debate Multi-Agent Debate System** with CrewAI, structured argumentation, and real-time debate orchestration
 - **💰 28-CrewAI-Financial-Researcher Real-Time Financial Analysis System** with CrewAI, SerperDevTool, and live market data integration
+- **📈 29-CrewAI-Stock-Picker Intelligent Investment Analysis System** with CrewAI, hierarchical management, persistent memory, and real-time notifications
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -946,6 +947,121 @@ The system generates professional financial reports with:
 - **Data Validation**: Verification of financial data accuracy and recency
 - **Professional Output**: Structured reports suitable for business use
 - **Extensible Architecture**: Easy to add new search queries and analysis types
+
+---
+
+### 9. 📈 29-CrewAI-Stock-Picker: Intelligent Investment Analysis System
+
+A sophisticated multi-agent AI system powered by CrewAI that performs comprehensive financial analysis, identifies trending companies, and makes data-driven investment recommendations with real-time market intelligence and persistent learning capabilities.
+
+#### 🎯 Key Features
+
+- **Multi-Agent Architecture**: Manager orchestrates Financial News Analyst, Senior Financial Researcher, and Stock Picker agents
+- **Advanced Memory Systems**: Short-term, long-term, and entity memory with ChromaDB vector storage and SQLite persistence
+- **Hierarchical Process**: Manager delegates tasks and coordinates workflow for optimal decision-making
+- **Real-Time Market Intelligence**: SerperDevTool integration for live web searches and current market data
+- **Smart Notifications**: Instant investment recommendations via Pushover with custom branding (📈 AI Stock Picker)
+- **Professional Output Generation**: JSON reports with structured data and markdown decisions with detailed rationale
+
+#### 🛠️ Technical Implementation
+
+```python
+# Advanced memory systems for persistent learning
+class StockPicker:
+    @crew
+    def crew(self) -> Crew:
+        manager = Agent(
+            config=self.agents_config['manager'],
+            allow_delegation=True
+        )
+        
+        return Crew(
+            agents=self.agents,
+            tasks=self.tasks,
+            process=Process.hierarchical,  # Manager coordination
+            memory=True,
+            short_term_memory=short_term_memory,    # ChromaDB embeddings
+            long_term_memory=long_term_memory,      # SQLite persistence
+            entity_memory=entity_memory,            # Entity extraction
+            manager_agent=manager
+        )
+```
+
+#### 📋 Tech Stack
+
+- **Framework**: CrewAI 1.8+ with hierarchical multi-agent orchestration
+- **AI/ML**: OpenAI GPT models for analysis and decision-making
+- **Memory Systems**: ChromaDB (vector embeddings) + SQLite (structured persistence)
+- **Real-Time Search**: SerperDevTool for live financial data and market intelligence
+- **Notifications**: Pushover API for instant investment recommendations
+- **Data Processing**: Pydantic models for structured JSON validation
+
+#### 🧠 Memory Architecture
+
+**Three-Layer Memory System:**
+1. **Short-Term Memory**: ChromaDB with OpenAI embeddings for recent conversations
+2. **Long-Term Memory**: SQLite database for persistent knowledge and historical insights
+3. **Entity Memory**: Vector embeddings for companies, relationships, and semantic connections
+
+**Learning Benefits:**
+- Session 1: Analyzes Tesla → Stores EV market insights
+- Session 2: Analyzes Rivian → Recalls Tesla patterns for comparison
+- Session 3: Analyzes Lucid → Compares with all previous EV analysis
+
+#### 🔍 Investment Analysis Workflow
+
+1. **Trending Company Discovery**: Real-time news search for current market trends
+2. **Deep Financial Research**: Company-specific analysis with market position and outlook
+3. **Investment Decision Making**: Comparative analysis with risk-adjusted selection
+4. **Instant Notification**: Push notification with decision and rationale
+
+#### 💡 Example Usage
+
+```bash
+# Setup CrewAI CLI with Python 3.12
+uv tool install crewai --python 3.12
+
+# Create and setup project
+crewai create crew stock-picker
+cd stock-picker
+crewai install
+
+# Configure environment
+cp .env.example .env
+# Edit .env with OPENAI_API_KEY, SERPER_API_KEY, PUSHOVER_USER, PUSHOVER_TOKEN
+
+# Run investment analysis
+crewai run
+
+# Output: Comprehensive investment analysis with memory-enhanced insights
+# 📱 Push Notification: 📈 AI Stock Picker - Perplexity AI selected for investment
+# 📊 Files: trending_companies.json, research_report.json, decision.md
+```
+
+#### 🎯 Advanced Capabilities
+
+- **Persistent Learning**: Memory systems learn from each analysis session
+- **Hierarchical Management**: Manager coordinates agent delegation and quality control
+- **Real-Time Intelligence**: Live market data with current year context
+- **Entity Recognition**: Automatic extraction of companies and relationships
+- **Investment Tracking**: Historical decision analysis and performance comparison
+- **Customizable Sectors**: Analyze any market sector (Technology, Healthcare, etc.)
+
+#### 📊 Example Output
+
+The system generates comprehensive investment analysis:
+- **Trending Companies**: JSON list with current market trends and reasoning
+- **Research Reports**: Detailed financial analysis with market position and outlook
+- **Investment Decisions**: Rationale for selection and rejected alternatives
+- **Memory-Enhanced Insights**: Comparisons with previous analyses and learned patterns
+
+#### 🚀 Production Features
+
+- **Error Handling**: Robust JSON validation and trailing comma prevention
+- **Memory Management**: Efficient ChromaDB and SQLite storage systems
+- **Data Validation**: Source verification and citation requirements
+- **Scalable Architecture**: Modular agent and task configuration
+- **Professional Output**: Investment-grade analysis with structured reporting
 
 ---
 
