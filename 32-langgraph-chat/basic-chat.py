@@ -20,16 +20,18 @@ class State(BaseModel):
 
 graph_builder = StateGraph(State)
 
-llm = ChatOpenAI(model="gpt-4o-mini")
+def our_first_node(old_state: State) -> State:
+    
+    reply = f"{random.choice(nouns)} are {random.choice(adjectives)}"
+    messages = [{"role": "assistant", "content": reply}]
 
-def chatbot_node(old_state: State) -> State:
-    response = llm.invoke(old_state.messages)
-    new_state = State(messages=[response])
+    new_state = State(messages=messages)
+
     return new_state
 
-graph_builder.add_node("chatbot", chatbot_node)
-graph_builder.add_edge(START, "chatbot")
-graph_builder.add_edge("chatbot", END)
+graph_builder.add_node("first_node", our_first_node)
+graph_builder.add_edge(START, "first_node")
+graph_builder.add_edge("first_node", END)
 
 graph = graph_builder.compile()
 
@@ -58,10 +60,12 @@ def save_graph_image():
         print("Display not available in console mode")
 
 def chat(user_input: str, history):
-    initial_state = State(messages=[{"role": "user", "content": user_input}])
-    result = graph.invoke(initial_state)
+    message = {"role": "user", "content": user_input}
+    messages = [message]
+    state = State(messages=messages)
+    result = graph.invoke(state)
     print(result)
-    return result['messages'][-1].content
+    return result["messages"][-1].content
 
 def main():
     # save_graph_image()
