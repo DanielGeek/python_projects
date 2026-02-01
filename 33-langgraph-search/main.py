@@ -1,4 +1,5 @@
 import os
+import sqlite3
 from typing import Annotated, TypedDict
 
 import gradio as gr
@@ -9,13 +10,17 @@ from langchain_community.utilities import GoogleSerperAPIWrapper
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import START, StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 
 load_dotenv(override=True)
 
-memory = MemorySaver()
+db_path = "db/memory.db"
+conn = sqlite3.connect(db_path, check_same_thread=False)
+sql_memory = SqliteSaver(conn)
+# memory = MemorySaver()
 
 serper = GoogleSerperAPIWrapper()
 
@@ -85,7 +90,8 @@ graph_builder.add_conditional_edges("chatbot", tools_condition, "tools")
 graph_builder.add_edge("tools", "chatbot")
 graph_builder.add_edge(START, "chatbot")
 
-graph = graph_builder.compile(checkpointer=memory)
+# graph = graph_builder.compile(checkpointer=memory)
+graph = graph_builder.compile(checkpointer=sql_memory)
 # display(Image(graph.get_graph().draw_mermaid_png()))
 
 
@@ -116,19 +122,23 @@ def save_graph_image():
 
 # save_graph_image()
 
-config = {"configurable": {"thread_id": "1"}}
+config = {"configurable": {"thread_id": "3"}}
 
 
 def chat(user_input: str, history):
     result = graph.invoke(
         {"messages": [{"role": "user", "content": user_input}]}, config=config
     )
+
+    state = graph.get_state(config)
+    print("📊 State:", state)
+
+    history = list(graph.get_state_history(config))
+    print("📜 State history length:", len(history))
+    for i, state in enumerate(history):
+        print(f"State {i}: {state}")
+
     return result["messages"][-1].content
 
 
 gr.ChatInterface(chat).launch()
-
-graph.get_state(config)
-
-# Most recent first
-list(graph.get_state_history(config))

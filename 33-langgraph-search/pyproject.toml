@@ -11,6 +11,7 @@ dependencies = [
     "langchain-google-community>=3.0.5",
     "langchain-openai>=1.1.7",
     "langgraph>=1.0.7",
+    "langgraph-checkpoint-sqlite>=3.0.3",
     "pydantic>=2.12.5",
     "python-dotenv>=1.2.1",
 ]
