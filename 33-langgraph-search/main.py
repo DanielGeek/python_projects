@@ -1,18 +1,21 @@
-from typing import Annotated
-from langgraph.graph import StateGraph, START
-from langgraph.graph.message import add_messages
+import os
+from typing import Annotated, TypedDict
+
+import gradio as gr
+import requests
 from dotenv import load_dotenv
 from IPython.display import Image, display
-import gradio as gr
-from langgraph.prebuilt import ToolNode, tools_condition
-import requests
-import os
-from langchain_openai import ChatOpenAI
-from typing import TypedDict
 from langchain_community.utilities import GoogleSerperAPIWrapper
 from langchain_core.tools import tool
+from langchain_openai import ChatOpenAI
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import START, StateGraph
+from langgraph.graph.message import add_messages
+from langgraph.prebuilt import ToolNode, tools_condition
 
 load_dotenv(override=True)
+
+memory = MemorySaver()
 
 serper = GoogleSerperAPIWrapper()
 
@@ -30,7 +33,7 @@ search_title = "What is the capital of France?"
 
 pushover_token = os.getenv("PUSHOVER_TOKEN")
 pushover_user = os.getenv("PUSHOVER_USER")
-pushover_url = f"https://api.pushover.net/1/messages.json"
+pushover_url = "https://api.pushover.net/1/messages.json"
 
 
 def push(content: str, title: str = "Langchain Search Result"):
@@ -82,7 +85,7 @@ graph_builder.add_conditional_edges("chatbot", tools_condition, "tools")
 graph_builder.add_edge("tools", "chatbot")
 graph_builder.add_edge(START, "chatbot")
 
-graph = graph_builder.compile()
+graph = graph_builder.compile(checkpointer=memory)
 # display(Image(graph.get_graph().draw_mermaid_png()))
 
 
@@ -107,16 +110,25 @@ def save_graph_image():
     # Also display in console (if supported)
     try:
         display(Image(png_data))
-    except:
-        print("Display not available in console mode")
+    except Exception as e:
+        print("Display not available in console mode", e)
 
 
 # save_graph_image()
 
+config = {"configurable": {"thread_id": "1"}}
+
 
 def chat(user_input: str, history):
-    result = graph.invoke({"messages": [{"role": "user", "content": user_input}]})
+    result = graph.invoke(
+        {"messages": [{"role": "user", "content": user_input}]}, config=config
+    )
     return result["messages"][-1].content
 
 
 gr.ChatInterface(chat).launch()
+
+graph.get_state(config)
+
+# Most recent first
+list(graph.get_state_history(config))
