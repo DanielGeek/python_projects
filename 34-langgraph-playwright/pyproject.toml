@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "beautifulsoup4>=4.14.3",
     "gradio>=6.4.0",
     "ipython>=9.9.0",
     "langchain>=1.2.7",
@@ -12,6 +13,7 @@ dependencies = [
     "langchain-openai>=1.1.7",
     "langgraph>=1.0.7",
     "langgraph-checkpoint-sqlite>=3.0.3",
+    "lxml>=6.0.2",
     "nest-asyncio>=1.6.0",
     "playwright>=1.58.0",
     "pydantic>=2.12.5",
