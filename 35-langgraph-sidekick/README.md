@@ -250,4 +250,188 @@ MIT License - feel free to use this project for learning and development.
 
 ---
 
+## 📦 Installation
+
+```bash
+cd 35-langgraph-sidekick
+
+# Install dependencies
+uv sync
+
+# Install Playwright browsers
+playwright install chromium
+```
+
+## 🔧 Configuration
+
+Create a `.env` file based on `.env.example`:
+
+```env
+# Required
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Optional - for push notifications
+PUSHOVER_TOKEN=your_pushover_token_here
+PUSHOVER_USER=your_pushover_user_key_here
+
+# Optional - for web search
+SERPER_API_KEY=your_serper_api_key_here
+```
+
+## 🚀 Running the Application
+
+### Option 1: Simple Version (main.py)
+```bash
+uv run main.py
+```
+- Single file implementation
+- Basic multi-agent system
+- Good for understanding the core concepts
+
+### Option 2: Advanced Version (app.py) ⭐ Recommended
+```bash
+uv run app.py
+```
+- Modular architecture with separate files
+- Full tool suite (Playwright, Pushover, Wikipedia, Python REPL, File Management, Web Search)
+- Better resource management
+- Production-ready structure
+
+## 🛠️ Available Tools
+
+The advanced version (`app.py`) includes:
+
+1. **Playwright Tools** - Web scraping and browser automation
+   - Navigate to URLs
+   - Extract text content
+   - Click elements
+   - Fill forms
+
+2. **Push Notifications** - Send alerts via Pushover
+   - `send_push_notification(text)` - Send notification to your device
+
+3. **Web Search** - Google search via Serper API
+   - `search(query)` - Get search results
+
+4. **Wikipedia** - Query Wikipedia articles
+   - Automatic article lookup and summarization
+
+5. **Python REPL** - Execute Python code
+   - Run calculations
+   - Data processing
+   - Quick scripts
+
+6. **File Management** - Read/write files in sandbox
+   - Create files
+   - Read file contents
+   - List directory contents
+
+## 💡 Usage Examples
+
+### Example 1: Web Research
+```
+Request: "Get me the main headline from CNN"
+Success Criteria: "Response contains the current headline text from CNN.com"
+```
+
+### Example 2: Data Analysis
+```
+Request: "Calculate the average of these numbers: 45, 67, 89, 23, 56"
+Success Criteria: "Response includes the calculated average"
+```
+
+### Example 3: Wikipedia Research
+```
+Request: "Tell me about Python programming language from Wikipedia"
+Success Criteria: "Response includes key information about Python from Wikipedia"
+```
+
+### Example 4: File Operations
+```
+Request: "Create a file called notes.txt with today's date and a reminder"
+Success Criteria: "File is created in sandbox with the requested content"
+```
+
+### Example 5: Web Search + Notification
+```
+Request: "Search for latest AI news and send me a notification with the top result"
+Success Criteria: "Notification sent with relevant AI news headline"
+```
+
+## 🔄 How It Works
+
+1. **Worker Agent** receives your request and success criteria
+2. **Worker** uses available tools to complete the task
+3. **Evaluator Agent** reviews the worker's output
+4. **Feedback Loop**: If criteria not met, evaluator provides feedback and worker tries again
+5. **Completion**: Process ends when criteria are satisfied or user input is needed
+
+## 📊 UI Features
+
+- **Request Field**: Enter your task
+- **Success Criteria Field**: Define what success looks like
+- **Go Button**: Start the multi-agent workflow
+- **Reset Button**: Clear conversation and start fresh
+- **Chat Display**: See worker responses and evaluator feedback
+
+## 🎯 Tips for Best Results
+
+1. **Be Specific**: Clear success criteria lead to better results
+   - ❌ Bad: "Get some news"
+   - ✅ Good: "Get the top 3 headlines from CNN with brief summaries"
+
+2. **Make Criteria Measurable**: Evaluator needs clear metrics
+   - ❌ Bad: "Good summary"
+   - ✅ Good: "Summary contains at least 3 key points"
+
+3. **Use Available Tools**: Worker has many capabilities
+   - Web scraping (Playwright)
+   - Calculations (Python REPL)
+   - Research (Wikipedia + Web Search)
+   - Notifications (Pushover)
+   - File operations
+
+4. **Iterate**: If first attempt doesn't meet criteria, evaluator will guide improvements
+
+## 🐛 Troubleshooting
+
+### Browser Not Opening
+```bash
+playwright install chromium
+```
+
+### Missing Dependencies
+```bash
+uv sync
+```
+
+### API Keys Not Working
+- Check `.env` file exists
+- Verify API keys are correct
+- Ensure no extra spaces in `.env`
+
+### Gradio Warnings
+The warnings about `theme` and `type` parameters are cosmetic and don't affect functionality.
+
+## 📝 File Structure
+
+```
+35-langgraph-sidekick/
+├── main.py              # Simple version (single file)
+├── app.py               # Advanced version (entry point)
+├── sidekick.py          # Sidekick class with multi-agent logic
+├── sidekick_tools.py    # All tool definitions
+├── pyproject.toml       # Dependencies
+├── .env.example         # Environment variables template
+└── README.md            # This file
+```
+
+## 🎓 Learning Resources
+
+- **LangGraph**: https://langchain-ai.github.io/langgraph/
+- **Playwright**: https://playwright.dev/python/
+- **Pydantic**: https://docs.pydantic.dev/
+
+---
+
 **Note**: This is an educational project demonstrating multi-agent AI systems with quality assurance patterns.
