@@ -328,11 +328,14 @@ The advanced version (`app.py`) includes:
 
 ## 💡 Usage Examples
 
-### Example 1: Web Research
+### Example 1: Simple Web Research (main.py)
+
 ```
 Request: "Get me the main headline from CNN"
 Success Criteria: "Response contains the current headline text from CNN.com"
 ```
+
+*Perfect for testing the basic multi-agent system with just Playwright tools.*
 
 ### Example 2: Data Analysis
 ```
@@ -352,11 +355,19 @@ Request: "Create a file called notes.txt with today's date and a reminder"
 Success Criteria: "File is created in sandbox with the requested content"
 ```
 
-### Example 5: Web Search + Notification
+### Example 5: Web Search + File Writing + Notification (app.py - Advanced)
 ```
-Request: "Search for latest AI news and send me a notification with the top result"
-Success Criteria: "Notification sent with relevant AI news headline"
+Request: "I'd like to go for dinner tomorrow in a French restaurant in NYC. Please find a great French restaurant and write a report in markdown to dinner.md including the name, address, menu, reviews. Send me a push notification with the restaurant name and phone"
+Success Criteria: "dinner.md file created with complete restaurant information and push notification sent"
 ```
+
+**What happens:**
+
+1. **Web Search**: Uses Serper API to find French restaurants in NYC
+2. **Web Scraping**: Uses Playwright to extract detailed information (menu, reviews)
+3. **File Management**: Creates `dinner.md` in sandbox with structured markdown
+4. **Push Notification**: Sends restaurant name and phone via Pushover
+5. **Evaluator**: Verifies file exists and notification was sent
 
 ## 🔄 How It Works
 

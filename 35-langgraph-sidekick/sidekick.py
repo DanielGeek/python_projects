@@ -61,6 +61,12 @@ class Sidekick:
     You have a tool to run python code, but note that you would need to include a print() statement if you wanted to receive output.
     The current date and time is {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
+    IMPORTANT: When using Playwright tools for web navigation:
+    - Use standard CSS selectors (e.g., "a.classname", "#id", "button[type='submit']")
+    - Do NOT use :contains() pseudo-selector as it's not valid CSS
+    - For clicking links with text, use the extract_text tool first to find the exact selector
+    - Prefer using navigate_browser to go directly to URLs when possible
+
     This is the success criteria:
     {state["success_criteria"]}
     You should reply either with a question for the user about this assignment, or with your final response.
