@@ -2594,32 +2594,40 @@ dependencies = [
 
 **Category**: Multi-Agent Systems | **Frameworks**: Microsoft AutoGen | **Language**: Python 3.14+
 
-An advanced multi-agent conversation system implementing Microsoft AutoGen's `RoundRobinGroupChat` with structured dialogue management, iterative feedback loops, and approval-based termination conditions.
+An advanced multi-agent conversation system implementing Microsoft AutoGen's `RoundRobinGroupChat` with a professional class-based architecture, structured dialogue management, iterative feedback loops, and comprehensive error handling.
 
 ### 🎯 RoundRobin Features
 
-- **🔄 RoundRobin Conversation**: Alternating turns between primary and evaluator agents
+- **🏗️ Class-Based Architecture**: `FlightResearchSystem` class with modular design and clean separation of concerns
+- **🔄 RoundRobin Conversation**: Alternating turns between primary and evaluator agents with structured logging
 - **📝 Iterative Feedback**: Evaluator provides constructive feedback for response improvement
 - **✅ Approval-Based Termination**: Automatic termination when evaluator responds with "APPROVE"
-- **🔍 LangChain Integration**: Google Serper API for real-time internet search
+- **🔍 LangChain Integration**: Google Serper API for real-time internet search with error recovery
 - **🎯 Structured Dialogue**: Organized conversation flow with clear turn management
 - **📊 Quality Assurance**: Multi-round refinement ensures high-quality responses
+- **🛡️ Robust Error Handling**: Comprehensive exception management and environment validation
+- **📋 Professional Logging**: Structured logging with timestamps, severity levels, and debugging information
 
 ### 🏗️ RoundRobin Architecture
 
 ```python
-from autogen_agentchat.teams import RoundRobinGroupChat
-from autogen_agentchat.conditions import TextMentionTermination
-
-# RoundRobin team with alternating agents
-team = RoundRobinGroupChat(
-    [primary_agent, evaluation_agent],
-    termination_condition=text_termination,
-    max_turns=20,
-)
-
-# Approval-based termination
-text_termination = TextMentionTermination("APPROVE")
+class FlightResearchSystem:
+    """A system that manages agents to research flight deals using Serper and OpenAI."""
+    
+    def __init__(self, model_name: str = "gpt-4o-mini", max_turns: int = 20):
+        self._validate_environment()
+        self.model_client = OpenAIChatCompletionClient(model=self.model_name)
+        self.team = self._setup_team()
+    
+    def _validate_environment(self) -> None:
+        """Validate required environment variables."""
+        required_vars = ["OPENAI_API_KEY", "SERPER_API_KEY"]
+        # Environment validation logic
+    
+    async def run(self, task_prompt: str) -> None:
+        """Execute the research task with comprehensive logging."""
+        result = await self.team.run(task=task_prompt)
+        # Structured output with logging
 ```
 
 ### 💡 RoundRobin Key Learnings
@@ -2628,6 +2636,10 @@ text_termination = TextMentionTermination("APPROVE")
 - **Iterative Improvement**: Multi-turn conversations with feedback produce better results
 - **Termination Conditions**: `TextMentionTermination` works reliably for approval-based workflows
 - **Tool Integration**: LangChain tools can be seamlessly integrated with AutoGen agents
+- **Class-Based Architecture**: Encapsulating functionality in classes improves code organization and reusability
+- **Environment Validation**: Validating configuration early prevents runtime errors and improves user experience
+- **Structured Logging**: Professional logging with different severity levels aids debugging and monitoring
+- **Error Handling**: Comprehensive exception management makes the system more robust and user-friendly
 
 ### 🔧 RoundRobin Dependencies
 
@@ -2644,21 +2656,25 @@ dependencies = [
 
 ### 🌟 RoundRobin Highlights
 
-- **Structured Dialogue**: RoundRobin pattern ensures organized conversation flow
-- **Quality Enhancement**: Multi-round feedback improves response quality
-- **Real-Time Search**: Live flight data integration with Google Serper API
-- **Approval Workflow**: Clear termination condition with explicit approval
-- **Debugging Insights**: Comprehensive logging for troubleshooting multi-agent interactions
-- **Educational Value**: Perfect for learning multi-agent conversation patterns
+- **Professional Architecture**: Class-based design with clean separation of concerns and reusability
+- **Structured Dialogue**: RoundRobin pattern ensures organized conversation flow with logging
+- **Quality Enhancement**: Multi-round feedback improves response quality with error recovery
+- **Real-Time Search**: Live flight data integration with Google Serper API and fallback handling
+- **Approval Workflow**: Clear termination condition with explicit approval and logging confirmation
+- **Debugging Insights**: Comprehensive logging with timestamps, severity levels, and error tracking
+- **Environment Validation**: Automatic configuration checking prevents runtime errors
+- **Educational Value**: Perfect for learning multi-agent conversation patterns with best practices
 
 ### 🔍 RoundRobin Advanced Features
 
-- **Turn Management**: Automatic alternation between agents
-- **Feedback Processing**: Agents incorporate evaluator feedback for improvement
-- **Search Integration**: LangChain tools for internet search capabilities
-- **Termination Control**: Text-based approval system for conversation ending
-- **Error Handling**: Robust exception handling and debugging capabilities
-- **Response Formatting**: Structured output with professional presentation
+- **Turn Management**: Automatic alternation between agents with structured logging
+- **Feedback Processing**: Agents incorporate evaluator feedback for improvement with error handling
+- **Search Integration**: LangChain tools for internet search capabilities with graceful error recovery
+- **Termination Control**: Text-based approval system for conversation ending with logging
+- **Error Handling**: Comprehensive exception management with user-friendly error messages
+- **Response Formatting**: Structured output with professional presentation and debugging information
+- **Environment Validation**: Startup validation ensures all required variables are configured
+- **Modular Design**: Clean separation between agent configuration, validation, and execution logic
 
 **Project Repository**: [39-autogen_agent_chat_roundrobin](./39-autogen_agent_chat_roundrobin/)
 
