@@ -39,7 +39,8 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🖼️ 37-AutoGen-Agent-Chat-Multi-Modal Multi-Modal Image Analysis System** with vision capabilities, structured outputs, Pydantic validation, and OpenAI GPT-4o-mini integration
 - **🔗 38-AutoGen-Agent-Chat-with-LangChain Multi-Agent Tool Integration System** with LangChain tools, Google Serper search, file management, and advanced workflow orchestration
 - **� 39-AutoGen-Agent-Chat-RoundRobin Multi-Agent RoundRobin Conversation System** with Microsoft AutoGen, iterative feedback loops, structured dialogue management, and approval-based termination
-- **�🔧 Enterprise-grade architecture** and best practices
+- **🔌 40-autogen_MCP AutoGen with Model Context Protocol (MCP)** with Microsoft AutoGen, MCP server integration, dynamic tool loading, and JSON-RPC protocol communication
+- **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
 ---
@@ -2677,6 +2678,111 @@ dependencies = [
 - **Modular Design**: Clean separation between agent configuration, validation, and execution logic
 
 **Project Repository**: [39-autogen_agent_chat_roundrobin](./39-autogen_agent_chat_roundrobin/)
+
+### 40. 🔌 40-autogen_MCP - AutoGen with Model Context Protocol (MCP)
+
+**Category**: Multi-Agent Systems | **Frameworks**: Microsoft AutoGen, MCP | **Language**: Python 3.14+
+
+An advanced multi-agent system demonstrating Microsoft AutoGen's integration with Model Context Protocol (MCP) servers, enabling agents to use external tools through standardized protocol communication.
+
+#### Key Features
+
+- **🔗 MCP Integration**: Direct connection to MCP servers for tool access
+- **🌐 Web Fetching**: Real-time web content retrieval via mcp-server-fetch
+- **🤖 Agent Tool Usage**: AssistantAgent with external tool capabilities
+- **⚡ Dynamic Tool Loading**: Runtime tool discovery and integration
+- **🔄 Protocol Communication**: JSON-RPC based client-server communication
+- **📊 Content Processing**: Intelligent web content analysis and summarization
+
+#### MCP Architecture
+
+The system demonstrates advanced protocol-based tool integration:
+
+```python
+from autogen_ext.models.openai import OpenAIChatCompletionClient
+from autogen_ext.tools.mcp import StdioServerParams, mcp_server_tools
+from autogen_agentchat.agents import AssistantAgent
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
+async def main():
+    # Get the fetch tool from mcp-server-fetch.
+    fetch_mcp_server = StdioServerParams(
+        command="uvx", args=["mcp-server-fetch"], read_timeout_seconds=30
+    )
+    fetcher = await mcp_server_tools(fetch_mcp_server)
+
+    # Create an agent that can use the fetch tool.
+    model_client = OpenAIChatCompletionClient(model="gpt-4o-mini")
+    agent = AssistantAgent(
+        name="fetcher",
+        model_client=model_client,
+        tools=fetcher,
+        reflect_on_tool_use=True,
+    )  # type: ignore
+
+    # Let the agent fetch the content of a URL and summarize it.
+    result = await agent.run(
+        task="Review edwarddonner.com and summarize what you learn. Reply in Markdown."
+    )
+    print(result.messages[-1].content)
+```
+
+#### Communication Flow
+
+```
+Agent Request → MCP Server → External Tool → Web Content → Processed Response → Agent Output
+```
+
+#### Technical Implementation
+
+- **Protocol**: JSON-RPC 2.0 for client-server communication
+- **Transport**: Stdio (standard input/output) for MCP server interaction
+- **Tool Discovery**: Automatic capability detection and loading
+- **Error Handling**: Graceful degradation with timeout management
+- **Agent Reflection**: Self-monitoring of tool usage effectiveness
+
+#### Key Learnings
+
+1. **MCP Protocol Understanding**: Mastered Model Context Protocol for standardized tool integration
+2. **Dynamic Tool Loading**: Implemented runtime tool discovery and integration patterns
+3. **Protocol Communication**: Developed expertise in JSON-RPC based client-server interactions
+4. **Error Resilience**: Built robust error handling for network-dependent scenarios
+5. **Agent Extensibility**: Enhanced AutoGen agents with external tool capabilities
+
+#### Dependencies
+
+```toml
+dependencies = [
+    "autogen-agentchat==0.4.9.3",      # Agent framework
+    "autogen-ext>=0.4.0",              # OpenAI and MCP tools
+    "autogen-ext-mcp>=0.2.2",          # MCP protocol integration
+    "openai>=1.0.0",                   # OpenAI API client
+    "python-dotenv>=1.2.1",            # Environment variables
+    "tiktoken>=0.5.0",                 # Token counting
+]
+```
+
+#### MCP Integration Highlights
+
+- **Protocol Standardization**: Uses industry-standard MCP for tool integration
+- **Dynamic Tool Discovery**: Automatic tool capability detection and loading
+- **Real-Time Web Access**: Live content fetching and processing
+- **Agent Reflection**: Self-monitoring of tool usage effectiveness
+- **Error Resilience**: Robust error handling and recovery mechanisms
+- **Extensible Architecture**: Easy to add new MCP servers and tools
+
+#### Advanced Features
+
+- **Multiple MCP Servers**: Support for connecting to multiple MCP servers simultaneously
+- **Tool Chaining**: Sequential tool usage for complex workflows
+- **Custom Tool Development**: Create and integrate custom MCP tools
+- **Performance Monitoring**: Track tool usage and response times
+- **Caching Strategies**: Implement intelligent content caching
+- **Security Controls**: Tool access restrictions and validation
+
+**Project Repository**: [40-autogen_MCP](./40-autogen_MCP/)
 
 ---
 
