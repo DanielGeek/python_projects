@@ -40,6 +40,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🔗 38-AutoGen-Agent-Chat-with-LangChain Multi-Agent Tool Integration System** with LangChain tools, Google Serper search, file management, and advanced workflow orchestration
 - **� 39-AutoGen-Agent-Chat-RoundRobin Multi-Agent RoundRobin Conversation System** with Microsoft AutoGen, iterative feedback loops, structured dialogue management, and approval-based termination
 - **🔌 40-autogen_MCP AutoGen with Model Context Protocol (MCP)** with Microsoft AutoGen, MCP server integration, dynamic tool loading, and JSON-RPC protocol communication
+- **⚙️ 41-autogen_core AutoGen Core Framework Fundamentals** with Microsoft AutoGen Core, custom agent development, message routing, runtime management, and LLM integration patterns
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -2783,6 +2784,142 @@ dependencies = [
 - **Security Controls**: Tool access restrictions and validation
 
 **Project Repository**: [40-autogen_MCP](./40-autogen_MCP/)
+
+### 41. ⚙️ 41-autogen_core - AutoGen Core Framework Fundamentals
+
+**Category**: Multi-Agent Systems | **Frameworks**: Microsoft AutoGen Core | **Language**: Python 3.14+
+
+A comprehensive demonstration of Microsoft AutoGen Core framework fundamentals, showcasing custom agent creation, message routing, runtime management, and LLM integration patterns.
+
+#### Key Features
+
+- **🤖 Custom Agent Development**: Build custom agents using RoutedAgent base class
+- **📨 Message Handling**: Implement custom message types and handlers
+- **🔄 Runtime Management**: Single-threaded agent runtime with lifecycle management
+- **🧠 LLM Integration**: OpenAI model integration through AssistantAgent delegation
+- **🔀 Agent Communication**: Inter-agent messaging with typed message protocols
+- **⚡ Asynchronous Processing**: Full async/await support for concurrent operations
+
+#### Core Architecture
+
+The system demonstrates AutoGen Core's low-level agent capabilities:
+
+```python
+from dataclasses import dataclass
+from autogen_core import AgentId, MessageContext, RoutedAgent, message_handler
+from autogen_core import SingleThreadedAgentRuntime
+from autogen_agentchat.agents import AssistantAgent
+from autogen_ext.models.openai import OpenAIChatCompletionClient
+
+@dataclass
+class Message:
+    content: str
+
+class SimpleAgent(RoutedAgent):
+    def __init__(self) -> None:
+        super().__init__("Simple")
+
+    @message_handler
+    async def on_my_message(self, message: Message, ctx: MessageContext) -> Message:
+        return Message(
+            content=f"This is {self.id.type}-{self.id.key}. You said '{message.content}' and I disagree."
+        )
+
+class MyLLMAgent(RoutedAgent):
+    def __init__(self) -> None:
+        super().__init__("LLMAgent")
+        model_client = OpenAIChatCompletionClient(model="gpt-4o-mini")
+        self._delegate = AssistantAgent("LLMAgent", model_client=model_client)
+
+    @message_handler
+    async def handle_my_message_type(self, message: Message, ctx: MessageContext) -> Message:
+        print(f"{self.id.type} received message: {message.content}")
+        text_message = TextMessage(content=message.content, source="user")
+        response = await self._delegate.on_messages([text_message], ctx.cancellation_token)
+        reply = response.chat_message.content
+        print(f"{self.id.type} responded: {reply}")
+        return Message(content=reply)
+```
+
+#### Runtime Management
+
+```python
+async def main():
+    runtime = SingleThreadedAgentRuntime()
+    await SimpleAgent.register(runtime, "simple_agent", lambda: SimpleAgent())
+    await MyLLMAgent.register(runtime, "LLMAgent", lambda: MyLLMAgent())
+
+    runtime.start()  # Start processing messages in the background.
+    
+    # Agent communication
+    response = await runtime.send_message(Message("Hi there!"), AgentId("LLMAgent", "default"))
+    print(">>>", response.content)
+    
+    response = await runtime.send_message(Message(response.content), AgentId("simple_agent", "default"))
+    print(">>>", response.content)
+    
+    response = await runtime.send_message(Message(response.content), AgentId("LLMAgent", "default"))
+    
+    await runtime.stop()
+    await runtime.close()
+```
+
+#### Communication Flow
+
+```text
+User Input → Runtime → LLM Agent → OpenAI API → Response → Simple Agent → Response → LLM Agent → Final Output
+```
+
+#### Technical Implementation
+
+- **Framework**: AutoGen Core for low-level agent management
+- **Message Protocol**: Dataclass-based typed messages
+- **Runtime**: SingleThreadedAgentRuntime for message processing
+- **Agent Types**: Custom RoutedAgent implementations
+- **LLM Integration**: OpenAI gpt-4o-mini through AssistantAgent delegation
+- **Async Patterns**: Full async/await support throughout
+
+#### Key Learnings
+
+1. **AutoGen Core Fundamentals**: Mastered the core framework architecture and patterns
+2. **Custom Agent Creation**: Built extensible agents using RoutedAgent base class
+3. **Message Handling**: Implemented type-safe message protocols with decorators
+4. **Runtime Management**: Professional agent lifecycle and runtime configuration
+5. **LLM Integration**: Clean delegation patterns for AI model integration
+6. **Asynchronous Programming**: Advanced async/await patterns in agent communication
+
+#### Dependencies
+
+```toml
+dependencies = [
+    "autogen-agentchat==0.4.9.3",      # Agent framework
+    "autogen-core>=0.4.9.3",           # Core framework
+    "autogen-ext>=0.4.0",              # OpenAI extensions
+    "openai>=1.0.0",                   # OpenAI API client
+    "python-dotenv>=1.2.1",            # Environment variables
+    "tiktoken>=0.5.0",                 # Token counting
+]
+```
+
+#### Core Framework Highlights
+
+- **Framework Fundamentals**: Deep dive into AutoGen Core architecture
+- **Custom Agent Patterns**: Demonstrates extensible agent design
+- **Type Safety**: Dataclass-based message protocols
+- **Runtime Management**: Professional agent lifecycle handling
+- **LLM Integration**: Seamless OpenAI model integration
+- **Communication Patterns**: Inter-agent messaging with routing
+
+#### Advanced Features
+
+- **Agent Registration**: Dynamic agent registration with factory patterns
+- **Message Routing**: Type-safe message handling with decorators
+- **Runtime States**: Proper runtime lifecycle management
+- **Delegation Patterns**: Clean separation between agents and LLMs
+- **Error Handling**: Robust exception management in async contexts
+- **Extensibility**: Easy to add new agent types and message protocols
+
+**Project Repository**: [41-autogen_core](./41-autogen_core/)
 
 ---
 
