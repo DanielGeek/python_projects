@@ -36,7 +36,8 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🌐 34-LangGraph-Playwright Advanced Web Scraping System** with anti-bot bypass, fresh browser contexts, and real-time content extraction
 - **🤝 35-LangGraph-Sidekick Multi-Agent Personal Co-worker** with Worker/Evaluator agents, structured outputs, and quality assurance loops
 - **✈️ 36-AutoGen-Agent-Chat Multi-Agent Airline Assistant** with Microsoft AutoGen, tool integration, database connectivity, and streaming responses
-- **🔧 Enterprise-grade architecture** and best practices
+- **�️ 37-AutoGen-Agent-Chat-Multi-Modal Multi-Modal Image Analysis System** with vision capabilities, structured outputs, Pydantic validation, and OpenAI GPT-4o-mini integration
+- **�🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
 ---
@@ -2320,6 +2321,138 @@ dependencies = [
 - **Production Ready**: Error handling and cancellation support
 
 **Project Repository**: [36-autogen_agent_chat](./36-autogen_agent_chat/)
+
+---
+
+## 37. 🖼️ AutoGen-Agent-Chat-Multi-Modal - Multi-Modal Image Analysis System
+
+**Category**: Multi-Modal AI | **Framework**: Microsoft AutoGen | **Language**: Python 3.14+
+
+A sophisticated multi-modal AI system demonstrating advanced image analysis capabilities using Microsoft AutoGen with structured outputs and OpenAI's vision models.
+
+### 🎯 Key Features
+
+- **🖼️ Multi-Modal Processing**: Image + Text input handling with vision capabilities
+- **📋 Structured Outputs**: Pydantic model validation for type-safe responses
+- **👁️ Vision Analysis**: OpenAI GPT-4o-mini integration for image understanding
+- **🔒 Type Safety**: Strong typing with Literal types and Field validation
+- **📝 Formatted Display**: Clean output with text wrapping and organization
+- **🔄 Flexible Output**: Both structured and unstructured response modes
+
+### 🏗️ Architecture
+
+```python
+class ImageDescription(BaseModel):
+    scene: str = Field(description="Briefly, the overall scene of the image")
+    message: str = Field(description="The point that the image is trying to convey")
+    style: str = Field(description="The artistic style of the image")
+    orientation: Literal["portrait", "landscape", "square"] = Field(description="The orientation of the image")
+
+# Multi-modal agent with structured output
+describer = AssistantAgent(
+    name="description_agent",
+    model_client=model_client,
+    output_content_type=ImageDescription,  # Structured validation
+)
+```
+
+### 🛠️ Technical Implementation
+
+- **Framework**: Microsoft AutoGen with multi-modal agent chat
+- **Vision Model**: OpenAI GPT-4o-mini with image analysis
+- **Image Processing**: PIL + AutoGen Image format conversion
+- **Data Validation**: Pydantic models with Field descriptions
+- **URL Loading**: Requests library for remote image fetching
+- **Output Formatting**: textwrap for clean terminal display
+
+### 📊 Analysis Pipeline
+
+```python
+# 1. Load image from URL
+pil_image = Image.open(BytesIO(requests.get(url).content))
+img = AGImage(pil_image)
+
+# 2. Create multi-modal message
+multi_modal_message = MultiModalMessage(
+    content=["Describe the content of this image in detail", img], 
+    source="User"
+)
+
+# 3. Process with structured output
+response = await describer.on_messages([multi_modal_message], cancellation_token=CancellationToken())
+reply = response.chat_message.content
+
+# 4. Access validated fields
+print(f"Scene:\n{textwrap.fill(reply.scene)}")
+print(f"Message:\n{textwrap.fill(reply.message)}")
+print(f"Style:\n{textwrap.fill(reply.style)}")
+print(f"Orientation:\n{textwrap.fill(reply.orientation)}")
+```
+
+### 🚀 Usage Example
+
+```bash
+uv run main.py
+```
+
+**Structured Output**:
+```
+Scene:
+A professional headshot of a man in a business setting, wearing a collared shirt and looking directly at the camera with a confident expression
+
+Message:
+The image conveys professionalism and expertise, representing a software engineer's transition to AI/ML roles
+
+Style:
+Professional corporate photography with clean lighting and neutral background
+
+Orientation:
+portrait
+```
+
+### 🎓 Learning Outcomes
+
+- **Multi-Modal AI**: Understanding vision + text processing
+- **Structured Outputs**: Pydantic model validation and type safety
+- **Image Processing**: PIL, AutoGen Image format conversion
+- **Vision APIs**: OpenAI GPT-4o-mini integration
+- **Data Validation**: Strong typing with Literal types
+- **Framework Mastery**: Microsoft AutoGen multi-modal capabilities
+
+### 🔧 Dependencies
+
+```toml
+dependencies = [
+    "autogen-ext>=0.7.5",        # AutoGen extensions
+    "autogen-agentchat>=0.0.1",  # Agent chat framework
+    "openai>=1.0.0",             # OpenAI client with vision
+    "python-dotenv>=1.2.1",      # Environment variables
+    "tiktoken>=0.5.0",           # Tokenization
+    "pydantic>=2.0.0",           # Structured data validation
+    "pillow>=10.0.0",            # Image processing
+    "requests>=2.31.0",          # HTTP requests
+]
+```
+
+### 🌟 Highlights
+
+- **Vision Integration**: Advanced image analysis with GPT-4o-mini
+- **Type Safety**: Pydantic models ensure structured, validated outputs
+- **Multi-Modal**: Seamlessly combines text and image inputs
+- **Educational**: Perfect for learning multi-modal AI concepts
+- **Modern Stack**: Latest Python 3.14+ with uv package manager
+- **Extensible**: Easy to add new analysis fields and capabilities
+- **Production Ready**: Error handling and validation included
+
+### 🔍 Advanced Features
+
+- **URL-based Image Loading**: Download and process images from web
+- **Field Validation**: Detailed Pydantic Field descriptions for AI guidance
+- **Literal Types**: Restricted choices for orientation (portrait/landscape/square)
+- **Formatted Output**: Clean terminal display with text wrapping
+- **Debug Mode**: Raw response inspection and logging capabilities
+
+**Project Repository**: [37-autogen_agent_chat_multi_modal](./37-autogen_agent_chat_multi_modal/)
 
 ---
 
