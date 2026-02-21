@@ -35,6 +35,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🔍 33-LangGraph-Search Advanced AI Search System** with web search, push notifications, persistent memory, and tool integration
 - **🌐 34-LangGraph-Playwright Advanced Web Scraping System** with anti-bot bypass, fresh browser contexts, and real-time content extraction
 - **🤝 35-LangGraph-Sidekick Multi-Agent Personal Co-worker** with Worker/Evaluator agents, structured outputs, and quality assurance loops
+- **✈️ 36-AutoGen-Agent-Chat Multi-Agent Airline Assistant** with Microsoft AutoGen, tool integration, database connectivity, and streaming responses
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -2216,6 +2217,111 @@ class EvaluatorOutput(BaseModel):
 ---
 
 ## 📄 License
+
+## 36. ✈️ AutoGen-Agent-Chat - Multi-Agent Airline Assistant
+
+**Category**: Multi-Agent Systems | **Framework**: Microsoft AutoGen | **Language**: Python 3.14+
+
+A sophisticated multi-agent airline assistant system demonstrating Microsoft AutoGen's capabilities with tool integration, database connectivity, and streaming responses.
+
+### 🎯 Key Features
+
+- **🤖 Multi-Agent Architecture**: Two specialized agents with different capabilities
+- **🔧 Tool Integration**: Custom database lookup tools for real-time pricing
+- **💾 Database Connectivity**: SQLite for persistent city pricing data
+- **🌐 Multiple Model Support**: OpenAI and Ollama client compatibility
+- **📡 Streaming Support**: Real-time response streaming with cancellation
+- **🎭 Personality**: Humorous airline assistant with character
+
+### 🏗️ Architecture
+
+```python
+# Basic Agent - Simple responses with humor
+agent = AssistantAgent(
+    name="airline_agent",
+    model_client=model_client,
+    system_message="You are a helpful assistant for an airline. You give short, humorous answers.",
+    model_client_stream=True
+)
+
+# Smart Agent - Enhanced with database tools
+smart_agent = AssistantAgent(
+    name="smart_airline_agent",
+    model_client=model_client,
+    tools=[get_city_price],
+    reflect_on_tool_use=True
+)
+```
+
+### 🛠️ Technical Implementation
+
+- **Framework**: Microsoft AutoGen with agent chat system
+- **Database**: SQLite with city pricing information
+- **Tools**: Custom Python functions for data lookup
+- **Models**: OpenAI GPT-4o-mini and Ollama Llama 3.2 support
+- **Async**: Full async/await with cancellation tokens
+
+### 📊 Sample Data
+
+```sql
+CREATE TABLE cities (
+    city_name TEXT PRIMARY KEY, 
+    round_trip_price REAL
+);
+
+-- Sample pricing data
+London: $299    | Paris: $399     | Rome: $499
+Madrid: $550    | Barcelona: $580 | Berlin: $525
+```
+
+### 🚀 Usage Example
+
+```bash
+uv run main.py
+```
+
+**Output**:
+```
+id='df91f741-ef78-4ff4-9857-a3168a936477' source='user' content="I'd like to go to London"
+Sure! Just be sure to pack your umbrella—it rains there more than it does in a wet sponge factory! 🇬🇧☔️
+
+[FunctionCall(id='call_WzrArgxwhjXcox4UdLmU92el', arguments='{"city_name":"London"}', name='get_city_price')]
+[FunctionExecutionResult(content='299.0', name='get_city_price')]
+Sure! A roundtrip ticket to London is just $299. Pack your umbrella—it's always raining or suspending!
+```
+
+### 🎓 Learning Outcomes
+
+- **Multi-Agent Systems**: Understanding agent specialization and coordination
+- **Tool Integration**: Implementing custom tools for data access
+- **Database Integration**: SQLite with async Python operations
+- **Streaming Responses**: Real-time agent communication
+- **Framework Mastery**: Microsoft AutoGen best practices
+
+### 🔧 Dependencies
+
+```toml
+dependencies = [
+    "autogen-ext>=0.7.5",        # AutoGen extensions
+    "autogen-agentchat>=0.0.1",  # Agent chat framework
+    "openai>=1.0.0",             # OpenAI client
+    "python-dotenv>=1.2.1",      # Environment variables
+    "tiktoken>=0.5.0",           # Tokenization
+    "ollama>=0.1.0",             # Ollama client
+]
+```
+
+### 🌟 Highlights
+
+- **Educational Focus**: Perfect for learning multi-agent concepts
+- **Practical Tools**: Real-world database integration example
+- **Modern Stack**: Latest Python 3.14+ with uv package manager
+- **Extensible**: Easy to add new tools and agents
+- **Production Ready**: Error handling and cancellation support
+
+**Project Repository**: [36-autogen_agent_chat](./36-autogen_agent_chat/)
+
+---
 
 All projects are open source and available under the MIT License - see individual project licenses for details.
 
