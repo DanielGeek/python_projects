@@ -38,7 +38,8 @@ This repository demonstrates my journey through **14 structured learning modules
 - **✈️ 36-AutoGen-Agent-Chat Multi-Agent Airline Assistant** with Microsoft AutoGen, tool integration, database connectivity, and streaming responses
 - **🖼️ 37-AutoGen-Agent-Chat-Multi-Modal Multi-Modal Image Analysis System** with vision capabilities, structured outputs, Pydantic validation, and OpenAI GPT-4o-mini integration
 - **🔗 38-AutoGen-Agent-Chat-with-LangChain Multi-Agent Tool Integration System** with LangChain tools, Google Serper search, file management, and advanced workflow orchestration
-- **🔧 Enterprise-grade architecture** and best practices
+- **� 39-AutoGen-Agent-Chat-RoundRobin Multi-Agent RoundRobin Conversation System** with Microsoft AutoGen, iterative feedback loops, structured dialogue management, and approval-based termination
+- **�🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
 ---
@@ -2586,6 +2587,80 @@ dependencies = [
 - **API Integration**: Real-time web search with commercial-grade APIs
 
 **Project Repository**: [38-autogen_agent_chat_with_langchain](./38-autogen_agent_chat_with_langchain/)
+
+---
+
+## 39. 🔄 AutoGen-Agent-Chat-RoundRobin - Multi-Agent RoundRobin Conversation System
+
+**Category**: Multi-Agent Systems | **Frameworks**: Microsoft AutoGen | **Language**: Python 3.14+
+
+An advanced multi-agent conversation system implementing Microsoft AutoGen's `RoundRobinGroupChat` with structured dialogue management, iterative feedback loops, and approval-based termination conditions.
+
+### 🎯 RoundRobin Features
+
+- **🔄 RoundRobin Conversation**: Alternating turns between primary and evaluator agents
+- **📝 Iterative Feedback**: Evaluator provides constructive feedback for response improvement
+- **✅ Approval-Based Termination**: Automatic termination when evaluator responds with "APPROVE"
+- **🔍 LangChain Integration**: Google Serper API for real-time internet search
+- **🎯 Structured Dialogue**: Organized conversation flow with clear turn management
+- **📊 Quality Assurance**: Multi-round refinement ensures high-quality responses
+
+### 🏗️ RoundRobin Architecture
+
+```python
+from autogen_agentchat.teams import RoundRobinGroupChat
+from autogen_agentchat.conditions import TextMentionTermination
+
+# RoundRobin team with alternating agents
+team = RoundRobinGroupChat(
+    [primary_agent, evaluation_agent],
+    termination_condition=text_termination,
+    max_turns=20,
+)
+
+# Approval-based termination
+text_termination = TextMentionTermination("APPROVE")
+```
+
+### 💡 RoundRobin Key Learnings
+
+- **Prompt vs System Message**: Instructions in user prompt are more effective than system message when using tools
+- **Iterative Improvement**: Multi-turn conversations with feedback produce better results
+- **Termination Conditions**: `TextMentionTermination` works reliably for approval-based workflows
+- **Tool Integration**: LangChain tools can be seamlessly integrated with AutoGen agents
+
+### 🔧 RoundRobin Dependencies
+
+```toml
+dependencies = [
+    "autogen-agentchat>=0.0.1",        # Agent chat framework
+    "autogen-ext.models.openai",        # OpenAI model integration
+    "autogen-ext.tools.langchain",      # LangChain tool adapter
+    "langchain-community>=3.0.5",       # Google Serper integration
+    "langchain-core>=1.2.10",           # LangChain framework
+    "python-dotenv>=1.2.1",             # Environment variables
+]
+```
+
+### 🌟 RoundRobin Highlights
+
+- **Structured Dialogue**: RoundRobin pattern ensures organized conversation flow
+- **Quality Enhancement**: Multi-round feedback improves response quality
+- **Real-Time Search**: Live flight data integration with Google Serper API
+- **Approval Workflow**: Clear termination condition with explicit approval
+- **Debugging Insights**: Comprehensive logging for troubleshooting multi-agent interactions
+- **Educational Value**: Perfect for learning multi-agent conversation patterns
+
+### 🔍 RoundRobin Advanced Features
+
+- **Turn Management**: Automatic alternation between agents
+- **Feedback Processing**: Agents incorporate evaluator feedback for improvement
+- **Search Integration**: LangChain tools for internet search capabilities
+- **Termination Control**: Text-based approval system for conversation ending
+- **Error Handling**: Robust exception handling and debugging capabilities
+- **Response Formatting**: Structured output with professional presentation
+
+**Project Repository**: [39-autogen_agent_chat_roundrobin](./39-autogen_agent_chat_roundrobin/)
 
 ---
 
