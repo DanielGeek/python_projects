@@ -36,8 +36,9 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🌐 34-LangGraph-Playwright Advanced Web Scraping System** with anti-bot bypass, fresh browser contexts, and real-time content extraction
 - **🤝 35-LangGraph-Sidekick Multi-Agent Personal Co-worker** with Worker/Evaluator agents, structured outputs, and quality assurance loops
 - **✈️ 36-AutoGen-Agent-Chat Multi-Agent Airline Assistant** with Microsoft AutoGen, tool integration, database connectivity, and streaming responses
-- **�️ 37-AutoGen-Agent-Chat-Multi-Modal Multi-Modal Image Analysis System** with vision capabilities, structured outputs, Pydantic validation, and OpenAI GPT-4o-mini integration
-- **�🔧 Enterprise-grade architecture** and best practices
+- **🖼️ 37-AutoGen-Agent-Chat-Multi-Modal Multi-Modal Image Analysis System** with vision capabilities, structured outputs, Pydantic validation, and OpenAI GPT-4o-mini integration
+- **🔗 38-AutoGen-Agent-Chat-with-LangChain Multi-Agent Tool Integration System** with LangChain tools, Google Serper search, file management, and advanced workflow orchestration
+- **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
 ---
@@ -2282,7 +2283,7 @@ uv run main.py
 ```
 
 **Output**:
-```
+```text
 id='df91f741-ef78-4ff4-9857-a3168a936477' source='user' content="I'd like to go to London"
 Sure! Just be sure to pack your umbrella—it rains there more than it does in a wet sponge factory! 🇬🇧☔️
 
@@ -2453,6 +2454,138 @@ dependencies = [
 - **Debug Mode**: Raw response inspection and logging capabilities
 
 **Project Repository**: [37-autogen_agent_chat_multi_modal](./37-autogen_agent_chat_multi_modal/)
+
+---
+
+## 38. 🔗 AutoGen-Agent-Chat-with-LangChain - Multi-Agent Tool Integration System
+
+**Category**: Multi-Agent Integration | **Frameworks**: Microsoft AutoGen + LangChain | **Language**: Python 3.14+
+
+A sophisticated multi-agent system demonstrating the powerful integration between Microsoft AutoGen and LangChain's extensive tool ecosystem for building intelligent workflow automation.
+
+### 🎯 Key Features
+
+- **🔗 Framework Integration**: Seamless AutoGen + LangChain tool integration via LangChainToolAdapter
+- **🌐 Internet Search**: Google Serper API integration for real-time web search capabilities
+- **📁 File Management**: Complete file operations (read, write, copy, delete, move, search) in sandbox environment
+- **🤔 Tool Reflection**: Agent reflects on tool usage for improved decision making
+- **📋 Multi-Step Workflows**: Complex task decomposition and sequential execution
+- **📝 Report Generation**: Automatic markdown report creation with structured data formatting
+
+### 🏗️ Architecture
+
+```python
+from autogen_ext.tools.langchain import LangChainToolAdapter
+from langchain_core.tools import tool
+
+# Modern LangChain tool with @tool decorator
+@tool
+def internet_search(query: str) -> str:
+    """Useful for when you need to search the internet."""
+    return serper.run(query)
+
+# Convert LangChain tool to AutoGen format
+autogen_serper = LangChainToolAdapter(internet_search)
+
+# Agent with tool reflection
+agent = AssistantAgent(
+    name="searcher",
+    model_client=model_client,
+    tools=autogen_tools,
+    reflect_on_tool_use=True
+)
+```
+
+### 🛠️ Technical Implementation
+
+- **Framework Integration**: LangChainToolAdapter bridges LangChain tools with AutoGen agents
+- **Search API**: Google Serper for real-time web search with flight data
+- **File Management**: LangChain FileManagementToolkit for sandboxed file operations
+- **Tool Reflection**: Agents analyze tool usage for better workflow optimization
+- **Sequential Processing**: Multi-turn conversations for complex task completion
+
+### 📊 Tool Ecosystem
+
+```python
+# Available Tools (8 total)
+1. internet_search     - Google Serper API web search
+2. copy_file          - Create file copies
+3. file_delete        - Delete files
+4. file_search        - Recursive regex search
+5. move_file          - Move/rename files
+6. read_file          - Read file contents
+7. write_file         - Write files to disk
+8. list_directory     - List directory contents
+```
+
+### 🚀 Usage Example
+
+```bash
+uv run main.py
+```
+
+**Multi-Step Workflow Execution**:
+
+```text
+toolFileManagement internet_search Useful for when you need to search the internet.
+toolFileManagement write_file Write file to disk
+toolFileManagement read_file Read file from disk
+...
+
+[FunctionCall(id='call_RRKvU7Rs1DwyTxA2STYnFmob', arguments='{"query":"one-way non-stop flight deals from JFK to LHR in June 2026"}', name='internet_search')]
+[FunctionExecutionResult(content="Flight deals from $205 to $461...", name='internet_search')]
+
+[FunctionCall(id='call_IYW4ISlmwPpSumN0a3fMUbm4', arguments='{"file_path":"flights.md","text":"# Flights from JFK to LHR..."}', name='write_file')]
+[FunctionExecutionResult(content='File written successfully to flights.md.', name='write_file')]
+
+**Selected Flight:**
+- **Airline:** American Airlines | **Price:** $205 | **Date:** June 1, 2026
+- **Route:** JFK → LHR | **Duration:** 7 hours | **Non-stop:** Yes
+```
+
+### 🎓 Learning Outcomes
+
+- **Framework Integration**: Understanding AutoGen + LangChain interoperability
+- **Tool Adaptation**: Converting LangChain tools to AutoGen-compatible format
+- **Workflow Orchestration**: Multi-step task decomposition and execution
+- **API Integration**: Real-time search with Google Serper API
+- **File Management**: Sandboxed file operations for safety
+- **Reflection Patterns**: Agent self-analysis for tool optimization
+
+### 🔧 Dependencies
+
+```toml
+dependencies = [
+    "autogen-ext>=0.7.5",              # AutoGen extensions
+    "autogen-agentchat>=0.0.1",        # Agent chat framework
+    "openai>=1.0.0",                   # OpenAI client
+    "python-dotenv>=1.2.1",            # Environment variables
+    "tiktoken>=0.5.0",                 # Tokenization
+    "ipython>=9.10.0",                 # Display utilities
+    "langchain-google-community>=3.0.5", # Google Serper integration
+    "langchain>=1.2.10",               # LangChain framework
+]
+```
+
+### 🌟 Highlights
+
+- **Powerful Integration**: Demonstrates AutoGen + LangChain interoperability
+- **Real-Time Search**: Live flight data from Google Serper API
+- **Tool Ecosystem**: 8 different tools for comprehensive workflow automation
+- **Reflection Capabilities**: Agents analyze and optimize tool usage
+- **Production Ready**: Error handling, sandboxing, and structured outputs
+- **Educational Value**: Perfect for learning multi-framework AI integration
+
+### 🔍 Advanced Features
+
+- **LangChainToolAdapter**: Seamless tool format conversion between frameworks
+- **Modern @tool Decorator**: Type-safe tool creation with Pydantic validation
+- **Sandbox Environment**: Isolated file operations for security
+- **Multi-Turn Processing**: Sequential message handling for complex workflows
+- **Structured Output**: Markdown report generation with formatted data
+- **API Integration**: Real-time web search with commercial-grade APIs
+
+**Project Repository**: [38-autogen_agent_chat_with_langchain](./38-autogen_agent_chat_with_langchain/)
 
 ---
 
