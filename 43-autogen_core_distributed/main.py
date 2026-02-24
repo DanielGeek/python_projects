@@ -6,7 +6,6 @@ from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntimeHost, GrpcWorkerAgen
 
 # LangChain tools:
 from langchain_community.utilities import GoogleSerperAPIWrapper
-from langchain_community.agent_toolkits import FileManagementToolkit
 
 # from langchain.agents import Tool # previous version
 from langchain_core.tools import tool
@@ -27,8 +26,6 @@ class Message:
     content: str
 
 host_address = "localhost:50051"
-host = GrpcWorkerAgentRuntimeHost(address=host_address)
-host.start()
 
 serper = GoogleSerperAPIWrapper()
 
@@ -124,6 +121,9 @@ class Judge(RoutedAgent):
 
 
 async def main():
+    # Create and start the gRPC host within the event loop
+    host = GrpcWorkerAgentRuntimeHost(address=host_address)
+    host.start()
 
     if ALL_IN_ONE_WORKER:
         worker = GrpcWorkerAgentRuntime(host_address=host_address)
@@ -144,7 +144,7 @@ async def main():
         await worker2.start()
         await Player2Agent.register(worker2, "player2", lambda: Player2Agent("player2"))
 
-        worker = GrpcWorkerAgentRuntime(host_address="localhost:50051")
+        worker = GrpcWorkerAgentRuntime(host_address=host_address)
         await worker.start()
         await Judge.register(worker, "judge", lambda: Judge("judge"))
         agent_id = AgentId("judge", "default")
@@ -159,6 +159,7 @@ async def main():
         await worker1.stop()
         await worker2.stop()
 
+    # Stop the gRPC host
     await host.stop()
 
 

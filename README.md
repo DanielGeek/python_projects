@@ -42,6 +42,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🔌 40-autogen_MCP AutoGen with Model Context Protocol (MCP)** with Microsoft AutoGen, MCP server integration, dynamic tool loading, and JSON-RPC protocol communication
 - **⚙️ 41-autogen_core AutoGen Core Framework Fundamentals** with Microsoft AutoGen Core, custom agent development, message routing, runtime management, and LLM integration patterns
 - **🎮 42-autogen_core_rock_paper_scissors_game Multi-Agent Rock Paper Scissors Game** with Microsoft AutoGen Core, hybrid AI models (OpenAI + Ollama), inter-agent communication, and intelligent game arbitration
+- **🌐 43-autogen_core_distributed AutoGen Core Distributed Agents** with Microsoft AutoGen Core, gRPC communication, distributed agent runtime, multi-agent decision making, and remote orchestration
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -3100,6 +3101,38 @@ dependencies = [
 7. **Game Variants**: Add rock paper scissors lizard spock and other variants
 
 **Project Repository**: [42-autogen_core_rock_paper_scissors_game](./42-autogen_core_rock_paper_scissors_game/)
+
+### 43. 🌐 AutoGen Core Distributed Agents
+
+**Technologies**: Microsoft AutoGen Core, gRPC, Python 3.13, OpenAI GPT-4, LangChain, Google Serper API
+
+**Overview**: Advanced distributed agent system demonstrating gRPC-based communication between multiple AI agents. The system implements a decision-making scenario where specialized agents investigate different perspectives and a judge agent makes informed decisions based on collaborative research.
+
+**Key Features**:
+- **gRPC Communication**: High-performance remote agent communication with GrpcWorkerAgentRuntimeHost
+- **Distributed Runtime**: Support for both single-worker and multi-worker distributed deployment modes
+- **Multi-Agent Orchestration**: Player1Agent (pros researcher), Player2Agent (cons researcher), and Judge (decision maker)
+- **Internet Search Integration**: Real-time web search capabilities via Google Serper API
+- **LangChain Tool Adaptation**: Seamless integration of LangChain tools with AutoGen agents
+- **Async/Await Patterns**: Proper asynchronous programming for concurrent agent operations
+- **Python 3.13 Compatibility**: Resolved grpcio compilation issues with Python version optimization
+
+**Technical Implementation**:
+- **Event Loop Management**: Proper asyncio integration for gRPC host initialization
+- **Agent Registration**: Dynamic agent registration with distributed runtime
+- **Message Routing**: Inter-agent communication through gRPC channels
+- **Error Handling**: Robust error handling for network timeouts and connection issues
+- **Configuration Management**: Flexible deployment configuration via environment variables
+
+**Learning Outcomes**:
+- Distributed systems architecture with gRPC
+- Multi-agent coordination patterns
+- Async programming in Python
+- Network communication protocols
+- System integration with external APIs
+- Performance optimization for distributed AI systems
+
+**Project Repository**: [43-autogen_core_distributed](./43-autogen_core_distributed/)
 
 ---
 
