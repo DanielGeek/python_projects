@@ -1,3 +1,5 @@
+import os
+import sys
 from autogen_core import MessageContext, RoutedAgent, message_handler
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
@@ -10,6 +12,10 @@ from autogen_core import AgentId
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
+
+# Create directories if they don't exist
+os.makedirs("agents", exist_ok=True)
+os.makedirs("ideas", exist_ok=True)
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(TRACE_LOGGER_NAME)
@@ -56,15 +62,18 @@ class Creator(RoutedAgent):
     ) -> messages.Message:
         filename = message.content
         agent_name = filename.split(".")[0]
+        agent_filename = f"agents/{filename}"
         text_message = TextMessage(content=self.get_user_prompt(), source="user")
         response = await self._delegate.on_messages(
             [text_message], ctx.cancellation_token
         )
-        with open(filename, "w", encoding="utf-8") as f:
+        with open(agent_filename, "w", encoding="utf-8") as f:
             f.write(response.chat_message.content)
         print(
             f"** Creator has created python code for agent {agent_name} - about to register with Runtime"
         )
+        # Add the agents directory to Python path for importing
+        sys.path.insert(0, 'agents')
         module = importlib.import_module(agent_name)
         await module.Agent.register(
             self.runtime, agent_name, lambda: module.Agent(agent_name)

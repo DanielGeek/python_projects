@@ -14,9 +14,11 @@ class Message:
 
 def find_recipient() -> AgentId:
     try:
-        agent_files = glob.glob("agent*.py")
-        agent_names = [os.path.splitext(file)[0] for file in agent_files]
-        agent_names.remove("agent")
+        agent_files = glob.glob("agents/agent*.py")
+        agent_names = [os.path.splitext(os.path.basename(file))[0] for file in agent_files]
+        # Only remove "agent" if it exists in the list
+        if "agent" in agent_names:
+            agent_names.remove("agent")
         agent_name = random.choice(agent_names)
         print(f"Selecting agent for refinement: {agent_name}")
         return AgentId(agent_name, "default")
