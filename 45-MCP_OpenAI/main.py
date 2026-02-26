@@ -7,10 +7,13 @@ load_dotenv(override=True)
 
 fetch_params = {"command": "uvx", "args": ["mcp-server-fetch"]}
 
-playwright_params = {"command": "npx","args": [ "@playwright/mcp@latest"]}
+playwright_params = {"command": "npx", "args": ["@playwright/mcp@latest"]}
 
 sandbox_path = os.path.abspath(os.path.join(os.getcwd(), "sandbox"))
-files_params = {"command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", sandbox_path]}
+files_params = {
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-filesystem", sandbox_path],
+}
 
 instructions = """
 You browse the internet to accomplish your instructions.
@@ -22,6 +25,7 @@ trying different options and sites as needed.
 When you need to write files, you do that inside the sandbox folder only.
 """
 
+
 async def main():
     async with MCPServerStdio(
         params=fetch_params, client_session_timeout_seconds=60
@@ -30,29 +34,38 @@ async def main():
 
     # print(fetch_tools)
 
-
-    async with MCPServerStdio(params=playwright_params, client_session_timeout_seconds=60) as playwright_server:
+    async with MCPServerStdio(
+        params=playwright_params, client_session_timeout_seconds=60
+    ) as playwright_server:
         playwright_tools = await playwright_server.list_tools()
 
     # print(playwright_tools)
 
-    async with MCPServerStdio(params=files_params,client_session_timeout_seconds=60) as files_server:
+    async with MCPServerStdio(
+        params=files_params, client_session_timeout_seconds=60
+    ) as files_server:
         file_tools = await files_server.list_tools()
 
     # print(file_tools)
 
-    async with MCPServerStdio(params=files_params, client_session_timeout_seconds=60) as mcp_server_files:
-        async with MCPServerStdio(params=playwright_params, client_session_timeout_seconds=60) as mcp_server_browser:
+    async with MCPServerStdio(
+        params=files_params, client_session_timeout_seconds=60
+    ) as mcp_server_files:
+        async with MCPServerStdio(
+            params=playwright_params, client_session_timeout_seconds=60
+        ) as mcp_server_browser:
             agent = Agent(
-                name="investigator", 
-                instructions=instructions, 
+                name="investigator",
+                instructions=instructions,
                 model="gpt-4.1-mini",
-                mcp_servers=[mcp_server_files, mcp_server_browser]
-                )
+                mcp_servers=[mcp_server_files, mcp_server_browser],
+            )
             with trace("investigate"):
-                result = await Runner.run(agent, "Find a great recipe for Banoffee Pie, then summarize it in markdown to banoffee.md")
+                result = await Runner.run(
+                    agent,
+                    "Find a great recipe for Banoffee Pie, then summarize it in markdown to banoffee.md",
+                )
                 print(result.final_output)
-
 
 
 if __name__ == "__main__":
