@@ -44,6 +44,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🎮 42-autogen_core_rock_paper_scissors_game Multi-Agent Rock Paper Scissors Game** with Microsoft AutoGen Core, hybrid AI models (OpenAI + Ollama), inter-agent communication, and intelligent game arbitration
 - **🌐 43-autogen_core_distributed AutoGen Core Distributed Agents** with Microsoft AutoGen Core, gRPC communication, distributed agent runtime, multi-agent decision making, and remote orchestration
 - **🤝 44-autogen_agent-to-agent AutoGen Agent-to-Agent Communication System** with Microsoft AutoGen Core, dynamic agent creation, collaborative intelligence, gRPC communication, and multi-agent ecosystem management
+- **🔌 45-MCP_OpenAI MCP OpenAI Multi-Tool Agent System** with OpenAI Agents, Model Context Protocol, multi-server integration, web browsing automation, and sandboxed file operations
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -3164,6 +3165,37 @@ A revolutionary multi-agent ecosystem demonstrating dynamic agent creation and c
 - Real-time agent communication and message routing
 
 **Project Repository**: [44-autogen_agent-to-agent](./44-autogen_agent-to-agent/)
+
+### 46. 🔌 MCP OpenAI Multi-Tool Agent System
+
+A cutting-edge AI agent system demonstrating advanced integration of multiple Model Context Protocol (MCP) servers with OpenAI's agent framework. This system showcases sophisticated web investigation capabilities combining browser automation, file system operations, and intelligent content generation in a unified agent architecture.
+
+**Technical Implementation**:
+- **Multi-Server Integration**: Three specialized MCP servers (fetch, Playwright, filesystem) working seamlessly
+- **Browser Automation**: Advanced web navigation with Playwright for dynamic content extraction
+- **Sandboxed Operations**: Secure file system access within controlled environment
+- **Agent Framework**: OpenAI Agents with MCP protocol integration and async execution
+- **Tool Discovery**: Dynamic tool enumeration and integration across multiple servers
+- **Content Generation**: AI-powered content summarization and markdown file creation
+
+**Key Features**:
+- **Web Investigation**: Automated browsing with cookie handling and popup management
+- **Content Extraction**: Intelligent web content processing and summarization
+- **File Management**: Secure sandboxed file operations for output generation
+- **Multi-Tool Coordination**: Sequential and parallel tool execution for complex tasks
+- **Session Management**: Configurable timeouts and robust error handling
+- **Trace Logging**: Comprehensive execution tracking and debugging capabilities
+
+**Learning Outcomes**:
+- Model Context Protocol (MCP) integration and server architecture
+- Multi-server AI agent coordination and orchestration
+- Advanced web automation with Playwright and browser control
+- Secure sandboxed file system operations and permissions
+- Async agent execution patterns and session management
+- Tool discovery and dynamic integration protocols
+- Content generation and automated file output workflows
+
+**Project Repository**: [45-MCP_OpenAI](./45-MCP_OpenAI/)
 
 ---
 
