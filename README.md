@@ -45,7 +45,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🌐 43-autogen_core_distributed AutoGen Core Distributed Agents** with Microsoft AutoGen Core, gRPC communication, distributed agent runtime, multi-agent decision making, and remote orchestration
 - **🤝 44-autogen_agent-to-agent AutoGen Agent-to-Agent Communication System** with Microsoft AutoGen Core, dynamic agent creation, collaborative intelligence, gRPC communication, and multi-agent ecosystem management
 - **🔌 45-MCP_OpenAI MCP OpenAI Multi-Tool Agent System** with OpenAI Agents, Model Context Protocol, multi-server integration, web browsing automation, and sandboxed file operations
-- **🏦 46-MCP_manager_accounts MCP Investment Account Management System** with OpenAI Agents, multi-server MCP architecture, AI-powered trading automation, real-time market data integration, and comprehensive portfolio management
+- **🏦 46-MCP_manager_accounts MCP Investment Account Management System** with OpenAI Agents, multi-server MCP architecture, AI-powered trading automation, real-time market data integration, persistent memory storage, and comprehensive portfolio management
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -3267,6 +3267,24 @@ agent = Agent(
     tools=openai_tools
 )
 result = await Runner.run(agent, "My name is Ed. What's my balance?")
+```
+
+**Example 3: Persistent Memory with MCP**
+
+```python
+# Memory persistence across agent sessions using libsql
+params = {
+    "command": "npx",
+    "args": ["-y", "mcp-memory-libsql"],
+    "env": {"LIBSQL_URL": "file:./memory/daniel.db"}
+}
+
+# Store information in one session
+agent = Agent(name="agent", instructions="Use entity tools for persistent memory", mcp_servers=[memory_server])
+await Runner.run(agent, "My name's Daniel. I'm an LLM engineer teaching AI Agents.")
+
+# Recall information in another session
+await Runner.run(agent, "Search your memory for information about Daniel.")
 ```
 
 ### 🔧 Technical Implementation Details

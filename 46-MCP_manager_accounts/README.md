@@ -6,7 +6,7 @@ A comprehensive Model Context Protocol (MCP) server implementation for managing 
 
 This project implements a multi-server MCP architecture for automated trading and account management:
 
-```
+```text
 46-MCP_manager_accounts/
 ├── src/                          # Source code package
 │   ├── accounts_server.py        # MCP server for account operations
@@ -24,23 +24,31 @@ This project implements a multi-server MCP architecture for automated trading an
 │   └── util.py                   # Utility functions
 ├── db/                           # Database storage
 │   └── accounts.db               # SQLite database
+├── memory/                       # Memory storage for MCP
+│   └── daniel.db                 # libsql database for entities
 ├── example1.py                   # Basic MCP server usage
 ├── example2.py                   # Advanced AI agent integration
+├── example3.py                   # MCP memory persistence with libsql
 └── pyproject.toml                # Project dependencies
 ```
 
 ## 🚀 Features
 
 ### Core Functionality
+
+-
 - **Account Management**: Create, read, update investment accounts
 - **Trading Operations**: Buy/sell shares with rationale tracking
 - **Market Data Integration**: Real-time and historical market data
 - **AI Agent Integration**: OpenAI agents for automated trading
 - **Notification System**: Push notifications for trade alerts
 - **Transaction Logging**: Complete audit trail with timestamps
+- **Memory Persistence**: Long-term memory storage with MCP and libsql
 
 ### MCP Servers
+
 1. **Accounts Server** (`src/accounts_server.py`)
+
    - `get_balance(name)` - Get account cash balance
    - `get_holdings(name)` - Get current stock holdings
    - `buy_shares(name, symbol, quantity, rationale)` - Buy shares
@@ -49,10 +57,21 @@ This project implements a multi-server MCP architecture for automated trading an
    - Resources: `accounts://accounts_server/{name}`, `accounts://strategy/{name}`
 
 2. **Market Server** (`src/market_server.py`)
+
    - `lookup_share_price(symbol)` - Get current stock price
 
 3. **Push Server** (`src/push_server.py`)
+
    - `push(message)` - Send push notifications
+
+4. **Memory Server** (External - `mcp-memory-libsql`)
+
+   - `create_entities(entities)` - Create entities with observations
+   - `search_nodes(query, limit)` - Search entities with relevance ranking
+   - `read_graph()` - Get recent entities and relations
+   - `create_relations(relations)` - Create relations between entities
+   - `delete_entity(name)` - Delete entity and associated data
+   - `delete_relation(source, target, type)` - Delete specific relation
 
 ## 📦 Dependencies
 
@@ -66,6 +85,7 @@ dependencies = [
     "python-dotenv>=1.2.1",
 ]
 ```
+
 
 ## 🛠️ Installation
 
@@ -96,6 +116,7 @@ POLYGON_PLAN=free|paid|realtime
 PUSHOVER_USER=your_pushover_user_key
 PUSHOVER_TOKEN=your_pushover_api_token
 ```
+
 
 ## 📖 Usage Examples
 
@@ -144,6 +165,48 @@ context = await read_accounts_resource("ed")
 report = Account.get("ed").report()
 ```
 
+### Example 3: MCP Memory Persistence
+
+```python
+# example3.py - Persistent memory with MCP and libsql
+from agents import Agent, Runner, trace
+from agents.mcp import MCPServerStdio
+
+# Configure memory server with libsql database
+params = {
+    "command": "npx",
+    "args": ["-y", "mcp-memory-libsql"],
+    "env": {"LIBSQL_URL": "file:./memory/daniel.db"}
+}
+
+instructions = "You use your entity tools as persistent memory to store and recall information."
+
+async def main():
+    # Session 1: Store information about Daniel
+    async with MCPServerStdio(params=params) as memory_server:
+        agent = Agent(name="agent", instructions=instructions, model="gpt-4.1-mini", mcp_servers=[memory_server])
+        with trace("conversation"):
+            result = await Runner.run(agent, "My name's Daniel. I'm an LLM engineer teaching AI Agents.")
+            print(result.final_output)
+    
+    # Session 2: Recall information about Daniel
+    async with MCPServerStdio(params=params) as memory_server:
+        agent = Agent(name="agent", instructions=instructions, model="gpt-4.1-mini", mcp_servers=[memory_server])
+        with trace("conversation"):
+            result = await Runner.run(agent, "Search your memory for information about Daniel.")
+            print(result.final_output)
+```
+
+**Memory Features:**
+
+- **Entity Creation**: Store people, concepts, and relationships
+- **Semantic Search**: Find entities with relevance ranking
+- **Persistent Storage**: Data survives across agent sessions
+- **Graph Relations**: Create and manage entity relationships
+- **Cross-Session Memory**: Information persists between different agent instances
+
+```
+
 ## 🤖 AI Agent Features
 
 ### Supported Models
@@ -171,11 +234,13 @@ report = Account.get("ed").report()
 ## 📊 Data Storage
 
 ### Database Schema
-- **accounts**: Account data and holdings
-- **logs**: Transaction and operation logs
-- **market**: Market data cache
+
+- **accounts**: Account data, holdings, transactions
+- **logs**: Operation logs with trace IDs
+- **market**: Market data cache for performance
 
 ### Account Data Structure
+
 ```json
 {
   "name": "ed",
@@ -205,6 +270,7 @@ report = Account.get("ed").report()
 - Performance monitoring and debugging
 
 ### Available Logs
+
 - Account operations
 - Trade executions
 - Agent decisions
@@ -213,16 +279,19 @@ report = Account.get("ed").report()
 ## 🚀 Advanced Features
 
 ### Multi-Model Trading
+
 - Support for multiple AI models simultaneously
 - Model comparison and performance tracking
 - Ensemble trading decisions
 
 ### Real-time Market Data
+
 - Polygon.io integration for live prices
 - End-of-day data fallback
 - Technical indicators and fundamentals
 
 ### Push Notifications
+
 - Trade alerts via Pushover
 - Portfolio milestone notifications
 - System status updates
@@ -237,10 +306,14 @@ uv run example1.py
 
 # Advanced AI agent test
 uv run example2.py
+
+# Memory persistence test
+uv run example3.py
 ```
 
 ## 🔮 Future Enhancements
 
+- [x] Memory persistence implementation with libsql
 - [ ] Additional example implementations
 - [ ] Web dashboard for account monitoring
 - [ ] Advanced risk management features
