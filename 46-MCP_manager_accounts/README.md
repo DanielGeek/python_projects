@@ -30,6 +30,7 @@ This project implements a multi-server MCP architecture for automated trading an
 ├── example2.py                   # Advanced AI agent integration
 ├── example3.py                   # MCP memory persistence with libsql
 ├── example4.py                   # Web search integration with Brave Search API
+├── example5.py                   # Market data integration with Polygon.io API
 └── pyproject.toml                # Project dependencies
 ```
 
@@ -46,6 +47,7 @@ This project implements a multi-server MCP architecture for automated trading an
 - **Transaction Logging**: Complete audit trail with timestamps
 - **Memory Persistence**: Long-term memory storage with MCP and libsql
 - **Web Search Integration**: Real-time web search with Brave Search API
+- **Market Data Integration**: Real-time and historical stock market data with Polygon.io
 
 ### MCP Servers
 
@@ -79,6 +81,13 @@ This project implements a multi-server MCP architecture for automated trading an
 
    - `brave_search(query)` - Search the web using Brave Search API
    - Real-time web search with news, finance, and general information
+
+6. **Market Server** (`src/market_server.py`)
+
+   - `lookup_share_price(symbol)` - Get current stock price for any symbol
+   - Real-time market data with Polygon.io integration
+   - Intelligent caching to avoid API rate limiting
+   - Fallback to simulated data when API is unavailable
 
 ## 📦 Dependencies
 
@@ -287,6 +296,80 @@ Error Status: 422
 Error Type: ErrorResponse
 ```
 
+### Example 5: Market Data Integration
+
+```python
+# example5.py - Real-time market data with Polygon.io API
+from polygon import RESTClient
+from src.market import get_share_price
+from agents import Agent, Runner, trace
+from agents.mcp import MCPServerStdio
+
+# Validate API key before proceeding
+polygon_api_key = os.getenv("POLYGON_API_KEY")
+if not polygon_api_key or polygon_api_key == "your_polygon_api_key":
+    print("❌ ERROR: POLYGON_API_KEY is not configured!")
+    exit(1)
+
+client = RESTClient(polygon_api_key)
+
+# Get previous close data directly from Polygon
+previous_close = client.get_previous_close_agg("AAPL")[0]
+print("Previous close:", previous_close)
+
+# Use cached market data function
+print("get_share_price:", get_share_price("AAPL"))
+
+# Test caching with multiple calls
+for i in range(1000):
+    get_share_price("AAPL")  # Only 1 API call due to caching
+
+async def main():
+    params = {"command": "uv", "args": ["run", "src/market_server.py"]}
+    
+    async with MCPServerStdio(params=params) as market_server:
+        agent = Agent(
+            name="market_agent", 
+            instructions="You answer questions about the stock market.", 
+            model="gpt-4.1-mini", 
+            mcp_servers=[market_server]
+        )
+        
+        with trace("market_query"):
+            result = await Runner.run(agent, "What's the share price of Apple?")
+            print(result.final_output)
+```
+
+**Market Data Features:**
+
+- **Real-time Data**: Access to current stock prices via Polygon.io API
+- **Historical Data**: Previous close prices with full OHLCV data
+- **Intelligent Caching**: LRU cache prevents API rate limiting
+- **Fallback System**: Uses simulated data when API is unavailable
+- **Bulk Data**: Grouped daily aggregates for market-wide data
+- **Plan Support**: Adapts to free, paid, and realtime Polygon plans
+
+**Data Sources:**
+
+- **Primary**: Polygon.io API (real-time and historical)
+- **Secondary**: Local SQLite database cache
+- **Fallback**: Random number generation for testing
+
+**Performance Optimizations:**
+
+- **@lru_cache**: Reduces API calls from 1000+ to 1
+- **Database Persistence**: Survives application restarts
+- **Rate Limiting Protection**: Prevents 429 errors
+- **Plan-aware Logic**: Uses appropriate endpoints based on subscription
+
+**Use Cases:**
+
+- Real-time stock price queries
+- Portfolio valuation
+- Market research and analysis
+- Trading algorithm development
+- Financial dashboard integration
+
 ## 🤖 AI Agent Features
 
 ### Supported Models
@@ -392,6 +475,9 @@ uv run example3.py
 
 # Web search integration test
 uv run example4.py
+
+# Market data integration test
+uv run example5.py
 ```
 
 ## �️ Error Handling Best Practices
