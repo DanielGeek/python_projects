@@ -29,6 +29,7 @@ This project implements a multi-server MCP architecture for automated trading an
 ├── example1.py                   # Basic MCP server usage
 ├── example2.py                   # Advanced AI agent integration
 ├── example3.py                   # MCP memory persistence with libsql
+├── example4.py                   # Web search integration with Brave Search API
 └── pyproject.toml                # Project dependencies
 ```
 
@@ -44,6 +45,7 @@ This project implements a multi-server MCP architecture for automated trading an
 - **Notification System**: Push notifications for trade alerts
 - **Transaction Logging**: Complete audit trail with timestamps
 - **Memory Persistence**: Long-term memory storage with MCP and libsql
+- **Web Search Integration**: Real-time web search with Brave Search API
 
 ### MCP Servers
 
@@ -72,6 +74,11 @@ This project implements a multi-server MCP architecture for automated trading an
    - `create_relations(relations)` - Create relations between entities
    - `delete_entity(name)` - Delete entity and associated data
    - `delete_relation(source, target, type)` - Delete specific relation
+
+5. **Brave Search Server** (External - `@modelcontextprotocol/server-brave-search`)
+
+   - `brave_search(query)` - Search the web using Brave Search API
+   - Real-time web search with news, finance, and general information
 
 ## 📦 Dependencies
 
@@ -107,6 +114,9 @@ Required environment variables:
 ```bash
 # OpenAI API (required for AI agents)
 OPENAI_API_KEY=your_openai_api_key
+
+# Brave Search API (for web search - https://api-dashboard.search.brave.com/app/keys)
+BRAVE_API_KEY=your_brave_api_key
 
 # Polygon API (for market data)
 POLYGON_API_KEY=your_polygon_api_key
@@ -205,6 +215,57 @@ async def main():
 - **Graph Relations**: Create and manage entity relationships
 - **Cross-Session Memory**: Information persists between different agent instances
 
+```
+
+### Example 4: Web Search Integration
+
+```python
+# example4.py - Real-time web search with Brave Search API
+from agents import Agent, Runner, trace
+from agents.mcp import MCPServerStdio
+from datetime import datetime
+import os
+
+# Configure Brave Search server
+env = {"BRAVE_API_KEY": os.getenv("BRAVE_API_KEY")}
+params = {
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+    "env": env,
+}
+
+instructions = "You are able to search the web for information and briefly summarize the takeaways."
+
+async def main():
+    async with MCPServerStdio(params=params) as search_server:
+        agent = Agent(
+            name="research_agent", 
+            instructions=instructions, 
+            model="gpt-4o-mini", 
+            mcp_servers=[search_server]
+        )
+        
+        # Research latest stock news with current date context
+        request = f"Please research the latest news on Amazon stock price and briefly summarize its outlook. For context, the current date is {datetime.now().strftime('%Y-%m-%d')}"
+        
+        with trace("web_search"):
+            result = await Runner.run(agent, request)
+            print(result.final_output)
+```
+
+**Web Search Features:**
+- **Real-time Search**: Access to current web information via Brave Search API
+- **News Integration**: Latest financial news and market analysis
+- **Context-aware**: Automatically includes current date in search queries
+- **Summarization**: AI-powered summarization of search results
+- **Finance Focus**: Optimized for stock market and financial research
+
+**Use Cases:**
+- Stock market research and analysis
+- Latest financial news aggregation
+- Company-specific information gathering
+- Market sentiment analysis
+- Investment decision support
 ```
 
 ## 🤖 AI Agent Features
@@ -309,11 +370,15 @@ uv run example2.py
 
 # Memory persistence test
 uv run example3.py
+
+# Web search integration test
+uv run example4.py
 ```
 
 ## 🔮 Future Enhancements
 
 - [x] Memory persistence implementation with libsql
+- [x] Web search integration with Brave Search API
 - [ ] Additional example implementations
 - [ ] Web dashboard for account monitoring
 - [ ] Advanced risk management features

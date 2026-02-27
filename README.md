@@ -45,7 +45,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🌐 43-autogen_core_distributed AutoGen Core Distributed Agents** with Microsoft AutoGen Core, gRPC communication, distributed agent runtime, multi-agent decision making, and remote orchestration
 - **🤝 44-autogen_agent-to-agent AutoGen Agent-to-Agent Communication System** with Microsoft AutoGen Core, dynamic agent creation, collaborative intelligence, gRPC communication, and multi-agent ecosystem management
 - **🔌 45-MCP_OpenAI MCP OpenAI Multi-Tool Agent System** with OpenAI Agents, Model Context Protocol, multi-server integration, web browsing automation, and sandboxed file operations
-- **🏦 46-MCP_manager_accounts MCP Investment Account Management System** with OpenAI Agents, multi-server MCP architecture, AI-powered trading automation, real-time market data integration, persistent memory storage, and comprehensive portfolio management
+- **🏦 46-MCP_manager_accounts MCP Investment Account Management System** with OpenAI Agents, multi-server MCP architecture, AI-powered trading automation, real-time market data integration, persistent memory storage, web search capabilities, and comprehensive portfolio management
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -3285,6 +3285,28 @@ await Runner.run(agent, "My name's Daniel. I'm an LLM engineer teaching AI Agent
 
 # Recall information in another session
 await Runner.run(agent, "Search your memory for information about Daniel.")
+```
+
+**Example 4: Web Search Integration**
+```python
+# Real-time web search with Brave Search API
+env = {"BRAVE_API_KEY": os.getenv("BRAVE_API_KEY")}
+params = {
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+    "env": env,
+}
+
+agent = Agent(
+    name="research_agent", 
+    instructions="Search the web and summarize findings", 
+    model="gpt-4o-mini", 
+    mcp_servers=[search_server]
+)
+
+# Research latest stock news with current date context
+request = f"Research latest Amazon stock news. Current date: {datetime.now().strftime('%Y-%m-%d')}"
+result = await Runner.run(agent, request)
 ```
 
 ### 🔧 Technical Implementation Details
