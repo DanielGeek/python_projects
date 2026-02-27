@@ -45,6 +45,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🌐 43-autogen_core_distributed AutoGen Core Distributed Agents** with Microsoft AutoGen Core, gRPC communication, distributed agent runtime, multi-agent decision making, and remote orchestration
 - **🤝 44-autogen_agent-to-agent AutoGen Agent-to-Agent Communication System** with Microsoft AutoGen Core, dynamic agent creation, collaborative intelligence, gRPC communication, and multi-agent ecosystem management
 - **🔌 45-MCP_OpenAI MCP OpenAI Multi-Tool Agent System** with OpenAI Agents, Model Context Protocol, multi-server integration, web browsing automation, and sandboxed file operations
+- **🏦 46-MCP_manager_accounts MCP Investment Account Management System** with OpenAI Agents, multi-server MCP architecture, AI-powered trading automation, real-time market data integration, and comprehensive portfolio management
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -3196,6 +3197,140 @@ A cutting-edge AI agent system demonstrating advanced integration of multiple Mo
 - Content generation and automated file output workflows
 
 **Project Repository**: [45-MCP_OpenAI](./45-MCP_OpenAI/)
+
+## 46. 🏦 MCP Manager Accounts - Investment Account Management System
+
+**Project Type**: Model Context Protocol (MCP) Multi-Server Architecture | **Technologies**: OpenAI Agents, MCP, FastAPI, SQLite, Polygon.io
+
+### 🎯 Project Overview
+
+A comprehensive Model Context Protocol (MCP) implementation for managing investment accounts with AI-powered trading automation. This project demonstrates advanced multi-server MCP architecture with real-time market data integration and intelligent portfolio management.
+
+### 🏗️ Technical Architecture
+
+**Multi-Server MCP Architecture:**
+- **Accounts Server**: Account management, trading operations, strategy updates
+- **Market Server**: Real-time market data integration with Polygon.io
+- **Push Server**: Notification system for trade alerts and portfolio updates
+- **AI Agent Integration**: OpenAI agents for automated trading decisions
+
+**Key Technical Features:**
+- **Structured Package Organization**: Clean `src/` package with relative imports
+- **Database Management**: SQLite with account data, transactions, and market cache
+- **Real-time Data**: Polygon.io integration for live market prices
+- **MCP Protocol**: Standardized tool and resource interfaces
+- **AI Agents**: OpenAI GPT models for intelligent trading decisions
+
+### 🚀 Core Functionality
+
+**Account Management:**
+- Create and manage investment accounts with $10,000 starting balance
+- Buy/sell shares with rationale tracking and timestamp logging
+- Portfolio value tracking with profit/loss calculations
+- Dynamic strategy management and adjustment
+
+**AI-Powered Trading:**
+- Multi-model support (OpenAI GPT, DeepSeek, Gemini, Grok)
+- Intelligent trading decisions with rationale generation
+- Market analysis and risk assessment
+- Automated portfolio rebalancing
+
+**Monitoring & Logging:**
+- Complete transaction audit trail
+- Structured logging with trace IDs
+- Performance monitoring and debugging
+- Push notifications for significant events
+
+### 📖 Implementation Examples
+
+**Example 1: Basic MCP Server Usage**
+```python
+# Direct MCP server interaction with account management
+account = Account.get("Ed")
+account.buy_shares("AMZN", 3, "Because this bookstore website looks promising")
+
+# Connect to MCP server through AI agent
+params = {"command": "uv", "args": ["run", "src/accounts_server.py"]}
+async with MCPServerStdio(params=params) as server:
+    agent = Agent(name="account_manager", instructions=instructions, mcp_servers=[server])
+    result = await Runner.run(agent, "What's my balance and holdings?")
+```
+
+**Example 2: Advanced AI Agent Integration**
+```python
+# Full AI agent with MCP tools for comprehensive account management
+openai_tools = await get_accounts_tools_openai()
+agent = Agent(
+    name="account_manager", 
+    instructions="You are able to manage an account for a client",
+    model="gpt-4.1-mini",
+    tools=openai_tools
+)
+result = await Runner.run(agent, "My name is Ed. What's my balance?")
+```
+
+### 🔧 Technical Implementation Details
+
+**Package Structure:**
+```
+src/
+├── accounts_server.py    # MCP server with sys.path manipulation for direct execution
+├── market_server.py      # Market data server with Polygon.io integration
+├── push_server.py        # Notification server for trade alerts
+├── accounts.py           # Core account management logic
+├── accounts_client.py    # MCP client for OpenAI tool integration
+├── database.py           # SQLite operations with dynamic path resolution
+├── market.py             # Market data fetching and caching
+├── traders.py            # AI trader implementations
+└── ...
+```
+
+**Direct Server Execution:**
+- Implemented `sys.path` manipulation to allow direct execution of MCP servers
+- Conditional imports: `from src.accounts import Account` when run directly, `from .accounts import Account` when imported
+- Eliminated need for wrapper scripts while maintaining clean package structure
+
+**Database Schema:**
+- **accounts**: Account data, holdings, transactions
+- **logs**: Operation logs with trace IDs
+- **market**: Market data cache for performance
+
+### 📊 Learning Outcomes
+
+**Advanced MCP Architecture:**
+- Multi-server MCP implementation with standardized interfaces
+- Resource and tool management across distributed servers
+- Client-server communication patterns with JSON-RPC
+
+**AI Agent Integration:**
+- OpenAI Agents framework integration with MCP tools
+- Multi-model support and performance comparison
+- Intelligent decision-making with rationale tracking
+
+**Production Considerations:**
+- Structured logging and monitoring
+- Error handling and graceful degradation
+- Performance optimization with caching strategies
+- Security considerations for financial data
+
+**Software Engineering Best Practices:**
+- Clean package organization with relative imports
+- Dynamic path resolution for cross-platform compatibility
+- Comprehensive documentation and examples
+- Modular design for extensibility
+
+### 🔮 Future Enhancements
+
+- Additional example implementations (web dashboard, advanced analytics)
+- Multi-account support and portfolio optimization
+- Backtesting framework and performance metrics
+- Advanced risk management features
+- Real-time charting and technical indicators
+
+---
+
+**Status**: ✅ Complete with working examples and comprehensive documentation  
+**Next Steps**: Additional examples and advanced features as requested
 
 ---
 
