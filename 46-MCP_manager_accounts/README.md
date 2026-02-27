@@ -254,6 +254,7 @@ async def main():
 ```
 
 **Web Search Features:**
+
 - **Real-time Search**: Access to current web information via Brave Search API
 - **News Integration**: Latest financial news and market analysis
 - **Context-aware**: Automatically includes current date in search queries
@@ -266,6 +267,24 @@ async def main():
 - Company-specific information gathering
 - Market sentiment analysis
 - Investment decision support
+
+**Error Handling:**
+- Pre-execution API key validation to catch missing credentials early
+- Structured error reporting with detailed technical information
+- Extracts complete error details: code, message, component, status, and type
+- Prevents generic responses - forces transparent error disclosure
+- Consistent format with ⚠️ emoji prefix for easy identification
+- Provides specific troubleshooting steps for each error type
+
+**Error Response Format:**
+```
+⚠️ API ERROR DETECTED:
+Error: Brave API error: 422 
+Error Code: 422
+Error Detail: The provided subscription token is invalid.
+Error Component: authentication
+Error Status: 422
+Error Type: ErrorResponse
 ```
 
 ## 🤖 AI Agent Features
@@ -375,10 +394,44 @@ uv run example3.py
 uv run example4.py
 ```
 
-## 🔮 Future Enhancements
+## �️ Error Handling Best Practices
+
+The project demonstrates comprehensive error handling patterns for MCP integrations:
+
+### **Pre-execution Validation**
+```python
+# Validate API key before proceeding
+brave_api_key = os.getenv("BRAVE_API_KEY")
+if not brave_api_key or brave_api_key == "your_brave_api_key":
+    print("❌ ERROR: BRAVE_API_KEY is not configured!")
+    exit(1)
+```
+
+### **Structured Error Reporting**
+Use template-based error extraction to capture complete API error details:
+- Error message and code
+- Component and status information
+- Error type classification
+- Specific troubleshooting steps
+
+### **Agent Instructions for Transparency**
+Force agents to report technical errors explicitly:
+```python
+instructions = """
+CRITICAL ERROR REPORTING RULES:
+When you encounter ANY error, you MUST:
+1. Start with "⚠️ API ERROR DETECTED:"
+2. Quote the EXACT error message
+3. Explain what this error means
+4. Provide specific steps to fix it
+"""
+```
+
+## �🔮 Future Enhancements
 
 - [x] Memory persistence implementation with libsql
 - [x] Web search integration with Brave Search API
+- [x] Advanced error handling and transparent reporting
 - [ ] Additional example implementations
 - [ ] Web dashboard for account monitoring
 - [ ] Advanced risk management features
