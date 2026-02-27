@@ -1,11 +1,14 @@
 import sqlite3
 import json
+import os
 from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
-DB = "accounts.db"
+# Get the project root directory (parent of src/)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB = os.path.join(PROJECT_ROOT, "db", "accounts.db")
 
 
 with sqlite3.connect(DB) as conn:

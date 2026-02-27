@@ -1,5 +1,16 @@
+import sys
+import os
+
+# Add parent directory to path to allow imports when run directly
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from mcp.server.fastmcp import FastMCP
-from market import get_share_price
+
+if __name__ == "__main__":
+    from src.market import get_share_price
+else:
+    from .market import get_share_price
 
 mcp = FastMCP("market_server")
 

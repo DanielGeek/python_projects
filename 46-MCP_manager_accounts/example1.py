@@ -3,7 +3,7 @@ from agents import Agent, Runner, trace
 from agents.mcp import MCPServerStdio
 from IPython.display import display, Markdown
 
-from accounts import Account
+from src.accounts import Account
 
 load_dotenv(override=True)
 
@@ -11,7 +11,7 @@ account = Account.get("Ed")
 
 account.buy_shares("AMZN", 3, "Because this bookstore website looks promising")
 
-params = {"command": "uv", "args": ["run", "accounts_server.py"]}
+params = {"command": "uv", "args": ["run", "src/accounts_server.py"]}
 
 instructions = "You are able to manage an account for a client, and answer questions about the account."
 request = "My name is Ed and my account is under the name Ed. What's my balance and my holdings?"

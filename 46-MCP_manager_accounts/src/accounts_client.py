@@ -5,7 +5,7 @@ from agents import FunctionTool
 import json
 
 params = StdioServerParameters(
-    command="uv", args=["run", "accounts_server.py"], env=None
+    command="uv", args=["run", "src/accounts_server.py"], env=None
 )
 
 

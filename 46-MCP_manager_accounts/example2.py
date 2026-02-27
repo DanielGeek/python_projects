@@ -1,9 +1,9 @@
 from dotenv import load_dotenv
 from agents import Agent, Runner, trace
 from IPython.display import display, Markdown
-from accounts_client import get_accounts_tools_openai, read_accounts_resource, list_accounts_tools
+from src.accounts_client import get_accounts_tools_openai, read_accounts_resource, list_accounts_tools
 
-from accounts import Account
+from src.accounts import Account
 
 load_dotenv(override=True)
 
