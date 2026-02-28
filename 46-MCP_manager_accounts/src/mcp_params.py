@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-from .util import get_project_root
 from .market import is_paid_polygon, is_realtime_polygon, polygon_api_key
 
 load_dotenv(override=True)

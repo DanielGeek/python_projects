@@ -148,7 +148,8 @@ async def main():
     )
     with trace(agent_name):
         result = await Runner.run(trader, prompt, max_turns=30)
-    display(Markdown(result.final_output))
+    # display(Markdown(result.final_output))
+    print("result.final_output", result.final_output)
 
     # And let's look at the results of the trading
     print("read_accounts_resource", await read_accounts_resource(agent_name))

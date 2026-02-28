@@ -34,6 +34,7 @@ This project implements a multi-server MCP architecture for automated trading an
 ├── example6.py                   # Advanced error handling with Polygon MCP server
 ├── example7.py                   # Financial researcher agent with web search
 ├── example8.py                   # Autonomous trader agent with research integration
+├── example9.py                   # Advanced trader with streaming real-time output
 └── pyproject.toml                # Project dependencies
 ```
 
@@ -668,6 +669,113 @@ async def main():
 - Strategy implementation and testing
 - Risk-managed investment execution
 
+### Example 9: Advanced Trader with Streaming Real-Time Output
+
+```python
+# example9.py - Professional trader with real-time streaming and MCP server analytics
+from dotenv import load_dotenv
+from src.accounts_client import read_accounts_resource
+from src.traders import Trader
+from src.mcp_params import trader_mcp_server_params, researcher_mcp_server_params
+from agents.mcp import MCPServerStdio
+
+load_dotenv(override=True)
+
+# Initialize advanced trader with streaming capabilities
+trader = Trader("Daniel")
+
+# Get all MCP server parameters for analytics
+all_params = trader_mcp_server_params + researcher_mcp_server_params("Daniel")
+
+async def main():
+    # Run trader with real-time streaming output
+    await trader.run()
+    
+    # Display final account state
+    read_accounts_resource_result = await read_accounts_resource("Daniel")
+    print("read_accounts_resource_result", read_accounts_resource_result)
+
+    # MCP server analytics - count available tools
+    count = 0
+    for each_params in all_params:
+        async with MCPServerStdio(params=each_params, client_session_timeout_seconds=60) as server:
+            mcp_tools = await server.list_tools()
+            count += len(mcp_tools)
+    print(f"We have {len(all_params)} MCP servers, and {count} tools")
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())
+```
+
+**Advanced Trader Features:**
+
+- **Real-Time Streaming**: Watch AI responses appear token-by-token as they're generated
+- **Visual Tool Tracking**: See exactly when tools are called and completed
+- **MCP Server Analytics**: Count and track all available servers and tools
+- **Professional Trading**: Advanced autonomous trading with research integration
+- **Enhanced Monitoring**: Real-time feedback with visual separators and emojis
+- **Portfolio Management**: Complete account state tracking and reporting
+
+**Streaming Output Example:**
+```bash
+🤖 Daniel is analyzing the market...
+
+================================================================================
+I'll research the latest market conditions and identify trading opportunities...
+
+🔧 [Tool called]
+✅ [Tool completed]
+Based on my research, I'll check current stock prices...
+
+🔧 [Tool called]
+✅ [Tool completed]
+I've executed the following trades:
+1. Sold 1 share of TSLA at $407.76, locking in profits due to market volatility.
+2. Placed buy orders for 3 shares of MSFT and 5 shares of ENPH...
+--------------------------------------------------------------------------------
+
+================================================================================
+
+✨ Daniel finished trading session
+📊 Final output: Trading session completed successfully...
+We have 6 MCP servers, and 16 tools
+```
+
+**Technical Implementation:**
+
+- **Runner.run_streamed()**: Uses OpenAI Agents streaming API for real-time output
+- **ResponseTextDeltaEvent**: Captures each token as it's generated
+- **Safe Event Handling**: Robust error handling for different event types
+- **Tool Call Tracking**: Visual feedback for all MCP tool interactions
+- **MCP Analytics**: Comprehensive server and tool inventory
+
+**Trader Capabilities:**
+
+- **Market Research**: Real-time web search and analysis
+- **Price Monitoring**: Live stock price checking
+- **Trade Execution**: Automated buy/sell decisions with rationale
+- **Portfolio Tracking**: Complete balance and holdings management
+- **Risk Management**: Profit-taking and strategic positioning
+- **Performance Analytics**: Real-time P&L tracking
+
+**Use Cases:**
+
+- Professional trading automation
+- Real-time market monitoring
+- Portfolio management with AI insights
+- Risk-managed investment execution
+- Trading strategy testing and optimization
+- Market research-driven decision making
+
+**Streaming Benefits:**
+
+- **Immediate Feedback**: See AI thinking process in real-time
+- **Transparency**: Watch exactly how trading decisions are made
+- **Debugging**: Identify and troubleshoot issues instantly
+- **User Experience**: Interactive and engaging trading sessions
+- **Monitoring**: Real-time progress tracking without waiting
+
 ## 🤖 AI Agent Features
 
 ### Supported Models
@@ -785,6 +893,9 @@ uv run example7.py
 
 # Autonomous trader agent test
 uv run example8.py
+
+# Advanced trader with streaming test
+uv run example9.py
 ```
 
 ## �️ Error Handling Best Practices
@@ -827,6 +938,7 @@ When you encounter ANY error, you MUST:
 - [x] Advanced error handling and transparent reporting
 - [x] Financial researcher agent with multi-server integration
 - [x] Autonomous trader agent with research tool integration
+- [x] Advanced trader with real-time streaming output
 - [ ] Web dashboard for account monitoring
 - [ ] Advanced risk management features
 - [ ] Portfolio optimization algorithms
@@ -856,4 +968,4 @@ This MCP implementation integrates with:
 
 ---
 
-**Note**: This is an active development project. New examples and features will be added as requested. The current implementation focuses on account management, financial research, and autonomous trading with AI agents including multi-server MCP integration and comprehensive error handling.
+**Note**: This is an active development project. New examples and features will be added as requested. The current implementation focuses on account management, financial research, autonomous trading, and real-time streaming with AI agents including multi-server MCP integration, comprehensive error handling, and professional trading automation.

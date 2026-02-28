@@ -3,6 +3,7 @@ from .accounts_client import read_accounts_resource, read_strategy_resource
 from .tracers import make_trace_id
 from agents import Agent, Tool, Runner, OpenAIChatCompletionsModel, trace
 from openai import AsyncOpenAI
+from openai.types.responses import ResponseTextDeltaEvent
 from dotenv import load_dotenv
 import os
 import json
@@ -104,7 +105,31 @@ class Trader:
             if self.do_trade
             else rebalance_message(self.name, strategy, account)
         )
-        await Runner.run(self.agent, message, max_turns=MAX_TURNS)
+        
+        # Stream the agent execution to see real-time output
+        print(f"\n🤖 {self.name} is analyzing the market...\n")
+        print("=" * 80)
+        
+        result = Runner.run_streamed(self.agent, message, max_turns=MAX_TURNS)
+        
+        async for event in result.stream_events():
+            # Stream raw text deltas for immediate display (token by token)
+            if event.type == "raw_response_event":
+                if isinstance(event.data, ResponseTextDeltaEvent):
+                    print(event.data.delta, end="", flush=True)
+            
+            # Handle tool calls with safe attribute access
+            elif event.type == "run_item_stream_event":
+                if event.item.type == "tool_call_item":
+                    print("\n\n🔧 [Tool called]", flush=True)
+                elif event.item.type == "tool_call_output_item":
+                    print("\n✅ [Tool completed]", flush=True)
+                elif event.item.type == "message_output_item":
+                    print("\n" + "-" * 80, flush=True)
+        
+        print("\n" + "=" * 80)
+        print(f"\n✨ {self.name} finished trading session")
+        print(f"📊 Final output: {result.final_output}\n")
 
     async def run_with_mcp_servers(self):
         async with AsyncExitStack() as stack:
