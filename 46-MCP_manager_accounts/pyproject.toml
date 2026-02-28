@@ -5,9 +5,11 @@ description = "MCP server for manager accounts"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "gradio>=6.8.0",
     "ipython>=9.10.0",
     "openai>=1.0.0",
     "openai-agents>=0.10.1",
+    "plotly>=6.5.2",
     "polygon-api-client>=1.16.3",
     "python-dotenv>=1.2.1",
 ]

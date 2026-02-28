@@ -8,33 +8,30 @@ This project implements a multi-server MCP architecture for automated trading an
 
 ```text
 46-MCP_manager_accounts/
-├── src/                          # Source code package
-│   ├── accounts_server.py        # MCP server for account operations
-│   ├── market_server.py          # MCP server for market data
-│   ├── push_server.py            # MCP server for notifications
-│   ├── accounts.py               # Account management logic
-│   ├── accounts_client.py        # MCP client for accounts
-│   ├── database.py               # Database operations
-│   ├── market.py                 # Market data integration
-│   ├── traders.py                # AI trader implementations
-│   ├── trading_floor.py          # Trading orchestration
-│   ├── templates.py              # Agent instruction templates
-│   ├── tracers.py                # Logging and tracing
-│   ├── mcp_params.py             # MCP server configurations
-│   └── util.py                   # Utility functions
-├── db/                           # Database storage
-│   └── accounts.db               # SQLite database
-├── memory/                       # Memory storage for MCP
-│   └── daniel.db                 # libsql database for entities
-├── example1.py                   # Basic MCP server usage
-├── example2.py                   # Advanced AI agent integration
-├── example3.py                   # MCP memory persistence with libsql
-├── example4.py                   # Web search integration with Brave Search API
-├── example5.py                   # Market data integration with Polygon.io API
-├── example6.py                   # Advanced error handling with Polygon MCP server
-├── example7.py                   # Financial researcher agent with web search
-├── example8.py                   # Autonomous trader agent with research integration
-├── example9.py                   # Advanced trader with streaming real-time output
+├── src/
+│   ├── __init__.py
+│   ├── accounts.py           # Account management system
+│   ├── accounts_server.py    # MCP server for account operations
+│   ├── database.py           # SQLite database operations
+│   ├── market.py             # Market data and utilities
+│   ├── mcp_params.py         # MCP server configuration
+│   ├── traders.py            # AI trading agent implementation
+│   ├── trading_floor.py      # Multi-agent orchestration system
+│   ├── tracers.py            # Logging and tracing utilities
+│   └── util.py               # CSS/JS utilities and styling
+├── example1.py              # Basic account operations
+├── example2.py              # Account with MCP server
+├── example3.py              # Account + market data
+├── example4.py              # Account + market + notifications
+├── example5.py              # Basic AI trading agent
+├── example6.py              # Advanced error handling
+├── example7.py              # Financial researcher agent
+├── example8.py              # Autonomous trader agent
+├── example9.py              # Advanced trader with streaming
+├── app.py                   # Web dashboard for monitoring
+├── .env.example             # Environment variables template
+├── db/                      # SQLite database directory
+└── README.md                # This file
 └── pyproject.toml                # Project dependencies
 ```
 
@@ -776,6 +773,162 @@ We have 6 MCP servers, and 16 tools
 - **User Experience**: Interactive and engaging trading sessions
 - **Monitoring**: Real-time progress tracking without waiting
 
+## 🖥️ Trading Dashboard UI
+
+### Web Dashboard with Gradio
+
+The project includes a comprehensive web dashboard built with Gradio that provides real-time monitoring of multiple AI trading agents:
+
+```python
+# app.py - Web dashboard for monitoring trading agents
+import gradio as gr
+from src.util import css, js, Color
+import pandas as pd
+from src.trading_floor import names, lastnames, short_model_names
+import plotly.express as px
+from src.accounts import Account
+from src.database import read_log
+
+# Create UI with real-time updates
+ui = create_ui()
+ui.launch(inbrowser=True)
+```
+
+**Dashboard Features:**
+
+- **Multi-Agent Monitoring**: Track Warren, George, Ray, and Cathie simultaneously
+- **Real-Time Portfolio Charts**: Interactive Plotly charts showing portfolio performance
+- **Live Transaction Logs**: Real-time trading activity and decision rationale
+- **Portfolio Holdings**: Current positions and quantities
+- **Performance Metrics**: P&L tracking with color-coded indicators
+- **Auto-Refresh**: 2-minute interval updates for portfolio data
+- **Log Streaming**: 0.5-second interval updates for trading logs
+
+**UI Components:**
+
+```python
+class TraderView:
+    def make_ui(self):
+        with gr.Column():
+            # Trader title with model info
+            gr.HTML(self.trader.get_title())
+            
+            # Portfolio value with P&L indicator
+            self.portfolio_value = gr.HTML(self.trader.get_portfolio_value)
+            
+            # Interactive portfolio chart
+            self.chart = gr.Plot(self.trader.get_portfolio_value_chart)
+            
+            # Real-time trading logs
+            self.log = gr.HTML(self.trader.get_logs)
+            
+            # Holdings and transactions tables
+            self.holdings_table = gr.Dataframe(...)
+            self.transactions_table = gr.Dataframe(...)
+```
+
+**Chart Styling:**
+- Blue line charts matching professional trading interfaces
+- Grid overlays for better readability
+- Hover tooltips for detailed value inspection
+- Responsive design with proper formatting
+
+**Data Integration:**
+- SQLite database for persistent storage
+- Real-time log streaming from trading activities
+- Portfolio value time series tracking
+- Transaction history with rationale
+
+### Automated Trading Floor
+
+The `trading_floor.py` module orchestrates multiple trading agents with configurable scheduling:
+
+```python
+# src/trading_floor.py - Multi-agent trading orchestration
+from .traders import Trader
+from .tracers import LogTracer
+from agents import add_trace_processor
+from .market import is_market_open
+
+# Create and run multiple traders
+traders = create_traders()  # Warren, George, Ray, Cathie
+await asyncio.gather(*[trader.run() for trader in traders])
+```
+
+**Trading Floor Configuration:**
+
+Environment variables control trading behavior:
+```bash
+# Trading frequency
+RUN_EVERY_N_MINUTES=60
+
+# Market hours enforcement
+RUN_EVEN_WHEN_MARKET_IS_CLOSED=False
+
+# Model diversity
+USE_MANY_MODELS=False
+```
+
+**Agent Profiles:**
+
+| Trader | Lastname | Default Model | Specialization |
+|--------|----------|---------------|----------------|
+| Warren | Patience | GPT 4o mini | Value investing |
+| George | Bold | GPT 4o mini | Growth trading |
+| Ray | Systematic | GPT 4o mini | Algorithmic trading |
+| Cathie | Crypto | GPT 4o mini | Digital assets |
+
+**Multi-Model Support:**
+
+When `USE_MANY_MODELS=True`, agents use different AI models:
+- GPT 4.1 Mini
+- DeepSeek V3
+- Gemini 2.5 Flash
+- Grok 3 Mini
+
+**Scheduling System:**
+
+```python
+async def run_every_n_minutes():
+    while True:
+        if RUN_EVEN_WHEN_MARKET_IS_CLOSED or is_market_open():
+            # Run all traders concurrently
+            await asyncio.gather(*[trader.run() for trader in traders])
+        else:
+            print("Market is closed, skipping run")
+        
+        # Wait for next cycle
+        await asyncio.sleep(RUN_EVERY_N_MINUTES * 60)
+```
+
+**Integration with Dashboard:**
+
+- **Database Logging**: All trading activities logged to SQLite
+- **Real-Time Updates**: Dashboard refreshes automatically
+- **Performance Tracking**: Portfolio value time series
+- **Error Handling**: Comprehensive error reporting
+- **Market Awareness**: Respects market hours
+
+### Running the Trading System
+
+**1. Start the Trading Floor:**
+```bash
+# Execute trading agents with scheduling
+uv run -m src.trading_floor
+```
+
+**2. Launch Dashboard:**
+```bash
+# Start web dashboard
+uv run app.py
+```
+
+**3. Monitor Trading:**
+- Open http://127.0.0.1:7860 in browser
+- Watch real-time portfolio updates
+- Monitor trading logs and decisions
+- Track P&L performance
+
 ## 🤖 AI Agent Features
 
 ### Supported Models
@@ -870,19 +1023,19 @@ We have 6 MCP servers, and 16 tools
 Run the examples to verify functionality:
 
 ```bash
-# Basic MCP server test
+# Basic account operations test
 uv run example1.py
 
-# Advanced AI agent test
+# Account with MCP server test
 uv run example2.py
 
-# Memory persistence test
+# Account + market data test
 uv run example3.py
 
-# Web search integration test
+# Account + market + notifications test
 uv run example4.py
 
-# Market data integration test
+# Basic AI trading agent test
 uv run example5.py
 
 # Advanced error handling test
@@ -896,6 +1049,12 @@ uv run example8.py
 
 # Advanced trader with streaming test
 uv run example9.py
+
+# Web dashboard test
+uv run app.py
+
+# Trading floor orchestration test
+uv run -m src.trading_floor
 ```
 
 ## �️ Error Handling Best Practices
@@ -939,6 +1098,8 @@ When you encounter ANY error, you MUST:
 - [x] Financial researcher agent with multi-server integration
 - [x] Autonomous trader agent with research tool integration
 - [x] Advanced trader with real-time streaming output
+- [x] Web dashboard with real-time monitoring
+- [x] Multi-agent trading floor orchestration
 - [ ] Web dashboard for account monitoring
 - [ ] Advanced risk management features
 - [ ] Portfolio optimization algorithms
@@ -968,4 +1129,4 @@ This MCP implementation integrates with:
 
 ---
 
-**Note**: This is an active development project. New examples and features will be added as requested. The current implementation focuses on account management, financial research, autonomous trading, and real-time streaming with AI agents including multi-server MCP integration, comprehensive error handling, and professional trading automation.
+**Note**: This is an active development project. New examples and features will be added as requested. The current implementation focuses on account management, financial research, autonomous trading, real-time streaming, web dashboard monitoring, and multi-agent orchestration with AI agents including multi-server MCP integration, comprehensive error handling, and professional trading automation.
