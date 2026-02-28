@@ -31,6 +31,7 @@ This project implements a multi-server MCP architecture for automated trading an
 ├── example3.py                   # MCP memory persistence with libsql
 ├── example4.py                   # Web search integration with Brave Search API
 ├── example5.py                   # Market data integration with Polygon.io API
+├── example6.py                   # Advanced error handling with Polygon MCP server
 └── pyproject.toml                # Project dependencies
 ```
 
@@ -48,6 +49,7 @@ This project implements a multi-server MCP architecture for automated trading an
 - **Memory Persistence**: Long-term memory storage with MCP and libsql
 - **Web Search Integration**: Real-time web search with Brave Search API
 - **Market Data Integration**: Real-time and historical stock market data with Polygon.io
+- **Advanced Error Handling**: Comprehensive error reporting and troubleshooting
 
 ### MCP Servers
 
@@ -88,6 +90,12 @@ This project implements a multi-server MCP architecture for automated trading an
    - Real-time market data with Polygon.io integration
    - Intelligent caching to avoid API rate limiting
    - Fallback to simulated data when API is unavailable
+
+7. **Polygon MCP Server** (External - `mcp_polygon`)
+
+   - `get_snapshot_ticker(symbol)` - Get real-time stock price snapshots
+   - Advanced error handling with detailed API error reporting
+   - Professional-grade market data integration
 
 ## 📦 Dependencies
 
@@ -370,6 +378,104 @@ async def main():
 - Trading algorithm development
 - Financial dashboard integration
 
+### Example 6: Advanced Error Handling with Polygon MCP Server
+
+```python
+# example6.py - Professional error handling with external MCP server
+from dotenv import load_dotenv
+from agents import Agent, Runner, trace
+from agents.mcp import MCPServerStdio
+import os
+
+# Validate API key before proceeding
+polygon_api_key = os.getenv("POLYGON_API_KEY")
+if not polygon_api_key or polygon_api_key == "your_polygon_api_key":
+    print("\n❌ ERROR: POLYGON_API_KEY is not configured!")
+    print("📝 To fix this:")
+    print("   1. Get your API key from: https://polygon.io/pricing")
+    print("   2. Add it to your .env file: POLYGON_API_KEY=your_actual_key")
+    print("   3. Note: Free plans have limitations on real-time data access")
+    print("   4. Run the example again\n")
+    exit(1)
+
+# Configure external Polygon MCP server
+params = {
+    "command": "uvx",
+    "args": [
+        "--from",
+        "git+https://github.com/polygon-io/mcp_polygon@v0.1.0",
+        "mcp_polygon",
+    ],
+    "env": {"POLYGON_API_KEY": polygon_api_key},
+}
+
+# Enhanced instructions with strict error reporting
+instructions = """You answer questions about the stock market.
+
+CRITICAL ERROR REPORTING RULES:
+When you encounter ANY error from the get_snapshot_ticker tool, you MUST:
+1. Start your response with "⚠️ API ERROR DETECTED:"
+2. Quote the EXACT error message you received (including error codes like 422, 401, etc.)
+3. Explain what this error means in plain terms
+4. Provide specific steps to fix it
+
+DO NOT provide generic responses like "I'm unable to access information" without explaining the technical error."""
+
+request = "What's the share price of Apple? Use your get_snapshot_ticker tool to get the latest price."
+model = "gpt-4.1-mini"
+
+async def main():
+    async with MCPServerStdio(params=params, client_session_timeout_seconds=60) as server:
+        mcp_tools = await server.list_tools()
+        print("Available tools:", mcp_tools)
+
+    async with MCPServerStdio(params=params, client_session_timeout_seconds=60) as mcp_server:
+        agent = Agent(
+            name="market_agent", 
+            instructions=instructions, 
+            model=model, 
+            mcp_servers=[mcp_server]
+        )
+        
+        with trace("market_query"):
+            result = await Runner.run(agent, request)
+            print(result.final_output)
+```
+
+**Advanced Error Handling Features:**
+
+- **Pre-execution Validation**: Comprehensive API key validation with helpful setup instructions
+- **External MCP Server**: Uses official Polygon MCP server for professional-grade integration
+- **Structured Error Reporting**: Enforces detailed error disclosure with specific technical details
+- **Tool Discovery**: Lists available MCP tools before execution
+- **Enhanced Instructions**: Strict error reporting rules prevent generic responses
+- **Professional Integration**: Demonstrates production-ready MCP server usage
+
+**Error Handling Excellence:**
+
+1. **Validation Layer**: Catches missing API keys before execution
+2. **Transparent Reporting**: Forces agents to reveal exact error details
+3. **User Guidance**: Provides specific troubleshooting steps
+4. **Technical Details**: Captures error codes, messages, and request IDs
+5. **Consistent Format**: Standardized error response structure
+
+**External MCP Server Benefits:**
+
+- **Official Support**: Uses Polygon's maintained MCP server
+- **Advanced Features**: Access to professional market data tools
+- **Better Performance**: Optimized data retrieval and caching
+- **Regular Updates**: Maintained by Polygon.io team
+- **Production Ready**: Designed for enterprise use
+
+**Use Cases:**
+
+- Production market data integration
+- Professional trading applications
+- Financial dashboard development
+- Risk management systems
+- Portfolio analysis tools
+- Real-time market monitoring
+
 ## 🤖 AI Agent Features
 
 ### Supported Models
@@ -478,6 +584,9 @@ uv run example4.py
 
 # Market data integration test
 uv run example5.py
+
+# Advanced error handling test
+uv run example6.py
 ```
 
 ## �️ Error Handling Best Practices
