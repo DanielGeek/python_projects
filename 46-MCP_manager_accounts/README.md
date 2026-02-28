@@ -32,6 +32,8 @@ This project implements a multi-server MCP architecture for automated trading an
 ├── example4.py                   # Web search integration with Brave Search API
 ├── example5.py                   # Market data integration with Polygon.io API
 ├── example6.py                   # Advanced error handling with Polygon MCP server
+├── example7.py                   # Financial researcher agent with web search
+├── example8.py                   # Autonomous trader agent with research integration
 └── pyproject.toml                # Project dependencies
 ```
 
@@ -476,6 +478,196 @@ async def main():
 - Portfolio analysis tools
 - Real-time market monitoring
 
+### Example 7: Financial Researcher Agent with Web Search
+
+```python
+# example7.py - Financial researcher agent with multi-server integration
+from dotenv import load_dotenv
+from agents import Agent, Runner, trace
+from agents.mcp import MCPServerStdio
+from datetime import datetime
+import os
+
+# Configure multiple MCP servers
+researcher_mcp_server_params = [
+    {"command": "uvx", "args": ["mcp-server-fetch"]},
+    {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+        "env": {"BRAVE_API_KEY": os.getenv("BRAVE_API_KEY")},
+    },
+]
+
+# Create researcher agent with error handling
+async def get_researcher(mcp_servers) -> Agent:
+    instructions = f"""You are a financial researcher. You are able to search the web for interesting financial news,
+look for possible trading opportunities, and help with research.
+Based on the request, you carry out necessary research and respond with your findings.
+Take time to make multiple searches to get a comprehensive overview, and then summarize your findings.
+If there isn't a specific request, then just respond with investment opportunities based on searching latest news.
+The current datetime is {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+
+CRITICAL ERROR REPORTING RULES:
+When you encounter ANY error from web search tools, you MUST:
+1. Start your response with "⚠️ API ERROR DETECTED:"
+2. Quote the EXACT error message you received
+3. Explain what this error means in plain terms
+4. Provide specific steps to fix it"""
+    
+    return Agent(
+        name="Researcher",
+        instructions=instructions,
+        model="gpt-4.1-mini",
+        mcp_servers=mcp_servers,
+    )
+
+async def main():
+    # Connect MCP servers
+    researcher_mcp_servers = [
+        MCPServerStdio(params, client_session_timeout_seconds=30)
+        for params in researcher_mcp_server_params
+    ]
+    
+    for server in researcher_mcp_servers:
+        await server.connect()
+    
+    researcher = await get_researcher(researcher_mcp_servers)
+    research_question = "What's the latest news on Amazon?"
+    
+    with trace("Researcher"):
+        result = await Runner.run(researcher, research_question, max_turns=30)
+    print(result.final_output)
+```
+
+**Financial Researcher Features:**
+
+- **Multi-Server Integration**: Combines web fetch and Brave Search capabilities
+- **Comprehensive Research**: Multiple searches for complete market overview
+- **Error Handling**: Transparent reporting of API errors and issues
+- **Current Context**: Automatically includes current date in research
+- **Financial Focus**: Optimized for stock market and investment research
+
+**Use Cases:**
+- Stock market research and analysis
+- Latest financial news aggregation
+- Company-specific information gathering
+- Investment opportunity identification
+- Market sentiment analysis
+
+### Example 8: Autonomous Trader Agent with Research Integration
+
+```python
+# example8.py - Autonomous trader with research tool integration
+from dotenv import load_dotenv
+from agents import Agent, Runner, trace, Tool
+from agents.mcp import MCPServerStdio
+from src.accounts_client import read_accounts_resource, read_strategy_resource
+from src.accounts import Account
+import os
+
+# Configure all MCP servers
+trader_mcp_server_params = [
+    {"command": "uv", "args": ["run", "src/accounts_server.py"]},
+    {"command": "uv", "args": ["run", "src/push_server.py"]},
+    market_mcp,  # Polygon or local market server
+]
+
+researcher_mcp_server_params = [
+    {"command": "uvx", "args": ["mcp-server-fetch"]},
+    {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+        "env": {"BRAVE_API_KEY": os.getenv("BRAVE_API_KEY")},
+    },
+]
+
+# Create researcher as a tool for the trader
+async def get_researcher_tool(mcp_servers) -> Tool:
+    researcher = await get_researcher(mcp_servers)
+    return researcher.as_tool(
+        tool_name="Researcher",
+        tool_description="This tool researches online for news and opportunities, \
+            either based on your specific request to look into a certain stock, \
+            or generally for notable financial news and opportunities. \
+            Describe what kind of research you're looking for."
+    )
+
+async def main():
+    agent_name = "Daniel"
+    
+    # Get current account state
+    account_details = await read_accounts_resource(agent_name)
+    strategy = await read_strategy_resource(agent_name)
+    
+    # Create trader instructions with context
+    instructions = f"""
+    You are a trader that manages a portfolio of shares. Your name is {agent_name} and your account is under your name, {agent_name}.
+    You have access to tools that allow you to search the internet for company news, check stock prices, and buy and sell shares.
+    Your investment strategy for your portfolio is:
+    {strategy}
+    Your current holdings and balance is:
+    {account_details}
+    You have the tools to perform a websearch for relevant news and information.
+    You have tools to check stock prices.
+    You have tools to buy and sell shares.
+    You have tools to save memory of companies, research and thinking so far.
+    Please make use of these tools to manage your portfolio. Carry out trades as you see fit; do not wait for instructions or ask for confirmation.
+    """
+    
+    # Connect all MCP servers
+    mcp_servers = trader_mcp_servers + researcher_mcp_servers
+    for server in mcp_servers:
+        await server.connect()
+    
+    # Create researcher tool
+    researcher_tool = await get_researcher_tool(researcher_mcp_servers)
+    
+    # Create autonomous trader
+    trader = Agent(
+        name=agent_name,
+        instructions=instructions,
+        tools=[researcher_tool],
+        mcp_servers=trader_mcp_servers,
+        model="gpt-4o-mini",
+    )
+    
+    prompt = """
+    Use your tools to make decisions about your portfolio.
+    Investigate the news and the market, make your decision, make the trades, and respond with a summary of your actions.
+    """
+    
+    with trace(agent_name):
+        result = await Runner.run(trader, prompt, max_turns=30)
+    
+    # Display results and final portfolio state
+    print("Trading Summary:", result.final_output)
+    print("Final Portfolio:", await read_accounts_resource(agent_name))
+```
+
+**Autonomous Trader Features:**
+
+- **Research Integration**: Uses researcher tool for market analysis
+- **Portfolio Management**: Complete trading autonomy with strategy awareness
+- **Multi-Tool Architecture**: Combines research, trading, and account management
+- **Real-time Decisions**: Investigates market conditions and executes trades
+- **Context-Aware Trading**: Considers current holdings, balance, and strategy
+- **Comprehensive Reporting**: Detailed trade summaries and portfolio updates
+
+**Trader Capabilities:**
+- Autonomous market research and analysis
+- Real-time trade execution based on research findings
+- Portfolio rebalancing and optimization
+- Risk assessment and management
+- Strategy-aligned decision making
+- Complete audit trail with rationale
+
+**Use Cases:**
+- Automated trading systems
+- Portfolio management automation
+- Market research-driven trading
+- Strategy implementation and testing
+- Risk-managed investment execution
+
 ## 🤖 AI Agent Features
 
 ### Supported Models
@@ -587,6 +779,12 @@ uv run example5.py
 
 # Advanced error handling test
 uv run example6.py
+
+# Financial researcher agent test
+uv run example7.py
+
+# Autonomous trader agent test
+uv run example8.py
 ```
 
 ## �️ Error Handling Best Practices
@@ -622,18 +820,19 @@ When you encounter ANY error, you MUST:
 """
 ```
 
-## �🔮 Future Enhancements
+## 🔮 Future Enhancements
 
 - [x] Memory persistence implementation with libsql
 - [x] Web search integration with Brave Search API
 - [x] Advanced error handling and transparent reporting
-- [ ] Additional example implementations
+- [x] Financial researcher agent with multi-server integration
+- [x] Autonomous trader agent with research tool integration
 - [ ] Web dashboard for account monitoring
 - [ ] Advanced risk management features
 - [ ] Portfolio optimization algorithms
 - [ ] Backtesting framework
 - [ ] Multi-account support
-- [ ] Advanced charting and analytics
+- [ ] Additional example implementations
 
 ## 🤝 Contributing
 
@@ -657,4 +856,4 @@ This MCP implementation integrates with:
 
 ---
 
-**Note**: This is an active development project. New examples and features will be added as requested. The current implementation focuses on account management and basic trading automation with AI agents.
+**Note**: This is an active development project. New examples and features will be added as requested. The current implementation focuses on account management, financial research, and autonomous trading with AI agents including multi-server MCP integration and comprehensive error handling.
