@@ -1,0 +1,242 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "upload",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2e7b19c6-d2bc-4a25-8c4e-0b675c4aff57",
+      "name": "Webhook",
+      "webhookId": "333f7e4b-f500-4366-8631-733211745b6e"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "340754af-9cd1-4466-9587-5ce2f4d9fd17",
+              "name": "mimeType",
+              "value": "={{ $json.body.fileType }}",
+              "type": "string"
+            },
+            {
+              "id": "e2d8870f-6be8-4007-8b51-b4e941049a5f",
+              "name": "fileName",
+              "value": "={{ $json.body.filename }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "58ea4bce-6b94-4c65-817e-1e331ce3dd2c",
+      "name": "Extract Fields"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "={{ \"application/pdf\" }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "5247d14a-a234-4455-8d58-cd02545a099a"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c98be01a-7381-4839-a00e-49bc5e4fb0fa",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "={{ \"text/csv\" }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3330a9b9-ce16-4694-8d94-a159369c6a99",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "={{ \"text/plain\" }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "dd05ea5d-0c27-48a7-b953-ffebb2f74638",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        -112
+      ],
+      "id": "fbaa1490-5c40-4fc2-8f6f-db31e6c03e69",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        48
+      ],
+      "id": "db2c1d47-237d-4617-9803-f46967cf3a41",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "binaryPropertyName": "file",
+        "destinationKey": "file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        240
+      ],
+      "id": "155f0292-700e-46e4-9def-8abff6b66916",
+      "name": "Extract from File2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Fields": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "62ea5537-186c-4d0d-916e-99ac4c029221",
+  "meta": {
+    "instanceId": "85757c58b69237edee3c39834c9f110726919ce518fc09e384ebf0ca63c74423"
+  },
+  "id": "YSQpYbDX67igjOXo",
+  "tags": []
+}
