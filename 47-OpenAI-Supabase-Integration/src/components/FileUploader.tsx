@@ -47,7 +47,7 @@ export default function FileUploader() {
         file,
         id: `${Date.now()}-${i}`,
         status: error ? 'error' : 'idle',
-        error,
+        error: error ?? undefined,
       });
     }
     setFiles((prev) => [...prev, ...newFiles]);
@@ -79,6 +79,7 @@ export default function FileUploader() {
       formData.append('fileType', uploadedFile.file.type);
       formData.append('fileSize', uploadedFile.file.size.toString());
       formData.append('timestamp', new Date().toISOString());
+      formData.append('userId', 'USR' + Math.random().toString(36).substr(2, 9).toUpperCase());
 
       const response = await fetch(N8N_WEBHOOK_URL, {
         method: 'POST',
