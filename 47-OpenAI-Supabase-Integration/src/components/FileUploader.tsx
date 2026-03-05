@@ -87,7 +87,29 @@ export default function FileUploader() {
       });
 
       if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
+        // Try to parse error response as JSON
+        let errorMessage = `Upload failed (${response.status} ${response.statusText})`;
+        
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage = `Error ${response.status}: ${errorData.message}`;
+          } else if (errorData.error) {
+            errorMessage = `Error ${response.status}: ${errorData.error}`;
+          }
+        } catch {
+          // If JSON parsing fails, try to get text
+          try {
+            const errorText = await response.text();
+            if (errorText) {
+              errorMessage = `Error ${response.status}: ${errorText}`;
+            }
+          } catch {
+            // Keep default error message
+          }
+        }
+        
+        throw new Error(errorMessage);
       }
 
       setFiles((prev) =>
@@ -119,7 +141,14 @@ export default function FileUploader() {
   };
 
   const removeFile = (id: string) => {
-    setFiles((prev) => prev.filter((f) => f.id !== id));
+    setFiles((prev) => {
+      const newFiles = prev.filter((f) => f.id !== id);
+      // Reset file input when removing the last file
+      if (newFiles.length === 0 && fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      return newFiles;
+    });
   };
 
   const clearAll = () => {
