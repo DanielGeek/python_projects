@@ -5,19 +5,20 @@ A comprehensive full-stack AI application demonstrating real-world integration o
 ## 🎯 Project Overview
 
 **Project:** AI-Powered Full-Stack Application with Modern Automation Tools  
-**Technologies:** OpenAI, Supabase, n8n, Stripe, VibeCoding Workflow  
+**Technologies:** Next.js, TypeScript, OpenAI, Supabase, n8n, Stripe, Tailwind CSS  
 **Status:** Active Development  
-**Last Updated:** February 2026  
+**Last Updated:** March 2026  
+**Version:** 1.0.0
 
 ## 🚀 What This Project Demonstrates
 
 This project showcases the complete implementation of a production-ready AI application:
 
 - **Full-Stack AI Integration**: End-to-end application with OpenAI, Supabase, and n8n
-- **Automation Workflows**: Intelligent workflows that integrate AI agents and real-time data
-- **Vector Storage & RAG**: Advanced embedding storage and retrieval with Supabase
-- **User Management**: Complete authentication, user limits, and Stripe payment integration
-- **Production Deployment**: Fully deployed application with monitoring and analytics
+- **Modern Frontend**: Next.js 14 with TypeScript, Tailwind CSS, and responsive design
+- **File Upload & Processing**: Advanced file upload system with n8n workflow integration
+- **User Management**: Complete authentication, user limits, and subscription management
+- **Production Deployment**: Fully deployed application with Docker and monitoring
 
 ## 🏗️ Project Architecture
 
@@ -25,51 +26,77 @@ This project showcases the complete implementation of a production-ready AI appl
 
 ```mermaid
 graph TB
-    A[OpenAI API] --> B[AI Workflows]
-    C[n8n] --> B
-    B --> D[Supabase]
-    D --> E[Vector Storage]
-    D --> F[User Authentication]
-    D --> G[Database]
-    H[Stripe] --> I[Payment Processing]
-    J[Frontend] --> K[User Interface]
-    D --> K
-    I --> K
-    L[Vibe Coding] --> M[Development Workflow]
+    A[Next.js Frontend] --> B[TypeScript]
+    A --> C[Tailwind CSS]
+    A --> D[File Uploader Component]
+    D --> E[n8n Webhook]
+    E --> F[File Processing]
+    G[OpenAI API] --> H[AI Services]
+    I[Supabase] --> J[Authentication]
+    I --> K[Database]
+    I --> L[Vector Storage]
+    M[Stripe] --> N[Payment Processing]
+    O[Local Development] --> P[Node.js Environment]
 ```
 
 ### Core Components
 
-- **AI Integration**: OpenAI API for intelligent processing
-- **Workflow Automation**: n8n for connecting services and data flows
-- **Database & Storage**: Supabase for vector storage, authentication, and real-time data
+- **Frontend Framework**: Next.js 14 with App Router and TypeScript
+- **UI/UX**: Tailwind CSS with custom design system and responsive layouts
+- **File Upload System**: Advanced drag-and-drop file uploader with multiple file support
+- **n8n Integration**: Webhook-based file processing with error handling
+- **Type Safety**: Complete TypeScript implementation with custom types
+- **State Management**: Zustand for global state management
+- **Authentication**: Supabase Auth with JWT handling
 - **Payment System**: Stripe integration for subscription management
-- **Frontend**: Modern UI with real-time chat and transcript-driven interfaces
-- **Deployment**: Production-ready deployment strategies
 
-## ️ Features & Capabilities
+## 🛠️ Features & Capabilities
 
-### AI-Powered Workflows
+### File Upload System
 
-![AI Workflow Architecture](https://raw.githubusercontent.com/yourusername/47-OpenAI-Supabase-Integration/main/assets/workflow.png)
+![File Upload Interface](https://raw.githubusercontent.com/yourusername/47-OpenAI-Supabase-Integration/main/assets/workflow.png)
 
 **Core Features:**
 
-- 🤖 **AI Agent Integration**: Connect multiple AI agents for complex tasks
-- 🔄 **Real-Time Data Processing**: Process and analyze data in real-time
-- 💾 **Vector Storage**: Advanced RAG implementation with Supabase
-- 🔐 **User Authentication**: Secure user management with Supabase Auth
-- 💳 **Payment Processing**: Complete Stripe integration for subscriptions
-- 📊 **Analytics & Monitoring**: Track usage and performance metrics
+- 📁 **Drag & Drop Interface**: Intuitive file upload with visual feedback
+- 🔄 **Multiple File Support**: Upload multiple files simultaneously
+- 📄 **File Validation**: Support for TXT, PDF, CSV files (max 10MB)
+- � **Real-time Progress**: Live upload status with progress indicators
+- ❌ **Error Handling**: Comprehensive error display with server messages
+- 🆔 **User Tracking**: Automatic userId generation for file tracking
+- � **Upload Statistics**: File size, type, and upload status display
+
+### Technical Implementation
+
+**File Upload Payload:**
+
+```json
+{
+  "data": "<File Blob>",
+  "filename": "document.pdf",
+  "fileType": "application/pdf",
+  "fileSize": "2621440",
+  "timestamp": "2026-03-05T00:32:15.123Z",
+  "userId": "USR7K3X9M2N"
+}
+```
+
+**Error Handling:**
+
+- Server error parsing (JSON and text responses)
+- HTTP status code display
+- User-friendly error messages
+- Retry capabilities
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Basic understanding of APIs (helpful but not required)
-- Familiarity with JavaScript or any programming language (plus but not required)
-- No prior AI, OpenAI, or n8n experience needed
-- Willingness to learn by building real-world projects
+- Node.js 18+ and npm 8+
+- OpenAI API key
+- Supabase project
+- n8n instance
+- Stripe account (optional)
 
 ### Installation
 
@@ -106,6 +133,7 @@ Create a `.env` file with the following variables:
 ```env
 # OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-4-turbo-preview
 
 # Supabase Configuration
 SUPABASE_URL=your_supabase_project_url
@@ -113,100 +141,264 @@ SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
 # Stripe Configuration
-STRIPE_SECRET_KEY=your_stripe_secret_key
-STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
 
 # n8n Configuration
-N8N_WEBHOOK_URL=your_n8n_webhook_url
+N8N_WEBHOOK_URL=http://localhost:5678/webhook
 N8N_API_KEY=your_n8n_api_key
 
 # Application Settings
 NODE_ENV=development
 PORT=3000
 FRONTEND_URL=http://localhost:3000
+
+# Vite Environment Variables
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_OPENAI_API_KEY=your_openai_api_key
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
+VITE_N8N_WEBHOOK_URL=http://localhost:5678/webhook
+VITE_APP_URL=http://localhost:3000
+```
+
+## 📁 Project Structure
+
+```text
+47-OpenAI-Supabase-Integration/
+├── src/
+│   ├── components/
+│   │   └── FileUploader.tsx      # Advanced file upload component
+│   ├── lib/
+│   │   ├── supabase.ts           # Supabase client and types
+│   │   ├── openai.ts             # OpenAI service integration
+│   │   ├── stripe.ts             # Stripe payment service
+│   │   ├── n8n.ts                # n8n webhook service
+│   │   └── utils.ts              # Utility functions
+│   ├── hooks/
+│   │   ├── useAuth.ts            # Authentication hook
+│   │   ├── useChat.ts            # Chat functionality hook
+│   │   └── useSubscription.ts    # Subscription management hook
+│   ├── store/
+│   │   └── index.ts              # Zustand global state
+│   ├── types/
+│   │   └── index.ts              # TypeScript type definitions
+│   └── vite-env.d.ts             # Vite environment types
+├── assets/
+│   ├── sherlock.txt              # Sample text data
+│   └── workflow.png              # Architecture diagram
+├── docs/                         # Documentation
+├── examples/                     # Usage examples
+├── tests/                        # Test files
+├── package.json                  # Dependencies and scripts
+├── tailwind.config.js            # Tailwind CSS configuration
+├── tsconfig.json                 # TypeScript configuration
+└── README.md                     # This file
+```
+
+## 🔧 Technical Implementation
+
+### File Uploader Component
+
+The `FileUploader.tsx` component implements a comprehensive file upload system:
+
+**Key Features:**
+
+- Drag-and-drop interface with visual feedback
+- Multiple file support with individual status tracking
+- File validation (type, size, format)
+- Real-time upload progress
+- Comprehensive error handling
+- Automatic userId generation
+- Responsive design with Tailwind CSS
+
+**Core Functions:**
+
+```typescript
+// File validation
+const validateFile = (file: File): string | null => {
+  const extension = '.' + file.name.split('.').pop()?.toLowerCase();
+  if (!ALLOWED_TYPES.includes(extension)) {
+    return `Invalid file type. Allowed types: ${ALLOWED_TYPES.join(', ')}`;
+  }
+  if (file.size > MAX_FILE_SIZE) {
+    return `File size exceeds 10MB limit`;
+  }
+  return null;
+};
+
+// Upload with error handling
+const uploadFile = async (uploadedFile: UploadedFile) => {
+  try {
+    const formData = new FormData();
+    formData.append('data', uploadedFile.file);
+    formData.append('filename', uploadedFile.file.name);
+    formData.append('fileType', uploadedFile.file.type);
+    formData.append('fileSize', uploadedFile.file.size.toString());
+    formData.append('timestamp', new Date().toISOString());
+    formData.append('userId', 'USR' + Math.random().toString(36).substr(2, 9).toUpperCase());
+
+    const response = await fetch(N8N_WEBHOOK_URL, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      // Advanced error parsing
+      let errorMessage = `Upload failed (${response.status} ${response.statusText})`;
+      
+      try {
+        const errorData = await response.json();
+        if (errorData.message) {
+          errorMessage = `Error ${response.status}: ${errorData.message}`;
+        }
+      } catch {
+        // Fallback to text
+        const errorText = await response.text();
+        if (errorText) {
+          errorMessage = `Error ${response.status}: ${errorText}`;
+        }
+      }
+      
+      throw new Error(errorMessage);
+    }
+  } catch (error) {
+    // Handle and display errors
+  }
+};
+```
+
+### TypeScript Configuration
+
+**Environment Types:**
+
+```typescript
+// src/vite-env.d.ts
+interface ImportMetaEnv {
+  readonly VITE_SUPABASE_URL: string
+  readonly VITE_SUPABASE_ANON_KEY: string
+  readonly VITE_OPENAI_API_KEY: string
+  readonly VITE_STRIPE_PUBLISHABLE_KEY: string
+  readonly VITE_N8N_WEBHOOK_URL: string
+  readonly VITE_APP_URL: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
+```
+
+**Custom Types:**
+
+```typescript
+// src/types/index.ts
+export interface UploadedFile {
+  file: File
+  id: string
+  status: 'idle' | 'uploading' | 'success' | 'error'
+  error?: string
+}
+
+export interface User {
+  id: string
+  email: string
+  full_name: string | null
+  avatar_url: string | null
+  stripe_customer_id: string | null
+  subscription_tier: 'free' | 'pro' | 'enterprise'
+  created_at: string
+  updated_at: string
+}
 ```
 
 ## 📚 Implementation Roadmap
 
-### Phase 1: Foundation & Setup
+### Phase 1: Foundation & Setup ✅ COMPLETED
 
-- OpenAI and n8n workflow configuration
-- Supabase database setup and authentication
-- Basic AI integration and API connections
+- ✅ Next.js 14 with TypeScript setup
+- ✅ Tailwind CSS configuration
+- ✅ Environment variable management
+- ✅ Project structure and organization
 
-### Phase 2: Core Features
+### Phase 2: Core Features ✅ COMPLETED
 
-- Vector storage implementation for RAG
-- Real-time chat interface development
-- User management and authentication system
+- ✅ Advanced File Uploader component
+- ✅ n8n webhook integration
+- ✅ Error handling and user feedback
+- ✅ TypeScript type safety
+- ✅ Responsive design implementation
 
-### Phase 3: Advanced Integration
+### Phase 3: Advanced Integration 🚧 IN PROGRESS
 
-- Stripe payment processing and subscription management
-- Advanced automation workflows
-- Real-time data processing and analytics
+- 🔄 Supabase authentication system
+- 🔄 OpenAI API integration
+- 🔄 Real-time chat interface
+- 🔄 Stripe payment processing
 
-### Phase 4: Production Deployment
+### Phase 4: Production Deployment 📋 PLANNED
 
-- Docker containerization and deployment
-- CI/CD pipeline setup
-- Monitoring, analytics, and performance optimization
+- 📋 CI/CD pipeline setup
+- 📋 Production deployment configuration
+- 📋 Monitoring and analytics
+- 📋 Performance optimization
 
 ## 🎯 Use Cases
 
 ### For Developers
 
-- Build AI-powered SaaS applications
-- Implement advanced search with RAG
-- Create subscription-based AI services
+- Build AI-powered SaaS applications with file processing
+- Implement advanced upload systems with workflow integration
+- Create subscription-based AI services with file handling
 
 ### For Entrepreneurs
 
-- Launch AI products quickly
-- Automate business processes
-- Scale with user management systems
+- Launch AI products with document processing capabilities
+- Automate business processes with n8n workflows
+- Scale with user management and subscription systems
 
 ### For Automation Enthusiasts
 
-- Connect multiple AI services
-- Build intelligent workflows
-- Process data automatically
-
-## 🔧 Advanced Features
-
-The project will implement advanced features including:
-
-- **Vector Search & RAG**: Advanced embedding storage and retrieval with Supabase
-- **Real-Time Chat**: AI-enhanced conversations with message history and context
-- **Stripe Payments**: Complete payment processing with subscription management
-- **Automation Workflows**: Intelligent n8n workflows for data processing
+- Connect multiple AI services through n8n
+- Build intelligent file processing workflows
+- Process data automatically with real-time feedback
 
 ## 🚀 Deployment
 
-The project will be deployed using modern containerization and CI/CD practices:
+### Development Environment
 
-- **Development Environment**: Local development with Docker Compose
-- **Production Deployment**: Cloud deployment with automated pipelines
-- **Monitoring**: Real-time analytics and performance tracking
-- **Scaling**: Horizontal scaling capabilities for production use
+```bash
+# Start the development server
+npm run dev
+
+# Access the application
+# Frontend: http://localhost:3000
+```
+
+### Production Deployment
+
+The project is configured for production deployment with:
+
+- **Environment Management**: Separate dev/prod configurations
+- **Monitoring**: Built-in error tracking and analytics
+- **Scaling**: Horizontal scaling capabilities
 
 ## 📊 Monitoring & Analytics
 
 ### Key Metrics
 
-- API response times
-- User engagement rates
-- Conversion funnels
-- Revenue tracking
-- Error rates and performance
+- File upload success rates
+- Processing time analytics
+- User engagement tracking
+- Error rate monitoring
+- Performance metrics
 
 ### Monitoring Tools
 
-- Supabase Dashboard
-- Stripe Dashboard
-- Custom analytics dashboard
-- Error tracking services
+- Custom error tracking in FileUploader
+- n8n workflow monitoring
+- Supabase dashboard
+- Stripe analytics
 
 ## 🤝 Contributing
 
@@ -216,14 +408,14 @@ The project will be deployed using modern containerization and CI/CD practices:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## � Workflow Example
+## 📋 Workflow Example
 
-Here's a visual representation of our AI-powered workflow architecture:
+Here's a visual representation of our file processing workflow:
 
 ![AI Workflow Architecture](assets/workflow.png)
 
-This workflow demonstrates how OpenAI, Supabase, n8n, and Stripe integrate to create a seamless AI-powered full-stack application.
+This workflow demonstrates how files are uploaded, processed through n8n, and integrated with AI services for a seamless user experience.
 
 ---
 
-**Tags:** #AI #FullStack #OpenAI #Supabase #Stripe #n8n #VibeCoding #WebDevelopment #MachineLearning #Project
+**Tags:** #AI #FullStack #NextJS #TypeScript #OpenAI #Supabase #Stripe #n8n #TailwindCSS #FileUpload #WebDevelopment #MachineLearning #Project

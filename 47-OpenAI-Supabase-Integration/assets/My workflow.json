@@ -5,7 +5,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "upload",
-        "responseMode": "lastNode",
+        "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
@@ -300,7 +300,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "9026fdd0-b23e-4dd7-becf-7e294d787b1c",
+  "versionId": "a3adb7ad-c49c-44a7-8545-75a5c72e2b22",
   "meta": {
     "instanceId": "85757c58b69237edee3c39834c9f110726919ce518fc09e384ebf0ca63c74423"
   },
