@@ -6,28 +6,83 @@
 src/
 ├── components/              # React components
 │   ├── ErrorBoundary.tsx   # Error boundary for error handling
+│   ├── Auth/               # Authentication components
+│   │   ├── LoginForm.tsx   # Login form UI
+│   │   ├── SignupForm.tsx  # Signup form UI
+│   │   └── ProtectedRoute.tsx # Route protection wrapper
 │   └── FileUpload/         # File upload feature module
 │       ├── index.tsx       # Main FileUploader component
 │       ├── DropZone.tsx    # Drag & drop zone component
 │       ├── FileList.tsx    # File list display component
 │       ├── UploadButton.tsx # Upload action button
-│       └── SuccessMessage.tsx # Success feedback component
+│       ├── SuccessMessage.tsx # Success feedback component
+│       └── Header.tsx      # User info display with logout
+├── pages/                  # Page components
+│   ├── LoginPage.tsx       # Login page
+│   └── SignupPage.tsx      # Signup page
 ├── hooks/                   # Custom React hooks
+│   ├── useAuth.ts          # Authentication state management
 │   ├── useFileUpload.ts    # File upload logic and state management
 │   └── useDragAndDrop.ts   # Drag and drop functionality
 ├── services/                # API and external service integrations
+│   ├── auth.service.ts     # Authentication service layer
 │   └── upload.service.ts   # File upload service layer
+├── lib/                     # External library configurations
+│   └── supabase.ts         # Supabase client configuration
 ├── utils/                   # Utility functions
 │   └── file.utils.ts       # File validation and formatting utilities
 ├── types/                   # TypeScript type definitions
+│   ├── auth.types.ts       # Authentication related types
 │   └── file.types.ts       # File-related type definitions
 ├── config/                  # Configuration and constants
 │   └── constants.ts        # Application constants
-├── App.tsx                  # Root application component
+├── App.tsx                  # Root application component with routing
 ├── main.tsx                # Application entry point
 ├── index.css               # Global styles
 └── vite-env.d.ts          # Vite environment type definitions
 ```
+
+## 🔐 Authentication Architecture
+
+### Overview
+The project implements a complete authentication system using Supabase Auth with the following features:
+- User registration (signup)
+- User login (signin)  
+- Protected routes
+- Session management with auto-refresh
+- Logout functionality
+
+### Authentication Flow
+```
+Login/Signup Page
+    ↓
+useAuth Hook (State Management)
+    ↓
+auth.service.ts (Supabase API Calls)
+    ↓
+Supabase Auth
+    ↓
+Session Management & Protected Routes
+```
+
+### Key Components
+- **useAuth Hook**: Centralized authentication state and methods
+- **auth.service.ts**: Service layer for all Supabase auth operations
+- **ProtectedRoute**: Route wrapper that requires authentication
+- **LoginForm/SignupForm**: UI components for authentication
+- **Header**: User info display with logout functionality
+
+### Environment Variables
+Required Supabase configuration:
+- `VITE_SUPABASE_URL`: Supabase project URL
+- `VITE_SUPABASE_ANON_KEY`: Supabase anonymous key
+
+### Routing Structure
+- `/login` - Public login page
+- `/signup` - Public signup page
+- `/upload` - Protected file upload page
+- `/` - Redirects to login
+- `/*` - Wildcard redirects to login
 
 ## 🏗️ Architecture Principles
 

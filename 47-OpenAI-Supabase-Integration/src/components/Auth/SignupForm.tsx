@@ -46,15 +46,15 @@ export const SignupForm = ({ onSubmit, onSwitchToLogin, loading, error, success 
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
           <CheckCircle className="w-8 h-8 text-green-600" />
         </div>
-        <h3 className="text-xl font-semibold text-slate-900">Check your email!</h3>
+        <h3 className="text-xl font-semibold text-slate-900">Account created successfully!</h3>
         <p className="text-slate-600">
-          We've sent you a confirmation email. Please check your inbox and click the link to verify your account.
+          Your account has been created. You can now sign in with your credentials.
         </p>
         <button
           onClick={onSwitchToLogin}
-          className="text-blue-600 font-medium hover:text-blue-700 transition-colors"
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
         >
-          Back to login
+          Go to login
         </button>
       </div>
     );

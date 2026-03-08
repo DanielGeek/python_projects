@@ -21,7 +21,15 @@ npm install
 cp .env.example .env
 
 # Edit .env with your configuration
-# Add your n8n webhook URL and other credentials
+# Add your n8n webhook URL, Supabase credentials, and other keys
+
+# Required Supabase setup:
+# 1. Create a Supabase project at https://supabase.com
+# 2. Get project URL and anon key from Settings > API
+# 3. Configure email confirmation settings if needed
+# 4. Add to .env:
+#    VITE_SUPABASE_URL=your_supabase_project_url
+#    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 # Start development server
 npm run dev
