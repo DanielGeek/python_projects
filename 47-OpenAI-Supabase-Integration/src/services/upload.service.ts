@@ -3,13 +3,12 @@
  */
 
 import { API, ERROR_MESSAGES } from '@/config/constants';
-import { generateUserId } from '@/utils/file.utils';
 import type { UploadResponse } from '@/types/file.types';
 
 /**
  * Uploads a file to the n8n webhook
  */
-export const uploadFileToWebhook = async (file: File): Promise<UploadResponse> => {
+export const uploadFileToWebhook = async (file: File, userId: string): Promise<UploadResponse> => {
   try {
     const formData = new FormData();
     formData.append('data', file);
@@ -17,7 +16,7 @@ export const uploadFileToWebhook = async (file: File): Promise<UploadResponse> =
     formData.append('fileType', file.type);
     formData.append('fileSize', file.size.toString());
     formData.append('timestamp', new Date().toISOString());
-    formData.append('userId', generateUserId());
+    formData.append('userId', userId);
 
     const response = await fetch(API.N8N_WEBHOOK_URL, {
       method: 'POST',

@@ -5,9 +5,11 @@
 import { useState, useCallback } from 'react';
 import { validateFile, generateFileId } from '@/utils/file.utils';
 import { uploadFileToWebhook } from '@/services/upload.service';
+import { useAuth } from '@/hooks/useAuth';
 import type { UploadedFile } from '@/types/file.types';
 
 export const useFileUpload = () => {
+  const { user } = useAuth();
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -36,13 +38,18 @@ export const useFileUpload = () => {
    * Uploads a single file
    */
   const uploadFile = useCallback(async (uploadedFile: UploadedFile) => {
+    if (!user?.id) {
+      console.error('No user ID available for upload');
+      return;
+    }
+
     setFiles((prev) =>
       prev.map((f) =>
         f.id === uploadedFile.id ? { ...f, status: 'uploading' } : f
       )
     );
 
-    const result = await uploadFileToWebhook(uploadedFile.file);
+    const result = await uploadFileToWebhook(uploadedFile.file, user.id);
 
     setFiles((prev) =>
       prev.map((f) =>
@@ -55,7 +62,7 @@ export const useFileUpload = () => {
           : f
       )
     );
-  }, []);
+  }, [user]);
 
   /**
    * Uploads all valid files

@@ -29,13 +29,6 @@ export const validateFile = (file: File): FileValidationResult => {
 };
 
 /**
- * Generates a unique alphanumeric user ID
- */
-export const generateUserId = (): string => {
-  return 'USR' + Math.random().toString(36).substr(2, 9).toUpperCase();
-};
-
-/**
  * Formats file size from bytes to human-readable format
  */
 export const formatFileSize = (bytes: number): string => {
