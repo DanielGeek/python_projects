@@ -413,6 +413,11 @@ The project is configured for production deployment with:
 Here's a visual representation of our file processing workflow:
 
 ![AI Workflow Architecture](assets/workflow.png)
+![Signup Page](assets/signup.png)
+![Login Page](assets/signin.png)
+![File Upload Page](assets/upload.png)
+![Chat Page](assets/chat.png)
+![Db documents table](assets/db-documents-table.png)
 
 This workflow demonstrates how files are uploaded, processed through n8n, and integrated with AI services for a seamless user experience.
 

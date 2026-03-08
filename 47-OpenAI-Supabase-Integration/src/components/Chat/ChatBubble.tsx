@@ -4,6 +4,7 @@
 
 import { User, Bot } from 'lucide-react';
 import { formatMessageTime } from '@/utils/chat.utils';
+import { MarkdownMessage } from './MarkdownMessage';
 import type { ChatMessage } from '@/types/chat.types';
 
 interface ChatBubbleProps {
@@ -25,13 +26,17 @@ export const ChatBubble = ({ message }: ChatBubbleProps) => {
         )}
       </div>
 
-      <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-[70%]`}>
-        <div className={`px-4 py-2 rounded-2xl ${
+      <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-[75%]`}>
+        <div className={`px-4 py-3 rounded-2xl ${
           isUser 
             ? 'bg-blue-600 text-white rounded-tr-sm' 
-            : 'bg-slate-100 text-slate-900 rounded-tl-sm'
+            : 'bg-slate-50 text-slate-900 rounded-tl-sm border border-slate-200'
         }`}>
-          <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+          {isUser ? (
+            <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+          ) : (
+            <MarkdownMessage content={message.content} isUser={isUser} />
+          )}
         </div>
         <span className="text-xs text-slate-500 mt-1 px-1">
           {formatMessageTime(message.timestamp)}
