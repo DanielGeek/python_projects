@@ -29,9 +29,21 @@ export const sendChatMessage = async (request: ChatRequest): Promise<ChatRespons
 
     const data = await response.json();
 
+    let responseText = 'Message received';
+    
+    if (Array.isArray(data) && data.length > 0 && data[0].output) {
+      responseText = data[0].output;
+    } else if (data.output) {
+      responseText = data.output;
+    } else if (data.response) {
+      responseText = data.response;
+    } else if (data.message) {
+      responseText = data.message;
+    }
+
     return {
       success: true,
-      response: data.response || data.message || 'Message received',
+      response: responseText,
     };
   } catch (error) {
     return {

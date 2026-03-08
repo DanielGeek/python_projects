@@ -4,9 +4,10 @@
  */
 
 import { useRef } from 'react';
+import { Cloud } from 'lucide-react';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useDragAndDrop } from '@/hooks/useDragAndDrop';
-import { Header } from './Header';
+import { Navbar } from '@/components/Navbar';
 import { DropZone } from './DropZone';
 import { FileList } from './FileList';
 import { UploadButton } from './UploadButton';
@@ -56,10 +57,22 @@ export const FileUploader = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Header with user info */}
-        <Header />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+      {/* Navbar */}
+      <Navbar />
+
+      <div className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto">
+          {/* Page Title */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-100 mb-4">
+              <Cloud className="w-7 h-7 text-blue-600" />
+            </div>
+            <h1 className="text-4xl font-bold text-slate-900 mb-2">File Upload</h1>
+            <p className="text-lg text-slate-600">
+              Upload your TXT, PDF, or CSV files securely
+            </p>
+          </div>
 
         {/* Hidden file input */}
         <input
@@ -94,6 +107,7 @@ export const FileUploader = () => {
 
         {/* Success message */}
         {hasUploadedFiles && <SuccessMessage />}
+        </div>
       </div>
     </div>
   );
