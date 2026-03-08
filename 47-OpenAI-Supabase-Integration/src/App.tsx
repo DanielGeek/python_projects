@@ -3,6 +3,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
+import { ChatPage } from './pages/ChatPage';
 import { FileUploader } from './components/FileUpload';
 
 function App() {
@@ -15,6 +16,14 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           
           {/* Protected routes */}
+          <Route
+            path="/chat"
+            element={
+              <ProtectedRoute>
+                <ChatPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/upload"
             element={

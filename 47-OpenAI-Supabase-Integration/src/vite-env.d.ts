@@ -10,6 +10,7 @@ interface ImportMetaEnv {
   readonly VITE_OPENAI_API_KEY: string
   readonly VITE_STRIPE_PUBLISHABLE_KEY: string
   readonly VITE_N8N_WEBHOOK_URL: string
+  readonly VITE_N8N_CHAT_WEBHOOK_URL: string
   readonly VITE_APP_URL: string
 }
 

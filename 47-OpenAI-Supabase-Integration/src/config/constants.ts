@@ -10,6 +10,7 @@ export const FILE_UPLOAD = {
 
 export const API = {
   N8N_WEBHOOK_URL: import.meta.env.VITE_N8N_WEBHOOK_URL || '',
+  N8N_CHAT_WEBHOOK_URL: import.meta.env.VITE_N8N_CHAT_WEBHOOK_URL || '',
   APP_URL: import.meta.env.VITE_APP_URL || 'http://localhost:3000',
 } as const;
 
