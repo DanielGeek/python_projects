@@ -74,7 +74,7 @@ export const Navbar = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-2 flex-1 justify-center mr-6">
+          <div className="hidden md:flex items-center gap-2 flex-1 justify-center mr-6 ml-2">
             {navItems.map(({ path, icon: Icon, label }) => (
               <button
                 key={path}

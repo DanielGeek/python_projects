@@ -18,12 +18,12 @@ export const FileList = ({ files, onRemove, onClearAll }: FileListProps) => {
   return (
     <div className="space-y-4 mb-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-slate-900">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
           Files ({files.length})
         </h3>
         <button
           onClick={onClearAll}
-          className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+          className="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
         >
           Clear all
         </button>
@@ -49,18 +49,18 @@ interface FileItemProps {
 
 const FileItem = ({ file, onRemove }: FileItemProps) => {
   return (
-    <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-slate-200 hover:shadow-md transition-shadow">
-      <File className="w-5 h-5 text-slate-400 flex-shrink-0" />
+    <div className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
+      <File className="w-5 h-5 text-slate-400 dark:text-slate-500 flex-shrink-0" />
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-slate-900 truncate">
+        <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
           {file.file.name}
         </p>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           {formatFileSize(file.file.size)}
         </p>
         {file.error && (
-          <p className="text-xs text-red-600 mt-1">{file.error}</p>
+          <p className="text-xs text-red-600 dark:text-red-400 mt-1">{file.error}</p>
         )}
       </div>
 
@@ -69,7 +69,7 @@ const FileItem = ({ file, onRemove }: FileItemProps) => {
         {file.status !== 'uploading' && (
           <button
             onClick={() => onRemove(file.id)}
-            className="text-slate-400 hover:text-slate-600 transition-colors"
+            className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
             aria-label="Remove file"
           >
             <svg

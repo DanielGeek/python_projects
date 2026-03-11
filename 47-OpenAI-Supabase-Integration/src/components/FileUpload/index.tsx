@@ -63,10 +63,10 @@ export const FileUploader = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 mb-4 shadow-lg shadow-blue-500/30">
             <Upload className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">
+          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-3">
             Upload Documents
           </h1>
-          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Upload your TXT, PDF, or CSV files to analyze with AI
           </p>
         </div>

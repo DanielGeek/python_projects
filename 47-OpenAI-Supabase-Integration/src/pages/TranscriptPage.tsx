@@ -53,7 +53,7 @@ export const TranscriptPage = () => {
                         <li>Transcripts are disabled by the video owner</li>
                         <li>The video is too new (transcripts may take time to generate)</li>
                       </ul>
-                      <p className="text-xs text-slate-700 mt-3 font-medium">
+                      <p className="text-xs text-slate-700 dark:text-slate-300 mt-3 font-medium">
                         ✓ Try a different video with captions enabled
                       </p>
                     </div>
@@ -71,7 +71,7 @@ export const TranscriptPage = () => {
           )}
 
           {/* Input Section */}
-          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 mb-6">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-6">
             <TranscriptInput onFetchTranscript={getTranscript} isLoading={isLoading} />
           </div>
 
@@ -87,13 +87,13 @@ export const TranscriptPage = () => {
           {/* Empty State */}
           {!transcript && !isLoading && !error && (
             <div className="text-center py-12">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
-                <Video className="w-8 h-8 text-slate-400" />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-700 mb-4">
+                <Video className="w-8 h-8 text-slate-400 dark:text-slate-500" />
               </div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
                 No transcript yet
               </h3>
-              <p className="text-slate-600 max-w-md mx-auto">
+              <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
                 Enter a YouTube video URL above to extract its transcript. The transcript will
                 appear here once processed.
               </p>
