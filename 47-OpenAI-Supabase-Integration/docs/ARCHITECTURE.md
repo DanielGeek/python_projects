@@ -190,7 +190,7 @@ Configured in `tsconfig.app.json` and `vite.config.ts`:
 
 ### Environment Variables
 Defined in `.env` and typed in `vite-env.d.ts`:
-- `VITE_N8N_WEBHOOK_URL`: n8n webhook endpoint
+- `VITE_N8N_UPLOAD_WEBHOOK_URL`: n8n webhook endpoint
 - `VITE_APP_URL`: Application URL
 
 ## 📚 Development Guidelines

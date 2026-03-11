@@ -52,7 +52,7 @@ graph TB
 
 ## 🛠️ Features & Capabilities
 
-### File Upload System
+### 1. File Upload System
 
 ![File Upload Interface](https://raw.githubusercontent.com/yourusername/47-OpenAI-Supabase-Integration/main/assets/workflow.png)
 
@@ -61,10 +61,33 @@ graph TB
 - 📁 **Drag & Drop Interface**: Intuitive file upload with visual feedback
 - 🔄 **Multiple File Support**: Upload multiple files simultaneously
 - 📄 **File Validation**: Support for TXT, PDF, CSV files (max 10MB)
-- � **Real-time Progress**: Live upload status with progress indicators
+- 📊 **Real-time Progress**: Live upload status with progress indicators
 - ❌ **Error Handling**: Comprehensive error display with server messages
 - 🆔 **User Tracking**: Automatic userId generation for file tracking
-- � **Upload Statistics**: File size, type, and upload status display
+- 📈 **Upload Statistics**: File size, type, and upload status display
+
+### 2. AI Chat Assistant
+
+**Core Features:**
+
+- 💬 **Real-time Chat**: Interactive AI conversation with markdown support
+- 🔄 **Session Management**: Unique session IDs for conversation tracking
+- 📝 **Markdown Rendering**: Beautiful formatting for AI responses
+- 🎨 **Rich Formatting**: Support for headings, lists, code blocks, and links
+- 🔒 **User Authentication**: Secure chat tied to logged-in users
+- 🧹 **Clear History**: Easy conversation reset functionality
+
+### 3. YouTube Transcript Extractor
+
+**Core Features:**
+
+- 🎥 **Video URL Input**: Extract transcripts from any YouTube video
+- 📄 **Instant Extraction**: Fast transcript retrieval via RapidAPI
+- 📋 **Copy to Clipboard**: One-click transcript copying
+- 💾 **Download as TXT**: Save transcripts locally
+- ✅ **URL Validation**: Smart YouTube URL format detection
+- 📊 **Transcript Stats**: Line count and character count display
+- 🔒 **User Tracking**: All extractions tied to authenticated users
 
 ### Technical Implementation
 
@@ -77,7 +100,26 @@ graph TB
   "fileType": "application/pdf",
   "fileSize": "2621440",
   "timestamp": "2026-03-05T00:32:15.123Z",
-  "userId": "USR7K3X9M2N"
+  "userId": "actual-supabase-user-id"
+}
+```
+
+**Chat Message Payload:**
+
+```json
+{
+  "chatInput": "Tell me about LLMs and agents",
+  "sessionId": "ABC123DEF456",
+  "userId": "actual-supabase-user-id"
+}
+```
+
+**YouTube Transcript Payload:**
+
+```json
+{
+  "userId": "actual-supabase-user-id",
+  "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 }
 ```
 
@@ -87,6 +129,7 @@ graph TB
 - HTTP status code display
 - User-friendly error messages
 - Retry capabilities
+- URL validation for YouTube links
 
 ## 🚀 Getting Started
 
@@ -146,8 +189,9 @@ STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
 STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
 
 # n8n Configuration
-N8N_WEBHOOK_URL=http://localhost:5678/webhook
-N8N_API_KEY=your_n8n_api_key
+VITE_N8N_UPLOAD_WEBHOOK_URL=your_n8n_file_upload_webhook_url
+VITE_N8N_CHAT_WEBHOOK_URL=https://danielgeek.app.n8n.cloud/webhook-test/chat
+VITE_N8N_YOUTUBE_WEBHOOK_URL=https://danielgeek.app.n8n.cloud/webhook-test/fetch
 
 # Application Settings
 NODE_ENV=development
@@ -159,7 +203,7 @@ VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 VITE_OPENAI_API_KEY=your_openai_api_key
 VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
-VITE_N8N_WEBHOOK_URL=http://localhost:5678/webhook
+VITE_N8N_UPLOAD_WEBHOOK_URL=http://localhost:5678/webhook
 VITE_APP_URL=http://localhost:3000
 ```
 
@@ -239,7 +283,7 @@ const uploadFile = async (uploadedFile: UploadedFile) => {
     formData.append('timestamp', new Date().toISOString());
     formData.append('userId', 'USR' + Math.random().toString(36).substr(2, 9).toUpperCase());
 
-    const response = await fetch(N8N_WEBHOOK_URL, {
+    const response = await fetch(N8N_UPLOAD_WEBHOOK_URL, {
       method: 'POST',
       body: formData,
     });
@@ -280,7 +324,7 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_ANON_KEY: string
   readonly VITE_OPENAI_API_KEY: string
   readonly VITE_STRIPE_PUBLISHABLE_KEY: string
-  readonly VITE_N8N_WEBHOOK_URL: string
+  readonly VITE_N8N_UPLOAD_WEBHOOK_URL: string
   readonly VITE_APP_URL: string
 }
 

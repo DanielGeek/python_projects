@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { ChatPage } from './pages/ChatPage';
+import { TranscriptPage } from './pages/TranscriptPage';
 import { FileUploader } from './components/FileUpload';
 
 function App() {
@@ -21,6 +22,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ChatPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/transcript"
+            element={
+              <ProtectedRoute>
+                <TranscriptPage />
               </ProtectedRoute>
             }
           />

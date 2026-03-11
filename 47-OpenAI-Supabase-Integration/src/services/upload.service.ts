@@ -18,7 +18,7 @@ export const uploadFileToWebhook = async (file: File, userId: string): Promise<U
     formData.append('timestamp', new Date().toISOString());
     formData.append('userId', userId);
 
-    const response = await fetch(API.N8N_WEBHOOK_URL, {
+    const response = await fetch(API.N8N_UPLOAD_WEBHOOK_URL, {
       method: 'POST',
       body: formData,
     });

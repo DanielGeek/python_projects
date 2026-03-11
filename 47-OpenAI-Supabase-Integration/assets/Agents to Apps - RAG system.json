@@ -3,23 +3,6 @@
   "nodes": [
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "upload",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        0,
-        0
-      ],
-      "id": "2e7b19c6-d2bc-4a25-8c4e-0b675c4aff57",
-      "name": "Webhook",
-      "webhookId": "333f7e4b-f500-4366-8631-733211745b6e"
-    },
-    {
-      "parameters": {
         "assignments": {
           "assignments": [
             {
@@ -173,7 +156,7 @@
       "typeVersion": 1.1,
       "position": [
         624,
-        240
+        224
       ],
       "id": "155f0292-700e-46e4-9def-8abff6b66916",
       "name": "Extract from File2"
@@ -185,7 +168,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        816,
+        896,
         48
       ],
       "id": "9c0e1f1e-c427-4ccc-97ca-6d668b9f02e8",
@@ -199,7 +182,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        1392,
+        1488,
         48
       ],
       "id": "b7b550e8-10f7-45eb-b768-88eb378db37b",
@@ -221,7 +204,7 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        1024,
+        1104,
         48
       ],
       "id": "da3bb708-e0d3-40b2-a360-c7df4db7d532",
@@ -240,8 +223,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        976,
-        240
+        1104,
+        224
       ],
       "id": "cdb6fde7-8b8a-402a-b6e3-ba02fb30a876",
       "name": "Embeddings OpenAI",
@@ -268,8 +251,8 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
       "position": [
-        1168,
-        240
+        1280,
+        224
       ],
       "id": "0ace057e-2c97-47ae-a42e-459cf9567d3e",
       "name": "Default Data Loader"
@@ -295,19 +278,19 @@
             {
               "id": "7f4e109a-1755-48bb-9c7e-ada392ee29b3",
               "name": "chatInput",
-              "value": "={{ $json.body.chatInput }}",
+              "value": "={{ $json?.chatInput || $json.body.chatInput }}",
               "type": "string"
             },
             {
               "id": "b9690b3b-37ab-47a3-a680-411799637248",
               "name": "sessionId",
-              "value": "={{ $json.body.sessionId }}",
+              "value": "={{ $json?.sessionId || $json.body.sessionId }}",
               "type": "string"
             },
             {
               "id": "e38dc7f5-33e4-423a-b3a9-22469f022078",
               "name": "userId",
-              "value": "={{ $json.body.userId }}",
+              "value": "={{ $json?.body?.userId || \"08d4dae1-f550-4479-a4e1-f9a22c7dfc6a\" }}",
               "type": "string"
             }
           ]
@@ -466,21 +449,404 @@
       ],
       "id": "4c62e80c-09fe-4f93-a7e8-5450aaa60334",
       "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4fdd59f6-90d6-4f57-b3d2-3fc94e6b6f18",
+              "name": "userId",
+              "value": "={{ $json.body.userId }}",
+              "type": "string"
+            },
+            {
+              "id": "37a22898-2a0d-47e3-9bc4-dd3a2b2eaafd",
+              "name": "videoUrl",
+              "value": "={{ $json.body.videoUrl }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        432
+      ],
+      "id": "a7524a7e-1637-4aa2-ab68-4852ab957061",
+      "name": "ExtractFields"
+    },
+    {
+      "parameters": {
+        "url": "https://youtube-transcript3.p.rapidapi.com/api/transcript-with-url",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $json.videoUrl }}"
+            },
+            {
+              "name": "flat_text",
+              "value": "true"
+            },
+            {
+              "name": "lang",
+              "value": "en"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-key",
+              "value": "={{ $vars.RAPIDAPI_KEY }}"
+            },
+            {
+              "name": "x-rapidapi-host",
+              "value": "youtube-transcript3.p.rapidapi.com"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "videoUrl",
+              "value": "={{ $json.videoUrl }}"
+            },
+            {
+              "name": "userId",
+              "value": "={{ $json.userId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        400,
+        432
+      ],
+      "id": "6cb0e59b-f725-45a8-8d53-1d25a14ad04e",
+      "name": "RapidAPI-HTTP Request",
+      "notesInFlow": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "02D0yQXCdgCpgEnu",
+          "name": "YT-RapidAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fetch",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        432
+      ],
+      "id": "f6667a7d-ddab-43b1-90d1-ec4b880f8d35",
+      "name": "YT-Webhook",
+      "webhookId": "859e24cd-9e3d-4821-946c-0a04155137c8"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2000,
+        384
+      ],
+      "id": "50ffdc09-561e-4fad-a014-662ed35955bf",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bbf71338-694a-4f9f-8dd4-022c4cc8ae37",
+              "name": "transcript",
+              "value": "={{ $json.transcript || $json.error }}",
+              "type": "string"
+            },
+            {
+              "id": "56dff611-1fae-4322-919b-f3930a8030d6",
+              "name": "userId",
+              "value": "={{ $('ExtractFields').item.json.userId }}",
+              "type": "string"
+            },
+            {
+              "id": "491bdf54-ed44-43c6-87a0-83d8147a3bf5",
+              "name": "videoUrl",
+              "value": "={{ $('ExtractFields').item.json.videoUrl }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        608,
+        432
+      ],
+      "id": "3b0e1818-841b-4834-9704-d5a2f2541813",
+      "name": "Combine Payload"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bf2eab0c-92c3-4014-95e4-0f1f85ce5d27",
+              "leftValue": "={{ $('RapidAPI-HTTP Request').item.json.success }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        816,
+        432
+      ],
+      "id": "2383bea6-beed-4a6a-ba49-b274ab49dff9",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "useCustomSchema": true,
+        "tableId": "transcripts",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "user_id",
+              "fieldValue": "={{ $json.userId }}"
+            },
+            {
+              "fieldId": "video_url",
+              "fieldValue": "={{ $json.videoUrl }}"
+            },
+            {
+              "fieldId": "transcript",
+              "fieldValue": "={{ $json.transcript }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        368
+      ],
+      "id": "9c59c328-5093-4bf9-ac67-97636c6ad285",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "I7FfGV7VMtc9MgHh",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "transcripts",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "user_id",
+              "keyValue": "={{ $json.user_id }}"
+            },
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        400
+      ],
+      "id": "9f6552cc-1d19-4d68-98df-be0ab4c85dde",
+      "name": "Get a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "I7FfGV7VMtc9MgHh",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1488,
+        304
+      ],
+      "id": "aa493f94-dd17-48d0-a2db-596ce9d10462",
+      "name": "Supabase Vector Store2",
+      "credentials": {
+        "supabaseApi": {
+          "id": "I7FfGV7VMtc9MgHh",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1488,
+        576
+      ],
+      "id": "ffda437d-55b7-4736-bd8c-b2d3cee90966",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "h60Xv62FPbNAksbQ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "userId",
+                "value": "={{ $('Create a row').item.json.user_id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        1632,
+        576
+      ],
+      "id": "3f7641e5-1f11-4b17-b1f9-2ad834fd1b35",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 200,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        736
+      ],
+      "id": "35543c0b-fedc-41da-91ef-0b316be9c34b",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e145ebef-dd5e-4f2e-8ef1-465809ea1f2e",
+              "name": "success",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "2077167a-3202-40f6-bc93-56cf9eb8a7de",
+              "name": "error",
+              "value": "={{ $('RapidAPI-HTTP Request').item.json.error }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        576
+      ],
+      "id": "ede358c0-64bd-461b-b440-83dcd3b4cfdb",
+      "name": "Format Error Response",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "upload",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2e7b19c6-d2bc-4a25-8c4e-0b675c4aff57",
+      "name": "WebhookExtractor",
+      "webhookId": "333f7e4b-f500-4366-8631-733211745b6e"
     }
   ],
   "pinData": {},
   "connections": {
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "Extract Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Extract Fields": {
       "main": [
         [
@@ -681,15 +1047,165 @@
           }
         ]
       ]
+    },
+    "ExtractFields": {
+      "main": [
+        [
+          {
+            "node": "RapidAPI-HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RapidAPI-HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Combine Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT-Webhook": {
+      "main": [
+        [
+          {
+            "node": "ExtractFields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Payload": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "Get a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store2",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Error Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WebhookExtractor": {
+      "main": [
+        [
+          {
+            "node": "Extract Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "8bf308b8-ed2f-46b7-b305-83ae8a549fab",
+  "versionId": "b5de0495-488b-4798-bef5-5f1643f2b976",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "85757c58b69237edee3c39834c9f110726919ce518fc09e384ebf0ca63c74423"

@@ -21,7 +21,7 @@ npm install
 cp .env.example .env
 
 # Edit .env with your configuration
-# Add your n8n webhook URL, Supabase credentials, and other keys
+# Add your n8n webhook URLs, Supabase credentials, and other keys
 
 # Required Supabase setup:
 # 1. Create a Supabase project at https://supabase.com
@@ -30,6 +30,11 @@ cp .env.example .env
 # 4. Add to .env:
 #    VITE_SUPABASE_URL=your_supabase_project_url
 #    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Required n8n webhooks:
+# 1. VITE_N8N_UPLOAD_WEBHOOK_URL - File upload webhook
+# 2. VITE_N8N_CHAT_WEBHOOK_URL - AI chat webhook
+# 3. VITE_N8N_YOUTUBE_WEBHOOK_URL - YouTube transcript webhook
 
 # Start development server
 npm run dev
@@ -305,7 +310,7 @@ Example: `feat: add file validation utility`
 A: Update `ALLOWED_TYPES` in `src/config/constants.ts`
 
 ### Q: How do I change the upload endpoint?
-A: Update `VITE_N8N_WEBHOOK_URL` in `.env`
+A: Update `VITE_N8N_UPLOAD_WEBHOOK_URL` in `.env`
 
 ### Q: How do I add new validation rules?
 A: Update `validateFile` in `src/utils/file.utils.ts`
