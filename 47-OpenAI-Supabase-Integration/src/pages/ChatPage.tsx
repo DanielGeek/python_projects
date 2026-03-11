@@ -4,7 +4,7 @@
 
 import { MessageSquare, Trash2, AlertCircle } from 'lucide-react';
 import { useChat } from '@/hooks/useChat';
-import { Navbar } from '@/components/Navbar';
+import { MainLayout } from '@/components/Layout';
 import { MessageList } from '@/components/Chat/MessageList';
 import { ChatInput } from '@/components/Chat/ChatInput';
 
@@ -12,31 +12,30 @@ export const ChatPage = () => {
   const { messages, isLoading, error, sessionId, sendMessage, clearMessages, clearError } = useChat();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
-      {/* Navbar */}
-      <Navbar />
-
-      <div className="flex items-center justify-center p-4">
-        <div className="w-full max-w-4xl h-[calc(100vh-120px)] bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden">
+    <MainLayout>
+      <div className="max-w-5xl mx-auto">
+        <div className="h-[calc(100vh-180px)] sm:h-[calc(100vh-160px)] bg-white rounded-2xl shadow-xl border border-slate-200/50 flex flex-col overflow-hidden">
           {/* Chat Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                <MessageSquare className="w-6 h-6" />
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 sm:px-6 py-4 flex items-center justify-between shadow-lg">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <div>
-                <h1 className="text-xl font-bold">AI Chat Assistant</h1>
-                <p className="text-sm text-blue-100">Session: {sessionId.substring(0, 8)}...</p>
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-xl font-bold truncate">AI Chat Assistant</h1>
+                <p className="text-xs sm:text-sm text-blue-100 truncate">
+                  Session: {sessionId.substring(0, 8)}...
+                </p>
               </div>
             </div>
             
             {messages.length > 0 && (
               <button
                 onClick={clearMessages}
-                className="px-3 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors flex items-center gap-2"
+                className="px-3 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors flex items-center gap-2 flex-shrink-0"
               >
                 <Trash2 className="w-4 h-4" />
-                <span className="text-sm">Clear</span>
+                <span className="text-sm hidden sm:inline">Clear</span>
               </button>
             )}
           </div>
@@ -57,13 +56,13 @@ export const ChatPage = () => {
           </div>
         )}
 
-        {/* Messages */}
-        <MessageList messages={messages} isLoading={isLoading} />
+          {/* Messages */}
+          <MessageList messages={messages} isLoading={isLoading} />
 
-        {/* Input */}
-        <ChatInput onSendMessage={sendMessage} disabled={isLoading} />
+          {/* Input */}
+          <ChatInput onSendMessage={sendMessage} disabled={isLoading} />
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };

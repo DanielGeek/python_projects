@@ -18,7 +18,7 @@ export const SignupPage = () => {
     const result = await signUp(credentials);
     
     if (result.success) {
-      setSuccess(true);
+      navigate('/chat');
     }
   };
 

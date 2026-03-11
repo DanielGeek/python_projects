@@ -16,7 +16,7 @@ export const LoginPage = () => {
     const result = await signIn(credentials);
     
     if (result.success) {
-      navigate('/upload');
+      navigate('/chat');
     }
   };
 

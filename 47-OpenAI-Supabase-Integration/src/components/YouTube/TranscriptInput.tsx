@@ -30,10 +30,10 @@ export const TranscriptInput = ({ onFetchTranscript, isLoading }: TranscriptInpu
       <label htmlFor="youtube-url" className="block text-sm font-medium text-slate-700 mb-2">
         YouTube Video URL
       </label>
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Youtube className="h-5 w-5 text-slate-400" />
+            <Youtube className="h-5 w-5 text-red-600" />
           </div>
           <input
             id="youtube-url"
@@ -49,7 +49,7 @@ export const TranscriptInput = ({ onFetchTranscript, isLoading }: TranscriptInpu
         <button
           onClick={handleSubmit}
           disabled={isLoading || !url.trim()}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors flex items-center gap-2 font-medium"
+          className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 font-medium"
         >
           {isLoading ? (
             <>

@@ -4,10 +4,10 @@
  */
 
 import { useRef } from 'react';
-import { Cloud } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useDragAndDrop } from '@/hooks/useDragAndDrop';
-import { Navbar } from '@/components/Navbar';
+import { MainLayout } from '@/components/Layout';
 import { DropZone } from './DropZone';
 import { FileList } from './FileList';
 import { UploadButton } from './UploadButton';
@@ -43,7 +43,6 @@ export const FileUploader = () => {
   const handleRemoveFile = (id: string) => {
     removeFile(id);
     
-    // Reset input if no files remain
     if (files.length === 1 && fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -57,22 +56,20 @@ export const FileUploader = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
-      {/* Navbar */}
-      <Navbar />
-
-      <div className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl mx-auto">
-          {/* Page Title */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-100 mb-4">
-              <Cloud className="w-7 h-7 text-blue-600" />
-            </div>
-            <h1 className="text-4xl font-bold text-slate-900 mb-2">File Upload</h1>
-            <p className="text-lg text-slate-600">
-              Upload your TXT, PDF, or CSV files securely
-            </p>
+    <MainLayout>
+      <div className="max-w-3xl mx-auto">
+        {/* Page Header */}
+        <div className="text-center mb-8 sm:mb-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 mb-4 shadow-lg shadow-blue-500/30">
+            <Upload className="w-8 h-8 text-white" />
           </div>
+          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">
+            Upload Documents
+          </h1>
+          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
+            Upload your TXT, PDF, or CSV files to analyze with AI
+          </p>
+        </div>
 
         {/* Hidden file input */}
         <input
@@ -107,9 +104,8 @@ export const FileUploader = () => {
 
         {/* Success message */}
         {hasUploadedFiles && <SuccessMessage />}
-        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 

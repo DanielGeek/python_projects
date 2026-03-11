@@ -4,7 +4,7 @@
 
 import { Video, AlertCircle } from 'lucide-react';
 import { useYouTubeTranscript } from '@/hooks/useYouTubeTranscript';
-import { Navbar } from '@/components/Navbar';
+import { MainLayout } from '@/components/Layout';
 import { TranscriptInput } from '@/components/YouTube/TranscriptInput';
 import { TranscriptDisplay } from '@/components/YouTube/TranscriptDisplay';
 
@@ -20,23 +20,20 @@ export const TranscriptPage = () => {
   } = useYouTubeTranscript();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
-      <Navbar />
-
-      <div className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Page Title */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-red-100 mb-4">
-              <Video className="w-7 h-7 text-red-600" />
-            </div>
-            <h1 className="text-4xl font-bold text-slate-900 mb-2">
-              YouTube Transcript Extractor
-            </h1>
-            <p className="text-lg text-slate-600">
-              Extract transcripts from any YouTube video instantly
-            </p>
+    <MainLayout>
+      <div className="max-w-5xl mx-auto">
+        {/* Page Header */}
+        <div className="text-center mb-8 sm:mb-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-red-600 mb-4 shadow-lg shadow-red-500/30">
+            <Video className="w-8 h-8 text-white" />
           </div>
+          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">
+            YouTube Transcript Extractor
+          </h1>
+          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
+            Extract transcripts from any YouTube video instantly
+          </p>
+        </div>
 
           {/* Error Message */}
           {error && (
@@ -102,8 +99,7 @@ export const TranscriptPage = () => {
               </p>
             </div>
           )}
-        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
