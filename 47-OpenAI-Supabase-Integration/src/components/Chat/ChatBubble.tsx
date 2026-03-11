@@ -30,7 +30,7 @@ export const ChatBubble = ({ message }: ChatBubbleProps) => {
         <div className={`px-4 py-3 rounded-2xl ${
           isUser 
             ? 'bg-blue-600 text-white rounded-tr-sm' 
-            : 'bg-slate-50 text-slate-900 rounded-tl-sm border border-slate-200'
+            : 'bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-tl-sm border border-slate-200 dark:border-slate-600'
         }`}>
           {isUser ? (
             <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
@@ -38,7 +38,7 @@ export const ChatBubble = ({ message }: ChatBubbleProps) => {
             <MarkdownMessage content={message.content} isUser={isUser} />
           )}
         </div>
-        <span className="text-xs text-slate-500 mt-1 px-1">
+        <span className="text-xs text-slate-500 dark:text-slate-400 mt-1 px-1">
           {formatMessageTime(message.timestamp)}
         </span>
       </div>
