@@ -2,16 +2,19 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { PublicRoute } from './components/Auth/PublicRoute';
+import { DarkModeProvider } from './contexts/DarkModeContext';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { ChatPage } from './pages/ChatPage';
 import { TranscriptPage } from './pages/TranscriptPage';
+import { HistoryPage } from './pages/HistoryPage';
 import { FileUploader } from './components/FileUpload';
 
 function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
+      <DarkModeProvider>
+        <BrowserRouter>
         <Routes>
           {/* Public routes */}
           <Route 
@@ -49,6 +52,14 @@ function App() {
             }
           />
           <Route
+            path="/history"
+            element={
+              <ProtectedRoute>
+                <HistoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/upload"
             element={
               <ProtectedRoute>
@@ -62,6 +73,7 @@ function App() {
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
+      </DarkModeProvider>
     </ErrorBoundary>
   );
 }
