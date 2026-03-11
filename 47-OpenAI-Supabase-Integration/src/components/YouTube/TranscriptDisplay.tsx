@@ -13,6 +13,13 @@ interface TranscriptDisplayProps {
 
 export const TranscriptDisplay = ({ transcript, videoTitle, onClear }: TranscriptDisplayProps) => {
   const [copied, setCopied] = useState(false);
+  const [showFullTranscript, setShowFullTranscript] = useState(false);
+
+  const MAX_PREVIEW_LENGTH = 1000;
+  const isTruncated = transcript.length > MAX_PREVIEW_LENGTH;
+  const displayText = showFullTranscript || !isTruncated 
+    ? transcript 
+    : transcript.substring(0, MAX_PREVIEW_LENGTH);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(transcript);
@@ -87,8 +94,33 @@ export const TranscriptDisplay = ({ transcript, videoTitle, onClear }: Transcrip
       <div className="p-6">
         <div className="bg-slate-50 rounded-lg p-4 max-h-[500px] overflow-y-auto">
           <pre className="text-sm text-slate-700 whitespace-pre-wrap font-sans leading-relaxed">
-            {transcript}
+            {displayText}
           </pre>
+          
+          {isTruncated && !showFullTranscript && (
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <p className="text-xs text-slate-500 italic mb-3">
+                ... (Text truncated - {transcript.length.toLocaleString()} total characters)
+              </p>
+              <button
+                onClick={() => setShowFullTranscript(true)}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Show full transcript
+              </button>
+            </div>
+          )}
+          
+          {isTruncated && showFullTranscript && (
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <button
+                onClick={() => setShowFullTranscript(false)}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Show less
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

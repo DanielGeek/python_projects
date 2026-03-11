@@ -460,6 +460,7 @@ Here's a visual representation of our file processing workflow:
 ![Signup Page](assets/signup.png)
 ![Login Page](assets/signin.png)
 ![File Upload Page](assets/upload.png)
+![Transcript Page](assets/transcript.png)
 ![Chat Page](assets/chat.png)
 ![Db documents table](assets/db-documents-table.png)
 

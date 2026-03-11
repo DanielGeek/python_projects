@@ -59,7 +59,7 @@ export const fetchYouTubeTranscript = async (
       throw new Error(errorMsg);
     }
 
-    // Handle success responses
+    // Handle success responses with explicit success field
     if (data.success === true && data.transcript) {
       return {
         success: true,
@@ -68,29 +68,53 @@ export const fetchYouTubeTranscript = async (
       };
     }
 
-    let transcriptText = '';
-    let videoTitle = '';
+    // Handle Supabase Vector Store response (array with pageContent)
+    if (Array.isArray(data) && data.length > 0 && data[0].pageContent !== undefined) {
+      const transcriptFragments = data
+        .filter(item => 
+          item.pageContent && 
+          item.pageContent.length > 50 && 
+          !item.pageContent.includes('http') &&
+          !item.pageContent.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) &&
+          !item.pageContent.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)
+        )
+        .map(item => item.pageContent);
 
+      if (transcriptFragments.length > 0) {
+        const fullTranscript = transcriptFragments.join(' ');
+        
+        return {
+          success: true,
+          transcript: fullTranscript,
+          videoTitle: undefined,
+        };
+      }
+    }
+
+    // Handle array responses with transcript field
     if (Array.isArray(data) && data.length > 0) {
-      transcriptText = data[0].transcript || data[0].output || '';
-      videoTitle = data[0].title || data[0].videoTitle || '';
-    } else if (data.transcript) {
-      transcriptText = data.transcript;
-      videoTitle = data.title || data.videoTitle || '';
-    } else if (data.output) {
-      transcriptText = data.output;
-      videoTitle = data.title || data.videoTitle || '';
+      const transcriptText = data[0].transcript || data[0].output || '';
+      const videoTitle = data[0].title || data[0].videoTitle || '';
+      
+      if (transcriptText) {
+        return {
+          success: true,
+          transcript: transcriptText,
+          videoTitle: videoTitle || undefined,
+        };
+      }
     }
 
-    if (!transcriptText) {
-      throw new Error('No transcript found in response');
+    // Handle object responses with transcript field
+    if (data.transcript) {
+      return {
+        success: true,
+        transcript: data.transcript,
+        videoTitle: data.title || data.videoTitle || undefined,
+      };
     }
 
-    return {
-      success: true,
-      transcript: transcriptText,
-      videoTitle: videoTitle || undefined,
-    };
+    throw new Error('No transcript found in response');
   } catch (error) {
     return {
       success: false,
