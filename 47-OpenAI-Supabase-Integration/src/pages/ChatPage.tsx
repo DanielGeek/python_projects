@@ -13,7 +13,7 @@ export const ChatPage = () => {
 
   return (
     <MainLayout>
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto w-full">
         <div className="h-[calc(100vh-180px)] sm:h-[calc(100vh-160px)] bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200/50 dark:border-slate-700/50 flex flex-col overflow-hidden">
           {/* Chat Header */}
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 sm:px-6 py-4 flex items-center justify-between shadow-lg">

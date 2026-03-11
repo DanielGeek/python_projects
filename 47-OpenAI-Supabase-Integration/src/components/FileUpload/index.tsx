@@ -57,7 +57,7 @@ export const FileUploader = () => {
 
   return (
     <MainLayout>
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto w-full">
         {/* Page Header */}
         <div className="text-center mb-8 sm:mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 mb-4 shadow-lg shadow-blue-500/30">

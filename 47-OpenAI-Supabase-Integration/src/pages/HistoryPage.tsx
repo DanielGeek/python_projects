@@ -63,20 +63,20 @@ export const HistoryPage = () => {
 
   return (
     <MainLayout>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto w-full">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-2 break-words">
             Your Saved Transcripts
           </h1>
-          <p className="text-base text-slate-600 dark:text-slate-400">
+          <p className="text-base text-slate-600 dark:text-slate-400 break-words">
             Access and manage all your YouTube video transcriptions
           </p>
         </div>
 
         {hasTranscripts ? (
           /* Transcript Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {transcripts.map((transcript) => {
               const thumbnailUrl = transcript.thumbnail_url || getYouTubeThumbnail(transcript.video_url);
               
