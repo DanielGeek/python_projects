@@ -7,6 +7,7 @@ import { useYouTubeTranscript } from '@/hooks/useYouTubeTranscript';
 import { MainLayout } from '@/components/Layout';
 import { TranscriptInput } from '@/components/YouTube/TranscriptInput';
 import { TranscriptDisplay } from '@/components/YouTube/TranscriptDisplay';
+import { LimitReached } from '@/components/Limits';
 
 export const TranscriptPage = () => {
   const {
@@ -17,6 +18,8 @@ export const TranscriptPage = () => {
     getTranscript,
     clearTranscript,
     clearError,
+    limits,
+    canPerformAction,
   } = useYouTubeTranscript();
 
   return (
@@ -35,69 +38,80 @@ export const TranscriptPage = () => {
           </p>
         </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-red-800 dark:text-red-300 mb-2">{error}</p>
-                  
-                  {/* Show helpful suggestions for transcript unavailable errors */}
-                  {error.toLowerCase().includes('transcript is not available') && (
-                    <div className="mt-3 p-3 bg-white dark:bg-slate-800 rounded border border-red-100 dark:border-red-800">
-                      <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">💡 Possible reasons:</p>
-                      <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1 list-disc list-inside">
-                        <li>The video doesn't have captions/subtitles enabled</li>
-                        <li>The video is private or age-restricted</li>
-                        <li>Transcripts are disabled by the video owner</li>
-                        <li>The video is too new (transcripts may take time to generate)</li>
-                      </ul>
-                      <p className="text-xs text-slate-700 dark:text-slate-300 mt-3 font-medium">
-                        ✓ Try a different video with captions enabled
-                      </p>
-                    </div>
-                  )}
-                  
-                  <button
-                    onClick={clearError}
-                    className="text-xs text-red-600 hover:text-red-700 underline mt-2"
-                  >
-                    Dismiss
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Input Section */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-6">
-            <TranscriptInput onFetchTranscript={getTranscript} isLoading={isLoading} />
-          </div>
-
-          {/* Transcript Display */}
-          {transcript && (
-            <TranscriptDisplay
-              transcript={transcript}
-              videoTitle={videoTitle}
-              onClear={clearTranscript}
+          {/* Show limit reached message if user has reached transcript limit */}
+          {limits?.transcripts.hasReachedLimit ? (
+            <LimitReached
+              type="transcripts"
+              used={limits.transcripts.used}
+              limit={limits.transcripts.limit}
             />
-          )}
+          ) : (
+            <>
+              {/* Error Message */}
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-red-800 dark:text-red-300 mb-2">{error}</p>
+                      
+                      {/* Show helpful suggestions for transcript unavailable errors */}
+                      {error.toLowerCase().includes('transcript is not available') && (
+                        <div className="mt-3 p-3 bg-white dark:bg-slate-800 rounded border border-red-100 dark:border-red-800">
+                          <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">💡 Possible reasons:</p>
+                          <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1 list-disc list-inside">
+                            <li>The video doesn't have captions/subtitles enabled</li>
+                            <li>The video is private or age-restricted</li>
+                            <li>Transcripts are disabled by the video owner</li>
+                            <li>The video is too new (transcripts may take time to generate)</li>
+                          </ul>
+                          <p className="text-xs text-slate-700 dark:text-slate-300 mt-3 font-medium">
+                            ✓ Try a different video with captions enabled
+                          </p>
+                        </div>
+                      )}
+                      
+                      <button
+                        onClick={clearError}
+                        className="text-xs text-red-600 hover:text-red-700 underline mt-2"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-          {/* Empty State */}
-          {!transcript && !isLoading && !error && (
-            <div className="text-center py-12">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-700 mb-4">
-                <Video className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+              {/* Input Section */}
+              <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-6">
+                <TranscriptInput onFetchTranscript={getTranscript} isLoading={isLoading} />
               </div>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                No transcript yet
-              </h3>
-              <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-                Enter a YouTube video URL above to extract its transcript. The transcript will
-                appear here once processed.
-              </p>
-            </div>
+
+              {/* Transcript Display */}
+              {transcript && (
+                <TranscriptDisplay
+                  transcript={transcript}
+                  videoTitle={videoTitle}
+                  onClear={clearTranscript}
+                />
+              )}
+
+              {/* Empty State */}
+              {!transcript && !isLoading && !error && (
+                <div className="text-center py-12">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-700 mb-4">
+                    <Video className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                    No transcript yet
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
+                    Enter a YouTube video URL above to extract its transcript. The transcript will
+                    appear here once processed.
+                  </p>
+                </div>
+              )}
+            </>
           )}
       </div>
     </MainLayout>

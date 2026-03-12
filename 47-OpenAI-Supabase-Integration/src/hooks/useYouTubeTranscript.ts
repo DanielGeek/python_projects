@@ -4,11 +4,13 @@
 
 import { useState, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserLimits } from '@/hooks/useUserLimits';
 import { fetchYouTubeTranscript } from '@/services/youtube.service';
 import { isValidYouTubeUrl } from '@/utils/youtube.utils';
 
 export const useYouTubeTranscript = () => {
   const { user } = useAuth();
+  const { limits, incrementUsage, canPerformAction } = useUserLimits();
   const [transcript, setTranscript] = useState<string | null>(null);
   const [videoTitle, setVideoTitle] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,10 +50,13 @@ export const useYouTubeTranscript = () => {
     if (result.success && result.transcript) {
       setTranscript(result.transcript);
       setVideoTitle(result.videoTitle || null);
+      
+      // Increment usage counter after successful transcript extraction
+      await incrementUsage('transcripts');
     } else {
       setError(result.error || 'Failed to fetch transcript');
     }
-  }, [user]);
+  }, [user, incrementUsage]);
 
   /**
    * Clears transcript and error state
@@ -77,5 +82,7 @@ export const useYouTubeTranscript = () => {
     getTranscript,
     clearTranscript,
     clearError,
+    limits,
+    canPerformAction,
   };
 };

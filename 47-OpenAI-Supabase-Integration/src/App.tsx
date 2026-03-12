@@ -3,6 +3,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { PublicRoute } from './components/Auth/PublicRoute';
 import { DarkModeProvider } from './contexts/DarkModeContext';
+import { UserLimitsProvider } from './contexts/UserLimitsContext';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { ChatPage } from './pages/ChatPage';
@@ -14,7 +15,8 @@ function App() {
   return (
     <ErrorBoundary>
       <DarkModeProvider>
-        <BrowserRouter>
+        <UserLimitsProvider>
+          <BrowserRouter>
         <Routes>
           {/* Public routes */}
           <Route 
@@ -72,7 +74,8 @@ function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
-      </BrowserRouter>
+          </BrowserRouter>
+        </UserLimitsProvider>
       </DarkModeProvider>
     </ErrorBoundary>
   );
