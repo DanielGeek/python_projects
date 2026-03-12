@@ -6,10 +6,12 @@ import { useState, useCallback } from 'react';
 import { validateFile, generateFileId } from '@/utils/file.utils';
 import { uploadFileToWebhook } from '@/services/upload.service';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserLimits } from '@/hooks/useUserLimits';
 import type { UploadedFile } from '@/types/file.types';
 
 export const useFileUpload = () => {
   const { user } = useAuth();
+  const { limits, incrementUsage, canPerformAction } = useUserLimits();
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -62,7 +64,12 @@ export const useFileUpload = () => {
           : f
       )
     );
-  }, [user]);
+
+    // Increment usage counter if upload was successful
+    if (result.success) {
+      await incrementUsage('documents');
+    }
+  }, [user, incrementUsage]);
 
   /**
    * Uploads all valid files
@@ -110,5 +117,7 @@ export const useFileUpload = () => {
     uploadAllFiles,
     removeFile,
     clearAllFiles,
+    limits,
+    canPerformAction,
   };
 };

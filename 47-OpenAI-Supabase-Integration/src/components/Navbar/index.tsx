@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { useDarkMode } from '@/contexts/DarkModeContext';
+import { useUserLimits } from '@/hooks/useUserLimits';
 
 export const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -14,6 +15,7 @@ export const Navbar = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { limits } = useUserLimits();
 
   const handleLogout = async () => {
     const result = await signOut();
@@ -57,18 +59,30 @@ export const Navbar = () => {
               <Upload className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
               <span className="text-xs font-medium text-slate-700 dark:text-slate-300">Documents</span>
               <div className="flex items-center gap-0.5">
-                <span className="text-xs font-bold text-blue-600 dark:text-blue-400">4</span>
+                <span className={`text-xs font-bold ${limits?.documents.hasReachedLimit ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>
+                  {limits?.documents.used ?? 0}
+                </span>
                 <span className="text-slate-400 dark:text-slate-500 text-xs">/</span>
-                <Infinity className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                {limits?.isPro || limits?.documents.limit === -1 ? (
+                  <Infinity className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                ) : (
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{limits?.documents.limit ?? 3}</span>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg">
               <Video className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
               <span className="text-xs font-medium text-slate-700 dark:text-slate-300">Transcripts</span>
               <div className="flex items-center gap-0.5">
-                <span className="text-xs font-bold text-blue-600 dark:text-blue-400">1</span>
+                <span className={`text-xs font-bold ${limits?.transcripts.hasReachedLimit ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>
+                  {limits?.transcripts.used ?? 0}
+                </span>
                 <span className="text-slate-400 dark:text-slate-500 text-xs">/</span>
-                <Infinity className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                {limits?.isPro || limits?.transcripts.limit === -1 ? (
+                  <Infinity className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                ) : (
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{limits?.transcripts.limit ?? 3}</span>
+                )}
               </div>
             </div>
           </div>
@@ -180,9 +194,15 @@ export const Navbar = () => {
                   <span className="text-xs font-medium text-slate-700 dark:text-slate-300">Documents</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="text-sm font-bold text-blue-600 dark:text-blue-400">4</span>
+                  <span className={`text-sm font-bold ${limits?.documents.hasReachedLimit ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>
+                    {limits?.documents.used ?? 0}
+                  </span>
                   <span className="text-slate-400 dark:text-slate-500 text-xs">/</span>
-                  <Infinity className="w-3 h-3 text-slate-400 dark:text-slate-500" />
+                  {limits?.isPro || limits?.documents.limit === -1 ? (
+                    <Infinity className="w-3 h-3 text-slate-400 dark:text-slate-500" />
+                  ) : (
+                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{limits?.documents.limit ?? 3}</span>
+                  )}
                 </div>
               </div>
               <div className="flex flex-col gap-1 px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
@@ -191,9 +211,15 @@ export const Navbar = () => {
                   <span className="text-xs font-medium text-slate-700 dark:text-slate-300">Transcripts</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="text-sm font-bold text-blue-600 dark:text-blue-400">1</span>
+                  <span className={`text-sm font-bold ${limits?.transcripts.hasReachedLimit ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>
+                    {limits?.transcripts.used ?? 0}
+                  </span>
                   <span className="text-slate-400 dark:text-slate-500 text-xs">/</span>
-                  <Infinity className="w-3 h-3 text-slate-400 dark:text-slate-500" />
+                  {limits?.isPro || limits?.transcripts.limit === -1 ? (
+                    <Infinity className="w-3 h-3 text-slate-400 dark:text-slate-500" />
+                  ) : (
+                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{limits?.transcripts.limit ?? 3}</span>
+                  )}
                 </div>
               </div>
             </div>

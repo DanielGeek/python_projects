@@ -12,6 +12,7 @@ import { DropZone } from './DropZone';
 import { FileList } from './FileList';
 import { UploadButton } from './UploadButton';
 import { SuccessMessage } from './SuccessMessage';
+import { LimitReached } from '@/components/Limits';
 
 export const FileUploader = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -25,6 +26,8 @@ export const FileUploader = () => {
     uploadAllFiles,
     removeFile,
     clearAllFiles,
+    limits,
+    canPerformAction,
   } = useFileUpload();
 
   const { isDragging, handleDragOver, handleDragLeave, handleDrop } =
@@ -81,29 +84,40 @@ export const FileUploader = () => {
           className="hidden"
         />
 
-        {/* Drop zone */}
-        <DropZone
-          isDragging={isDragging}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onBrowseClick={handleBrowseClick}
-        />
+        {/* Show limit reached message if user has reached document limit */}
+        {limits?.documents.hasReachedLimit ? (
+          <LimitReached
+            type="documents"
+            used={limits.documents.used}
+            limit={limits.documents.limit}
+          />
+        ) : (
+          <>
+            {/* Drop zone */}
+            <DropZone
+              isDragging={isDragging}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onBrowseClick={handleBrowseClick}
+            />
 
-        {/* File list */}
-        <FileList
-          files={files}
-          onRemove={handleRemoveFile}
-          onClearAll={handleClearAll}
-        />
+            {/* File list */}
+            <FileList
+              files={files}
+              onRemove={handleRemoveFile}
+              onClearAll={handleClearAll}
+            />
 
-        {/* Upload button */}
-        {hasValidFiles && (
-          <UploadButton isUploading={isUploading} onClick={uploadAllFiles} />
+            {/* Upload button */}
+            {hasValidFiles && (
+              <UploadButton isUploading={isUploading} onClick={uploadAllFiles} />
+            )}
+
+            {/* Success message */}
+            {hasUploadedFiles && <SuccessMessage />}
+          </>
         )}
-
-        {/* Success message */}
-        {hasUploadedFiles && <SuccessMessage />}
       </div>
     </MainLayout>
   );
