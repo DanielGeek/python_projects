@@ -10,6 +10,8 @@ import { ChatPage } from './pages/ChatPage';
 import { TranscriptPage } from './pages/TranscriptPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { FileUploader } from './components/FileUpload';
+import { PaymentSuccessPage } from './pages/PaymentSuccessPage';
+import { PaymentCancelPage } from './pages/PaymentCancelPage';
 
 function App() {
   return (
@@ -66,6 +68,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <FileUploader />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment-success"
+            element={
+              <ProtectedRoute>
+                <PaymentSuccessPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment-cancel"
+            element={
+              <ProtectedRoute>
+                <PaymentCancelPage />
               </ProtectedRoute>
             }
           />

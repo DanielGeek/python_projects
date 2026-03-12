@@ -3,7 +3,9 @@
  * Displays when user tries to use a feature without available credits
  */
 
-import { X, Zap, Check } from 'lucide-react';
+import { useState } from 'react';
+import { X, Zap, Check, Loader2 } from 'lucide-react';
+import { stripeService } from '@/services/stripe.service';
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -12,9 +14,24 @@ interface UpgradeModalProps {
 }
 
 export const UpgradeModal = ({ isOpen, onClose, featureType }: UpgradeModalProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   if (!isOpen) return null;
 
   const featureName = featureType === 'documents' ? 'Document Uploads' : 'Transcript Extractions';
+
+  const handleUpgrade = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      await stripeService.redirectToCheckout();
+    } catch (err) {
+      console.error('Error redirecting to checkout:', err);
+      setError(err instanceof Error ? err.message : 'Failed to start checkout');
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -92,20 +109,36 @@ export const UpgradeModal = ({ isOpen, onClose, featureType }: UpgradeModalProps
             </ul>
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-sm text-red-800 dark:text-red-300">{error}</p>
+            </div>
+          )}
+
           {/* Action buttons */}
           <div className="flex flex-col gap-3">
             <button
-              onClick={() => {
-                // TODO: Navigate to upgrade page
-                console.log('Upgrade button clicked');
-              }}
-              className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
+              onClick={handleUpgrade}
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 disabled:from-yellow-300 disabled:to-orange-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-all transform hover:scale-105 disabled:hover:scale-100 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
             >
-              Upgrade to Pro
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Processing...</span>
+                </>
+              ) : (
+                <>
+                  <Zap className="w-5 h-5" />
+                  <span>Upgrade to Pro</span>
+                </>
+              )}
             </button>
             <button
               onClick={onClose}
-              className="w-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-medium py-3 px-6 rounded-lg transition-colors"
+              disabled={isLoading}
+              className="w-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-slate-700 dark:text-slate-300 font-medium py-3 px-6 rounded-lg transition-colors"
             >
               Maybe Later
             </button>
