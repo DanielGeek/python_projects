@@ -3,7 +3,7 @@
  * Following React and clean code best practices
  */
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Upload } from 'lucide-react';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useDragAndDrop } from '@/hooks/useDragAndDrop';
@@ -13,9 +13,11 @@ import { FileList } from './FileList';
 import { UploadButton } from './UploadButton';
 import { SuccessMessage } from './SuccessMessage';
 import { LimitReached } from '@/components/Limits';
+import { UpgradeModal } from '@/components/Modals';
 
 export const FileUploader = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const {
     files,
@@ -30,16 +32,30 @@ export const FileUploader = () => {
     canPerformAction,
   } = useFileUpload();
 
+  const handleFilesWithLimitCheck = (files: FileList) => {
+    // Check if user has reached limit before processing files
+    if (limits?.documents.hasReachedLimit) {
+      setShowUpgradeModal(true);
+      return;
+    }
+    processFiles(files);
+  };
+
   const { isDragging, handleDragOver, handleDragLeave, handleDrop } =
-    useDragAndDrop(processFiles);
+    useDragAndDrop(handleFilesWithLimitCheck);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      processFiles(e.target.files);
+      handleFilesWithLimitCheck(e.target.files);
     }
   };
 
   const handleBrowseClick = () => {
+    // Check limit before opening file picker
+    if (limits?.documents.hasReachedLimit) {
+      setShowUpgradeModal(true);
+      return;
+    }
     fileInputRef.current?.click();
   };
 
@@ -90,6 +106,7 @@ export const FileUploader = () => {
             type="documents"
             used={limits.documents.used}
             limit={limits.documents.limit}
+            onUpgradeClick={() => setShowUpgradeModal(true)}
           />
         ) : (
           <>
@@ -118,6 +135,13 @@ export const FileUploader = () => {
             {hasUploadedFiles && <SuccessMessage />}
           </>
         )}
+
+        {/* Upgrade Modal */}
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          featureType="documents"
+        />
       </div>
     </MainLayout>
   );

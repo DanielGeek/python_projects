@@ -2,14 +2,18 @@
  * YouTube Transcript page component
  */
 
+import { useState } from 'react';
 import { Video, AlertCircle } from 'lucide-react';
 import { useYouTubeTranscript } from '@/hooks/useYouTubeTranscript';
 import { MainLayout } from '@/components/Layout';
 import { TranscriptInput } from '@/components/YouTube/TranscriptInput';
 import { TranscriptDisplay } from '@/components/YouTube/TranscriptDisplay';
 import { LimitReached } from '@/components/Limits';
+import { UpgradeModal } from '@/components/Modals';
 
 export const TranscriptPage = () => {
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
   const {
     transcript,
     videoTitle,
@@ -21,6 +25,15 @@ export const TranscriptPage = () => {
     limits,
     canPerformAction,
   } = useYouTubeTranscript();
+
+  const handleGetTranscript = (videoUrl: string) => {
+    // Check if user has reached limit before extracting transcript
+    if (limits?.transcripts.hasReachedLimit) {
+      setShowUpgradeModal(true);
+      return;
+    }
+    getTranscript(videoUrl);
+  };
 
   return (
     <MainLayout>
@@ -44,6 +57,7 @@ export const TranscriptPage = () => {
               type="transcripts"
               used={limits.transcripts.used}
               limit={limits.transcripts.limit}
+              onUpgradeClick={() => setShowUpgradeModal(true)}
             />
           ) : (
             <>
@@ -84,7 +98,7 @@ export const TranscriptPage = () => {
 
               {/* Input Section */}
               <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-6">
-                <TranscriptInput onFetchTranscript={getTranscript} isLoading={isLoading} />
+                <TranscriptInput onFetchTranscript={handleGetTranscript} isLoading={isLoading} />
               </div>
 
               {/* Transcript Display */}
@@ -113,6 +127,13 @@ export const TranscriptPage = () => {
               )}
             </>
           )}
+
+        {/* Upgrade Modal */}
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          featureType="transcripts"
+        />
       </div>
     </MainLayout>
   );

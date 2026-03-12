@@ -3,16 +3,15 @@
  */
 
 import { AlertCircle, Zap } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 interface LimitReachedProps {
   type: 'documents' | 'transcripts';
   used: number;
   limit: number;
+  onUpgradeClick: () => void;
 }
 
-export const LimitReached = ({ type, used, limit }: LimitReachedProps) => {
-  const navigate = useNavigate();
+export const LimitReached = ({ type, used, limit, onUpgradeClick }: LimitReachedProps) => {
 
   const messages = {
     documents: {
@@ -52,7 +51,7 @@ export const LimitReached = ({ type, used, limit }: LimitReachedProps) => {
 
         <div className="w-full max-w-md space-y-3">
           <button
-            onClick={() => navigate('/pricing')}
+            onClick={onUpgradeClick}
             className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded-lg font-semibold shadow-lg shadow-yellow-500/30 transition-all duration-200"
           >
             <Zap className="w-5 h-5" />
