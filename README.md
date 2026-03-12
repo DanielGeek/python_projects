@@ -3372,6 +3372,8 @@ src/
 
 ### 10. 🤖 47-OpenAI-Supabase-Integration: DocuChat AI - Production-Ready AI SaaS Platform
 
+**🌐 Live Demo:** [https://python-projects-rose.vercel.app/login](https://python-projects-rose.vercel.app/login)
+
 A complete production-ready AI SaaS application featuring document chat, YouTube transcript extraction, and subscription management with Stripe integration.
 
 #### 🎯 Key Features

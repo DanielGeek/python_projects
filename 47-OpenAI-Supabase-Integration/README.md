@@ -7,6 +7,7 @@ A production-ready full-stack AI application featuring document chat, YouTube tr
 **Project:** DocuChat AI - Intelligent Document & Video Processing Platform  
 **Technologies:** React 18, TypeScript, Vite, Supabase, OpenAI, Stripe, Tailwind CSS  
 **Status:** Production Ready ✅  
+**Live Demo:** [https://python-projects-rose.vercel.app/login](https://python-projects-rose.vercel.app/login)  
 **Last Updated:** March 2026  
 **Version:** 2.0.0
 
