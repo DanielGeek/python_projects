@@ -12,11 +12,12 @@ export const useUserLimits = () => {
   const [limits, setLimits] = useState<UsageLimits | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   /**
-   * Fetch user limits from database
+   * Internal fetch function (not memoized to avoid circular deps)
    */
-  const fetchUserLimits = useCallback(async () => {
+  const fetchUserLimitsInternal = async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -67,6 +68,13 @@ export const useUserLimits = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  /**
+   * Public fetch function for manual refresh
+   */
+  const fetchUserLimits = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
   }, []);
 
   /**
@@ -141,15 +149,19 @@ export const useUserLimits = () => {
 
       if (updateError) throw updateError;
 
-      // Update local state
+      // Update local state immediately
       setLimits(transformLimitsData(data));
+      
+      // Trigger refresh
+      fetchUserLimits();
+      
       return true;
     } catch (err) {
       console.error(`Error incrementing ${type} usage:`, err);
       setError(err instanceof Error ? err.message : 'Failed to update usage');
       return false;
     }
-  }, [limits]);
+  }, [limits, fetchUserLimits]);
 
   /**
    * Check if user can perform an action based on limits
@@ -198,8 +210,8 @@ export const useUserLimits = () => {
   }, []);
 
   useEffect(() => {
-    fetchUserLimits();
-  }, [fetchUserLimits]);
+    fetchUserLimitsInternal();
+  }, [refreshTrigger]);
 
   return {
     limits,
