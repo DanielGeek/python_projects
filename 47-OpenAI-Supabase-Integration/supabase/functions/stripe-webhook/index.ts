@@ -46,6 +46,10 @@ serve(async (req) => {
           break
         }
 
+        // Fetch subscription details to get the end date
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+        const subscriptionEndDate = new Date(subscription.current_period_end * 1000).toISOString()
+
         const { error } = await supabaseAdmin
           .from('user_limits')
           .update({
@@ -53,6 +57,7 @@ serve(async (req) => {
             stripe_customer_id: customerId,
             stripe_subscription_id: subscriptionId,
             subscription_status: 'active',
+            subscription_end_date: subscriptionEndDate,
             documents_limit: -1,
             transcripts_limit: -1,
             updated_at: new Date().toISOString(),

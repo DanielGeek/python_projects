@@ -11,24 +11,39 @@ export const stripeService = {
    */
   async createCheckoutSession(): Promise<{ url: string | null; error: string | null }> {
     try {
-      // Get the current session
-      const { data: { session } } = await supabase.auth.getSession();
+      // Refresh session to ensure we have a valid token
+      const { data: { session }, error: sessionError } = await supabase.auth.refreshSession();
       
-      if (!session) {
-        return { url: null, error: 'User not authenticated' };
+      if (sessionError || !session) {
+        console.error('Session error:', sessionError);
+        return { url: null, error: 'User not authenticated. Please log in again.' };
       }
 
-      // Call the Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+      console.log('Session obtained, user:', session.user.email);
+
+      // Get Supabase URL from environment
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const functionUrl = `${supabaseUrl}/functions/v1/create-checkout-session`;
+
+      console.log('Calling Edge Function:', functionUrl);
+
+      // Call the Edge Function with fetch to ensure proper headers
+      const response = await fetch(functionUrl, {
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
         },
       });
 
-      if (error) {
-        console.error('Error creating checkout session:', error);
-        return { url: null, error: error.message };
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        console.error('Error creating checkout session:', errorData);
+        return { url: null, error: errorData.message || `HTTP ${response.status}` };
       }
+
+      const data = await response.json();
 
       if (!data?.url) {
         return { url: null, error: 'No checkout URL returned' };
