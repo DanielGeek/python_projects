@@ -14,7 +14,7 @@ Welcome to my comprehensive Python portfolio showcasing progressive mastery from
 
 ## 📊 Portfolio Overview
 
-This repository demonstrates my journey through **14 structured learning modules** and **11 production-scale projects**, encompassing:
+This repository demonstrates my journey through **14 structured learning modules** and **12 production-scale projects**, encompassing:
 
 - **🎯 50+ Python programs** ranging from basic algorithms to complex systems
 - **🤖 AI-Powered HR Management System** with Llama 3 integration
@@ -46,6 +46,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🤝 44-autogen_agent-to-agent AutoGen Agent-to-Agent Communication System** with Microsoft AutoGen Core, dynamic agent creation, collaborative intelligence, gRPC communication, and multi-agent ecosystem management
 - **🔌 45-MCP_OpenAI MCP OpenAI Multi-Tool Agent System** with OpenAI Agents, Model Context Protocol, multi-server integration, web browsing automation, and sandboxed file operations
 - **🏦 46-MCP_manager_accounts MCP Investment Account Management System** with OpenAI Agents, multi-server MCP architecture, AI-powered trading automation, real-time market data integration, persistent memory storage, web search capabilities, advanced error handling with external MCP servers, market data caching, and comprehensive portfolio management
+- **🤖 47-OpenAI-Supabase-Integration DocuChat AI - Full-Stack AI SaaS Platform** with React 18, TypeScript, Vite, Supabase Edge Functions, Stripe payments, OpenAI GPT-4, n8n workflow automation, YouTube transcript extraction, usage limits, subscription management, and production-ready authentication system
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -2405,7 +2406,7 @@ uv run main.py
 ```
 
 **Structured Output**:
-```
+```text
 Scene:
 A professional headshot of a man in a business setting, wearing a collared shirt and looking directly at the camera with a confident expression
 
@@ -3312,7 +3313,7 @@ result = await Runner.run(agent, request)
 ### 🔧 Technical Implementation Details
 
 **Package Structure:**
-```
+```text
 src/
 ├── accounts_server.py    # MCP server with sys.path manipulation for direct execution
 ├── market_server.py      # Market data server with Polygon.io integration
@@ -3366,6 +3367,196 @@ src/
 - Backtesting framework and performance metrics
 - Advanced risk management features
 - Real-time charting and technical indicators
+
+---
+
+### 10. 🤖 47-OpenAI-Supabase-Integration: DocuChat AI - Production-Ready AI SaaS Platform
+
+A complete production-ready AI SaaS application featuring document chat, YouTube transcript extraction, and subscription management with Stripe integration.
+
+#### 🎯 Key Features
+
+- **📄 Document Chat System**: Upload and chat with PDF, TXT, and CSV files using OpenAI GPT-4
+- **🎥 YouTube Transcript Extractor**: Extract and analyze video transcripts with RapidAPI integration
+- **💳 Stripe Subscription System**: Complete payment processing with Pro tier ($9/month)
+- **🔗 n8n Workflow Integration**: File upload, chat processing, and YouTube extraction via n8n webhooks
+- **👤 User Management**: Authentication, usage limits, and tier-based access control
+- **🔒 Secure Architecture**: JWT authentication, RLS policies, webhook signature verification
+- **⚡ Modern Stack**: React 18, TypeScript, Vite, Supabase Edge Functions
+- **🎨 Beautiful UI**: Responsive design with Tailwind CSS and Lucide icons
+
+#### 🛠️ Technical Implementation
+
+```typescript
+// Stripe payment integration with Edge Functions
+export const stripeService = {
+  async createCheckoutSession(): Promise<{ url: string | null; error: string | null }> {
+    // Refresh session to ensure valid JWT token
+    const { data: { session }, error: sessionError } = await supabase.auth.refreshSession();
+    
+    if (sessionError || !session) {
+      return { url: null, error: 'User not authenticated. Please log in again.' };
+    }
+
+    // Call Supabase Edge Function for Stripe Checkout
+    const response = await fetch(`${supabaseUrl}/functions/v1/create-checkout-session`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+        'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+      },
+    });
+
+    const data = await response.json();
+    return { url: data.url, error: null };
+  }
+};
+
+// User limits context with automatic session refresh
+useEffect(() => {
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+      if (session) {
+        // User logged in - reload limits automatically
+        fetchUserLimitsInternal();
+      } else {
+        // User logged out - clear limits
+        setLimits(null);
+      }
+    }
+  });
+
+  return () => subscription.unsubscribe();
+}, []);
+```
+
+#### 📋 Tech Stack
+
+**Frontend:**
+
+- **Framework**: React 18 with Vite for blazing-fast development
+- **Routing**: React Router v7 with protected routes
+- **UI/UX**: Tailwind CSS with custom design system and dark mode
+- **Icons**: Lucide React for beautiful, consistent icons
+- **Type Safety**: 100% TypeScript with strict mode enabled
+
+**Backend:**
+
+- **Database**: Supabase PostgreSQL with Row Level Security (RLS)
+- **Authentication**: Supabase Auth with JWT tokens and session management
+- **Edge Functions**: Deno-based serverless functions for Stripe integration
+- **Storage**: Document metadata and user limits tracking
+
+**Integrations:**
+- **AI**: OpenAI GPT-4 for intelligent document Q&A
+- **Payments**: Stripe Checkout and webhook processing
+- **Video**: YouTube transcript extraction via RapidAPI
+- **Workflows**: n8n automation platform for file processing and chat
+
+#### 🚀 Production Features
+
+**Environment Configuration:**
+```env
+# Supabase Configuration
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Supabase Edge Functions (Server-side)
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+
+# OpenAI Configuration
+VITE_OPENAI_API_KEY=your_openai_api_key
+
+# n8n Webhook URLs
+VITE_N8N_UPLOAD_WEBHOOK_URL=your_n8n_file_upload_webhook_url
+VITE_N8N_CHAT_WEBHOOK_URL=your_n8n_chat_webhook_url
+VITE_N8N_YOUTUBE_WEBHOOK_URL=your_n8n_youtube_webhook_url
+
+# RapidAPI (YouTube Transcripts)
+VITE_RAPIDAPI_KEY=your_rapidapi_key
+VITE_RAPIDAPI_HOST=youtube-transcriptor.p.rapidapi.com
+
+# Application Settings
+VITE_APP_URL=http://localhost:5173
+```
+
+**Database Schema:**
+```sql
+CREATE TABLE user_limits (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users NOT NULL UNIQUE,
+  documents_used INTEGER DEFAULT 0,
+  transcripts_used INTEGER DEFAULT 0,
+  documents_limit INTEGER DEFAULT 3,
+  transcripts_limit INTEGER DEFAULT 3,
+  is_pro BOOLEAN DEFAULT false,
+  stripe_customer_id TEXT,
+  stripe_subscription_id TEXT,
+  subscription_status TEXT DEFAULT 'inactive',
+  subscription_end_date TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+**Supabase Edge Functions:**
+- **create-checkout-session**: Creates Stripe Checkout session with customer management
+- **stripe-webhook**: Processes webhook events (checkout.session.completed, subscription updates)
+
+**Security & Compliance:**
+- ✅ Row Level Security (RLS) on all database tables
+- ✅ JWT authentication with automatic token refresh
+- ✅ Stripe webhook signature verification
+- ✅ Environment variable protection
+- ✅ Protected routes with auth guards
+- ✅ Input validation and sanitization
+- ✅ Secure Edge Functions with manual auth handling
+
+#### 💡 Usage Example
+
+```bash
+# Setup and run the application
+cd 47-OpenAI-Supabase-Integration
+npm install
+cp .env.example .env
+# Edit .env with all required credentials (Supabase, Stripe, OpenAI, n8n, RapidAPI)
+
+# Start development server
+npm run dev
+
+# Deploy Edge Functions
+supabase functions deploy create-checkout-session
+supabase functions deploy stripe-webhook
+
+# Set Stripe secrets
+supabase secrets set STRIPE_SECRET_KEY=sk_test_...
+supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+#### 🎯 Key Achievements
+
+- **Complete SaaS Platform**: Full subscription management with Stripe
+- **Real-time Sync**: Automatic limit updates on login/logout
+- **Production Ready**: Deployed Edge Functions with webhook processing
+- **Type Safety**: 100% TypeScript with strict mode
+- **Modern Architecture**: React 18, Vite, Supabase Edge Functions
+- **Beautiful UI**: Responsive design with Tailwind CSS
+- **Secure**: JWT authentication, RLS policies, webhook verification
+- **Workflow Integration**: n8n automation for file processing and chat
+
+#### 📊 Project Metrics
+
+- **Tech Stack**: React 18, TypeScript, Vite, Supabase, Stripe, OpenAI, n8n
+- **Components**: 24+ React components
+- **Edge Functions**: 2 Deno serverless functions
+- **Database Tables**: 2 main tables with RLS policies
+- **API Integrations**: 4 (OpenAI, Stripe, RapidAPI, n8n)
+- **Authentication**: JWT-based with automatic session refresh
+- **Payment Processing**: Stripe Checkout with webhook handling
 
 ---
 

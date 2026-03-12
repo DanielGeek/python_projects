@@ -218,6 +218,27 @@ export const UserLimitsProvider = ({ children }: { children: ReactNode }) => {
     fetchUserLimitsInternal();
   }, [refreshTrigger]);
 
+  // Listen for auth state changes to reload limits when user logs in/out
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        console.log('Auth state changed:', event);
+        if (session) {
+          // User logged in or token refreshed - reload limits
+          fetchUserLimitsInternal();
+        } else {
+          // User logged out - clear limits
+          setLimits(null);
+          setIsLoading(false);
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   const value = {
     limits,
     isLoading,
