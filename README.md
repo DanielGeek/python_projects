@@ -3378,10 +3378,11 @@ A complete production-ready AI SaaS application featuring document chat, YouTube
 
 #### 🎯 Key Features
 
-- **📄 Document Chat System**: Upload and chat with PDF, TXT, and CSV files using OpenAI GPT-4
+- **📄 Document Chat System with RAG**: Upload and chat with PDF, TXT, and CSV files using OpenAI GPT-5.2 with Retrieval-Augmented Generation
+- **🧠 Vector Embeddings & Semantic Search**: Advanced document processing with OpenAI text-embedding-3-small and Supabase pgvector for intelligent context retrieval
 - **🎥 YouTube Transcript Extractor**: Extract and analyze video transcripts with RapidAPI integration
 - **💳 Stripe Subscription System**: Complete payment processing with Pro tier ($9/month)
-- **🔗 n8n Workflow Integration**: File upload, chat processing, and YouTube extraction via n8n webhooks
+- **🔗 n8n Workflow Automation**: Sophisticated document processing pipeline with embeddings generation, vector storage, and chat memory
 - **👤 User Management**: Authentication, usage limits, and tier-based access control
 - **🔒 Secure Architecture**: JWT authentication, RLS policies, webhook signature verification
 - **⚡ Modern Stack**: React 18, TypeScript, Vite, Supabase Edge Functions

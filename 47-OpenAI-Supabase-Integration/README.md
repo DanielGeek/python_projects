@@ -15,7 +15,7 @@ A production-ready full-stack AI application featuring document chat, YouTube tr
 
 This project showcases a complete production-ready AI SaaS application:
 
-- **🤖 AI-Powered Chat**: Interactive document Q&A with OpenAI GPT-4
+- **🤖 AI-Powered Chat**: Interactive document Q&A with OpenAI GPT-5.2
 - **📄 Document Processing**: Upload and chat with PDF, TXT, and CSV files
 - **🎥 YouTube Integration**: Extract and analyze video transcripts
 - **💳 Stripe Payments**: Complete subscription system with Pro tier upgrades
@@ -39,7 +39,7 @@ graph TB
     F --> I[Edge Functions]
     I --> J[Stripe Checkout]
     I --> K[Stripe Webhooks]
-    L[OpenAI GPT-4] --> M[Document Chat]
+    L[OpenAI GPT-5.2] --> M[Document Chat]
     L --> N[AI Responses]
     O[Context Providers] --> P[User Limits]
     O --> Q[Auth State]
@@ -61,31 +61,72 @@ graph TB
 - **Storage**: Document metadata and user limits tracking
 
 **Integrations:**
-- **AI**: OpenAI GPT-4 for intelligent document Q&A
+- **AI**: OpenAI GPT-5.2 for intelligent document Q&A with RAG (Retrieval-Augmented Generation)
 - **Payments**: Stripe Checkout and webhook processing
 - **Video**: YouTube transcript extraction via RapidAPI
+- **Workflow Automation**: n8n for document processing, embeddings, and vector storage
 
 ## 🛠️ Features & Capabilities
 
-### 1. 📄 Document Chat System
+### 1. 📄 Document Chat System with RAG (Retrieval-Augmented Generation)
 
 **Core Features:**
 
 - 📁 **File Upload**: Drag & drop interface for PDF, TXT, and CSV files
-- 💬 **AI Chat**: Ask questions about your documents with GPT-4
-- � **Usage Tracking**: Monitor document uploads with visual limits
-- � **User Limits**: Free tier (3 documents) and Pro tier (unlimited)
+- 💬 **AI Chat**: Ask questions about your documents with GPT-5.2
+- 🧠 **RAG Implementation**: Advanced document processing with embeddings and vector search
+- 📊 **Usage Tracking**: Monitor document uploads with visual limits
+- 🎯 **User Limits**: Free tier (3 documents) and Pro tier (unlimited)
 - 📝 **Markdown Support**: Rich formatting in AI responses
 - 🗂️ **Document History**: View all uploaded documents with metadata
 - ❌ **Smart Validation**: File type and size validation (max 10MB)
 - 🎨 **Beautiful UI**: Modern, responsive design with loading states
 
+**RAG Architecture & Implementation:**
+
+This project implements a complete **RAG (Retrieval-Augmented Generation)** pipeline using n8n workflows:
+
+**1. Document Processing Pipeline (n8n Workflow):**
+- **File Extraction**: Automatic text extraction from PDF, TXT, and CSV files
+- **Text Chunking**: Documents split into semantic chunks for optimal processing
+- **Embeddings Generation**: OpenAI Embeddings API creates vector representations
+- **Vector Storage**: Supabase Vector Store (pgvector) for efficient similarity search
+- **Metadata Indexing**: Document metadata stored with embeddings for context
+
+**2. Chat Query Pipeline:**
+- **Query Embedding**: User questions converted to vector embeddings
+- **Similarity Search**: pgvector finds most relevant document chunks
+- **Context Retrieval**: Top-k similar chunks retrieved from vector store
+- **Prompt Engineering**: Context injected into GPT-5.2 prompt with user query
+- **Response Generation**: GPT-5.2 generates contextually accurate answers
+- **Chat Memory**: PostgreSQL stores conversation history for context continuity
+
+**3. Vector Database (Supabase pgvector):**
+- **Efficient Storage**: High-dimensional embeddings stored in PostgreSQL
+- **Fast Retrieval**: Optimized similarity search with HNSW indexing
+- **Scalable**: Handles thousands of document chunks efficiently
+- **Integrated**: Seamless integration with Supabase authentication and RLS
+
 **Technical Implementation:**
 - Real-time limit checking before uploads
 - Automatic user ID tracking
 - Document metadata storage in Supabase
+- n8n webhook triggers for document processing
+- OpenAI text-embedding-3-small for embeddings
+- Supabase Vector Store for semantic search
+- Chat history persistence in PostgreSQL
 - Error handling with user-friendly messages
 - Upgrade prompts when limits are reached
+
+**Workflow Components (n8n):**
+- **Webhook Extractor**: Receives uploaded files from frontend
+- **Extract from File**: Parses PDF, TXT, CSV content
+- **Embeddings OpenAI**: Generates vector embeddings
+- **Supabase Vector Store**: Stores embeddings with metadata
+- **Default Data Loader**: Manages document chunks
+- **Recursive Character Text Splitter**: Intelligent text chunking
+- **OpenAI Chat Model**: GPT-5.2 for response generation
+- **PostgreSQL Chat Memory**: Conversation history storage
 
 ### 2. 🎥 YouTube Transcript Extractor
 
