@@ -110,7 +110,13 @@ def exercise_first_chain():
 def new_way():
     # the universal way to initialize a model
     model = init_chat_model("gpt-4o-mini", temperature=0.7, max_tokens=1500)
-    print(model)
+
+    # Or provider-specific (still works)
+    openai_model = ChatOpenAI(
+        model="gpt-4o-mini", max_tokens=1500, timeout=30, max_retries=3
+    )
+
+    anthropic_model = ChatAnthropic(model="claude-sonnet-4-5-20250929")
 
 
 if __name__ == "__main__":
