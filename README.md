@@ -14,7 +14,7 @@ Welcome to my comprehensive Python portfolio showcasing progressive mastery from
 
 ## 📊 Portfolio Overview
 
-This repository demonstrates my journey through **14 structured learning modules** and **12 production-scale projects**, encompassing:
+This repository demonstrates my journey through **14 structured learning modules** and **13 production-scale projects**, encompassing:
 
 - **🎯 50+ Python programs** ranging from basic algorithms to complex systems
 - **🤖 AI-Powered HR Management System** with Llama 3 integration
@@ -46,7 +46,8 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🤝 44-autogen_agent-to-agent AutoGen Agent-to-Agent Communication System** with Microsoft AutoGen Core, dynamic agent creation, collaborative intelligence, gRPC communication, and multi-agent ecosystem management
 - **🔌 45-MCP_OpenAI MCP OpenAI Multi-Tool Agent System** with OpenAI Agents, Model Context Protocol, multi-server integration, web browsing automation, and sandboxed file operations
 - **🏦 46-MCP_manager_accounts MCP Investment Account Management System** with OpenAI Agents, multi-server MCP architecture, AI-powered trading automation, real-time market data integration, persistent memory storage, web search capabilities, advanced error handling with external MCP servers, market data caching, and comprehensive portfolio management
-- **🤖 47-OpenAI-Supabase-Integration DocuChat AI - Full-Stack AI SaaS Platform** with React 18, TypeScript, Vite, Supabase Edge Functions, Stripe payments, OpenAI GPT-4, n8n workflow automation, YouTube transcript extraction, usage limits, subscription management, and production-ready authentication system
+- **🤖 47-OpenAI-Supabase-Integration DocuChat AI - Full-Stack AI SaaS Platform** with React 18, TypeScript, Vite, Supabase Edge Functions, Stripe payments, OpenAI GPT-5.2, n8n workflow automation, RAG implementation, vector embeddings, YouTube transcript extraction, usage limits, subscription management, and production-ready authentication system
+- **🦜 48-langchain-example LangChain Fundamentals - Complete Learning Guide** with LCEL (LangChain Expression Language), multi-model support (OpenAI GPT-4o, Claude Sonnet), prompt engineering, output parsers (String, JSON, Pydantic), structured output, streaming & batching, few-shot learning, message placeholders, and hands-on exercises
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
@@ -3560,6 +3561,170 @@ supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...
 - **API Integrations**: 4 (OpenAI, Stripe, RapidAPI, n8n)
 - **Authentication**: JWT-based with automatic session refresh
 - **Payment Processing**: Stripe Checkout with webhook handling
+
+---
+
+### 11. 🦜 48-langchain-example: LangChain Fundamentals - Complete Learning Guide
+
+A comprehensive hands-on guide to mastering LangChain V.1 fundamentals, covering LCEL, prompts, output parsers, and multi-model integration.
+
+#### 🎯 Key Features
+
+- **🔗 LCEL (LangChain Expression Language)**: Chain composition with pipe operators for modular AI workflows
+- **💬 Multi-Model Support**: Seamless integration with OpenAI GPT-4o, GPT-4o-mini, and Anthropic Claude Sonnet
+- **📝 Prompt Engineering**: Templates, few-shot learning, message placeholders, and prompt composition
+- **🎯 Output Parsing**: String, JSON, Pydantic, and structured output with type safety
+- **⚡ Streaming & Batching**: Real-time responses and efficient batch processing
+- **🧩 Modular Architecture**: Reusable components and chain composition patterns
+
+#### 🛠️ Technical Implementation
+
+**LCEL Chain Composition:**
+```python
+# Basic LCEL chain with pipe operator
+prompt = ChatPromptTemplate.from_template("Answer: {question}")
+model = ChatOpenAI(model="gpt-4o-mini")
+parser = StrOutputParser()
+
+chain = prompt | model | parser
+result = chain.invoke({"question": "What is LangChain?"})
+```
+
+**Multi-Model Integration:**
+```python
+# Universal model initialization
+model = init_chat_model(
+    model="gpt-4o-mini",
+    temperature=0.7,
+    streaming=True,
+    max_retries=3
+)
+
+# Easy provider switching
+claude = init_chat_model(
+    model="claude-sonnet-4-5-20250929",
+    model_provider="anthropic"
+)
+```
+
+**Structured Output with Pydantic:**
+```python
+class TaskExtraction(BaseModel):
+    task: str
+    priority: str
+    deadline: Optional[str]
+    assignee: Optional[str]
+
+structured_model = model.with_structured_output(TaskExtraction)
+chain = prompt | structured_model
+result = chain.invoke({"text": "John needs to finish report by Friday"})
+# Returns: TaskExtraction object with type checking
+```
+
+#### 📋 Learning Modules
+
+**1. Core Concepts (`core_concepts.py`):**
+- Basic chain composition with `|` operator
+- Batch execution for multiple inputs
+- Streaming for real-time output
+- Schema inspection for debugging
+
+**2. Working with LLMs (`working_with_llms.py`):**
+- Universal model initialization with `init_chat_model()`
+- Provider-specific configurations
+- Model comparison across providers
+- Multi-turn conversations with message objects
+
+**3. Prompt Templates (`prompt_templates_all.py`):**
+- Simple and multi-message templates
+- Few-shot prompting with examples
+- Message placeholders for conversation history
+- Prompt composition and reusability
+
+**4. Output Parsers (`output_parsers_final.py`):**
+- StrOutputParser for simple text
+- JsonOutputParser for structured data
+- PydanticOutputParser for type-safe schemas
+- Modern `with_structured_output()` method
+
+#### 📦 Tech Stack
+
+**Core Technologies:**
+- **LangChain**: 1.2.12+ (core framework)
+- **LangChain OpenAI**: 1.1.11+ (OpenAI integration)
+- **LangChain Anthropic**: 1.3.5+ (Claude integration)
+- **LangGraph**: 1.1.2+ (stateful workflows)
+- **Python**: 3.14+ with type hints
+
+**Supported Models:**
+- OpenAI: GPT-4o, GPT-4o-mini
+- Anthropic: Claude Sonnet 4.5
+
+#### 🚀 Key Concepts
+
+**LCEL (LangChain Expression Language):**
+- Pipe operator (`|`) for chain composition
+- Runnables interface for all components
+- Composability for complex workflows
+
+**Chain Execution Methods:**
+- `invoke()`: Single input, single output
+- `batch()`: Multiple inputs, multiple outputs
+- `stream()`: Real-time streaming output
+- `ainvoke()`: Async single execution
+
+**Message Types:**
+- SystemMessage: System instructions
+- HumanMessage: User input
+- AIMessage: Model response
+- ToolMessage: Tool execution results
+
+**Output Parsing Strategies:**
+- String: Simple text output
+- JSON: Structured data without validation
+- Pydantic: Type-safe with validation
+- Structured Output: Modern automatic schema binding
+
+#### 💡 Usage Example
+
+```bash
+# Setup and run examples
+cd 48-langchain-example
+
+# Install dependencies with uv
+uv sync
+
+# Configure environment
+cp .env.example .env
+# Add your API keys to .env
+
+# Run examples
+uv run python main.py                    # Test setup
+uv run python core_concepts.py           # LCEL basics
+uv run python working_with_llms.py       # Multi-model support
+uv run python prompt_templates_all.py    # Prompt engineering
+uv run python output_parsers_final.py    # Structured output
+```
+
+#### 🎯 Key Achievements
+
+- **Complete Learning Path**: From basics to advanced patterns
+- **Multi-Model Support**: OpenAI and Anthropic integration
+- **Type Safety**: Pydantic validation and structured output
+- **Hands-on Exercises**: Practical examples with solutions
+- **Modern Patterns**: LCEL, streaming, batching, and composition
+- **Production Ready**: Best practices and error handling
+- **Comprehensive Documentation**: Detailed README with examples
+
+#### 📊 Project Metrics
+
+- **Learning Modules**: 5 comprehensive modules
+- **Code Examples**: 20+ working demonstrations
+- **Exercises**: 4 hands-on practice exercises
+- **Dependencies**: 6 core packages (LangChain ecosystem)
+- **Models Supported**: 3 (GPT-4o, GPT-4o-mini, Claude Sonnet)
+- **Output Parsers**: 4 types (String, JSON, Pydantic, Structured)
+- **Documentation**: 480+ lines of comprehensive README
 
 ---
 
