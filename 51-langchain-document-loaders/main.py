@@ -1,9 +1,9 @@
 import os
 import tempfile
 from pathlib import Path
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader, WebBaseLoader
 from dotenv import load_dotenv
-
+from bs4 import BeautifulSoup
 
 load_dotenv()
 
@@ -36,5 +36,19 @@ def load_text_file():
         os.remove(temp_file_path)
 
 
+def web_loader():
+    loader = WebBaseLoader(
+        "https://python.langchain.com/docs/introduction/", bs_kwargs={"parse_only": None}
+    )
+
+    documents = loader.load()
+
+    print(f"Loaded {len(documents)} document(s) from web")
+    print(f"Source: {documents[0].metadata.get('source', 'N/A')}")
+    print(f"Content length: {len(documents[0].page_content)} characters")
+    print(f"Preview: {documents[0].page_content[:200]}...")
+
+
 if __name__ == "__main__":
-    load_text_file()
+    # load_text_file()
+    web_loader()
