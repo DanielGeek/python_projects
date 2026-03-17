@@ -11,5 +11,6 @@ dependencies = [
     "langchain-core>=1.2.19",
     "langchain-openai>=1.1.11",
     "langgraph>=1.1.2",
+    "pypdf>=6.9.1",
     "python-dotenv>=1.2.2",
 ]
