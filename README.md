@@ -48,6 +48,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🏦 46-MCP_manager_accounts MCP Investment Account Management System** with OpenAI Agents, multi-server MCP architecture, AI-powered trading automation, real-time market data integration, persistent memory storage, web search capabilities, advanced error handling with external MCP servers, market data caching, and comprehensive portfolio management
 - **🤖 47-OpenAI-Supabase-Integration DocuChat AI - Full-Stack AI SaaS Platform** with React 18, TypeScript, Vite, Supabase Edge Functions, Stripe payments, OpenAI GPT-5.2, n8n workflow automation, RAG implementation, vector embeddings, YouTube transcript extraction, usage limits, subscription management, and production-ready authentication system
 - **🦜 48-langchain-example LangChain Fundamentals - Complete Learning Guide** with LCEL (LangChain Expression Language), multi-model support (OpenAI GPT-4o, Claude Sonnet), prompt engineering, output parsers (String, JSON, Pydantic), structured output, streaming & batching, few-shot learning, message placeholders, and hands-on exercises
+- **🦜 50-langchain-chain-patterns LangChain V.1 - Advanced Chain Patterns** with LCEL patterns, parallel execution, passthrough & assignment, conditional branching, debugging techniques, RunnableParallel, RunnablePassthrough, RunnableBranch, and RunnableLambda
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
