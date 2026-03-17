@@ -1,6 +1,7 @@
 import os
 import tempfile
 from pathlib import Path
+from langchain_core.documents import Document
 from langchain_community.document_loaders import (
     TextLoader,
     WebBaseLoader,
@@ -70,7 +71,36 @@ def lazy_loader():
             print("Metadata:", doc.metadata["source"])
 
 
+def doc_structure():
+    doc = Document(
+        page_content="This is a sample document.",
+        metadata={
+            "source": "manual_creatin.txt",
+            "author": "Daniel",
+            "length": 30,
+            "tags": ["sample", "test"],
+            "created_at": "2026-03-17",
+        },
+    )
+
+    print("Document Structure:")
+    print(f"  page_content (type): {type(doc.page_content)}")
+    print(f"  page_content: {doc.page_content}")
+    print(f"  metadata: {doc.metadata}")
+
+    # Documents are immutable-ish, but you can create new ones
+    updated_doc = Document(
+        page_content=doc.page_content + " Additional content.",
+        metadata={**doc.metadata, "updated": True},
+    )
+    print(f"\n Updated metadata: {updated_doc.metadata}")
+    print(f"   page_content (type): {type(updated_doc.page_content)}")
+    print(f"   page_content: {updated_doc.page_content}")
+    print(f"   metadata: {updated_doc.metadata}")
+
+
 if __name__ == "__main__":
     # load_text_file()
     # web_loader()
-    lazy_loader()
+    # lazy_loader()
+    doc_structure()
