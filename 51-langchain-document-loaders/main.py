@@ -1,7 +1,11 @@
 import os
 import tempfile
 from pathlib import Path
-from langchain_community.document_loaders import TextLoader, WebBaseLoader
+from langchain_community.document_loaders import (
+    TextLoader,
+    WebBaseLoader,
+    DirectoryLoader,
+)
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 
@@ -38,7 +42,8 @@ def load_text_file():
 
 def web_loader():
     loader = WebBaseLoader(
-        "https://python.langchain.com/docs/introduction/", bs_kwargs={"parse_only": None}
+        "https://python.langchain.com/docs/introduction/",
+        bs_kwargs={"parse_only": None},
     )
 
     documents = loader.load()
@@ -49,6 +54,23 @@ def web_loader():
     print(f"Preview: {documents[0].page_content[:200]}...")
 
 
+def lazy_loader():
+    # Create temp directory with sample files
+    with tempfile.TemporaryDirectory() as tempdir:
+        # Create sample files
+        for i in range(5):
+            path = Path(tempdir) / f"doc_{i}.txt"
+            path.write_text(f"This is document {i}. It contains sample content.")
+
+        loader = DirectoryLoader(tempdir, glob="*.txt", loader_cls=TextLoader)
+
+        print("Initialized lazy loader for directory:", tempdir)
+        for doc in loader.lazy_load():
+            print("Document Content Preview:", doc.page_content[:50], "...")
+            print("Metadata:", doc.metadata["source"])
+
+
 if __name__ == "__main__":
     # load_text_file()
-    web_loader()
+    # web_loader()
+    lazy_loader()
