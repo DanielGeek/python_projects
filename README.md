@@ -49,6 +49,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🤖 47-OpenAI-Supabase-Integration DocuChat AI - Full-Stack AI SaaS Platform** with React 18, TypeScript, Vite, Supabase Edge Functions, Stripe payments, OpenAI GPT-5.2, n8n workflow automation, RAG implementation, vector embeddings, YouTube transcript extraction, usage limits, subscription management, and production-ready authentication system
 - **🦜 48-langchain-example LangChain Fundamentals - Complete Learning Guide** with LCEL (LangChain Expression Language), multi-model support (OpenAI GPT-4o, Claude Sonnet), prompt engineering, output parsers (String, JSON, Pydantic), structured output, streaming & batching, few-shot learning, message placeholders, and hands-on exercises
 - **🦜 50-langchain-chain-patterns LangChain V.1 - Advanced Chain Patterns** with LCEL patterns, parallel execution, passthrough & assignment, conditional branching, debugging techniques, RunnableParallel, RunnablePassthrough, RunnableBranch, and RunnableLambda
+- **📄 51-langchain-document-loaders LangChain Document Loaders - Complete Guide** with text file loading, web content scraping, directory bulk processing, PDF document parsing, document structure management, lazy loading, metadata extraction, and Document object manipulation
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
