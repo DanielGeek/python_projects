@@ -51,6 +51,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🦜 50-langchain-chain-patterns LangChain V.1 - Advanced Chain Patterns** with LCEL patterns, parallel execution, passthrough & assignment, conditional branching, debugging techniques, RunnableParallel, RunnablePassthrough, RunnableBranch, and RunnableLambda
 - **📄 51-langchain-document-loaders LangChain Document Loaders - Complete Guide** with text file loading, web content scraping, directory bulk processing, PDF document parsing, document structure management, lazy loading, metadata extraction, and Document object manipulation
 - **📄 52-langchain-text-splitter LangChain Text Splitters - Complete Guide** with recursive character splitting, markdown header splitting, code splitting, document splitting, chunk size optimization, overlap strategies, and RAG pipeline optimization
+- **🧠 52-langchain-embedding LangChain Embeddings - Complete Guide** with OpenAI embeddings, Hugging Face embeddings, Ollama embeddings, similarity search, vector mathematics, embedding caching, and semantic search applications
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
