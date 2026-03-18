@@ -4,31 +4,83 @@
 # text-embedding-ada-002	1536	     $0.10	             Legacy
 
 from langchain_openai.embeddings import OpenAIEmbeddings
-from langchain_community.embeddings import HuggingFaceEmbeddings
+
+# from langchain_community.embeddings import HuggingFaceEmbeddings # Deprecated
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_ollama import OllamaEmbeddings
 from dotenv import load_dotenv
 
 load_dotenv()
 
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
-# single text
-text = "This is a sample text to be embedded."
-embedding = embeddings.embed_query(text)
-print(f"Embedding for single text: {embedding}")
+def openai_embed_text():
+    embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
-print(
-    f"Length of embedding: {len(embedding)}"
-)  # Should print 1536 for text-embedding-3-small
+    # single text
+    text = "This is a sample text to be embedded."
+    embedding = embeddings.embed_query(text)
+    print(f"Embedding for single text: {embedding}")
 
-# multiple texts
-embeds = embeddings.embed_documents(
-    ["This is the first document.", "This is the second document."]
-)
-print(f"Embeddings for multiple texts: {embeds}")
-print(f"Number of embeddings returned: {len(embeds)}")  # Should print 2
-print(
-    f"Length of each embedding: {len(embeds[0])}"
-)  # Should print 1536 for text-embedding-3-small
+    print(
+        f"Length of embedding: {len(embedding)}"
+    )  # Should print 1536 for text-embedding-3-small
+
+    # multiple texts
+    embeds = embeddings.embed_documents(
+        ["This is the first document.", "This is the second document."]
+    )
+    print(f"Embeddings for multiple texts: {embeds}")
+    print(f"Number of embeddings returned: {len(embeds)}")  # Should print 2
+    print(
+        f"Length of each embedding: {len(embeds[0])}"
+    )  # Should print 1536 for text-embedding-3-small
+
+
+def huggingface_embed_text():
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
+
+    # single text
+    text = "This is a sample text to be embedded."
+    embedding = embeddings.embed_query(text)
+    print(f"Embedding for single text: {embedding}")
+
+    print(
+        f"Length of embedding: {len(embedding)}"
+    )  # Should print 384 for all-MiniLM-L6-v2
+
+    # multiple texts
+    embeds = embeddings.embed_documents(
+        ["This is the first document.", "This is the second document."]
+    )
+    print(f"Embeddings for multiple texts: {embeds}")
+    print(f"Number of embeddings returned: {len(embeds)}")  # Should print 2
+    print(
+        f"Length of each embedding: {len(embeds[0])}"
+    )  # Should print 384 for all-MiniLM-L6-v2
+
+
+def ollama_embed_text():
+    embeddings = OllamaEmbeddings(model="nomic-embed-text")
+
+    # single text
+    text = "This is a sample text to be embedded."
+    embedding = embeddings.embed_query(text)
+    print(f"Embedding for single text: {embedding}")
+
+    print(f"Length of embedding: {len(embedding)}")  # Should print 768
+
+    # multiple texts
+    embeds = embeddings.embed_documents(
+        ["This is the first document.", "This is the second document."]
+    )
+    print(f"Embeddings for multiple texts: {embeds}")
+    print(f"Number of embeddings returned: {len(embeds)}")  # Should print 2
+    print(f"Length of each embedding: {len(embeds[0])}")  # Should print 768
+
 
 if __name__ == "__main__":
-    pass
+    # openai_embed_text()
+    # huggingface_embed_text()
+    ollama_embed_text()
