@@ -156,10 +156,23 @@ def markdown_splitter():
         print(f" Content: {chunk.page_content[:200]}...\n")
 
 
+def code_splitter():
+    python_splitter = RecursiveCharacterTextSplitter.from_language(
+        language=Language.PYTHON, chunk_size=500, chunk_overlap=50
+    )
+    chunks = python_splitter.split_text(SAMPLE_CODE)
+    print(f"Code Splitter produced {len(chunks)} chunks.")
+    for i, chunk in enumerate(chunks):
+        print(f"\nChunk {i} ({len(chunk)} chars):")
+        print(chunk[:150] + "..." if len(chunk) > 150 else chunk)
+
+
 if __name__ == "__main__":
     print("=== Recursive Character Text Splitter ===")
     # recursive_splitter()
     # chunk_size_comparison()
     # overlap_importance()
-    print("=== Markdown Header Text Splitter ===")
-    markdown_splitter()
+    # print("=== Markdown Header Text Splitter ===")
+    # markdown_splitter()
+    print("=== Code Splitter ===")
+    code_splitter()
