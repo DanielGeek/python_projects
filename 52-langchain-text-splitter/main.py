@@ -5,12 +5,10 @@ Optimizing document chunck for RAG
 
 from langchain_text_splitters import (
     RecursiveCharacterTextSplitter,
-    CharacterTextSplitter,
-    TokenTextSplitter,
     MarkdownHeaderTextSplitter,
     Language,
 )
-from langchain_core.documents import Document
+from langchain_community.document_loaders import PyPDFLoader
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -167,12 +165,34 @@ def code_splitter():
         print(chunk[:150] + "..." if len(chunk) > 150 else chunk)
 
 
+def document_splitter():
+    loader = PyPDFLoader("./docs/ai_agents_llms.pdf")
+    docs = loader.load()
+
+    print(f"Loaded {len(docs)} documents from PDF.")
+
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=50,
+    )
+
+    # split the docs
+    split_docs = splitter.split_documents(docs)
+
+    print(f"Split into {len(split_docs)} chunks")
+    print(f"\nFirst chunck metadata: {split_docs[0].metadata}")
+    print(f"First chunck content: {split_docs[0].page_content[:200]}...")
+    print(f"\nLast chunck metadata: {split_docs[-1].metadata}")
+
+
 if __name__ == "__main__":
-    print("=== Recursive Character Text Splitter ===")
+    # print("=== Recursive Character Text Splitter ===")
     # recursive_splitter()
     # chunk_size_comparison()
     # overlap_importance()
     # print("=== Markdown Header Text Splitter ===")
     # markdown_splitter()
-    print("=== Code Splitter ===")
-    code_splitter()
+    # print("=== Code Splitter ===")
+    # code_splitter()
+    print("=== Document Splitter ===")
+    document_splitter()

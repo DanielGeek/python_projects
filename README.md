@@ -50,6 +50,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🦜 48-langchain-example LangChain Fundamentals - Complete Learning Guide** with LCEL (LangChain Expression Language), multi-model support (OpenAI GPT-4o, Claude Sonnet), prompt engineering, output parsers (String, JSON, Pydantic), structured output, streaming & batching, few-shot learning, message placeholders, and hands-on exercises
 - **🦜 50-langchain-chain-patterns LangChain V.1 - Advanced Chain Patterns** with LCEL patterns, parallel execution, passthrough & assignment, conditional branching, debugging techniques, RunnableParallel, RunnablePassthrough, RunnableBranch, and RunnableLambda
 - **📄 51-langchain-document-loaders LangChain Document Loaders - Complete Guide** with text file loading, web content scraping, directory bulk processing, PDF document parsing, document structure management, lazy loading, metadata extraction, and Document object manipulation
+- **📄 52-langchain-text-splitter LangChain Text Splitters - Complete Guide** with recursive character splitting, markdown header splitting, code splitting, document splitting, chunk size optimization, overlap strategies, and RAG pipeline optimization
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
