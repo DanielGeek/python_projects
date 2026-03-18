@@ -5,6 +5,10 @@
 
 from langchain_openai.embeddings import OpenAIEmbeddings
 
+from langchain_classic.embeddings.cache import CacheBackedEmbeddings
+from langchain_classic.storage import LocalFileStore
+import tempfile
+
 # from langchain_community.embeddings import HuggingFaceEmbeddings # Deprecated
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import OllamaEmbeddings
@@ -137,10 +141,40 @@ def similarity_search():
         print(f"  {score:.4f}: {doc}")
 
 
+# Caching ---
+def embedding_caching():
+    with tempfile.TemporaryDirectory() as tempdir:
+        store = LocalFileStore(root_path=tempdir)
+
+        cached_embeddings = CacheBackedEmbeddings.from_bytes_store(
+            underlying_embeddings=openai_embeddings,
+            document_embedding_cache=store,
+            namespace="exercise",
+        )
+        
+        text = "What is Reinforcement Learning?"
+
+        # First call - hits API
+        print("First call (API):")
+        vectors1 = cached_embeddings.embed_documents([text])
+        print(f"  Embedded {len(vectors1)} documents")
+
+        # Second call - from cache
+        print("\nSecond call (Cache):")
+        vectors2 = cached_embeddings.embed_documents([text])
+        print(f"  Embedded {len(vectors2)} documents")
+
+        # Verify same results
+        print(f"\nSame vectors: {np.allclose(vectors1[0], vectors2[0])}")
+
+
+
 if __name__ == "__main__":
     # openai_embed_text()
     # huggingface_embed_text()
     # ollama_embed_text()
     # normalized_embeddings()
     # batch_embeddings()
-    similarity_search()
+    # similarity_search()
+    embedding_caching()
+
