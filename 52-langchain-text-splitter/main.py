@@ -100,6 +100,20 @@ def recursive_splitter():
     print(f"\nFirst chunck preview:\n{chuncks[0][:200]}...")
 
 
+def chunk_size_comparison():
+    sizes = [200, 500, 1000]
+
+    print("=== Chunk Size Comparison ===")
+    for size in sizes:
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=size, chunk_overlap=size // 5
+        )  # 20% overlap
+
+        chuncks = splitter.split_text(SAMPLE_TEXT)
+        print(f" Size {size}: {len(chuncks)} chunks")
+
+
 if __name__ == "__main__":
     print("=== Recursive Character Text Splitter ===")
-    recursive_splitter()
+    # recursive_splitter()
+    chunk_size_comparison()
