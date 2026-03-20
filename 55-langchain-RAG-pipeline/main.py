@@ -150,12 +150,15 @@ def demo_rag_with_sources():
     def format_docs_with_sources(docs):
         formatted = []
         for i, doc in enumerate(docs):
-            source = doc.metadata.get('source', "unknown")
-            formatted.append(f"[{i+1}] {source}:\n{doc.page_content}")
+            source = doc.metadata.get("source", "unknown")
+            formatted.append(f"[{i + 1}] {source}:\n{doc.page_content}")
         return "\n\n".join(formatted)
 
     rag_chain = (
-        {"context": retriever | format_docs_with_sources, "question": RunnablePassthrough()}
+        {
+            "context": retriever | format_docs_with_sources,
+            "question": RunnablePassthrough(),
+        }
         | prompt
         | llm
         | StrOutputParser()
@@ -167,8 +170,49 @@ def demo_rag_with_sources():
     print(f"A: {answer}")
 
 
+def demo_rag_with_fallback():
+    vectorstore = create_kb()
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
+
+    prompt = ChatPromptTemplate.from_template(
+        """
+        Answer the question based ONLY on the following context.;
+        If the answer is not in the context, respond with: "I don't have information about that in my knowledge base."
+
+        Context:
+        {context}
+
+        Question: {question}
+
+        Answer:
+        """
+    )
+
+    def format_docs(docs):
+        return "\n\n".join(doc.page_content for doc in docs)
+
+    rag_chain = (
+        {"context": retriever | format_docs, "question": RunnablePassthrough()}
+        | prompt
+        | llm
+        | StrOutputParser()
+    )
+
+    print("RAG with Fallback:\n")
+
+    questions = [
+        "What is the pricing for LangSmith?",  # In knowledge base
+        "What is the stock price of OpenAI?",  # Not in knowledge base
+        "How do I deploy LangChain to AWS?",  # Not in knowledge base
+    ]
+
+    for q in questions:
+        answer = rag_chain.invoke(q)
+        print(f"Q: {q}")
+        print(f"A: {answer}\n")
+
 
 if __name__ == "__main__":
     # demo_basic_rag()
-    demo_rag_with_sources()
-
+    # demo_rag_with_sources()
+    demo_rag_with_fallback()
