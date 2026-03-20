@@ -53,6 +53,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **📄 52-langchain-text-splitter LangChain Text Splitters - Complete Guide** with recursive character splitting, markdown header splitting, code splitting, document splitting, chunk size optimization, overlap strategies, and RAG pipeline optimization
 - **🧠 52-langchain-embedding LangChain Embeddings - Complete Guide** with OpenAI embeddings, Hugging Face embeddings, Ollama embeddings, similarity search, vector mathematics, embedding caching, and semantic search applications
 - **🗄️ 54-langchain-vector-store LangChain Vector Stores - Complete Guide** with Chroma vector database, similarity search with scores, metadata filtering, vector store persistence, retriever patterns, MMR search, and complete RAG pipeline implementation
+- **🤖 55-langchain-RAG-pipeline LangChain RAG Pipeline - Complete Implementation Guide** with Retrieval-Augmented Generation, similarity search, source attribution, fallback handling, structured outputs with confidence scoring, document Q&A systems, and production-ready RAG patterns
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
