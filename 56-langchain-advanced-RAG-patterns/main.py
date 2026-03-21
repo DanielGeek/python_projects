@@ -174,7 +174,7 @@ TECH_DOCS = [
 def create_base_vectorstore():
     """Create a basic vector store for demos."""
     return Chroma.from_documents(
-        documents=INFO_BURIED,
+        documents=TECH_DOCS,
         embedding=embeddings_model,
     )
 
@@ -248,6 +248,55 @@ def demo_contextual_compression():
         print(f"Content: {doc.page_content}\n")
 
 
+def demo_ensemble_hybrid_search():
+    """Hybrid search combining keyword (BM25) and semantic search."""
+
+    print("=" * 60)
+    print("ENSEMBLE/HYBRID RETRIEVER")
+    print("Combines keyword (BM25) + semantic search")
+    print("=" * 60)
+
+    vectorstore = create_base_vectorstore()
+
+    # BM25 keyword retriever
+    bm25_retriever = BM25Retriever.from_documents(TECH_DOCS)
+    bm25_retriever.k = 3
+
+    # Semantic retriever
+    semantic_retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+
+    # Ensemble combines both
+    ensemble_retriever = EnsembleRetriever(
+        retrievers=[bm25_retriever, semantic_retriever],
+        weights=[0.4, 0.6],  # 40% keyword, 60% semantic
+    )
+
+    # Test queries
+    # queries = [
+    #     "PostgreSQL pgvector",  # Keyword-heavy (BM25 helps)
+    #     "What database stores embeddings?",  # Semantic (vectors help)
+    # ]
+    queries = [
+        "ACID transactions",  # Keyword-heavy (BM25 helps)
+        "How do I store AI model outputs for later retrieval?",  # Semantic (vectors help)
+        "fast similarity lookup for embeddings",  # Mixed (both help)
+    ]
+
+    for query in queries:
+        print(f"\nQuery: {query}")
+        print("-" * 40)
+
+        # Compare results
+        bm25_results = bm25_retriever.invoke(query)
+        semantic_results = semantic_retriever.invoke(query)
+        ensemble_results = ensemble_retriever.invoke(query)
+
+        print(f"BM25 top results: {bm25_results[0].page_content[:60]}...")
+        print(f"Semantic top results: {semantic_results[0].page_content[:60]}...")
+        print(f"Ensemble top results: {ensemble_results[0].page_content[:60]}...")
+
+
 if __name__ == "__main__":
     # demo_multi_query_retriever()
-    demo_contextual_compression()
+    # demo_contextual_compression()
+    demo_ensemble_hybrid_search()
