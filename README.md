@@ -55,6 +55,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🗄️ 54-langchain-vector-store LangChain Vector Stores - Complete Guide** with Chroma vector database, similarity search with scores, metadata filtering, vector store persistence, retriever patterns, MMR search, and complete RAG pipeline implementation
 - **🤖 55-langchain-RAG-pipeline LangChain RAG Pipeline - Complete Implementation Guide** with Retrieval-Augmented Generation, similarity search, source attribution, fallback handling, structured outputs with confidence scoring, document Q&A systems, and production-ready RAG patterns
 - **🧠 56-langchain-advanced-RAG-patterns LangChain Advanced RAG Patterns - Complete Implementation Guide** with Multi-Query Retrieval, Contextual Compression, Hybrid Search (BM25 + Vector), Parent Document Retrieval, Advanced RAG Chains, comprehensive logging and monitoring, production-grade performance optimization, and enterprise-ready architectures
+- **🧠 57-langchain-memory LangChain Memory - Complete Implementation Guide** with Basic Memory patterns, Multi-Session Management, Message Trimming, Windowed Memory, Summary Memory, Persistent Storage with SQLite, production-ready memory optimization, and enterprise-grade persistence strategies
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
