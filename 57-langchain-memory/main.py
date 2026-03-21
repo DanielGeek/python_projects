@@ -150,6 +150,52 @@ def demo_multi_session():
     print(f"AI: {resp}")
 
 
+def demo_message_trimming():
+    """Trim messages to fit context window"""
+
+    print("=" * 60)
+    print("MESSAGE TRIMMING")
+    print("Keep conversation within token limits")
+    print("=" * 60)
+
+    # Simulate a long conversation
+    messages = [
+        SystemMessage(content="You are a helpful coding assistant."),
+        HumanMessage(content="What is Python?"),
+        AIMessage(
+            content="Python is a high-level programming language known for its simplicity and readability."
+        ),
+        HumanMessage(content="How do I install it?"),
+        AIMessage(
+            content="You can install Python from python.org or use package managers like Homebrew or apt."
+        ),
+        HumanMessage(content="What about pip?"),
+        AIMessage(
+            content="Pip is Python's package installer. It comes with Python by default."
+        ),
+        HumanMessage(content="Can you summarize everything we discussed?"),
+    ]
+
+    print(f"\nOriginal: {len(messages)} messages")
+
+    # Trim to last N tokens
+    trimmed = trim_messages(
+        messages,
+        max_tokens=60,
+        strategy="last",
+        token_counter=llm,
+        include_system=True,  # Always keep system message
+        allow_partial=False,
+    )
+
+    print(f"After trimming (max 60 tokens): {len(trimmed)} messages")
+    print("\nTrimmed messages:")
+    for msg in trimmed:
+        role = type(msg).__name__.replace("Message", "")
+        print(f"  {role}: {msg.content[:60]}...")
+
+
 if __name__ == "__main__":
     # demo_basic_memory()
-    demo_multi_session()
+    # demo_multi_session()
+    demo_message_trimming()
