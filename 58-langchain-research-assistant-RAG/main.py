@@ -24,15 +24,186 @@ from typing import List, Dict, Optional
 from datetime import datetime
 from dotenv import load_dotenv
 import json
+import shutil
+import os
 
 
 load_dotenv()
+
+default_db_dir = "./db/research_db"
 
 
 # ============================================================
 # Data Models
 # ============================================================
+class ResearchResponse(BaseModel):
+    """Structured response from the research assistant."""
+
+    answer: str = Field(description="The answer to the research question")
+    confidence: str = Field(description="high, medium, or low based on source quality")
+    sources: List[str] = Field(description="List of source documents used")
+    key_quotes: List[str] = Field(
+        description="Revelant quotes from sources", default=[]
+    )
+    follow_up_questions: List[str] = Field(description="Suggested follow-up questions")
+
+
+# ============================================================
+# Research Assistant Class
+# ============================================================
+class AIResearchAssistant:
+    """AI Research Assistant with document ingestion and retrieval."""
+
+    def __init__(
+        self,
+        persist_directory: str = default_db_dir,
+        chunk_size: int = 1000,
+        chunk_overlap: int = 200,
+    ):
+        self.persist_directory = persist_directory
+
+        # 1. Embeddings - turns text into vectors
+        self.embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+
+        # 2. Splitter - breaks big docs into chunks
+        self.splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
+            separators=["\n\n", "\n", ", ", " ", ""],
+        )
+
+        # 3. Vector Store - stores searches embeddings
+        self.vectorstore = Chroma(
+            persist_directory=persist_directory,
+            embedding_function=self.embeddings,
+            collection_name="research_docs",
+        )
+
+        self.session_store: Dict[str, InMemoryChatMessageHistory] = {}
+
+        print("Research Assistant initialized")
+        print(f"  Vector store: {persist_directory}")
+        print(f"  Documents indexed: {self.vectorstore._collection.count()}")
+
+    def add_documents(
+        self,
+        documents: List[Document],
+        source_name: Optional[str] = None,
+    ) -> int:
+        """Add documents to the research database."""
+
+        # Tag with source name
+        if source_name:
+            for doc in documents:
+                doc.metadata["source"] = source_name
+
+        # Split into chunks
+        chunks = self.splitter.split_documents(documents)
+
+        # Timestamp each chunk
+        for chunk in chunks:
+            chunk.metadata["indexed_at"] = datetime.now().isoformat()
+
+        # Store in vector DB
+        self.vectorstore.add_documents(chunks)
+
+        print(f"Added {len(chunks)} chunks from {len(documents)} documents")
+        return len(chunks)
+
+    def add_text(self, text: str, source: str, metadata: dict = None) -> int:
+        """Add a single text string as a document."""
+        doc = Document(
+            page_content=text, metadata={"source": source, **(metadata or {})}
+        )
+        return self.add_documents([doc])
+
+    def add_texts(self, texts: List[str], source: str) -> int:
+        """Add multiple text strings from the same source."""
+        docs = [Document(page_content=t, metadata={"source": source}) for t in texts]
+        return self.add_documents(docs)
+
+    def get_document_count(self) -> int:
+        """Get total number of indexed chunks."""
+        return self.vectorstore._collection.count()
+
+    def list_sources(self) -> List[str]:
+        """List all unique sources in the database."""
+        results = self.vectorstore._collection.get()
+        sources = set()
+        for metadata in results.get("metadatas", []):
+            if metadata and "source" in metadata:
+                sources.add(metadata["source"])
+        return sorted(list(sources))
 
 
 if __name__ == "__main__":
-    pass
+    # Clean start
+    shutil.rmtree(default_db_dir, ignore_errors=True)
+
+    # Initialize
+    assistant = AIResearchAssistant()
+
+    # Add research content
+    assistant.add_text(
+        """
+        Attention Mechanisms in Neural Networks
+
+        The attention mechanism was introduced in "Attention Is All You Need"
+        by Vaswani et al. (2017). It allows models to focus on relevant parts
+        of the input when generating output.
+
+        Key concepts:
+        - Query, Key, Value (QKV) triplets
+        - Scaled dot-product attention
+        - Multi-head attention for parallel processing
+
+        The transformer architecture has become the foundation for modern NLP
+        models including BERT, GPT, and T5.
+        """,
+        source="attention_mechanisms.pdf",
+    )
+
+    assistant.add_text(
+        """
+        Retrieval-Augmented Generation (RAG)
+
+        RAG combines retrieval system with generative models. First introduced
+        by Lewis et al. (2020), RAG addresses the limitation of LLMs being
+        limited to their training data.
+
+        Components of a RAG system:
+        1. Document store with vector embeddings
+        2. Retriever to find relevant documents
+        3. Generator (LLM) to produce responses
+
+        Benefits include reduce hallucination, up-to-date information,
+        and source attribution.
+        """,
+        source="rag_survey.pdf",
+    )
+
+    assistant.add_text(
+        """
+        LangChain and LangGraph Framework Overview
+
+        LangChain is an open-source framework for building LLM applications.
+        Key features include modular components, integration with 50+ LLM
+        providers, and built-in RAG utilities.
+
+        LangGraph extends LangChain for stateful applications with
+        graph-based state management, support for cycles and loops,
+        and human-in-the-loop workflows.
+        """,
+        source="langchain_docs.md",
+    )
+
+    # Prove it worked
+    print(f"\nTotal chunks indexed: {assistant.get_document_count()}")
+    print(f"Sources: {assistant.list_sources()}")
+
+    # Bonus: show the persist directory exists on disk
+    print(f"\nFiles on disk: {os.listdir(default_db_dir)}")
+    print("This data survives a restart!")
+
+    # Cleanup
+    shutil.rmtree(default_db_dir, ignore_errors=True)
