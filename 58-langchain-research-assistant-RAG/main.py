@@ -65,6 +65,8 @@ class AIResearchAssistant:
         # 1. Embeddings - turns text into vectors
         self.embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
+        self.llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
         # 2. Splitter - breaks big docs into chunks
         self.splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
@@ -135,6 +137,66 @@ class AIResearchAssistant:
                 sources.add(metadata["source"])
         return sorted(list(sources))
 
+    def _build_retriever(self):
+        """Build a basic similarity retriever."""
+        return self.vectorstore.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 4},
+        )
+
+    def _format_docs_for_context(self, docs) -> str:
+        """Format retrieved documents into a string for the prompt."""
+        if not docs:
+            return "No relevant documents found."
+
+        formatted = []
+        for i, doc in enumerate(docs):
+            source = doc.metadata.get("source", "unknown")
+            formatted.append(f"[Source {i + 1}: {source}]\n{doc.page_content}")
+        return "\n\n---\n\n".join(formatted)
+
+    def ask(self, question: str) -> str:
+        """Ask a question againts the research documents."""
+
+        # Step 1: Retrieve relevant chunks
+        retriever = self._build_retriever()
+        docs = retriever.invoke(question)
+
+        # Step 2: Format into context string
+        context = self._format_docs_for_context(docs)
+
+        # Step 3: Build the prompt
+        promtp = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    """You are an AI Research Assistant. Answer questions
+                        based ONLY on the provided context documents.
+
+                        Rules:
+                        1. Only use information from the context below
+                        2. If the context doesn't have the answer, say so
+                        3. Cite which sources you used (e.g. "According to Source 1...")
+                        4. Rate your confidence: high, medium, or low""",
+                ),
+                (
+                    "human",
+                    """Context documents:
+                        {context}
+
+                        Question: {question}
+
+                        Provide a clear answer with source citations.""",
+                ),
+            ]
+        )
+
+        # Step 4: Build and run the chain
+        chain = promtp | self.llm | StrOutputParser()
+
+        response = chain.invoke({"context": context, "question": question})
+        return response
+
 
 if __name__ == "__main__":
     # Clean start
@@ -198,12 +260,45 @@ if __name__ == "__main__":
     )
 
     # Prove it worked
-    print(f"\nTotal chunks indexed: {assistant.get_document_count()}")
+    print(f"\nIndexed: {assistant.get_document_count()} chunks")
     print(f"Sources: {assistant.list_sources()}")
 
+    # --- Question 1: Direct answer ---
+    print("\n" + "=" * 60)
+    print("QUESTION 1: Direct factual question")
+    print("=" * 60)
+
+    q1 = "What is RAG and what are its main components?"
+    print(f"\nUser: {q1}")
+    print(f"\nAssistant: {assistant.ask(q1)}")
+
+    # --- Question 2: Cross-document ---
+    print("\n" + "=" * 60)
+    print("QUESTION 2: Requires info from multiple sources")
+    print("=" * 60)
+
+    q2 = "How does the attention mechanism relate to LangChain?"
+    print(f"\nUser: {q2}")
+    print(f"\nAssistant: {assistant.ask(q2)}")
+
+    # --- Question 3: THE FAILURE -- follow-up question ---
+    print("\n" + "=" * 60)
+    print("QUESTION 3: Follow-up (this will fail!)")
+    print("=" * 60)
+
+    q3 = "Can you expand on the second component you just mentioned?"
+    print(f"\nUser: {q3}")
+    print(f"\nAssistant: {assistant.ask(q3)}")
+
+    print("\n" + "=" * 60)
+    print("PROBLEM: It has no idea what 'you just mentioned' means!")
+    print("Each question is independt -- there's no memory.")
+    print("We fix this in the next lesson.")
+    print("=" * 60)
+
     # Bonus: show the persist directory exists on disk
-    print(f"\nFiles on disk: {os.listdir(default_db_dir)}")
-    print("This data survives a restart!")
+    # print(f"\nFiles on disk: {os.listdir(default_db_dir)}")
+    # print("This data survives a restart!")
 
     # Cleanup
     shutil.rmtree(default_db_dir, ignore_errors=True)
