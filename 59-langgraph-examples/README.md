@@ -12,6 +12,7 @@ This project serves as a practical introduction to LangGraph core concepts, show
 - **Message Handling**: Integration with LangChain message types
 - **Graph Visualization**: Mermaid diagrams and PNG export capabilities
 - **LLM Integration**: Seamless integration with chat models
+- **Practical Exercise**: Complete Q&A workflow with question generation and answering
 
 ## 🎯 Key Concepts Demonstrated
 
@@ -44,6 +45,13 @@ This project serves as a practical introduction to LangGraph core concepts, show
 - **PNG Export**: Visual representation of workflow structure
 - **Debugging**: Visual understanding of execution paths
 - **Documentation**: Automated workflow documentation
+
+### 6. **Practical Q&A Exercise**
+- **Complete Workflow**: End-to-end question generation and answering system
+- **State Management**: QAState with topic, questions, and answer fields
+- **Sequential Processing**: Question generation followed by intelligent answering
+- **LLM Integration**: Using GPT-4o-mini for intelligent content generation
+- **Real-world Application**: Practical example of LangGraph workflow orchestration
 
 ## 🚀 Quick Start
 
@@ -105,6 +113,52 @@ result = app.invoke({"input": "hello", "output": "", "step": 0})
 - ✅ Type-safe state management with TypedDict
 - ✅ Visual workflow representation
 - ✅ Easy debugging and monitoring
+
+### Practical Q&A Exercise Implementation
+
+```python
+from langchain.chat_models import init_chat_model
+from typing_extensions import TypedDict
+
+class QAState(TypedDict):
+    topic: str
+    questions: str
+    answer: str
+
+llm = init_chat_model("gpt-4o-mini", temperature=0)
+
+def generate_questions(state: QAState) -> dict:
+    response = llm.invoke(
+        f"Generate 3 interesting questions about: {state['topic']}\n"
+        "Format: numbered list"
+    )
+    return {"questions": response.content}
+
+def answer_question(state: QAState) -> dict:
+    response = llm.invoke(
+        f"Answer this first question from this list:\n{state['questions']}"
+    )
+    return {"answer": response.content}
+
+# Create sequential workflow
+graph = StateGraph(QAState)
+graph.add_node("generate_questions", generate_questions)
+graph.add_node("answer_question", answer_question)
+
+graph.add_edge(START, "generate_questions")
+graph.add_edge("generate_questions", "answer_question")
+graph.add_edge("answer_question", END)
+
+app = graph.compile()
+result = app.invoke({"topic": "The future of renewable energy"})
+```
+
+**Key Benefits:**
+- ✅ Complete end-to-end workflow demonstration
+- ✅ Sequential processing with state preservation
+- ✅ LLM integration for intelligent content generation
+- ✅ Real-world application pattern
+- ✅ Clear separation of concerns between nodes
 
 ### Accumulating State with Reducers
 
