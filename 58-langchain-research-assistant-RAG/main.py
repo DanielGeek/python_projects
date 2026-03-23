@@ -155,8 +155,16 @@ class AIResearchAssistant:
             formatted.append(f"[Source {i + 1}: {source}]\n{doc.page_content}")
         return "\n\n---\n\n".join(formatted)
 
-    def ask(self, question: str) -> str:
+    def _get_session_history(self, session_id: str) -> BaseChatMessageHistory:
+        """Get or create session history."""
+        if session_id not in self.session_store:
+            self.session_store[session_id] = InMemoryChatMessageHistory()
+        return self.session_store[session_id]
+
+    def ask(self, question: str, session_id: str = "default") -> str:
         """Ask a question againts the research documents."""
+
+        history = self._get_session_history(session_id)
 
         # Step 1: Retrieve relevant chunks
         retriever = self._build_retriever()
@@ -179,6 +187,7 @@ class AIResearchAssistant:
                         3. Cite which sources you used (e.g. "According to Source 1...")
                         4. Rate your confidence: high, medium, or low""",
                 ),
+                MessagesPlaceholder(variable_name="history"),
                 (
                     "human",
                     """Context documents:
@@ -194,8 +203,37 @@ class AIResearchAssistant:
         # Step 4: Build and run the chain
         chain = promtp | self.llm | StrOutputParser()
 
-        response = chain.invoke({"context": context, "question": question})
+        response = chain.invoke(
+            {
+                "context": context,
+                "question": question,
+                "history": history.messages[-10:],  # Last 10 messages for context
+            }
+        )
+
+        # save this Q&A to history
+        history.add_message(HumanMessage(content=question))
+        history.add_message(AIMessage(content=response))
+
         return response
+
+    def clear_session(self, session_id: str) -> None:
+        """Clear conversation history for a session."""
+        if session_id in self.session_store:
+            self.session_store[session_id].clear()
+            print(f"Cleared session: {session_id}")
+
+    def get_session_history_display(self, session_id: str) -> list:
+        """Get conversation history as readable dicts."""
+        if session_id not in self.session_store:
+            return []
+        return [
+            {
+                "role": "human" if isinstance(m, HumanMessage) else "assistant",
+                "content": m.content,
+            }
+            for m in self.session_store[session_id].messages
+        ]
 
 
 if __name__ == "__main__":
@@ -204,6 +242,14 @@ if __name__ == "__main__":
 
     # Initialize
     assistant = AIResearchAssistant()
+
+    # history = assistant._get_session_history("test")
+    # print(type(history))
+    # print(history.messages)
+
+    # history.add_message(HumanMessage(content="Hello"))
+    # history.add_message(AIMessage(content="Hi there!"))
+    # print(history.messages)
 
     # Add research content
     assistant.add_text(
@@ -263,42 +309,58 @@ if __name__ == "__main__":
     print(f"\nIndexed: {assistant.get_document_count()} chunks")
     print(f"Sources: {assistant.list_sources()}")
 
-    # --- Question 1: Direct answer ---
+    session = "demo"
+
+    # --- Question 1 ---
     print("\n" + "=" * 60)
-    print("QUESTION 1: Direct factual question")
+    print("QUESTION 1")
     print("=" * 60)
 
     q1 = "What is RAG and what are its main components?"
     print(f"\nUser: {q1}")
-    print(f"\nAssistant: {assistant.ask(q1)}")
+    print(f"\nAssistant: {assistant.ask(q1, session)}")
 
-    # --- Question 2: Cross-document ---
+    # --- Question 2: Follow-up (FAILED in previous lesson, works now) ---
     print("\n" + "=" * 60)
-    print("QUESTION 2: Requires info from multiple sources")
+    print("QUESTION 2: Follow-up -- this FAILED last lesson!")
     print("=" * 60)
 
-    q2 = "How does the attention mechanism relate to LangChain?"
+    q2 = "Can you expand on the second component you just mentioned?"
     print(f"\nUser: {q2}")
-    print(f"\nAssistant: {assistant.ask(q2)}")
+    print(f"\nAssistant: {assistant.ask(q2, session)}")
 
-    # --- Question 3: THE FAILURE -- follow-up question ---
+    # --- Question 3: References both prior answers ---
     print("\n" + "=" * 60)
-    print("QUESTION 3: Follow-up (this will fail!)")
+    print("QUESTION 3: References the whole conversation")
     print("=" * 60)
 
-    q3 = "Can you expand on the second component you just mentioned?"
+    q3 = "How does what we discussed connect to the attention mechanism?"
     print(f"\nUser: {q3}")
-    print(f"\nAssistant: {assistant.ask(q3)}")
+    print(f"\nAssistant: {assistant.ask(q3, session)}")
 
+    # --- Show the history ---
     print("\n" + "=" * 60)
-    print("PROBLEM: It has no idea what 'you just mentioned' means!")
-    print("Each question is independt -- there's no memory.")
-    print("We fix this in the next lesson.")
+    print("CONVERSATION HISTORY (proof it's tracked)")
     print("=" * 60)
 
-    # Bonus: show the persist directory exists on disk
-    # print(f"\nFiles on disk: {os.listdir(default_db_dir)}")
-    # print("This data survives a restart!")
+    for i, msg in enumerate(assistant.get_session_history_display(session)):
+        role = "USER" if msg["role"] == "human" else "AI"
+        content = (
+            msg["content"][:120] + "..."
+            if len(msg["content"]) > 120
+            else msg["content"]
+        )
+        print(f"\n.  {i + 1}. [{role}]: {content}")
+
+    # --- Prove sessions are isolated ---
+    print("\n" + "=" * 60)
+    print("SESSION ISOLATION")
+    print("=" * 60)
+
+    q4 = "What did we discuss so far?"
+    print(f"\nUser (session='demo'):   {assistant.ask(q4, 'demo')[:150]}...")
+    print(f"\nUser (session='new'):   {assistant.ask(q4, 'new')[:150]}...")
+    print("\n'new' session has no idea -- different memory!")
 
     # Cleanup
     shutil.rmtree(default_db_dir, ignore_errors=True)
