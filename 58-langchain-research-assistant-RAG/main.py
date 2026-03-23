@@ -177,6 +177,80 @@ class AIResearchAssistant:
             self.session_store[session_id] = InMemoryChatMessageHistory()
         return self.session_store[session_id]
 
+    def ask_structured(
+        self,
+        question: str,
+        session_id: str = "default",
+        use_advanced: bool = True,
+    ) -> ResearchResponse:
+        """Ask a question and get a structured response."""
+
+        # LLM that returns a Pydantic object instead of a string
+        structured_llm = self.llm.with_structured_output(ResearchResponse)
+
+        # Get memory
+        history = self._get_session_history(session_id)
+
+        # Retriever
+        retriever = self._build_retriever(use_advanced=use_advanced)
+        docs = retriever.invoke(question)
+        context = self._format_docs_for_context(docs)
+        sources = list(set(d.metadata.get("source", "Unknown") for d in docs))
+
+        # Prompt -- tell the LLM about available sources
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    """You are an AI Research Assistant. Analyze the provided documents 
+                    and return a structured response.
+
+                    Rules:
+                    1. ONLY use information from the provided context
+                    2. If the context doesn't have the answer, say so in the answer field
+                    3. Set confidence: "high" if directly stated, "medium" if inferred, "low" if partial
+                    4. Include the source filenames you actually used
+                    5. Extract key quotes word-for-word from the context
+                    6. Suggest 2-3 follow-up questions the user might want to ask
+
+                    Use conversation history to understand follow-up questions.""",
+                ),
+                MessagesPlaceholder(variable_name="history"),
+                (
+                    "human",
+                    """Context documents:
+
+                    {context}
+
+                    Available sources: {sources}
+
+                    Question: {question}""",
+                ),
+            ]
+        )
+
+        # Chain
+        chain = prompt | structured_llm
+
+        response = chain.invoke(
+            {
+                "context": context,
+                "question": question,
+                "sources": ", ".join(sources),
+                "history": (
+                    history.messages[-10:]
+                    if hasattr(history, "messages")
+                    else history[-10:]
+                ),
+            }
+        )
+
+        # Save to memory (store just the answer text)
+        history.add_message(HumanMessage(content=question))
+        history.add_message(AIMessage(content=response.answer))
+
+        return response
+
     def ask(
         self, question: str, session_id: str = "default", use_advanced: bool = True
     ) -> str:
@@ -306,6 +380,23 @@ class AIResearchAssistant:
             print("  Advanced found more targeted content")
 
 
+def print_research_response(question: str, response: ResearchResponse):
+    """Pretty print a structured research response."""
+    print(f"\nQ: {question}")
+    print(f"\n Answer: {response.answer}")
+    print(f"\n Confidence: {response.confidence}")
+    print(f"  Sources: {', '.join(response.sources)}")
+
+    if response.key_quotes:
+        print("\n   Key Quotes:")
+        for q in response.key_quotes:
+            print(f'    - "{q}"')
+
+    print("\n   Follow-up Questions:")
+    for fq in response.follow_up_questions:
+        print(f"    - {fq}")
+
+
 if __name__ == "__main__":
     # Clean start
     shutil.rmtree(default_db_dir, ignore_errors=True)
@@ -375,74 +466,93 @@ if __name__ == "__main__":
         source="langchain_docs.md",
     )
 
-    # Prove it worked
     print(f"\nIndexed: {assistant.get_document_count()} chunks")
-    print(f"Sources: {assistant.list_sources()}")
 
-    retriever = assistant._build_retriever(use_advanced=True)
-    docs = retriever.invoke("What tools help me build AI apps?")
-    print(f"\nReturned {len(docs)} compressed chunks")
+    session = "structured_demo"
 
-    # --- Step 2: Side-by-side comparison ---
+    # --- Step 1: String vs Structured comparison ---
     print("\n" + "=" * 60)
-    print("STEP 2: Basic vs Advanced retrieval")
-    print("=" * 60)
-    print()
-
-    assistant.compare_retrievers("What tools help me build AI apps?")
-
-    session = "demo"
-
-    # --- Question 1 ---
-    print("\n" + "=" * 60)
-    print("QUESTION 1")
+    print("STEP 1: String response vs Structured response")
     print("=" * 60)
 
-    q1 = "What is RAG and what are its main components?"
+    question = "What is RAG and what are its benefits?"
+
+    print("\n--- String response (ask) ---")
+    string_response = assistant.ask(question, "string_test")
+    print(f"Type: {type(string_response)}")
+    print(f"Response: {string_response[:200]}...")
+
+    print("\n--- Structured response (ask_structured) ---")
+    structured_response = assistant.ask_structured(question, "struct_test")
+    print(f"Type: {type(structured_response)}")
+    print(f"answer:             {structured_response.answer[:100]}...")
+    print(f"confidence:         {structured_response.confidence}")
+    print(f"sources:            {structured_response.sources}")
+    print(f"key_quotes:         {structured_response.key_quotes[:2]}")
+    print(f"follow_up_questions: {structured_response.follow_up_questions}")
+
+    # --- Step 2: Access fields directly ---
+    print("\n" + "=" * 60)
+    print("STEP 2: Use fields in your code")
+    print("=" * 60)
+
+    r = assistant.ask_structured("What is the attention mechanism?", session)
+
+    # This is what your app code looks like
+    if r.confidence == "high":
+        print(f"\n  Confident answer from: {', '.join(r.sources)}")
+    else:
+        print("\n  Low confidence -- may need more sources")
+
+    print(f"\n  Answer: {r.answer[:200]}")
+
+    print("\n  Suggested follow-ups:")
+    for fq in r.follow_up_questions:
+        print(f"    -> {fq}")
+
+    # --- Step 3: Multi-turn with structured output ---
+    print("\n" + "=" * 60)
+    print("STEP 3: Memory works with structured output too")
+    print("=" * 60)
+
+    q1 = "What are the components of RAG?"
     print(f"\nUser: {q1}")
-    print(f"\nAssistant: {assistant.ask(q1, session)}")
+    r1 = assistant.ask_structured(q1, session)
+    print_research_response(q1, r1)
 
-    # --- Question 2: Follow-up (FAILED in previous lesson, works now) ---
-    print("\n" + "=" * 60)
-    print("QUESTION 2: Follow-up -- this FAILED last lesson!")
-    print("=" * 60)
-
-    q2 = "Can you expand on the second component you just mentioned?"
+    q2 = "How does the second component work?"
+    print(f"\n{'- ' * 30}")
     print(f"\nUser: {q2}")
-    print(f"\nAssistant: {assistant.ask(q2, session)}")
+    r2 = assistant.ask_structured(q2, session)
+    print_research_response(q2, r2)
 
-    # --- Question 3: References both prior answers ---
-    print("\n" + "=" * 60)
-    print("QUESTION 3: References the whole conversation")
-    print("=" * 60)
-
-    q3 = "How does what we discussed connect to the attention mechanism?"
+    q3 = "Connect everything we discussed to LangChain."
+    print(f"\n{'- ' * 30}")
     print(f"\nUser: {q3}")
-    print(f"\nAssistant: {assistant.ask(q3, session)}")
+    r3 = assistant.ask_structured(q3, session)
+    print_research_response(q3, r3)
 
-    # --- Show the history ---
+    # --- Step 4: Final stats ---
     print("\n" + "=" * 60)
-    print("CONVERSATION HISTORY (proof it's tracked)")
+    print("FINAL: What we built across the lessons")
     print("=" * 60)
 
-    for i, msg in enumerate(assistant.get_session_messages(session)):
-        role = "USER" if msg["role"] == "human" else "AI"
-        content = (
-            msg["content"][:120] + "..."
-            if len(msg["content"]) > 120
-            else msg["content"]
-        )
-        print(f"\n.  {i + 1}. [{role}]: {content}")
+    history = assistant._get_session_history(session)
+    msg_count = len(history.messages) if hasattr(history, "messages") else len(history)
 
-    # --- Prove sessions are isolated ---
-    print("\n" + "=" * 60)
-    print("SESSION ISOLATION")
-    print("=" * 60)
+    print(
+        f"""
+        Document ingestion    -> {assistant.get_document_count()} chunks indexed
+        Sources tracked       -> {assistant.list_sources()}
+        Basic retrieval       -> similarity search
+        Advanced retrieval    -> multi-query + compression
+        Conversation memory   -> {msg_count} messages in session '{session}'
+        Structured output     -> ResearchResponse with {len(ResearchResponse.model_fields)} fields
 
-    q4 = "What was my first question?"
-    print(f"\nUser (session='demo'):   {assistant.ask(q4, 'demo')[:150]}...")
-    print(f"\nUser (session='new'):   {assistant.ask(q4, 'new')[:150]}...")
-    print("\n'new' session has no idea -- different memory!")
+        From raw text to a production-ready research assistant.
+        That's the full RAG pipeline.
+        """
+    )
 
     # Cleanup
     shutil.rmtree(default_db_dir, ignore_errors=True)
