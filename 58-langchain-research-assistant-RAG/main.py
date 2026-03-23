@@ -357,7 +357,7 @@ if __name__ == "__main__":
     print("SESSION ISOLATION")
     print("=" * 60)
 
-    q4 = "What did we discuss so far?"
+    q4 = "What was my first question?"
     print(f"\nUser (session='demo'):   {assistant.ask(q4, 'demo')[:150]}...")
     print(f"\nUser (session='new'):   {assistant.ask(q4, 'new')[:150]}...")
     print("\n'new' session has no idea -- different memory!")
