@@ -26,7 +26,11 @@ from dotenv import load_dotenv
 import json
 import shutil
 import os
+import logging
 
+# Enable logging to see multi-query generation
+logging.basicConfig(level=logging.INFO, format="%(name)s - %(message)s")
+logging.getLogger("langchain.retrievers.multi_query").setLevel(logging.DEBUG)
 
 load_dotenv()
 
@@ -137,12 +141,24 @@ class AIResearchAssistant:
                 sources.add(metadata["source"])
         return sorted(list(sources))
 
-    def _build_retriever(self):
-        """Build a basic similarity retriever."""
-        return self.vectorstore.as_retriever(
+    def _build_retriever(self, use_advanced: bool = False):
+        """Build retriever -- basic or advanced."""
+
+        # Base: simple similarity search
+        base_retriever = self.vectorstore.as_retriever(
             search_type="similarity",
             search_kwargs={"k": 4},
         )
+
+        if not use_advanced:
+            return base_retriever
+
+        # Multi-query: LLM generates multiple search queries
+        multi_retriever = MultiQueryRetriever.from_llm(
+            retriever=base_retriever, llm=self.llm
+        )
+
+        return multi_retriever
 
     def _format_docs_for_context(self, docs) -> str:
         """Format retrieved documents into a string for the prompt."""
@@ -161,16 +177,16 @@ class AIResearchAssistant:
             self.session_store[session_id] = InMemoryChatMessageHistory()
         return self.session_store[session_id]
 
-    def ask(self, question: str, session_id: str = "default") -> str:
+    def ask(
+        self, question: str, session_id: str = "default", use_advanced: bool = True
+    ) -> str:
         """Ask a question againts the research documents."""
 
         history = self._get_session_history(session_id)
 
-        # Step 1: Retrieve relevant chunks
-        retriever = self._build_retriever()
+        # Use basic or advanced retriever
+        retriever = self._build_retriever(use_advanced=use_advanced)
         docs = retriever.invoke(question)
-
-        # Step 2: Format into context string
         context = self._format_docs_for_context(docs)
 
         # Step 3: Build the prompt
@@ -223,7 +239,7 @@ class AIResearchAssistant:
             self.session_store[session_id].clear()
             print(f"Cleared session: {session_id}")
 
-    def get_session_history_display(self, session_id: str) -> list:
+    def get_session_messages(self, session_id: str) -> list:
         """Get conversation history as readable dicts."""
         if session_id not in self.session_store:
             return []
@@ -234,6 +250,60 @@ class AIResearchAssistant:
             }
             for m in self.session_store[session_id].messages
         ]
+
+    def compare_retrievers(self, question: str):
+        """Show basic vs advanced retrieval side by side."""
+
+        print(f'Question: "{question}"\n')
+
+        # --- Basic ---
+        basic = self.vectorstore.as_retriever(
+            search_type="similarity", search_kwargs={"k": 4}
+        )
+        basic_docs = basic.invoke(question)
+
+        print("=" * 60)
+        print(f"BASIC RETRIEVER: {len(basic_docs)} chunks")
+        print("=" * 60)
+
+        basic_total_chars = 0
+        for i, doc in enumerate(basic_docs):
+            source = doc.metadata.get("source", "Unknown")
+            basic_total_chars += len(doc.page_content)
+            print(f"\n  Chunk {i + 1} [{source}] ({len(doc.page_content)} chars):")
+            print(f"  {doc.page_content[:150]}...")
+
+        print(f"\n  Total text sent to LLM: {basic_total_chars} chars")
+
+        # --- Advanced ---
+        advanced = self._build_retriever(use_advanced=True)
+        advanced_docs = advanced.invoke(question)
+
+        print("\n" + "=" * 60)
+        print(f"ADVANCED RETRIEVER: {len(advanced_docs)} chunks")
+        print("=" * 60)
+
+        advanced_total_chars = 0
+        for i, doc in enumerate(advanced_docs):
+            source = doc.metadata.get("source", "Unknown")
+            advanced_total_chars += len(doc.page_content)
+            print(f"\n  Chunk {i + 1} [{source}] ({len(doc.page_content)} chars):")
+            print(f"  {doc.page_content[:150]}...")
+
+        print(f"\n  Total text sent to LLM: {advanced_total_chars} chars")
+
+        # --- Summary ---
+        print("\n" + "=" * 60)
+        print("COMPARISON")
+        print("=" * 60)
+        print(f"  Basic:    {len(basic_docs)} chunks, {basic_total_chars} chars")
+        print(f"  Advanced: {len(advanced_docs)} chunks, {advanced_total_chars} chars")
+
+        if advanced_total_chars < basic_total_chars:
+            reduction = round((1 - advanced_total_chars / basic_total_chars) * 100)
+            print(f"  Compression saved {reduction}% of tokens!")
+        else:
+            print("  Advanced found more targeted content")
 
 
 if __name__ == "__main__":
@@ -309,6 +379,18 @@ if __name__ == "__main__":
     print(f"\nIndexed: {assistant.get_document_count()} chunks")
     print(f"Sources: {assistant.list_sources()}")
 
+    retriever = assistant._build_retriever(use_advanced=True)
+    docs = retriever.invoke("What tools help me build AI apps?")
+    print(f"\nReturned {len(docs)} compressed chunks")
+
+    # --- Step 2: Side-by-side comparison ---
+    print("\n" + "=" * 60)
+    print("STEP 2: Basic vs Advanced retrieval")
+    print("=" * 60)
+    print()
+
+    assistant.compare_retrievers("What tools help me build AI apps?")
+
     session = "demo"
 
     # --- Question 1 ---
@@ -343,7 +425,7 @@ if __name__ == "__main__":
     print("CONVERSATION HISTORY (proof it's tracked)")
     print("=" * 60)
 
-    for i, msg in enumerate(assistant.get_session_history_display(session)):
+    for i, msg in enumerate(assistant.get_session_messages(session)):
         role = "USER" if msg["role"] == "human" else "AI"
         content = (
             msg["content"][:120] + "..."
