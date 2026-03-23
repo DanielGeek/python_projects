@@ -57,6 +57,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **🧠 56-langchain-advanced-RAG-patterns LangChain Advanced RAG Patterns - Complete Implementation Guide** with Multi-Query Retrieval, Contextual Compression, Hybrid Search (BM25 + Vector), Parent Document Retrieval, Advanced RAG Chains, comprehensive logging and monitoring, production-grade performance optimization, and enterprise-ready architectures
 - **🧠 57-langchain-memory LangChain Memory - Complete Implementation Guide** with Basic Memory patterns, Multi-Session Management, Message Trimming, Windowed Memory, Summary Memory, Persistent Storage with SQLite, production-ready memory optimization, and enterprise-grade persistence strategies
 - **🔍 58-langchain-research-assistant-RAG LangChain Research Assistant - Complete RAG Implementation** with Document Ingestion Pipeline, Advanced Retrieval Strategies (Basic vs Multi-Query), Conversation Memory Management, Structured Output Generation with Pydantic, Source Attribution, Performance Optimization, and Production-Ready Features
+- **🔄 59-langgraph-examples LangGraph Examples - Core Concepts and Patterns** with StateGraph Fundamentals, State Management Patterns (Simple, Accumulating, Message), Reducer Functions, Message Integration with LangChain, Graph Visualization (Mermaid/PNG), LLM Integration, and Production-Ready Workflow Patterns
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
