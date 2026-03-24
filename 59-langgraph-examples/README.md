@@ -13,6 +13,7 @@ This project serves as a practical introduction to LangGraph core concepts, show
 - **Graph Visualization**: Mermaid diagrams and PNG export capabilities
 - **LLM Integration**: Seamless integration with chat models
 - **Practical Exercise**: Complete Q&A workflow with question generation and answering
+- **Sentiment Analysis**: Intelligent conversation system with emotion-aware responses
 
 ## 🎯 Key Concepts Demonstrated
 
@@ -52,6 +53,13 @@ This project serves as a practical introduction to LangGraph core concepts, show
 - **Sequential Processing**: Question generation followed by intelligent answering
 - **LLM Integration**: Using GPT-4o-mini for intelligent content generation
 - **Real-world Application**: Practical example of LangGraph workflow orchestration
+
+### 7. **Sentiment-Based Conversation System**
+- **Emotion Detection**: Real-time sentiment analysis of user messages
+- **Adaptive Responses**: Dynamic response generation based on detected sentiment
+- **State Management**: ConversationState with messages, sentiment, and response tracking
+- **SystemMessage Integration**: Context-aware prompts for different emotional states
+- **Practical AI Chat**: Complete conversational AI with emotional intelligence
 
 ## 🚀 Quick Start
 
@@ -159,6 +167,80 @@ result = app.invoke({"topic": "The future of renewable energy"})
 - ✅ LLM integration for intelligent content generation
 - ✅ Real-world application pattern
 - ✅ Clear separation of concerns between nodes
+
+### Sentiment-Based Conversation System
+
+```python
+from langchain.chat_models import init_chat_model
+from langchain_core.messages import HumanMessage, SystemMessage
+import operator
+from typing_extensions import TypedDict, Annotated
+
+class ConversationState(TypedDict):
+    messages: Annotated[list, operator.add]  # messages concatenate when merged
+    sentiment: str
+    response_count: int
+
+def create_conversation_graph():
+    llm = init_chat_model("gpt-4o-mini", temperature=0.7)
+
+    def analyze_sentiment(state: ConversationState) -> dict:
+        """Analyze the sentiment of the last message."""
+        last_message = state["messages"][-1]
+        
+        response = llm.invoke([
+            SystemMessage(content="Classify sentiment as: positive, negative, or neutral"),
+            HumanMessage(content=last_message),
+        ])
+        
+        return {"sentiment": response.content.lower().strip()}
+
+    def generate_response(state: ConversationState) -> dict:
+        """Generate appropriate response based on sentiment."""
+        sentiment = state["sentiment"]
+        last_message = state["messages"][-1]
+        
+        system_prompts = {
+            "positive": "Respond enthusiastically and build on their positive energy",
+            "negative": "Respond empathetically and offer support", 
+            "neutral": "Respond helpfully and informatively.",
+        }
+        
+        prompt = system_prompts.get(sentiment, system_prompts["neutral"])
+        
+        response = llm.invoke([
+            SystemMessage(content=prompt), 
+            HumanMessage(content=last_message)
+        ])
+        
+        return {"messages": [f"AI: {response.content}"], "response_count": 1}
+
+    # Create sequential workflow
+    graph = StateGraph(ConversationState)
+    graph.add_node("analyze_sentiment", analyze_sentiment)
+    graph.add_node("generate_response", generate_response)
+    
+    graph.add_edge(START, "analyze_sentiment")
+    graph.add_edge("analyze_sentiment", "generate_response")
+    graph.add_edge("generate_response", END)
+    
+    return graph.compile()
+
+# Usage
+app = create_conversation_graph()
+result = app.invoke({
+    "messages": ["Human: I just got promoted!"], 
+    "sentiment": "", 
+    "response_count": 0
+})
+```
+
+**Key Benefits:**
+- ✅ Real-time sentiment analysis with emotional intelligence
+- ✅ Adaptive response generation based on user emotions
+- ✅ Complete conversational AI workflow
+- ✅ SystemMessage integration for context-aware responses
+- ✅ Practical demonstration of multi-step processing
 
 ### Accumulating State with Reducers
 
@@ -384,6 +466,9 @@ def validated_process(state: dict) -> dict:
 - ✅ Build production-ready AI applications with structured state
 - ✅ Handle errors and optimize performance in graph workflows
 - ✅ Design scalable architectures for multi-step AI processes
+- ✅ Create sentiment-aware conversational AI systems
+- ✅ Implement emotion-based response generation
+- ✅ Build practical Q&A workflows with sequential processing
 
 ## 🔧 Production Patterns
 
