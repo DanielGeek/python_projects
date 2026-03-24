@@ -14,6 +14,9 @@ This project serves as a practical introduction to LangGraph core concepts, show
 - **LLM Integration**: Seamless integration with chat models
 - **Practical Exercise**: Complete Q&A workflow with question generation and answering
 - **Sentiment Analysis**: Intelligent conversation system with emotion-aware responses
+- **Conditional Routing**: Dynamic workflow paths based on query classification
+- **Quality Control Loops**: Iterative content improvement with quality scoring
+- **Multi-Path Routing**: Complex task routing with urgency and complexity analysis
 
 ## 🎯 Key Concepts Demonstrated
 
@@ -60,6 +63,27 @@ This project serves as a practical introduction to LangGraph core concepts, show
 - **State Management**: ConversationState with messages, sentiment, and response tracking
 - **SystemMessage Integration**: Context-aware prompts for different emotional states
 - **Practical AI Chat**: Complete conversational AI with emotional intelligence
+
+### 8. **Basic Conditional Routing**
+- **Query Classification**: Automatic categorization of user queries (question, command, statement)
+- **Dynamic Path Selection**: Conditional edges based on query type analysis
+- **Specialized Handlers**: Different processing nodes for each query category
+- **Graph Visualization**: Mermaid diagrams and PNG export for routing workflows
+- **Decision Logic**: Type-safe routing functions with Literal return types
+
+### 9. **Quality Control Loops**
+- **Iterative Improvement**: Content enhancement through quality evaluation cycles
+- **Quality Scoring**: LLM-based content quality assessment (1-10 scale)
+- **Conditional Looping**: Smart continuation logic with iteration limits
+- **Feedback Tracking**: Complete audit trail of improvement iterations
+- **Finalization Logic**: Automatic approval when quality thresholds are met
+
+### 10. **Multi-Path Task Routing**
+- **Task Analysis**: Dual-factor analysis (urgency + complexity) for intelligent routing
+- **Complex Decision Trees**: Multi-dimensional routing logic with 4 distinct paths
+- **Specialized Handlers**: Different processing strategies for each task combination
+- **Enterprise Patterns**: Real-world task delegation and escalation workflows
+- **State Management**: Comprehensive task tracking with handler assignment
 
 ## 🚀 Quick Start
 
@@ -241,6 +265,165 @@ result = app.invoke({
 - ✅ Complete conversational AI workflow
 - ✅ SystemMessage integration for context-aware responses
 - ✅ Practical demonstration of multi-step processing
+
+### Basic Conditional Routing
+
+```python
+class RouterState(TypedDict):
+    query: str
+    query_type: str
+    response: str
+
+def classify_query(state: RouterState) -> dict:
+    response = llm.invoke(
+        f"Classify this query as 'question', 'command', or 'statement'. "
+        f"Reply with just the word.\n\n{state['query']}"
+    )
+    return {"query_type": response.content.lower().strip()}
+
+def route_by_type(state: RouterState) -> Literal["question", "command", "statement"]:
+    qt = state["query_type"]
+    if "question" in qt:
+        return "question"
+    elif "command" in qt:
+        return "command"
+    else:
+        return "statement"
+
+# Create conditional routing graph
+graph = StateGraph(RouterState)
+graph.add_node("classify", classify_query)
+graph.add_node("handle_question", handle_question)
+graph.add_node("handle_command", handle_command)
+graph.add_node("handle_statement", handle_statement)
+
+graph.add_edge(START, "classify")
+graph.add_conditional_edges("classify", route_by_type, {
+    "question": "handle_question",
+    "command": "handle_command", 
+    "statement": "handle_statement"
+})
+```
+
+**Key Benefits:**
+- ✅ Intelligent query classification and routing
+- ✅ Type-safe conditional edge logic
+- ✅ Specialized handlers for each query type
+- ✅ Graph visualization with Mermaid diagrams
+- ✅ Extensible routing patterns
+
+### Quality Control Loops
+
+```python
+class QualityState(TypedDict):
+    content: str
+    quality_score: int
+    feedback: str
+    final_content: str
+    iteration: int
+
+def evaluate_quality(state: QualityState) -> dict:
+    response = llm.invoke(
+        f"Rate this content quality from 1-10. Reply with just the number.\n\n"
+        f"Content: {state['content']}"
+    )
+    try:
+        score = int(response.content.strip())
+    except:
+        score = 5
+    return {"quality_score": score}
+
+def should_continue(state: QualityState) -> Literal["improve", "finalize"]:
+    if state["quality_score"] >= 7:
+        return "finalize"
+    elif state["iteration"] >= 3:
+        return "finalize"  # Max iterations
+    else:
+        return "improve"
+
+# Create quality control loop
+graph = StateGraph(QualityState)
+graph.add_node("evaluate", evaluate_quality)
+graph.add_node("improve", improve_content)
+graph.add_node("finalize", finalize_content)
+
+graph.add_edge(START, "evaluate")
+graph.add_conditional_edges("evaluate", should_continue, {
+    "improve": "improve", 
+    "finalize": "finalize"
+})
+graph.add_edge("improve", "evaluate")  # Loop back!
+```
+
+**Key Benefits:**
+- ✅ Iterative content improvement with quality scoring
+- ✅ Smart continuation logic with iteration limits
+- ✅ Complete audit trail of improvements
+- ✅ Automatic quality threshold management
+- ✅ Production-ready content optimization
+
+### Multi-Path Task Routing
+
+```python
+class TaskState(TypedDict):
+    task: str
+    urgency: str
+    complexity: str
+    handler: str
+    result: str
+
+def analyze_task(state: TaskState) -> dict:
+    # Analyze urgency
+    urgency_response = llm.invoke(
+        f"Is this task urgent? Reply 'urgent' or 'normal'.\nTask: {state['task']}"
+    )
+    
+    # Analyze complexity
+    complexity_response = llm.invoke(
+        f"Is this task complex? Reply 'complex' or 'simple'.\nTask: {state['task']}"
+    )
+    
+    return {
+        "urgency": urgency_response.content.lower().strip(),
+        "complexity": complexity_response.content.lower().strip(),
+    }
+
+def route_task(state: TaskState) -> str:
+    is_urgent = "urgent" in state["urgency"]
+    is_complex = "complex" in state["complexity"]
+    
+    if is_urgent and is_complex:
+        return "urgent_complex"
+    elif is_urgent:
+        return "urgent_simple"
+    elif is_complex:
+        return "normal_complex"
+    else:
+        return "normal_simple"
+
+# Create multi-path routing system
+graph = StateGraph(TaskState)
+graph.add_node("analyze", analyze_task)
+graph.add_node("urgent_complex", urgent_complex_handler)
+graph.add_node("urgent_simple", urgent_simple_handler)
+graph.add_node("normal_complex", normal_complex_handler)
+graph.add_node("normal_simple", normal_simple_handler)
+
+graph.add_edge(START, "analyze")
+graph.add_conditional_edges("analyze", route_task, {
+    "urgent_complex": "urgent_complex",
+    "urgent_simple": "urgent_simple",
+    "normal_complex": "normal_complex",
+    "normal_simple": "normal_simple"
+})
+```
+
+**Key Benefits:**
+- ✅ Dual-factor task analysis (urgency + complexity)
+- ✅ Complex decision trees with 4 distinct paths
+- ✅ Enterprise-grade task delegation patterns
+- ✅ Specialized handlers for each task combination
+- ✅ Scalable routing architecture
 
 ### Accumulating State with Reducers
 
@@ -469,6 +652,10 @@ def validated_process(state: dict) -> dict:
 - ✅ Create sentiment-aware conversational AI systems
 - ✅ Implement emotion-based response generation
 - ✅ Build practical Q&A workflows with sequential processing
+- ✅ Design conditional routing systems with intelligent path selection
+- ✅ Implement quality control loops with iterative improvement
+- ✅ Create multi-path task routing with complex decision trees
+- ✅ Build enterprise-grade workflow orchestration systems
 
 ## 🔧 Production Patterns
 
