@@ -5,9 +5,9 @@ Self-correcting agents and iterative refinement
 
 from langchain.chat_models import init_chat_model
 from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import MemorySaver  # For saving intermediate states
 from typing_extensions import TypedDict, Annotated
 from typing import Literal
-from langchain_core.messages import HumanMessage, AIMessage, BaseMessage, SystemMessage
 import operator
 from dotenv import load_dotenv
 
@@ -260,6 +260,106 @@ def demo_iterative_research():
     print(f"\n📝 Final Summary:\n{result['summary']}")
 
 
+"""
+Human-in-the-Loop Patterns in LangGraph
+Interrupt, review, modify, and resume
+"""
+
+
+class ApprovalState(TypedDict):
+    request: str
+    draft: str
+    approved: bool
+    feedback: str
+    final: str
+
+
+def demo_interrupt_for_approval():
+    """Interrupt execution for human approval."""
+
+    def create_draft(state: ApprovalState) -> dict:
+        response = llm.invoke(f"Create a professional response for: {state['request']}")
+        return {"draft": response.content}
+
+    def wait_for_approval(state: ApprovalState) -> dict:
+        # This node is where we'll interrupt
+        return state
+
+    def finalize(state: ApprovalState) -> dict:
+        if state["approved"]:
+            return {"final": state["draft"]}
+        else:
+            # Incorporate feedback
+            response = llm.invoke(
+                f"Revise this draft based on feedback:\n\n"
+                f"Draft: {state['draft']}\n\n"
+                f"Feedback: {state['feedback']}"
+            )
+            return {"final": response.content}
+
+    graph = StateGraph(ApprovalState)
+
+    graph.add_node("draft", create_draft)
+    graph.add_node("approval", wait_for_approval)
+    graph.add_node("finalize", finalize)
+
+    graph.add_edge(START, "draft")
+    graph.add_edge("draft", "approval")
+    graph.add_edge("approval", "finalize")
+    graph.add_edge("finalize", END)
+
+    memory = MemorySaver()  # To save intermediate states for review
+
+    app = graph.compile(
+        checkpointer=memory,
+        interrupt_before=[
+            "approval"
+        ],  # Interrupt before the approval node to allow human review
+    )
+
+    # Example usage
+    print("Human-in-the-Loop Approval Demo:\n")
+
+    # Configuration for this thread
+    config = {"configurable": {"thread_id": "demo-1"}}
+
+    # Step 1: Run until interrupt
+    print("Step 1: Running until approval checkpoint...")
+    result = app.invoke(
+        {
+            "request": "Write a thank-you email for a job interview",
+            "draft": "",
+            "approved": False,
+            "final": "",
+        },
+        config,
+    )
+
+    print(f"\nDraft created:\n{result['draft'][:200]}...")
+    print("\n[Execution paused for human review]")
+
+    # Step 2: Get current state
+    current_state = app.get_state(config)
+    print(f"\nCurrent node: {current_state.next}")
+
+    # Step 3: Simulate human feedback and continue
+    print("\nStep 2: Human provides feedback and continues...")
+
+    # Update state with human input
+    app.update_state(
+        config,
+        {
+            "approved": False,  # Request changes
+            "feedback": "Make it more concise and add specific mention of the company culture",
+        },
+    )
+
+    # Continue execution
+    final_result = app.invoke(None, config)
+
+    print(f"\nFinal result:\n{final_result['final']}")
+
+
 if __name__ == "__main__":
     # demo_iterative_research()
-    demo_iterative_research()
+    demo_interrupt_for_approval()
