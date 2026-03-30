@@ -67,6 +67,7 @@ This repository demonstrates my journey through **14 structured learning modules
 - **💬 66-langgraph-agent-communication LangGraph Agent Communication - Advanced Multi-Agent Coordination Patterns** with Message Passing, Shared State Fields, Blackboard Pattern, Sequential Communication, Structured State Management, Iterative Refinement, Quality Control Systems, and Collaborative Workflows
 - **🏢 67-langgraph-hierarchical-agent LangGraph Hierarchical Agents - Multi-Level Supervisor Architecture** with CEO Supervisor Routing, Department Subgraph Composition, Intelligent Task Distribution, Specialized Team Workflows, Enterprise-Grade Orchestration, Modular Design Patterns, Organizational Structure Modeling, and Scalable Multi-Agent Systems
 - **🔬 68-langgraph-multi-agent-research-system LangGraph Multi-Agent Research System - Comprehensive Research Pipeline** with Supervisor Architecture, Send API Parallelism, Shared State Blackboard, Iterative Refinement Loops, Quality-Driven Automation, Dynamic Task Distribution, Structured Output Validation, and Production-Ready Research Automation
+- **📊 69-langsmith-example LangSmith Example - Production Observability for LLM Applications** with Automatic Tracing Setup, Custom Run Naming and Tagging, Metadata-Driven Observability, Production-Ready Monitoring, Real-time Performance Tracking, Error Detection and Analysis, Performance Metrics Collection, and Advanced Filtering Capabilities
 - **🔧 Enterprise-grade architecture** and best practices
 - **🧪 Comprehensive testing** with pytest and modern testing frameworks
 
