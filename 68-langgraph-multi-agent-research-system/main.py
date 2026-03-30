@@ -30,3 +30,63 @@ creative_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
 # ============================================================
 # State Schema
 # ============================================================
+
+
+class ResearchState(TypedDict):
+    messages: Annotated[list[BaseMessage], add_messages]
+    topic: str
+    search_queries: list[str]
+    findings: Annotated[list[dict], operator.add]
+    analysis: str
+    report: str
+    quality_score: float
+    quality_feedback: str
+    iteration: int
+
+
+# State for individual search tasks (used with Send API)
+class SearchTaskState(TypedDict):
+    search_query: str
+    findings: Annotated[list[dict], operator.add]
+
+
+# ============================================================
+# Node: Supervisor — Plans the research
+# ============================================================
+
+
+def supervisor(state: ResearchState) -> dict:
+    """Plans research by generating targeted search queries."""
+
+    response = llm.invoke(
+        [
+            SystemMessage(
+                content=(
+                    "You are a research supervisor. Given a topic, generate exactly 3 "
+                    "specific search queries that will cover different angles of the topic. "
+                    "Return ONLY a JSON array of strings. No markdown formatting."
+                )
+            ),
+            HumanMessage(content=f"Research topic: {state['topic']}"),
+        ]
+    )
+
+    try:
+        queries = json.loads(response.content)
+    except json.JSONDecodeError:
+        # Fallback: split by newlines
+        queries = [
+            f"{state['topic']} overview",
+            f"{state['topic']} latest developments",
+            f"{state['topic']} practical applications",
+        ]
+
+    return {
+        "search_queries": queries[:3],
+        "messages": [
+            AIMessage(
+                content=f"[SUPERVISOR]: Planned {len(queries)} research queries: {queries}",
+                name="supervisor",
+            )
+        ],
+    }
