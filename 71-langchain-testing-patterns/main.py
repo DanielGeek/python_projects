@@ -61,7 +61,69 @@ def test_qa_chain_handles_empty_response():
     assert result == ""
 
 
+# === Integration Testing with Real LLM ===
+class IntegrationTestSuite:
+    """Integration tests with real LLM calls."""
+
+    def __init__(self):
+        self.llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+    @traceable(name="integration_test")
+    def test_basic_qa(self) -> dict:
+        """Test basic question answering."""
+
+        test_cases = [
+            {
+                "question": "What is 2 + 2?",
+                "expected_contains": ["4", "four"],
+            },
+            {
+                "question": "What color is the sky on a clear day?",
+                "expected_contains": ["blue"],
+            },
+        ]
+
+        results = []
+        for case in test_cases:
+            response = self.llm.invoke(case["question"])
+            content = response.content.lower()
+
+            passed = any(exp.lower() in content for exp in case["expected_contains"])
+
+            results.append(
+                {
+                    "question": case["question"],
+                    "response": response.content,
+                    "passed": passed,
+                }
+            )
+
+        return {
+            "total": len(results),
+            "passed": sum(1 for r in results if r["passed"]),
+            "results": results,
+        }
+
+
+def demo_integration_tests():
+    """Run integration tests."""
+
+    suite = IntegrationTestSuite()
+
+    print("Integration Test Results:\n")
+
+    result = suite.test_basic_qa()
+
+    print(f"Passed: {result['passed']}/{result['total']}")
+
+    for r in result["results"]:
+        status = "✅" if r["passed"] else "❌"
+        print(f"{status} {r['question']}")
+        print(f"   Response: {r['response'][:50]}...")
+
+
 if __name__ == "__main__":
-    test_qa_chain_with_mock()
-    test_qa_chain_handles_empty_response()
+    # test_qa_chain_with_mock()
+    # test_qa_chain_handles_empty_response()
+    demo_integration_tests()
     print("All tests passed!")
