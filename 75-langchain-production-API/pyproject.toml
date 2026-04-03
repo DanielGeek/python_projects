@@ -1,0 +1,15 @@
+[project]
+name = "75-langchain-production-api"
+version = "0.1.0"
+description = "Langchain production API system"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "langchain>=1.2.12",
+    "langchain-anthropic>=1.4.0",
+    "langchain-core>=1.2.19",
+    "langchain-openai>=1.1.11",
+    "langsmith>=0.7.22",
+    "pytest>=9.0.2",
+    "python-dotenv>=1.2.2",
+]
