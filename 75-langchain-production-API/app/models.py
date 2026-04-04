@@ -29,10 +29,11 @@ class ChatResponse(BaseModel):
     thread_id: str
     model_used: str
     cached: bool = False
-    proccessing_time_ms: float
+    processing_time_ms: float
     timestamp: str = Field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
+    security_notes: list[str] = []  # Security warnings/notes
 
 
 class HealthResponse(BaseModel):
