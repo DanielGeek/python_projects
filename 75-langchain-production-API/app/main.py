@@ -12,6 +12,7 @@ Wires together:
 """
 
 from functools import lru_cache
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.responses import JSONResponse
@@ -71,11 +72,43 @@ def get_agent() -> ProductionAgent:
 # === Rate Limiter Setup ===
 limiter = Limiter(key_func=get_remote_address)
 
+
+# === Lifespan Events (Startup/Shutdown) ===
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Modern FastAPI lifespan context manager for startup/shutdown events.
+    Replaces deprecated @app.on_event("startup") and @app.on_event("shutdown").
+    """
+    # Startup
+    settings = get_settings()
+    logger.info(
+        "Starting production API...",
+        extra={
+            "extra_data": {
+                "environment": settings.app_env,
+                "primary_model": settings.primary_model,
+                "tracing_enabled": settings.langchain_tracing_v2,
+            }
+        },
+    )
+    logger.info("All components initialized. Ready to serve requests.")
+
+    yield  # Application is running
+
+    # Shutdown
+    metrics = get_metrics()
+    logger.info("Shutting down...", extra={"extra_data": metrics.summary})
+
+
 # === FastAPI App ===
 app = FastAPI(
     title="Production LangGraph API",
     description="A production-ready chat API with security, caching, and observability.",
     version="1.0.0",
+    lifespan=lifespan,
 )
 app.state.limiter = limiter
 
