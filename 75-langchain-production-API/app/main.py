@@ -53,10 +53,9 @@ logger = get_logger()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Initialize all components on startup, clean up on shutdown
-    This is the modern FastAPI pattern (replaces @app.on_event)
+    Initialize all components on startup, clean up on shutdown.
+    This is the modern FastAPI pattern (replaces @app.on_event).
     """
-
     global security, cache, metrics, agent
 
     settings = get_settings()
@@ -145,7 +144,7 @@ async def chat(request: Request, body: ChatRequest):
     with RequestTimer() as timer:
         security_notes = []
 
-        # --- Step 1: Security Check ---
+        # ---- Step 1: Security Check ----
         is_allowed, cleaned_message, notes = security.check_input(body.message)
         security_notes.extend(notes)
 
@@ -165,28 +164,38 @@ async def chat(request: Request, body: ChatRequest):
                 detail="Your message was blocked by our security filters.",
             )
 
-        # --- Step 2: Cache Lookup ---
+        # ---- Step 2: Cache Lookup ----
         cached_response = cache.get(cleaned_message)
         if cached_response is not None:
             metrics.record_request(latency_ms=0, cache_hit=True)
             logger.info(
-                "Cache hit", extra={"extra_data": {"thread_id": body.thread_id}}
+                "Cache hit",
+                extra={
+                    "extra_data": {
+                        "thread_id": body.thread_id,
+                    }
+                },
             )
             return ChatResponse(
                 response=cached_response,
                 thread_id=body.thread_id,
-                model_used="cached",
+                model_used="cache",
                 cached=True,
                 processing_time_ms=0,
             )
 
-        # --- Step 3: Invoke LangGraph Agent ---
+        # ---- Step 3: Invoke LangGraph Agent ----
         try:
             result = agent.invoke(cleaned_message)
         except Exception as e:
             logger.error(
                 f"Agent invocation failed: {e}",
-                extra={"thread_id": body.thread_id, "error": str(e)},
+                extra={
+                    "extra_data": {
+                        "thread_id": body.thread_id,
+                        "error": str(e),
+                    }
+                },
             )
             metrics.record_request(latency_ms=0, error=True)
             raise HTTPException(
@@ -197,14 +206,14 @@ async def chat(request: Request, body: ChatRequest):
         response_text = result["response"]
         model_used = result["model_used"]
 
-        # --- Step 4: Output Validation ---
+        # ---- Step 4: Output Validation ----
         validated_response, output_warnings = security.check_output(response_text)
         security_notes.extend(output_warnings)
 
-        # --- Step 5: Cache Store ---
+        # ---- Step 5: Cache Store ----
         cache.set(cleaned_message, validated_response)
 
-    # --- Step 6: Log & Record Metrics ---
+    # ---- Step 6: Log & Record Metrics ----
     input_tokens = int(len(cleaned_message.split()) * 1.3)
     output_tokens = int(len(validated_response.split()) * 1.3)
 
