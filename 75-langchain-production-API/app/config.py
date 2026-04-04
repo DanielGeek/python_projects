@@ -19,8 +19,8 @@ class Settings(BaseSettings):
 
     # LangSmith
     langchain_tracing_v2: bool = True
-    langchain_api_key: str = ""
-    langchain_project: str = "production-api"
+    langsmith_api_key: str = ""
+    langsmith_project: str = "production-api"
 
     # Application
     app_env: str = "development"
