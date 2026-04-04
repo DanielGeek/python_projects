@@ -277,3 +277,32 @@ print(json.dumps(metrics.summary, indent=2))
 "
 
 pause
+
+# ------------------------------------------------------------
+# 1.8 LangGraph Agent — Standalone (requires API key)
+# ------------------------------------------------------------
+section "1.8 LangGraph Agent — Standalone Invocation"
+echo "NOTE: This makes real LLM calls. Requires OPENAI_API_KEY in .env"
+echo ""
+
+uv run python -c "
+from app.agent import ProductionAgent
+
+agent = ProductionAgent()
+
+queries = [
+    'What is LangGraph in one sentence?',
+    'What is 2 + 2?',
+    'Explain the difference between RAG and fine-tuning in 2 sentences.',
+]
+
+for query in queries:
+    print(f'Question: {query}')
+    result = agent.invoke(query)
+    print(f'Response: {result[\"response\"][:150]}')
+    print(f'Model:    {result[\"model_used\"]}')
+    print(f'Error:    {result[\"error\"]}')
+    print()
+"
+
+pause
