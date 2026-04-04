@@ -58,7 +58,7 @@ def get_cache() -> ResponseCache:
 
 
 @lru_cache()
-def get_metrics() -> MetricsCollector:
+def get_metrics_collector() -> MetricsCollector:
     """Dependency: Metrics collector (singleton)."""
     return MetricsCollector()
 
@@ -99,8 +99,8 @@ async def lifespan(app: FastAPI):
     yield  # Application is running
 
     # Shutdown
-    metrics = get_metrics()
-    logger.info("Shutting down...", extra={"extra_data": metrics.summary})
+    metrics_collector = get_metrics_collector()
+    logger.info("Shutting down...", extra={"extra_data": metrics_collector.summary})
 
 
 # === FastAPI App ===
@@ -149,7 +149,7 @@ async def chat(
     body: ChatRequest,
     security: SecurityPipeline = Depends(get_security),
     cache: ResponseCache = Depends(get_cache),
-    metrics: MetricsCollector = Depends(get_metrics),
+    metrics: MetricsCollector = Depends(get_metrics_collector),
     agent: ProductionAgent = Depends(get_agent),
 ):
     """
@@ -303,7 +303,7 @@ async def health(
 
 
 @app.get("/metrics", response_model=MetricsResponse, tags=["Monitoring"])
-async def get_metrics(metrics: MetricsCollector = Depends(get_metrics)):
+async def get_metrics(metrics: MetricsCollector = Depends(get_metrics_collector)):
     """Metrics for monitoring dashboards."""
     summary = metrics.summary
     return MetricsResponse(**summary)
