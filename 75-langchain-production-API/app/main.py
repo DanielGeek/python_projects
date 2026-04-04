@@ -126,7 +126,7 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 # =============================================
 
 
-@app.post("/chat", response_model=ChatResponse)
+@app.post("/chat", response_model=ChatResponse, tags=["Chat"])
 @limiter.limit(get_settings().rate_limit)
 @traceable(name="chat_endpoint")
 async def chat(request: Request, body: ChatRequest):
@@ -256,7 +256,7 @@ async def chat(request: Request, body: ChatRequest):
     )
 
 
-@app.get("/health", response_model=HealthResponse)
+@app.get("/health", response_model=HealthResponse, tags=["System"])
 async def health():
     """Health check for Docker/Kubernetes."""
     settings = get_settings()
@@ -276,14 +276,14 @@ async def health():
     )
 
 
-@app.get("/metrics", response_model=MetricsResponse)
+@app.get("/metrics", response_model=MetricsResponse, tags=["Monitoring"])
 async def get_metrics():
     """Metrics for monitoring dashboards."""
     summary = metrics.summary
     return MetricsResponse(**summary)
 
 
-@app.get("/cache/stats")
+@app.get("/cache/stats", tags=["Monitoring"])
 async def cache_stats():
     """Cache performance statistics."""
     return cache.stats

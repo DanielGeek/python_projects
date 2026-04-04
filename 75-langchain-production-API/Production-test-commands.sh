@@ -451,3 +451,63 @@ for i in $(seq 1 25); do
 done
 
 pause
+
+# ------------------------------------------------------------
+# 2.11 OpenAPI Docs
+# ------------------------------------------------------------
+section "2.11 Interactive API Docs"
+echo "Open in your browser:"
+echo ""
+echo "  http://localhost:8000/docs      (Swagger UI)"
+echo "  http://localhost:8000/redoc     (ReDoc)"
+echo ""
+echo "FastAPI generates these automatically from your Pydantic models."
+
+pause
+
+
+# ============================================================
+#  PART 3: TESTS
+# ============================================================
+
+section "PART 3: Automated Tests (pytest)"
+
+echo "Running security + cache tests (no API key needed)..."
+echo ""
+
+uv run pytest tests/test_security.py tests/test_cache.py -v
+
+pause
+
+echo ""
+echo "To run all tests including API tests:"
+echo "  uv run pytest tests/ -v"
+echo ""
+echo "To run with coverage:"
+echo "  uv run pytest tests/ -v --cov=app"
+echo ""
+
+
+# ============================================================
+section "ALL DONE!"
+echo "You've tested:"
+echo "  - Config validation"
+echo "  - Input sanitization (6 injection patterns)"
+echo "  - PII detection & masking (email, phone, SSN, card)"
+echo "  - Output validation (PII leakage + harmful content)"
+echo "  - Full security pipeline"
+echo "  - Response cache (hit, miss, TTL, case-insensitive)"
+echo "  - Structured JSON logging + metrics"
+echo "  - LangGraph agent (standalone)"
+echo "  - Health check endpoint"
+echo "  - Normal chat + cached response"
+echo "  - PII masking in API requests"
+echo "  - Prompt injection blocking"
+echo "  - Pydantic validation"
+echo "  - Metrics + cache stats endpoints"
+echo "  - Rate limiting (20/min)"
+echo "  - pytest (20 unit tests)"
+echo ""
+echo "Next: Check LangSmith at https://smith.langchain.com"
+echo "      for traces of every request."
+# ============================================================
