@@ -33,7 +33,7 @@ class ChatResponse(BaseModel):
     timestamp: str = Field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
-    security_notes: list[str] = []  # Security warnings/notes
+    security_notes: list[str] = []
 
 
 class HealthResponse(BaseModel):
