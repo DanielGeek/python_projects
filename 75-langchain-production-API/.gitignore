@@ -1,4 +1,17 @@
+# Environment variables — NEVER commit these
 .env
-__pycache__
+
+# Python
+__pycache__/
 *.pyc
-.venv
+*.pyo
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

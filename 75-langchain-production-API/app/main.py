@@ -11,11 +11,9 @@ Wires together:
 - Health checks
 """
 
-import time
-import os
-from contextlib import asynccontextmanager
+from functools import lru_cache
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -29,7 +27,6 @@ from app.models import (
     ChatResponse,
     HealthResponse,
     MetricsResponse,
-    ErrorResponse,
 )
 from app.security import SecurityPipeline
 from app.cache import ResponseCache
@@ -38,51 +35,37 @@ from app.agent import ProductionAgent
 
 load_dotenv()
 
-
-# === Global instances (initialized in lifespan) ===
-security: SecurityPipeline = None
-cache: ResponseCache = None
-metrics: MetricsCollector = None
-agent: ProductionAgent = None
 logger = get_logger()
 
 
-# === Lifespan (startup/shutdown) ===
+# === Dependency Injection Functions ===
+# Using @lru_cache to implement singleton pattern
+# Each dependency is created once and reused across requests
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-    Initialize all components on startup, clean up on shutdown.
-    This is the modern FastAPI pattern (replaces @app.on_event).
-    """
-    global security, cache, metrics, agent
+@lru_cache()
+def get_security() -> SecurityPipeline:
+    """Dependency: Security pipeline (singleton)."""
+    return SecurityPipeline()
 
+
+@lru_cache()
+def get_cache() -> ResponseCache:
+    """Dependency: Response cache (singleton)."""
     settings = get_settings()
+    return ResponseCache(ttl_seconds=settings.cache_ttl_seconds)
 
-    logger.info(
-        "Starting production API...",
-        extra={
-            "extra_data": {
-                "environment": settings.app_env,
-                "primary_model": settings.primary_model,
-                "tracing_enabled": settings.langchain_tracing_v2,
-            }
-        },
-    )
 
-    # Initialize components
-    security = SecurityPipeline()
-    cache = ResponseCache(ttl_seconds=settings.cache_ttl_seconds)
-    metrics = MetricsCollector()
-    agent = ProductionAgent()
+@lru_cache()
+def get_metrics() -> MetricsCollector:
+    """Dependency: Metrics collector (singleton)."""
+    return MetricsCollector()
 
-    logger.info("All components initialized. Ready to serve requests.")
 
-    yield  # App is running
-
-    # Shutdown
-    logger.info("Shutting down...", extra={"extra_data": metrics.summary})
+@lru_cache()
+def get_agent() -> ProductionAgent:
+    """Dependency: Production agent (singleton)."""
+    return ProductionAgent()
 
 
 # === Rate Limiter Setup ===
@@ -93,7 +76,6 @@ app = FastAPI(
     title="Production LangGraph API",
     description="A production-ready chat API with security, caching, and observability.",
     version="1.0.0",
-    lifespan=lifespan,
 )
 app.state.limiter = limiter
 
@@ -129,7 +111,14 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 @app.post("/chat", response_model=ChatResponse, tags=["Chat"])
 @limiter.limit(get_settings().rate_limit)
 @traceable(name="chat_endpoint")
-async def chat(request: Request, body: ChatRequest):
+async def chat(
+    request: Request,
+    body: ChatRequest,
+    security: SecurityPipeline = Depends(get_security),
+    cache: ResponseCache = Depends(get_cache),
+    metrics: MetricsCollector = Depends(get_metrics),
+    agent: ProductionAgent = Depends(get_agent),
+):
     """
     Main chat endpoint.
 
@@ -257,7 +246,11 @@ async def chat(request: Request, body: ChatRequest):
 
 
 @app.get("/health", response_model=HealthResponse, tags=["System"])
-async def health():
+async def health(
+    security: SecurityPipeline = Depends(get_security),
+    cache: ResponseCache = Depends(get_cache),
+    agent: ProductionAgent = Depends(get_agent),
+):
     """Health check for Docker/Kubernetes."""
     settings = get_settings()
 
@@ -277,13 +270,13 @@ async def health():
 
 
 @app.get("/metrics", response_model=MetricsResponse, tags=["Monitoring"])
-async def get_metrics():
+async def get_metrics(metrics: MetricsCollector = Depends(get_metrics)):
     """Metrics for monitoring dashboards."""
     summary = metrics.summary
     return MetricsResponse(**summary)
 
 
 @app.get("/cache/stats", tags=["Monitoring"])
-async def cache_stats():
+async def cache_stats(cache: ResponseCache = Depends(get_cache)):
     """Cache performance statistics."""
     return cache.stats
