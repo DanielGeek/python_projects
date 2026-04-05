@@ -38,22 +38,24 @@
 
 ## 🏆 Featured Production Systems
 
-### 🚀 **1. Production-Ready LangChain API**
+### 🚀 **1. Production-Ready LangGraph API**
 
 **[75-langchain-production-API]** | *Enterprise LLM Application with Complete Security & Observability*
 
-The most comprehensive production-ready LLM API showcasing enterprise-grade patterns and best practices.
+The most comprehensive production-ready LLM API showcasing enterprise-grade patterns and best practices. **27 passing tests** with **Dependency Injection** architecture.
+
+**🌐 Try it Live:** [https://langchain-production-api.onrender.com/docs](https://langchain-production-api.onrender.com/docs) - Interactive API documentation with real endpoints
 
 #### **Architecture Highlights**
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    FASTAPI APPLICATION                       │
 ├─────────────────────────────────────────────────────────────┤
 │  Security Layer → Cache → Agent → Monitoring → Response     │
 │     ↓              ↓        ↓         ↓            ↓        │
-│  • Injection    • TTL    • Retry   • Metrics   • Validation│
-│  • PII Mask     • Redis  • Fallback• Logs      • PII Check │
+│  • Injection    • LRU    • Retry   • Metrics   • Validation│
+│  • PII Mask     • TTL    • Fallback• Logs      • PII Check │
 │  • Validation   • Hit/Miss• Circuit• Tracing   • Security  │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -61,32 +63,54 @@ The most comprehensive production-ready LLM API showcasing enterprise-grade patt
 #### **Production Features**
 
 - **🛡️ Multi-Layer Security**: Input sanitization, PII detection/masking, output validation, prompt injection detection
-- **⚡ Performance**: Response caching with TTL, intelligent model routing, semantic deduplication
-- **🔄 Reliability**: Retry with exponential backoff, circuit breaker, model fallback chain
+- **⚡ Performance**: Response caching with TTL, intelligent model routing, zero-latency cached responses
+- **🔄 Reliability**: Retry with exponential backoff, model fallback chain, graceful error handling
 - **📊 Observability**: Structured JSON logging, metrics collection, LangSmith tracing, health checks
-- **🚦 Rate Limiting**: SlowAPI integration with configurable limits per endpoint
+- **🚦 Rate Limiting**: SlowAPI integration with configurable limits per endpoint (20/min default)
 - **🤖 LangGraph Agent**: State management, error recovery, conditional routing
+- **🧪 Comprehensive Testing**: 27 tests (24 unit + 3 integration), 90%+ coverage, pytest markers
 
 #### **Tech Stack**
 
 ```python
 # Core Framework
-FastAPI + Pydantic + LangGraph + LangChain
+FastAPI 0.115+ + Pydantic v2 + LangGraph + LangChain + uv
 
 # Security & Validation
 SecurityPipeline (Injection Detection, PII Masking, Output Validation)
 
 # Caching & Performance  
-ResponseCache (TTL-based, SHA256 keys, hit/miss tracking)
+ResponseCache (LRU-based, TTL 300s, SHA256 keys, hit/miss tracking)
 
 # Monitoring & Observability
-JSONFormatter (structured logs) + MetricsCollector + LangSmith
+structlog (JSON logs) + MetricsCollector + LangSmith tracing
 
 # Agent Architecture
 ProductionAgent (primary/fallback models, retry logic, state management)
+
+# Testing
+pytest + TestClient + Dependency Injection + integration markers
 ```
 
 #### **Key Implementation Patterns**
+
+**Dependency Injection (Modern FastAPI):**
+
+```python
+@lru_cache()
+def get_security() -> SecurityPipeline:
+    """Singleton security pipeline."""
+    return SecurityPipeline()
+
+@app.post("/chat")
+async def chat(
+    security: SecurityPipeline = Depends(get_security),
+    cache: ResponseCache = Depends(get_cache),
+    metrics: MetricsCollector = Depends(get_metrics_collector),
+    agent: ProductionAgent = Depends(get_agent),
+):
+    # Clean, testable, no global state
+```
 
 **Security Pipeline:**
 
@@ -118,22 +142,22 @@ class ProductionAgent:
         )
 ```
 
-**Structured Monitoring:**
+**Lifespan Events (Modern FastAPI):**
 
 ```python
-class MetricsCollector:
-    def record_request(self, latency_ms, input_tokens, output_tokens, 
-                      error=False, cache_hit=False):
-        # Track: requests, errors, latency, tokens, cache performance
-        
-    def summary(self) -> dict:
-        # Return: error_rate, avg_latency, cache_hit_rate, token_usage
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    logger.info("Starting production API...", extra={"environment": settings.app_env})
+    yield  # Application running
+    # Shutdown
+    logger.info("Shutting down...", extra={"metrics": metrics.summary})
 ```
 
 #### **API Endpoints**
 
 - `POST /chat` - Main chat endpoint with full security pipeline
-- `GET /health` - Health check with component status
+- `GET /health` - Health check with component status (Docker/K8s ready)
 - `GET /metrics` - Performance metrics and statistics
 - `GET /cache/stats` - Cache performance analytics
 
@@ -144,29 +168,48 @@ class MetricsCollector:
 OPENAI_API_KEY=sk-xxx
 LANGSMITH_API_KEY=lsv2_pt_xxx
 LANGCHAIN_TRACING_V2=true
+APP_ENV=production
 RATE_LIMIT=20/minute
 CACHE_TTL_SECONDS=300
 
-# Run with uvicorn
-uvicorn app.main:app --reload --port 8000
+# Docker Compose
+docker compose up --build
+
+# Or with uvicorn
+uv run uvicorn app.main:app --port 8000
 ```
 
 #### **Testing & Validation**
 
-- ✅ Input sanitization tests (10+ injection patterns)
-- ✅ PII detection accuracy (email, phone, SSN, cards)
-- ✅ Cache hit/miss scenarios with TTL expiration
-- ✅ Rate limiting enforcement (429 responses)
-- ✅ Model fallback chain validation
-- ✅ Metrics accuracy and aggregation
+**27 Tests Passing:**
+
+- ✅ **Health Endpoint** (4 tests) - Status, structure, environment, version
+- ✅ **Metrics Endpoint** (3 tests) - Response, structure, types
+- ✅ **Cache Stats** (3 tests) - Response, structure, types
+- ✅ **Chat Endpoint** (9 tests) - Validation, security, integration, caching, PII masking
+- ✅ **Error Handling** (4 tests) - 404, 405, 422, content-type
+- ✅ **OpenAPI Docs** (4 tests) - /docs, /redoc, /openapi.json, endpoints
+
+**Test Commands:**
+```bash
+# Unit tests only (fast, no API keys)
+uv run pytest tests/ -v -m "not integration"
+
+# All tests (requires OPENAI_API_KEY)
+uv run pytest tests/ -v
+
+# With coverage
+uv run pytest tests/ --cov=app --cov-report=html
+```
 
 #### **Enterprise Value**
 
-- **Zero-downtime deployment** with health checks
-- **Comprehensive audit trail** with structured logging
-- **Cost optimization** through intelligent caching
-- **Security compliance** with PII protection
-- **Scalable architecture** ready for horizontal scaling
+- **Zero-downtime deployment** with health checks and lifespan events
+- **Comprehensive audit trail** with structured JSON logging
+- **Cost optimization** through intelligent LRU caching (5min TTL)
+- **Security compliance** with PII protection and prompt injection detection
+- **Scalable architecture** with dependency injection, ready for horizontal scaling
+- **Production-ready** with Docker, Render.com config, and comprehensive testing
 
 ---
 
