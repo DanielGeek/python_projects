@@ -213,112 +213,7 @@ uv run pytest tests/ --cov=app --cov-report=html
 
 ---
 
-### 🔍 **2. RAG with FAISS - Document Retrieval System**
-
-**[76-RAG-FAISS-test]** | *Lightweight RAG with FAISS Vector Search & OpenAI Embeddings*
-
-A production-ready document retrieval system demonstrating fundamental RAG patterns with FAISS for fast semantic search over PDF and text documents.
-
-#### **Core Features**
-
-- **📄 Multi-format Support** - PDF (PyMuPDF) and TXT document processing
-- **🔍 Semantic Search** - FAISS IndexFlatIP with cosine similarity via inner product
-- **🚀 Fast Retrieval** - <1ms search time for 1000 chunks (CPU)
-- **💾 Persistent Storage** - Index and metadata saved to disk with pickle
-- **🎯 Smart Chunking** - Character-based splitting with configurable overlap (500 chars, 100 overlap)
-- **📊 Relevance Scoring** - Returns similarity scores for each retrieved chunk
-
-#### **Tech Stack**
-
-```python
-# Vector Search
-FAISS 1.11.0 (IndexFlatIP for cosine similarity)
-
-# Embeddings
-OpenAI text-embedding-3-small (1536 dimensions, $0.02/1M tokens)
-
-# Document Processing
-PyMuPDF 1.26.1 (PDF text extraction)
-
-# Core Libraries
-numpy 2.3.1 + python-dotenv + tqdm
-```
-
-#### **RAG Pipeline**
-
-```text
-Documents (PDF/TXT) 
-    ↓
-Text Extraction (PyMuPDF)
-    ↓
-Chunking (500 chars, 100 overlap)
-    ↓
-Embedding Generation (OpenAI, batches of 100)
-    ↓
-L2 Normalization (for cosine similarity)
-    ↓
-FAISS Indexing (IndexFlatIP)
-    ↓
-Query → Embedding → Top-K Search → Scored Results
-```
-
-#### **Key Implementation**
-
-**Embedding with L2 Normalization:**
-```python
-def embed_texts(texts: List[str]) -> np.ndarray:
-    client = openai.OpenAI()
-    embs = []
-    for i in range(0, len(texts), 100):
-        resp = client.embeddings.create(input=texts[i:i+100], model="text-embedding-3-small")
-        embs.extend([d.embedding for d in resp.data])
-    arr = np.array(embs, dtype="float32")
-    faiss.normalize_L2(arr)  # L2 normalize for cosine via inner product
-    return arr
-```
-
-**FAISS Indexing:**
-```python
-index = faiss.IndexFlatIP(embedding_dim)  # Inner Product = Cosine after L2 norm
-index.add(embeddings)
-faiss.write_index(index, "faiss_index/index.faiss")
-```
-
-**Retrieval:**
-```python
-def retrieve(query: str, k: int = 3) -> List[Dict]:
-    index, texts, meta = load_vector_db()
-    q_emb = embed_texts([query])
-    D, I = index.search(q_emb, k)  # distances & indices
-    return [{"text": texts[i], "meta": meta[i], "score": float(D[0][rank])} 
-            for rank, i in enumerate(I[0])]
-```
-
-#### **Performance Metrics**
-
-- **Indexing Speed**: ~100 chunks/second (OpenAI API dependent)
-- **Search Latency**: <1ms for 1000 chunks (CPU)
-- **Memory Usage**: ~6KB per chunk (1536-dim float32)
-- **Accuracy**: 85%+ retrieval accuracy for semantic queries
-
-#### **Use Cases**
-
-- 📚 Document Q&A systems
-- 🔍 Knowledge base semantic search
-- 📄 Research paper retrieval
-- 💼 Customer support article search
-- 📖 Educational content search
-
-#### **Technical Highlights**
-
-- **Why IndexFlatIP?** After L2 normalization, inner product equals cosine similarity, making it faster than computing cosine directly
-- **Exact Search**: No approximation (suitable for small-medium datasets <100K chunks)
-- **Batch Processing**: Embeddings generated in batches of 100 for API efficiency
-- **Persistent Storage**: Index and metadata saved separately for fast loading
-
----
-
-### 🧠 **3. Advanced RAG Research Assistant**
+### 🧠 **2. Advanced RAG Research Assistant**
 
 **[58-langchain-research-assistant-RAG]** | *Production RAG with Multi-Query Retrieval & Source Attribution*
 
@@ -858,6 +753,114 @@ async def health():
 - **Cache Performance**: Hit/miss ratios, memory usage
 - **LLM Performance**: Model latency, token efficiency
 - **System Health**: Component status, resource usage
+
+---
+
+### 🔍 **9. RAG with FAISS - Document Retrieval System**
+
+**[76-RAG-FAISS-test]** | *Lightweight RAG with FAISS Vector Search & OpenAI Embeddings*
+
+A lightweight document retrieval system demonstrating fundamental RAG patterns with FAISS for fast semantic search over PDF and text documents.
+
+#### **Core Features**
+
+- **📄 Multi-format Support** - PDF (PyMuPDF) and TXT document processing
+- **🔍 Semantic Search** - FAISS IndexFlatIP with cosine similarity via inner product
+- **🚀 Fast Retrieval** - <1ms search time for 1000 chunks (CPU)
+- **💾 Persistent Storage** - Index and metadata saved to disk with pickle
+- **🎯 Smart Chunking** - Character-based splitting with configurable overlap (500 chars, 100 overlap)
+- **📊 Relevance Scoring** - Returns similarity scores for each retrieved chunk
+
+#### **Tech Stack**
+
+```python
+# Vector Search
+FAISS 1.11.0 (IndexFlatIP for cosine similarity)
+
+# Embeddings
+OpenAI text-embedding-3-small (1536 dimensions, $0.02/1M tokens)
+
+# Document Processing
+PyMuPDF 1.26.1 (PDF text extraction)
+
+# Core Libraries
+numpy 2.3.1 + python-dotenv + tqdm
+```
+
+#### **RAG Pipeline**
+
+```text
+Documents (PDF/TXT) 
+    ↓
+Text Extraction (PyMuPDF)
+    ↓
+Chunking (500 chars, 100 overlap)
+    ↓
+Embedding Generation (OpenAI, batches of 100)
+    ↓
+L2 Normalization (for cosine similarity)
+    ↓
+FAISS Indexing (IndexFlatIP)
+    ↓
+Query → Embedding → Top-K Search → Scored Results
+```
+
+#### **Key Implementation**
+
+**Embedding with L2 Normalization:**
+
+```python
+def embed_texts(texts: List[str]) -> np.ndarray:
+    client = openai.OpenAI()
+    embs = []
+    for i in range(0, len(texts), 100):
+        resp = client.embeddings.create(input=texts[i:i+100], model="text-embedding-3-small")
+        embs.extend([d.embedding for d in resp.data])
+    arr = np.array(embs, dtype="float32")
+    faiss.normalize_L2(arr)  # L2 normalize for cosine via inner product
+    return arr
+```
+
+**FAISS Indexing:**
+
+```python
+index = faiss.IndexFlatIP(embedding_dim)  # Inner Product = Cosine after L2 norm
+index.add(embeddings)
+faiss.write_index(index, "faiss_index/index.faiss")
+```
+
+**Retrieval:**
+
+```python
+def retrieve(query: str, k: int = 3) -> List[Dict]:
+    index, texts, meta = load_vector_db()
+    q_emb = embed_texts([query])
+    D, I = index.search(q_emb, k)  # distances & indices
+    return [{"text": texts[i], "meta": meta[i], "score": float(D[0][rank])} 
+            for rank, i in enumerate(I[0])]
+```
+
+#### **Performance Metrics**
+
+- **Indexing Speed**: ~100 chunks/second (OpenAI API dependent)
+- **Search Latency**: <1ms for 1000 chunks (CPU)
+- **Memory Usage**: ~6KB per chunk (1536-dim float32)
+- **Accuracy**: 85%+ retrieval accuracy for semantic queries
+
+#### **Use Cases**
+
+- 📚 Document Q&A systems
+- 🔍 Knowledge base semantic search
+- 📄 Research paper retrieval
+- 💼 Customer support article search
+- 📖 Educational content search
+
+#### **Technical Highlights**
+
+- **Why IndexFlatIP?** After L2 normalization, inner product equals cosine similarity, making it faster than computing cosine directly
+- **Exact Search**: No approximation (suitable for small-medium datasets <100K chunks)
+- **Batch Processing**: Embeddings generated in batches of 100 for API efficiency
+- **Persistent Storage**: Index and metadata saved separately for fast loading
 
 ---
 
