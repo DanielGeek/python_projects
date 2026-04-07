@@ -112,7 +112,7 @@ def retrieve(query: str, k: int = 3) -> List[Dict]:
 
 # ---------- 6. MAIN -----------------------------------------------
 if __name__ == "__main__":
-    folder = "documents"
+    folder = "../documents"
 
     if not (os.path.exists(INDEX_FILE) and os.path.exists(META_FILE)):
         print("No existing index – building one …")

@@ -14,7 +14,7 @@ load_dotenv()
 # ─────────────────────────────────────────────────────────────────────────────
 # Configuration
 # ─────────────────────────────────────────────────────────────────────────────
-DOCS_DIR = "documents"  # Folder with source docs
+DOCS_DIR = "../documents"  # Folder with source docs
 DB_DIR = "faiss_index"  # Where the index lives
 INDEX_FILE = os.path.join(DB_DIR, "index.faiss")
 META_FILE = os.path.join(DB_DIR, "docs.pkl")
