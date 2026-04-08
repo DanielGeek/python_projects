@@ -19,8 +19,8 @@ DB_DIR = "faiss_index"
 INDEX_FILE = os.path.join(DB_DIR, "index.faiss")
 META_FILE = os.path.join(DB_DIR, "docs.pkl")
 
-CHUNK_SIZE = 500
-CHUNK_OVERLAP = 100
+CHUNK_SIZE = 1500
+CHUNK_OVERLAP = 300
 EMBED_MODEL = "text-embedding-3-small"
 MAX_CONTEXTS = 3
 LLM_MODEL = "gpt-4o-mini"
