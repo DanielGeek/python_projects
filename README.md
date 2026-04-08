@@ -2,7 +2,7 @@
 
 > **Senior Backend AI/ML Engineer specializing in Production-Ready LLM Applications**
 >
-> 76+ projects | 50K+ lines of code | 10+ production systems | RAG expert | Multi-agent orchestration
+> 81+ projects | 50K+ lines of code | 10+ production systems | RAG expert | Multi-agent orchestration
 
 [![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
 [![LangChain Expert](https://img.shields.io/badge/LangChain-Expert-green.svg)](https://langchain.com/)
@@ -868,6 +868,7 @@ def retrieve(query: str, k: int = 3) -> List[Dict]:
 
 ### **RAG & Document Processing**
 
+- **[81-RAG-FAISS-Deepeval-tests]** - RAG evaluation with DeepEval LLM-as-a-Judge metrics
 - **[55-langchain-RAG-pipeline]** - Complete RAG implementation with source attribution
 - **[54-langchain-vector-store]** - Chroma vector database with MMR search
 - **[52-langchain-text-splitter]** - Advanced chunking strategies
