@@ -19,15 +19,21 @@ DB_DIR = "faiss_index"
 INDEX_FILE = os.path.join(DB_DIR, "index.faiss")
 META_FILE = os.path.join(DB_DIR, "docs.pkl")
 
-CHUNK_SIZE = 1500
+CHUNK_SIZE = 1200
 CHUNK_OVERLAP = 300
 EMBED_MODEL = "text-embedding-3-small"
-MAX_CONTEXTS = 3
+MAX_CONTEXTS = 6
 LLM_MODEL = "gpt-4o-mini"
 
 SYSTEM_PROMPT = (
-    "You are a concise, highly accurate assistant. "
-    "If the answer cannot be found in the provided context, say 'I don't know.'"
+    "You are a highly accurate assistant that ONLY uses information from the provided context. "
+    "CRITICAL RULES: "
+    "1. Answer ONLY based on the exact information in the context provided. "
+    "2. Do NOT add information, infer, or make assumptions beyond what is explicitly stated. "
+    "3. If the answer is not clearly stated in the context, respond with 'I don't know'. "
+    "4. Be concise and direct - use the exact wording from the context when possible. "
+    "5. When mentioning product names or models, include the complete name as stated in the context. "
+    "6. Never hallucinate or generate information not present in the context."
 )
 
 
@@ -64,12 +70,31 @@ def load_documents(folder: str = DOCS_DIR) -> List[Dict]:
 def split_text(
     text: str, size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP
 ) -> List[str]:
+    """Split text into chunks with sentence boundary awareness."""
     chunks = []
     start = 0
+
     while start < len(text):
         end = min(start + size, len(text))
-        chunks.append(text[start:end])
+
+        # Try to end at sentence boundary if not at end of text
+        if end < len(text):
+            # Look for sentence endings within last 200 chars
+            search_start = max(end - 200, start)
+            last_period = text.rfind(". ", search_start, end)
+            last_newline = text.rfind("\n", search_start, end)
+
+            # Use the closest sentence boundary
+            boundary = max(last_period, last_newline)
+            if boundary > start:
+                end = boundary + 1
+
+        chunk = text[start:end].strip()
+        if chunk:  # Only add non-empty chunks
+            chunks.append(chunk)
+
         start += size - overlap
+
     return chunks
 
 
@@ -118,13 +143,24 @@ def load_vector_db():
 # RETRIEVE + GENERATE
 # ─────────────────────────────────────
 def retrieve(query: str, k: int = MAX_CONTEXTS):
+    """Retrieve relevant contexts with improved relevance filtering."""
     index, texts, meta = load_vector_db()
     q_vec = embed_texts([query])
-    D, I = index.search(q_vec, k)
-    return [
+
+    # Retrieve more candidates for re-ranking
+    search_k = min(k * 3, len(texts))
+    D, I = index.search(q_vec, search_k)
+
+    # Filter by relevance score (cosine similarity threshold)
+    min_score = 0.3  # Minimum relevance threshold
+    candidates = [
         {"text": texts[i], "meta": meta[i], "score": float(D[0][rank])}
         for rank, i in enumerate(I[0])
+        if float(D[0][rank]) >= min_score
     ]
+
+    # Return top k most relevant
+    return candidates[:k]
 
 
 def generate_answer(query: str) -> str:
