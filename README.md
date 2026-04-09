@@ -868,6 +868,7 @@ def retrieve(query: str, k: int = 3) -> List[Dict]:
 
 ### **RAG & Document Processing**
 
+- **[83-RAG-DeepEval]** - Advanced RAG system with DeepEval LLM-as-a-Judge evaluation and HTML reporting
 - **[82-RAG-FAISS-RAGAS-tests]** - Advanced RAG with comprehensive Ragas evaluation metrics
 - **[81-RAG-FAISS-Deepeval-tests]** - RAG evaluation with DeepEval LLM-as-a-Judge metrics
 - **[55-langchain-RAG-pipeline]** - Complete RAG implementation with source attribution

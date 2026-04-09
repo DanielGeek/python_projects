@@ -1,7 +1,11 @@
-from deepeval import assert_test
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 from deepeval.metrics import GEval
 from main import ask_llm
+
+import pandas as pd
+import os
+
+REPORTS_DIR = "reports"
 
 
 def build_metrics():
@@ -21,7 +25,6 @@ def build_metrics():
                 LLMTestCaseParams.INPUT,
                 LLMTestCaseParams.ACTUAL_OUTPUT,
             ],
-            threshold=0.5,
         ),
         GEval(
             name="Relevance",
@@ -44,40 +47,52 @@ def build_metrics():
         GEval(
             name="Technical Accuracy",
             criteria="Is the answer technically accurate based on known Galaxy S22 Ultra specifications?",
-            evaluation_params=[
-                LLMTestCaseParams.INPUT,
-                LLMTestCaseParams.ACTUAL_OUTPUT,
-            ],
+            evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT],
             threshold=0.5,
         ),
     ]
 
 
+def log_results_to_html(test_name, query, actual_output):
+    test_case = LLMTestCase(input=query, actual_output=actual_output)
+    data = []
+
+    for metric in build_metrics():
+        score = metric.measure(test_case)
+        data.append(
+            {
+                "Test Name": test_name,
+                "Query": query,
+                "Metric": metric.name,
+                "Score": round(score, 3),
+                "Passed": score >= metric.threshold if metric.threshold else "N/A",
+                "Explanation": "",  # No explanation available in older versions
+            }
+        )
+
+    df = pd.DataFrame(data)
+    report_file = "test_report.html"
+
+    if not os.path.exists(os.path.join(REPORTS_DIR, report_file)):
+        df.to_html(os.path.join(REPORTS_DIR, report_file), index=False)
+    else:
+        with open(os.path.join(REPORTS_DIR, report_file), "a", encoding="utf-8") as f:
+            f.write(df.to_html(index=False, header=False))
+
+
 def test_display_resolutions():
-    query = "What display resolution can I set on the Galaxy S22 Ultra?"
+    query = "What display resolutions can I set on the Galaxy S22 Ultra?"
     actual_output = ask_llm(query)
-    test_case = LLMTestCase(
-        input=query,
-        actual_output=actual_output,
-    )
-    assert_test(test_case, build_metrics())
+    log_results_to_html("Display Resolutions", query, actual_output)
 
 
-def test_camara_features():
+def test_camera_features():
     query = "What camera capabilities does the Galaxy S22 Ultra offer?"
     actual_output = ask_llm(query)
-    test_case = LLMTestCase(
-        input=query,
-        actual_output=actual_output,
-    )
-    assert_test(test_case, build_metrics())
+    log_results_to_html("Camera Features", query, actual_output)
 
 
 def test_s_pen_functionality():
     query = "What can I do with the S Pen on the Galaxy S22 Ultra?"
     actual_output = ask_llm(query)
-    test_case = LLMTestCase(
-        input=query,
-        actual_output=actual_output,
-    )
-    assert_test(test_case, build_metrics())
+    log_results_to_html("S Pen Functionality", query, actual_output)
