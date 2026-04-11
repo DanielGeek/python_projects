@@ -4,4 +4,4 @@ version = "0.1.0"
 description = "Vector databases projects"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = ["chromadb>=1.5.7"]
