@@ -19,3 +19,7 @@ Thumbs.db
 # DeepEval
 .deepeval/
 
+# ChromaDB
+db/
+
+
