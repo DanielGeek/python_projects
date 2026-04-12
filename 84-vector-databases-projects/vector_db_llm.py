@@ -85,25 +85,83 @@ client = OpenAI(api_key=openai_key)
 
 
 # Function to query documents
-def query_documents(question, n_results=2):
+def query_documents(question, n_results=21):
     # query_embedding = get_openai_embedding(question)
     results = collection.query(
         query_texts=question,
         n_results=n_results,
     )
 
-    # Extract the relevant chunks
+    # Extract the relevant chunks and their IDs
     relevant_chunks = [doc for sublist in results["documents"] for doc in sublist]
+    doc_ids = [doc_id for sublist in results["ids"] for doc_id in sublist]
     print("==== Returning relevant chunks ====")
-    return relevant_chunks
+    return relevant_chunks, doc_ids
     # for idx, document in enumerate(results["documents"][0]):
     #     doc_id = results["ids"][0][idx]
     #     distance = results["distances"][0][idx]
     #     print(f"Found document chunk: {document} (ID: {doc_id}, Distance: {distance})")
 
 
-question = "Tell me about databricks acquisition of ai"
-relevant_chunks = query_documents(question)
+# Function to generate a response from OpenAI
+def generate_response(question, relevant_chunks, doc_ids):
+    context = "\n\n".join(
+        [
+            f"[Document {i + 1}] (File: {doc_ids[i]}):\n{chunk}"
+            for i, chunk in enumerate(relevant_chunks)
+        ]
+    )
 
-print("==== Relevant chunks ====")
-print(*relevant_chunks, sep="\n")
+    system_prompt = f"""You are a multilingual question-answering assistant.
+
+CRITICAL INSTRUCTION:
+You MUST respond in the EXACT same language that the user uses in their question.
+- If the question is in English, respond in English
+- And so on for ANY language
+
+RULES:
+1. Use ONLY information from the Context Documents below
+2. Do NOT use your training data or general knowledge
+3. Do NOT make inferences beyond what is explicitly stated
+4. Maximum 3 sentences
+5. Always cite sources with document numbers and filenames
+
+JSON FORMAT (respond in question's language):
+{{
+  "answer": "your answer in the question's language",
+  "sources": [
+    {{"document_number": 1, "filename": "file.txt"}}
+  ]
+}}
+
+CONTEXT DOCUMENTS:
+{context}"""
+
+    user_prompt = f"""{question}
+
+Remember: Your entire answer must be in the same language as my question above. Return JSON only."""
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        temperature=0,
+        response_format={"type": "json_object"},
+    )
+
+    answer = response.choices[0].message
+    return answer
+
+
+# question = "フランスの首都は何ですか？"
+# question = "give me a brief overview of the articles. Be concise, please."
+# question = "Dame un breve resumen de los artículos. Sé conciso, por favor."
+# question = "How is the owner of SpaceX?"
+question = "What is the age of the owner of SpaceX?"
+relevant_chunks, doc_ids = query_documents(question)
+answer = generate_response(question, relevant_chunks, doc_ids)
+
+print("==== Answer ====")
+print(answer.content)
