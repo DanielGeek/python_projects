@@ -85,7 +85,7 @@ client = OpenAI(api_key=openai_key)
 
 
 # Function to query documents
-def query_documents(question, n_results=21):
+def query_documents(question, n_results=2):
     # query_embedding = get_openai_embedding(question)
     results = collection.query(
         query_texts=question,
