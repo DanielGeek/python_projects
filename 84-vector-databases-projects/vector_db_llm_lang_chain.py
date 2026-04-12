@@ -22,5 +22,26 @@ loader = DirectoryLoader(
     path="./data/new_articles/", glob="*.txt", loader_cls=TextLoader
 )
 documents = loader.load()
-print(f"Loaded {len(documents)} documents")
-# print("documents", documents)
+
+# Split text into sentences
+text_splitter = RecursiveCharacterTextSplitter(
+    separators=["\n\n", "\n"],
+    chunk_size=1000,
+    chunk_overlap=20,
+)
+
+documents_split = text_splitter.split_documents(documents)
+print(f"Number of documents after splitting: {len(documents_split)}")
+
+# Get embeddings
+embedding = OpenAIEmbeddings(api_key=openai_api_key, model="text-embedding-3-small")
+
+# Next we instantiate the Chroma object from langchain_chroma
+persist_directory = "./db/chroma_db_real_world"
+vectordb = Chroma.from_documents(
+    documents=documents_split,
+    embedding=embedding,
+    persist_directory=persist_directory,
+)  # This will create the Chroma object and persist it to disk
+
+print(vectordb)
