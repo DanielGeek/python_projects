@@ -10,6 +10,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from utils import format_docs
 
 load_dotenv()
 
@@ -60,12 +61,6 @@ retriever = vectordb.as_retriever()
 
 # res_docs = retriever.invoke("How much did microsoft raise?", k=2)
 # print(res_docs)
-
-
-# Helper function to format retrieved documents
-def format_docs(docs):
-    return "\n\n".join(doc.page_content for doc in docs)
-
 
 system_prompt = """You are an assistant for question-answering tasks.
 Use the following pieces of retrieved context to answer the question.

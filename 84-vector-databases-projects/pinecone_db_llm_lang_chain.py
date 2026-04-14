@@ -12,6 +12,7 @@ from langchain_core.runnables import RunnablePassthrough
 
 from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
+from utils import format_docs
 
 load_dotenv()
 
@@ -58,10 +59,55 @@ else:
 
 index = pc.Index(index_name)
 
-docsearch = PineconeVectorStore.from_documents(
-    documents, embedding, index_name=index_name
+# Check if index already has vectors
+index_stats = index.describe_index_stats()
+total_vectors = index_stats.get("total_vector_count", 0)
+
+if total_vectors == 0:
+    print(f"Index is empty. Upserting {len(documents)} documents...")
+    # Use from_documents to populate the index
+    docsearch = PineconeVectorStore.from_documents(
+        documents, embedding, index_name=index_name
+    )
+    print(f"Successfully upserted {len(documents)} documents!")
+else:
+    print(f"Index already has {total_vectors} vectors. Using existing data.")
+    # Connect to existing index
+    docsearch = PineconeVectorStore(index=index, embedding=embedding)
+
+retriever = docsearch.as_retriever()
+
+
+system_prompt = """You are a helpful question-answering assistant.
+You have been given context documents. Your job is to summarize and answer using ONLY that context.
+
+STRICT RULES:
+1. Read the context carefully and extract relevant information to answer the question.
+2. Even if the question is broad (e.g. "tell me about AI"), summarize what the context says about it.
+3. NEVER say "I don't know" or "I don't have information" if the context contains ANY related content.
+4. Respond in the same language as the question.
+5. Keep your answer to 3 sentences maximum.
+
+Context:
+{context}
+"""
+
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", system_prompt),
+        ("human", "{question}"),
+    ]
 )
 
-query = "Tell me about writers strike"
-docs = docsearch.similarity_search(query)
-print(docs[0].page_content)
+# Build RAG chain using LCEL (LangChain Expression Language)
+rag_chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | prompt
+    | model
+    | StrOutputParser()
+)
+
+question = "Quien es Elon Musk"
+response = rag_chain.invoke(question)
+print("==== Answer ====")
+print(response)
