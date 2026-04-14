@@ -107,7 +107,9 @@ rag_chain = (
     | StrOutputParser()
 )
 
-question = "Quien es Elon Musk"
+question = "Tell me more about AI and ML news"
 response = rag_chain.invoke(question)
 print("==== Answer ====")
 print(response)
+
+# pc.delete_index(index_name)
