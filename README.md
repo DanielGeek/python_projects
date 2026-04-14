@@ -50,13 +50,13 @@ The most comprehensive production-ready LLM API showcasing enterprise-grade patt
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                    FASTAPI APPLICATION                       │
+│                    FASTAPI APPLICATION                      │
 ├─────────────────────────────────────────────────────────────┤
 │  Security Layer → Cache → Agent → Monitoring → Response     │
 │     ↓              ↓        ↓         ↓            ↓        │
-│  • Injection    • LRU    • Retry   • Metrics   • Validation│
-│  • PII Mask     • TTL    • Fallback• Logs      • PII Check │
-│  • Validation   • Hit/Miss• Circuit• Tracing   • Security  │
+│  • Injection    • LRU    • Retry   • Metrics   • Validation │
+│  • PII Mask     • TTL    • Fallback• Logs      • PII Check  │
+│  • Validation   • Hit/Miss• Circuit• Tracing   • Security   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -191,6 +191,7 @@ uv run uvicorn app.main:app --port 8000
 - ✅ **OpenAPI Docs** (4 tests) - /docs, /redoc, /openapi.json, endpoints
 
 **Test Commands:**
+
 ```bash
 # Unit tests only (fast, no API keys)
 uv run pytest tests/ -v -m "not integration"
