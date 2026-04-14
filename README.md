@@ -869,6 +869,7 @@ def retrieve(query: str, k: int = 3) -> List[Dict]:
 
 ### **RAG & Document Processing**
 
+- **[84-vector-databases-projects]** - Production RAG with Pinecone, ChromaDB, and FAISS - Multi-vector store implementations with smart index management, namespace-based multi-tenancy, and optimized prompts for gpt-4o-mini
 - **[83-RAG-DeepEval]** - Advanced RAG system with DeepEval LLM-as-a-Judge evaluation and HTML reporting
 - **[82-RAG-FAISS-RAGAS-tests]** - Advanced RAG with comprehensive Ragas evaluation metrics
 - **[81-RAG-FAISS-Deepeval-tests]** - RAG evaluation with DeepEval LLM-as-a-Judge metrics
