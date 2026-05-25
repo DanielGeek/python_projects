@@ -3,9 +3,13 @@ name = "85-llm-evaluation"
 version = "0.1.0"
 description = "A package for evaluating large language models (LLMs) using various benchmarks and metrics."
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.11,<3.13"
+
 dependencies = [
-    "langchain-openai>=1.2.2",
+    "langchain>=0.3.27,<1.0.0",
+    "langchain-community>=0.3.27,<1.0.0",
+    "langchain-openai>=0.3.28,<1.0.0",
+    "python-dotenv>=1.2.2",
     "ragas>=0.4.3",
     "requests>=2.34.2",
 ]
