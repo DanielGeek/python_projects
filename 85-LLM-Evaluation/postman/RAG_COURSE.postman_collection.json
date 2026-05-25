@@ -1,0 +1,40 @@
+{
+  "info": {
+    "_postman_id": "c39cfe3b-20c6-4a53-aa30-b2c098ab8488",
+    "name": "RAG_COURSE",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "6097804",
+    "_collection_link": "https://go.postman.co/collection/6097804-c39cfe3b-20c6-4a53-aa30-b2c098ab8488?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Get articles",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"question\": \"How many articles are there in the Selenium webdriver python course?\",\n    \"chat_history\": [\n\n    ]\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://rahulshettyacademy.com/rag-llm/ask",
+          "protocol": "https",
+          "host": [
+            "rahulshettyacademy",
+            "com"
+          ],
+          "path": [
+            "rag-llm",
+            "ask"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
