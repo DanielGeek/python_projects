@@ -25,6 +25,12 @@ from ragas.metrics import LLMContextPrecisionWithoutReference
 # retrieved_context -> Top k retrieved docs
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("get_data", [
+    {
+        "question": "How many articles are there in the Selenium webdriver python course?",
+        "reference": "23",
+    }
+], indirect=True)
 async def test_context_precision(ragas_llm, get_data):
     # Create object of class for that specific metric
 
@@ -39,9 +45,7 @@ async def test_context_precision(ragas_llm, get_data):
         )
     """
 
-    context_precision = ContextPrecisionWithoutReference(
-        llm=ragas_llm,
-    )
+    context_precision = ContextPrecisionWithoutReference(llm=ragas_llm)
 
     """ Sample data -
         sample = SingleTurnSample(
@@ -66,6 +70,7 @@ async def test_context_precision(ragas_llm, get_data):
         Deprecated way to call the scoring method
         score = context_precision.single_turn_ascore(sample)
     """
+
     score = await context_precision.ascore(
         user_input=get_data.user_input,
         response=get_data.response,
