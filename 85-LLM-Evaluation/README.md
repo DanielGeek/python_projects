@@ -32,8 +32,8 @@ Measures how relevant the retrieved documents are.
 
 ## 🧪 Project Structure
 
-- `test_context_recall.py` → evaluates retrieval completeness
-- `test_context_precision.py` → evaluates retrieval relevance
+- `tests/test_context_recall.py` → evaluates retrieval completeness
+- `tests/test_context_precision.py` → evaluates retrieval relevance
 - `helpers/clean_chat_completions.py` → custom OpenAI wrapper
 
 ---
@@ -72,7 +72,7 @@ uv run pytest
 ### Run Context Recall test
 
 ```bash
-uv run pytest test_context_recall.py -s
+uv run pytest tests/test_context_recall.py -s
 ```
 
 ---
@@ -80,7 +80,7 @@ uv run pytest test_context_recall.py -s
 ### Run Context Precision test
 
 ```bash
-uv run pytest test_context_precision.py -s
+uv run pytest tests/test_context_precision.py -s
 ```
 
 ---
@@ -143,7 +143,7 @@ A well-tuned RAG system should achieve:
 ## 📌 Example Command
 
 ```bash
-uv run pytest test_context_recall.py -s
+uv run pytest tests/test_context_recall.py -s
 ```
 
 This runs the test in verbose mode and prints metric scores in real time.

@@ -5,7 +5,7 @@ class CleanChatCompletions:
         self._original = original
 
     async def create(self, **kwargs):
-        kwargs.pop("max_tokens", None)
+        kwargs.pop("max_tokens", None) # Remove max_tokens to prevent OpenAI API errors (max_completion_tokens is already set at the LLM level, invalid_parameter_combination error occurs if max_tokens is also passed in the request)
         return await self._original.create(**kwargs)
 
 

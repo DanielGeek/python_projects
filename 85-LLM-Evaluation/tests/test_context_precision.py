@@ -1,13 +1,15 @@
-import os
 
 import pytest
 
+""""
+import os
 import httpx
 from ragas import SingleTurnSample
 from ragas.llms import (
     # LangchainLLMWrapper, # Deprecated
-    llm_factory # Recommended alternative
+    # llm_factory # Recommended alternative
 )
+"""
 from ragas.metrics.collections.context_precision import ContextPrecisionWithoutReference
 
 from helpers.clean_chat_completions import CleanOpenAI
@@ -17,19 +19,13 @@ from langchain_openai import ChatOpenAI
 from ragas.metrics import LLMContextPrecisionWithoutReference
 """
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
-model = os.getenv("OPENAI_MODEL")
-
 # user_input -> query
 # response -> response
 # reference -> Groud truth
 # retrieved_context -> Top k retrieved docs
 
 @pytest.mark.asyncio
-async def test_context_precision():
+async def test_context_precision(ragas_llm, get_data):
     # Create object of class for that specific metric
 
     # Power of LLM + method metric -> score
@@ -43,40 +39,8 @@ async def test_context_precision():
         )
     """
 
-    client = CleanOpenAI(
-        api_key=os.getenv("OPENAI_API_KEY")
-    )
-
-    ragas_llm = llm_factory(
-        model=model,
-        client=client,
-        temperature=0,
-        max_completion_tokens=512,
-    )
-
     context_precision = ContextPrecisionWithoutReference(
         llm=ragas_llm,
-    )
-
-    question = "How many articles are there in the Selenium webdriver python course?"
-    # Feed data - 
-    async with httpx.AsyncClient() as client_request:
-        response_dict = await client_request.post(
-            "https://rahulshettyacademy.com/rag-llm/ask",
-            json={
-                "question": question,
-                "chat_history": []
-            }
-        )
-        print(response_dict.json())
-
-    sample = SingleTurnSample(
-            user_input=question,
-            response=response_dict.json()["answer"],
-            retrieved_contexts=[
-                doc["page_content"]
-                    for doc in response_dict.json()["retrieved_docs"]
-            ]
     )
 
     """ Sample data -
@@ -103,9 +67,9 @@ async def test_context_precision():
         score = context_precision.single_turn_ascore(sample)
     """
     score = await context_precision.ascore(
-        user_input=sample.user_input,
-        response=sample.response,
-        retrieved_contexts=sample.retrieved_contexts,
+        user_input=get_data.user_input,
+        response=get_data.response,
+        retrieved_contexts=get_data.retrieved_contexts,
     )
 
     print(score)
