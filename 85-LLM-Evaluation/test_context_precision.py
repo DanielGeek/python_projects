@@ -2,6 +2,7 @@ import os
 
 import pytest
 
+import httpx
 from openai.resources.chat.completions import AsyncCompletions
 from ragas import SingleTurnSample
 from ragas.llms import (
@@ -58,22 +59,45 @@ async def test_context_precision():
         llm=ragas_llm,
     )
 
+    question = "How many articles are there in the Selenium webdriver python course?"
     # Feed data - 
+    async with httpx.AsyncClient() as client:
+        response_dict = await client.post(
+            "https://rahulshettyacademy.com/rag-llm/ask",
+            json={
+                "question": question,
+                "chat_history": []
+            }
+        )
+        print(response_dict.json())
+
     sample = SingleTurnSample(
-        user_input="How many articles are there in the Selenium webdriver python course?",
-        response="There are 23 articles in the course.",
-        retrieved_contexts=["Complete Understanding on Selenium Python API Methods with real time Scenarios on LIVE "
-                            "Websites\n\"Last but not least\" you can clear any Interview and can Lead Entire Selenium "
-                            "Python Projects from Design Stage\nThis course includes:\n17.5 hours on-demand "
-                            "video\nAssignments\n23 articles\n9 downloadable resources\nAccess on mobile and "
-                            "TV\nCertificate of completion\nRequirements",
-                            "What you'll learn\n*****By the end of this course,You will be Mastered on Selenium "
-                            "Webdriver with strong Core JAVA basics\n****You will gain the ability to design "
-                            "PAGEOBJECT, DATADRIVEN&HYBRID Automation FRAMEWORKS from scratch\n*** InDepth "
-                            "understanding of real time Selenium CHALLENGES with 100 + examples\n*Complete knowledge on "
-                            "TestNG, MAVEN,ANT, JENKINS,LOG4J, CUCUMBER, HTML REPORTS,EXCEL API, GRID PARALLEL TESTING"]
-    
+            user_input=question,
+            response=response_dict.json()["answer"],
+            retrieved_contexts=[
+                response_dict.json()["retrieved_docs"][0]["page_content"],
+                response_dict.json()["retrieved_docs"][1]["page_content"],
+                response_dict.json()["retrieved_docs"][2]["page_content"]
+            ]
     )
+
+    """ Sample data -
+        sample = SingleTurnSample(
+            user_input="How many articles are there in the Selenium webdriver python course?",
+            response="There are 23 articles in the course.",
+            retrieved_contexts=["Complete Understanding on Selenium Python API Methods with real time Scenarios on LIVE "
+                                "Websites\n\"Last but not least\" you can clear any Interview and can Lead Entire Selenium "
+                                "Python Projects from Design Stage\nThis course includes:\n17.5 hours on-demand "
+                                "video\nAssignments\n23 articles\n9 downloadable resources\nAccess on mobile and "
+                                "TV\nCertificate of completion\nRequirements",
+                                "What you'll learn\n*****By the end of this course,You will be Mastered on Selenium "
+                                "Webdriver with strong Core JAVA basics\n****You will gain the ability to design "
+                                "PAGEOBJECT, DATADRIVEN&HYBRID Automation FRAMEWORKS from scratch\n*** InDepth "
+                                "understanding of real time Selenium CHALLENGES with 100 + examples\n*Complete knowledge on "
+                                "TestNG, MAVEN,ANT, JENKINS,LOG4J, CUCUMBER, HTML REPORTS,EXCEL API, GRID PARALLEL TESTING"]
+        
+        )
+    """
 
     # Score
     """
@@ -87,4 +111,4 @@ async def test_context_precision():
     )
 
     print(score)
-    assert score.value >= 0
+    assert score.value >= 0.8
