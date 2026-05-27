@@ -3,7 +3,6 @@ import os
 import pytest
 
 import httpx
-from openai.resources.chat.completions import AsyncCompletions
 from ragas import SingleTurnSample
 from ragas.llms import (
     # LangchainLLMWrapper, # Deprecated
@@ -61,8 +60,8 @@ async def test_context_precision():
 
     question = "How many articles are there in the Selenium webdriver python course?"
     # Feed data - 
-    async with httpx.AsyncClient() as client:
-        response_dict = await client.post(
+    async with httpx.AsyncClient() as client_request:
+        response_dict = await client_request.post(
             "https://rahulshettyacademy.com/rag-llm/ask",
             json={
                 "question": question,
@@ -75,9 +74,8 @@ async def test_context_precision():
             user_input=question,
             response=response_dict.json()["answer"],
             retrieved_contexts=[
-                response_dict.json()["retrieved_docs"][0]["page_content"],
-                response_dict.json()["retrieved_docs"][1]["page_content"],
-                response_dict.json()["retrieved_docs"][2]["page_content"]
+                doc["page_content"]
+                    for doc in response_dict.json()["retrieved_docs"]
             ]
     )
 
@@ -111,4 +109,4 @@ async def test_context_precision():
     )
 
     print(score)
-    assert score.value >= 0.8
+    assert score.value >= 0.8, "Context Precision score should be 0.8 or higher for good precision"
