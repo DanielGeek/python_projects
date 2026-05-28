@@ -1,12 +1,12 @@
 import os
-import httpx
 import pytest
 import pytest_asyncio
 
 from dotenv import load_dotenv
 from ragas import SingleTurnSample
 from ragas.llms import llm_factory
-from helpers.clean_chat_completions import CleanOpenAI
+from helpers.chat_completions import CleanOpenAI
+from helpers.llm_response import get_llm_response
 
 load_dotenv()
 
@@ -24,7 +24,7 @@ def ragas_llm():
         model=os.getenv("OPENAI_MODEL"),
         client=client,
         temperature=0,
-        max_completion_tokens=512,
+        max_completion_tokens=1024,
     )
 
 
@@ -35,16 +35,7 @@ def ragas_llm():
 async def get_data(request):
     test_data = request.param
 
-    async with httpx.AsyncClient() as client_request:
-        response = await client_request.post(
-            "https://rahulshettyacademy.com/rag-llm/ask",
-            json={
-                "question": test_data["question"],
-                "chat_history": []
-            }
-        )
-
-    data = response.json()
+    data = await get_llm_response(test_data["question"])
 
     return SingleTurnSample(
         user_input=test_data["question"],

@@ -1,13 +1,10 @@
 import pytest
 from ragas.metrics.collections.context_recall import ContextRecall
 
+from helpers.llm_response import load_test_data
+
 @pytest.mark.asyncio
-@pytest.mark.parametrize("get_data", [
-    {
-        "question": "How many articles are there in the Selenium webdriver python course?",
-        "reference": "23",
-    }
-], indirect=True)
+@pytest.mark.parametrize("get_data", load_test_data(), indirect=True)
 async def test_context_recall(ragas_llm, get_data):
 
     context_recall = ContextRecall(llm=ragas_llm)
@@ -19,4 +16,4 @@ async def test_context_recall(ragas_llm, get_data):
     )
 
     print(score)
-    assert score.value >= 0.8, "Context recall score should be 1.0 or higher for perfect recall"
+    assert score.value >= 0.8, "Context recall score should be 0.8 or higher for perfect recall"

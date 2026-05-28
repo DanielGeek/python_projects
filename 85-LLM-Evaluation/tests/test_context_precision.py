@@ -1,6 +1,8 @@
 
 import pytest
 
+from helpers.llm_response import load_test_data
+
 """"
 import os
 import httpx
@@ -11,8 +13,6 @@ from ragas.llms import (
 )
 """
 from ragas.metrics.collections.context_precision import ContextPrecisionWithoutReference
-
-from helpers.clean_chat_completions import CleanOpenAI
 
 """ Deprecated imports -
 from langchain_openai import ChatOpenAI
@@ -25,12 +25,7 @@ from ragas.metrics import LLMContextPrecisionWithoutReference
 # retrieved_context -> Top k retrieved docs
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("get_data", [
-    {
-        "question": "How many articles are there in the Selenium webdriver python course?",
-        "reference": "23",
-    }
-], indirect=True)
+@pytest.mark.parametrize("get_data", load_test_data(), indirect=True)
 async def test_context_precision(ragas_llm, get_data):
     # Create object of class for that specific metric
 
