@@ -1,0 +1,10 @@
+[
+  {
+    "question": "How many articles are there in the Selenium webdriver python course?",
+    "reference": "The Selenium WebDriver Python course contains 23 articles, along with video lectures, assignments, and downloadable resources."
+  },
+  {
+    "question": "What are the requirements for the course?",
+    "reference": "The course requires no prior programming experience. All installations such as Python and Selenium are handled within the course. It includes lifetime instructor support, downloadable materials, and certification upon completion."
+  }
+]

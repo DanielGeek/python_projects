@@ -24,8 +24,10 @@ from ragas.metrics import LLMContextPrecisionWithoutReference
 # reference -> Groud truth
 # retrieved_context -> Top k retrieved docs
 
+path_file_name = "precision/selenium_precision.json"
+
 @pytest.mark.asyncio
-@pytest.mark.parametrize("get_data", load_test_data(), indirect=True)
+@pytest.mark.parametrize("get_data", load_test_data(path_file_name), indirect=True)
 async def test_context_precision(ragas_llm, get_data):
     # Create object of class for that specific metric
 

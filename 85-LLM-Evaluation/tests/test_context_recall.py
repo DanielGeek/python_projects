@@ -3,8 +3,10 @@ from ragas.metrics.collections.context_recall import ContextRecall
 
 from helpers.llm_response import load_test_data
 
+path_file_name = "recall/selenium_recall.json"
+
 @pytest.mark.asyncio
-@pytest.mark.parametrize("get_data", load_test_data(), indirect=True)
+@pytest.mark.parametrize("get_data", load_test_data(path_file_name), indirect=True)
 async def test_context_recall(ragas_llm, get_data):
 
     context_recall = ContextRecall(llm=ragas_llm)
