@@ -1,6 +1,4 @@
 import pytest
-import pytest_asyncio
-from ragas import SingleTurnSample
 from ragas.metrics.collections.faithfulness import Faithfulness
 
 from helpers.llm_response import load_test_data
