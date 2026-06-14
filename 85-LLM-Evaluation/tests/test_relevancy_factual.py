@@ -55,7 +55,7 @@ async def test_relevancy_factual(ragas_llm, ragas_embedding, get_data):
     # 3. Results (same format as before)
     # ==========================================
     print(
-        f"AnswerRelevancy: {relevancy_score.value:.4f} | "
+        f"\nAnswerRelevancy: {relevancy_score.value:.4f} | "
         f"FactualCorrectness (f1): {factual_score.value:.4f}"
     )
 
