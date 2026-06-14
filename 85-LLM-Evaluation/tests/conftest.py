@@ -1,9 +1,11 @@
 import os
+from langchain_community.embeddings import OpenAIEmbeddings
 import pytest
 import pytest_asyncio
 
 from dotenv import load_dotenv
 from ragas import SingleTurnSample
+from ragas.embeddings import embedding_factory
 from ragas.llms import llm_factory
 from helpers.chat_completions import CleanOpenAI
 from helpers.llm_response import get_llm_response
@@ -27,6 +29,16 @@ def ragas_llm():
         max_completion_tokens=1024,
     )
 
+@pytest.fixture
+def ragas_embedding():
+    return embedding_factory(
+        provider="openai",
+        model=os.getenv("OPENAI_EMBEDDING_MODEL"),
+        client=CleanOpenAI(
+            api_key=os.getenv("OPENAI_API_KEY")
+        ),
+        interface="modern"
+    )
 
 # --------------------
 # DATA FIXTURE (ASYNC + PARAMETRIZED)

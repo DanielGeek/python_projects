@@ -5,7 +5,8 @@
     "retrieved_contexts": [
       "Complete Understanding on Selenium Python API Methods with real time Scenarios on LIVE Websites",
       "This course includes: 17.5 hours on-demand video, 23 articles, 9 downloadable resources"
-    ]
+    ],
+    "reference": "23 articles are included in the Selenium WebDriver Python course. Video lectures are included. Assignments are included. Downloadable resources are included."
   },
   {
     "question": "What are the prerequisites for the Selenium WebDriver course?",
@@ -13,6 +14,7 @@
     "retrieved_contexts": [
       "Prerequisites: Basic knowledge of Python programming and understanding of HTML/CSS",
       "Prior experience with testing concepts is helpful but not required"
-    ]
+    ],
+    "reference": "No prior programming experience is required. Python and Selenium installation are handled in the course. Lifetime instructor support is provided. Downloadable materials are included. Certification is provided upon completion."
   }
 ]
