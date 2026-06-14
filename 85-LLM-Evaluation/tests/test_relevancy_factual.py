@@ -44,7 +44,17 @@ async def test_relevancy_factual(ragas_llm, ragas_embedding, get_data):
     # ==========================================
     # 2. FactualCorrectness
     # ==========================================
-    factual_correctness = FactualCorrectness(llm=ragas_llm, mode="f1")
+    """
+        Use "precision" for a more lenient evaluation, allowing for partial credit if the response contains some correct information even if it's not perfectly aligned with the reference. This is especially useful in cases where the LLM's response may be factually correct but not an exact match to the reference, which can happen due to variations in phrasing or additional context provided by the LLM.
+        factual_correctness = FactualCorrectness(llm=ragas_llm, mode="precision")
+    """
+    factual_correctness = FactualCorrectness(
+        llm=ragas_llm,
+        mode="f1",
+        beta=1.0,
+        atomicity="low",
+        coverage="low"
+    )
 
     factual_score = await factual_correctness.ascore(
         response=get_data.response,
@@ -56,13 +66,13 @@ async def test_relevancy_factual(ragas_llm, ragas_embedding, get_data):
     # ==========================================
     print(
         f"\nAnswerRelevancy: {relevancy_score.value:.4f} | "
-        f"FactualCorrectness (f1): {factual_score.value:.4f}"
+            f"FactualCorrectness: {factual_score.value:.4f}"
     )
 
     # Assertions
-    assert relevancy_score.value >= 0.5, (
-        f"AnswerRelevancy score {relevancy_score.value:.4f} is lower than 0.5"
+    assert relevancy_score.value >= 0.9, (
+        f"AnswerRelevancy score {relevancy_score.value:.4f} is lower than 0.9"
     )
-    assert factual_score.value >= 0.3, (
-        f"FactualCorrectness score {factual_score.value:.4f} is lower than 0.3"
+    assert factual_score.value >= 0.6, (
+        f"FactualCorrectness score {factual_score.value:.4f} is lower than 0.6"
     )

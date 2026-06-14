@@ -1,20 +1,20 @@
 [
   {
     "question": "How many articles are there in the Selenium WebDriver Python course?",
-    "answer": "There are 23 articles in the course.",
+    "answer": "There are **23 articles** in the Selenium WebDriver Python course.",
     "retrieved_contexts": [
       "Complete Understanding on Selenium Python API Methods with real time Scenarios on LIVE Websites",
       "This course includes: 17.5 hours on-demand video, 23 articles, 9 downloadable resources"
     ],
-    "reference": "23 articles are included in the Selenium WebDriver Python course. Video lectures are included. Assignments are included. Downloadable resources are included."
+    "reference": "There are 23 articles in the Selenium WebDriver Python course."
   },
   {
     "question": "What are the prerequisites for the Selenium WebDriver course?",
-    "answer": "None - You don't need any prior Java coding experience or programming background to enroll. The course covers all installation and setup (including Java) as part of the curriculum. It's designed for automation testers, QA professionals, and developers who want to learn Selenium step by step.",
+    "answer": "None. No prior Java coding experience is required. No programming background is needed. The course covers all the basics.",
     "retrieved_contexts": [
       "Prerequisites: Basic knowledge of Python programming and understanding of HTML/CSS",
       "Prior experience with testing concepts is helpful but not required"
     ],
-    "reference": "No prior programming experience is required to enroll in the Selenium WebDriver course. The course covers all installation and setup as part of the curriculum. It is designed for automation testers and QA professionals who want to learn Selenium from scratch."
+    "reference": "The course has no prerequisites. You don't need any prior experience. No Java or programming knowledge is required. You can start from scratch. The course covers all installation and setup including Java and IDEs. It teaches everything step by step from the basics. The course is designed for QA engineers, QA architects, developers, automation testers, and automation engineers. Anyone can enroll regardless of their background. Basic computer literacy is sufficient."
   }
 ]
