@@ -11,7 +11,6 @@ path_file_name = "topic_adherence/selenium_topic_adherence.json"
 async def test_topic_adherence(ragas_llm, get_data):
     topic_adherence = TopicAdherence(llm=ragas_llm)
 
-    # conversation y reference_topics vienen directamente del wrapper TestSample
     score = await topic_adherence.ascore(
         get_data.conversation,
         reference_topics=get_data.reference_topics,
