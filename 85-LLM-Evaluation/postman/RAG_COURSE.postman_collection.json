@@ -14,7 +14,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"question\": \"How many articles are there in the Selenium webdriver python course?\",\n    \"chat_history\": [\n\n    ]\n}\n",
+          "raw": "{\n    // \"question\": \"How many articles are there in the Selenium webdriver python course?\",\n    // \"question\": \"What does the course include?\",\n    // \"question\": \"Selenium course content\",\n    // \"question\": \"What are the requirements for the course?\",\n    // \"question\": \"How many articles and downloadable resources are there in the Selenium WebDriver python course?\",\n    \"question\": \"How many donwloadable resources are there in this course?\",\n    \"chat_history\": [\n        {\n            \"role\": \"human\",\n            \"content\": \"how many articles are there in the selenium webdriver python course?\"\n        },\n        {\n            \"role\": \"system\",\n            \"content\": \"There are 23 articles in the course.\"\n        }\n    ]\n}\n",
           "options": {
             "raw": {
               "language": "json"
