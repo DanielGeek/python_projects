@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 '''
 It creates an instance of the Flask class,
 which will be your WSGI (Web Server Gateway Interface) application.
@@ -9,11 +9,15 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def welcome():
-    return "<html><H1>Welcome to the flask course</H1></html>"
+    return "<html><h1>Welcome to the flask course</h1></html>"
 
 @app.route("/index", methods=["GET"])
 def index():
-    return "Welcome to the index page"
+    return render_template("index.html")
+
+@app.route('/about', methods=["GET"])
+def about():
+    return render_template("about.html")
 
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run(host="127.0.0.1", port=5001, debug=True)
