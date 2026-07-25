@@ -33,7 +33,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 09 | **Advanced Python Concepts** | Iterators (`__iter__`, `__next__`), generators (`yield`), decorators |
 | 10 | **Data Analysis with Python** | NumPy (arrays, broadcasting), Pandas (DataFrames, series), data manipulation (`groupby`, `merge`), reading CSV/Excel files |
 | 11 | **Logging in Python** | Basic logging (levels, handlers, formatters), multiple loggers, logging to files |
-| 12 | **Flask** *(in progress)* | Web framework basics |
+| 12 | **Flask** | Web framework basics, routing (GET/POST), Jinja2 templates, and RESTful APIs (JSON responses, GET/POST/PUT/DELETE) |
 
 ---
 
@@ -119,7 +119,20 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │       ├── app.log
 │       ├── logger.py
 │       └── test.py
-├── 12-flask/                      # Flask (WIP)
+├── 12-flask/                      # Web development with Flask
+│   ├── app.py                     # Minimal Flask app
+│   ├── main.py                    # Flask app with standard HTML templates
+│   ├── get_post.py                # Handling GET and POST request parameters
+│   ├── jinja.py                   # Dynamic URL building and Jinja2 rendering (conditions, loops)
+│   ├── api.py                     # RESTful API with full CRUD endpoints (GET/POST/PUT/DELETE)
+│   ├── sample.json                # JSON mock data for API testing
+│   └── templates/                 # HTML templates
+│       ├── index.html             # Homepage template
+│       ├── about.html             # About page template
+│       ├── form.html              # Basic HTML form
+│       ├── result.html            # Condition-based grade display
+│       ├── sucessres.html         # Loop-based grade dictionary display
+│       └── getresult.html         # Form for inputting marks (accessibility optimized)
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
