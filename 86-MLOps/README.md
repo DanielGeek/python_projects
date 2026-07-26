@@ -34,6 +34,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 10 | **Data Analysis with Python** | NumPy (arrays, broadcasting), Pandas (DataFrames, series), data manipulation (`groupby`, `merge`), reading CSV/Excel files |
 | 11 | **Logging in Python** | Basic logging (levels, handlers, formatters), multiple loggers, logging to files |
 | 12 | **Flask** | Web framework basics, routing (GET/POST), Jinja2 templates, and RESTful APIs (JSON responses, GET/POST/PUT/DELETE) |
+| 13 | **MLflow** | Experiment tracking, logging parameters and metrics, and model registry basics |
 
 ---
 
@@ -133,6 +134,9 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │       ├── result.html            # Condition-based grade display
 │       ├── sucessres.html         # Loop-based grade dictionary display
 │       └── getresult.html         # Form for inputting marks (accessibility optimized)
+├── 13-mlflow/                     # Experiment tracking with MLflow
+│   ├── get-started.ipynb          # Introduction to MLflow tracking
+│   └── requirements.txt           # MLflow-specific dependencies
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -167,6 +171,41 @@ conda activate mlops-env
 python -m pip install -r requirements.txt
 ```
 
+### Installation for Module 13 (MLflow)
+
+Module 13 (`13-mlflow`) can be set up in a dedicated environment (Python 3.10) or your existing Anaconda/Conda environment.
+
+#### Option A: Dedicated Local Environment (Recommended)
+
+```bash
+# Navigate to the module directory
+cd 13-mlflow
+
+# Create and activate environment using Conda
+conda create -p venv python=3.10 -y
+conda activate ./venv
+
+# Install MLflow dependencies and Jupyter kernel support
+python -m pip install -r requirements.txt
+python -m pip install ipykernel
+```
+
+#### Option B: Global Anaconda/Conda Environment
+
+If you prefer to use your main `anaconda3` environment:
+
+```bash
+# Activate your base conda environment
+conda activate
+
+# Install MLflow and its dependencies
+python -m pip install -r 13-mlflow/requirements.txt
+```
+
+> [!IMPORTANT]
+> **VS Code Jupyter Kernel Warning:** When opening `get-started.ipynb`, make sure to select the correct Python kernel in the top-right corner of the editor. If you chose Option A, select the environment pointing to `13-mlflow/venv`. If you chose Option B, select `anaconda3 (Python 3.13.x)`. Otherwise, you will encounter a `ModuleNotFoundError: No module named 'mlflow'` error.
+
+
 ---
 
 ## Running Notebooks
@@ -192,6 +231,13 @@ python 01-python-basics/test.py
 # Example: run the Flask web app from module 12
 cd 12-flask
 python app.py
+
+# Example: run the MLflow tracking server from module 13
+cd 13-mlflow
+conda activate ./venv
+mlflow ui
+# Or alternatively on-the-fly using uvx:
+uvx mlflow server
 ```
 
 ---
