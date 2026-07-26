@@ -188,6 +188,11 @@ conda activate ./venv
 # Install MLflow dependencies and Jupyter kernel support
 python -m pip install -r requirements.txt
 python -m pip install ipykernel
+
+# For MLflow >= 2.10 the UI command changed.
+# Use the following to start the tracking UI:
+#   uvx mlflow server
+# (Older versions may still support `mlflow ui`.)
 ```
 
 #### Option B: Global Anaconda/Conda Environment
@@ -332,6 +337,7 @@ git log --oneline
 | `numpy` | Numerical computing (arrays, linear algebra) |
 | `pandas` | Data manipulation and analysis (DataFrames) |
 | `flask` | Lightweight WSGI web application framework |
+| `mlflow` | Experiment tracking and model registry |
 
 All dependencies are defined in `requirements.txt`. If you need additional packages (e.g. `openpyxl` for Excel handling), install them using:
 
