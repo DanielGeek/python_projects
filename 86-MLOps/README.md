@@ -136,6 +136,8 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │       └── getresult.html         # Form for inputting marks (accessibility optimized)
 ├── 13-mlflow/                     # Experiment tracking with MLflow
 │   ├── get-started.ipynb          # Introduction to MLflow tracking
+│   ├── 01-project/                # Hyperparameter tuning project
+│   │   └── housepricepredict.ipynb # RandomForest regression tracking
 │   └── requirements.txt           # MLflow-specific dependencies
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
