@@ -16,3 +16,4 @@ mlartifacts
 # OS
 .DS_Store
 Thumbs.db
+mlruns
