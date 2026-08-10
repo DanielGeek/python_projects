@@ -138,6 +138,8 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   ├── get-started.ipynb          # Introduction to MLflow tracking
 │   ├── 01-project/                # Hyperparameter tuning project
 │   │   └── housepricepredict.ipynb # RandomForest regression tracking
+│   ├── 02-project/                # Deep Learning with MLflow
+│   │   └── starter.ipynb          # Keras/TensorFlow model tracking & optimization
 │   └── requirements.txt           # MLflow-specific dependencies
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
@@ -340,6 +342,8 @@ git log --oneline
 | `pandas` | Data manipulation and analysis (DataFrames) |
 | `flask` | Lightweight WSGI web application framework |
 | `mlflow` | Experiment tracking and model registry |
+| `keras` / `tensorflow` | Deep Learning models and neural network training |
+| `hyperopt` | Distributed hyperparameter optimization |
 
 All dependencies are defined in `requirements.txt`. If you need additional packages (e.g. `openpyxl` for Excel handling), install them using:
 
