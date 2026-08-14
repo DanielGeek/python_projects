@@ -36,6 +36,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 12 | **Flask** | Web framework basics, routing (GET/POST), Jinja2 templates, and RESTful APIs (JSON responses, GET/POST/PUT/DELETE) |
 | 13 | **MLflow** | Experiment tracking, logging parameters and metrics, and model registry basics |
 | 14 | **DVC Demo** | Data Version Control (DVC) basics, dataset versioning, tracking data files (`.dvc`), and data management |
+| 15 | **DagsHub Demo** | Data Version Control remote tracking with [DagsHub](https://dagshub.com/DanielGeek/demo-dagshub), DVC S3 storage integration (`dagshub`, `dvc`, `dvc_s3`), and cloud dataset management |
 
 ---
 
@@ -149,6 +150,14 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   ├── .dvc/                      # DVC system files and configuration
 │   ├── requirements.txt           # DVC dependencies
 │   └── README.md                  # Module 14 documentation
+├── 15-dagshub-demo/               # DagsHub integration demo
+│   ├── data/                      # Tracked dataset directory
+│   │   ├── data.csv               # Sample CSV dataset file
+│   │   └── data.csv.dvc           # DVC tracking metadata file
+│   ├── .dvc/                      # DVC configuration (remote DagsHub S3 storage)
+│   │   └── config                 # DagsHub S3 endpoint configuration
+│   ├── requirements.txt           # DagsHub & DVC S3 dependencies
+│   └── README.md                  # Module 15 documentation
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -235,6 +244,22 @@ conda create -p venv python=3.9 -c conda-forge -y
 conda activate ./venv
 
 # Install DVC dependencies
+python -m pip install -r requirements.txt
+```
+
+### Installation for Module 15 (DagsHub Demo)
+
+Module 15 (`15-dagshub-demo`) integrates DVC with [DagsHub](https://dagshub.com/DanielGeek/demo-dagshub) for cloud data versioning and remote S3 storage tracking:
+
+```bash
+# Navigate to module directory
+cd 15-dagshub-demo
+
+# Create and activate environment using Conda (Python 3.9)
+conda create -p venv python=3.9 -c conda-forge -y
+conda activate ./venv
+
+# Install DagsHub and DVC S3 dependencies
 python -m pip install -r requirements.txt
 ```
 
@@ -369,6 +394,8 @@ git log --oneline
 | `keras` / `tensorflow` | Deep Learning models and neural network training |
 | `hyperopt` | Distributed hyperparameter optimization |
 | `dvc` | Data Version Control for data files and ML pipelines |
+| `dagshub` | Data Science Collaboration Platform (DVC/MLflow integration) |
+| `dvc_s3` | DVC plugin for S3 remote storage compatibility |
 
 All dependencies are defined in `requirements.txt`. If you need additional packages (e.g. `openpyxl` for Excel handling), install them using:
 
@@ -380,7 +407,7 @@ python -m pip install openpyxl
 
 ## Learning Path
 
-This project is **module 01–14** within a broader MLOps curriculum:
+This project is **module 01–15** within a broader MLOps curriculum:
 
 ```
 Python Foundations (you are here) → ML Libraries → MLOps Tooling → Production Deployment
