@@ -35,6 +35,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 11 | **Logging in Python** | Basic logging (levels, handlers, formatters), multiple loggers, logging to files |
 | 12 | **Flask** | Web framework basics, routing (GET/POST), Jinja2 templates, and RESTful APIs (JSON responses, GET/POST/PUT/DELETE) |
 | 13 | **MLflow** | Experiment tracking, logging parameters and metrics, and model registry basics |
+| 14 | **DVC Demo** | Data Version Control (DVC) basics, dataset versioning, tracking data files (`.dvc`), and data management |
 
 ---
 
@@ -141,6 +142,13 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   ├── 02-project/                # Deep Learning with MLflow
 │   │   └── starter.ipynb          # Keras/TensorFlow model tracking & optimization
 │   └── requirements.txt           # MLflow-specific dependencies
+├── 14-dvc-demo/                   # Data Version Control (DVC) demo
+│   ├── data/                      # Tracked dataset directory
+│   │   ├── data.txt               # Sample dataset file
+│   │   └── data.txt.dvc           # DVC tracking metadata file
+│   ├── .dvc/                      # DVC system files and configuration
+│   ├── requirements.txt           # DVC dependencies
+│   └── README.md                  # Module 14 documentation
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -213,6 +221,22 @@ python -m pip install -r 13-mlflow/requirements.txt
 
 > [!IMPORTANT]
 > **VS Code Jupyter Kernel Warning:** When opening `get-started.ipynb`, make sure to select the correct Python kernel in the top-right corner of the editor. If you chose Option A, select the environment pointing to `13-mlflow/venv`. If you chose Option B, select `anaconda3 (Python 3.13.x)`. Otherwise, you will encounter a `ModuleNotFoundError: No module named 'mlflow'` error.
+
+### Installation for Module 14 (DVC Demo)
+
+Module 14 (`14-dvc-demo`) uses Data Version Control (DVC) to manage data files and versioning:
+
+```bash
+# Navigate to module directory
+cd 14-dvc-demo
+
+# Create and activate environment using Conda (Python 3.9)
+conda create -p venv python=3.9 -c conda-forge -y
+conda activate ./venv
+
+# Install DVC dependencies
+python -m pip install -r requirements.txt
+```
 
 
 ---
@@ -344,6 +368,7 @@ git log --oneline
 | `mlflow` | Experiment tracking and model registry |
 | `keras` / `tensorflow` | Deep Learning models and neural network training |
 | `hyperopt` | Distributed hyperparameter optimization |
+| `dvc` | Data Version Control for data files and ML pipelines |
 
 All dependencies are defined in `requirements.txt`. If you need additional packages (e.g. `openpyxl` for Excel handling), install them using:
 
@@ -355,7 +380,7 @@ python -m pip install openpyxl
 
 ## Learning Path
 
-This project is **module 01–12** within a broader MLOps curriculum:
+This project is **module 01–14** within a broader MLOps curriculum:
 
 ```
 Python Foundations (you are here) → ML Libraries → MLOps Tooling → Production Deployment
