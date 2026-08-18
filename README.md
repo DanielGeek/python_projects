@@ -2,7 +2,7 @@
 
 > **Senior Backend AI/ML Engineer specializing in Production-Ready LLM Applications**
 >
-> 82+ projects | 50K+ lines of code | 10+ production systems | RAG expert | Multi-agent orchestration
+> 86+ projects | 50K+ lines of code | 10+ production systems | RAG expert | Multi-agent orchestration | MLOps pipelines
 
 [![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
 [![LangChain Expert](https://img.shields.io/badge/LangChain-Expert-green.svg)](https://langchain.com/)
@@ -919,6 +919,10 @@ def retrieve(query: str, k: int = 3) -> List[Dict]:
 - **[18-AI-Powered-HR-System]** - Llama 3 candidate screening
 - **[17-Django-React-App]** - JWT authentication and SPA
 
+### **MLOps & Pipeline Engineering**
+
+- **[86-MLOps]** - Complete 16-module MLOps curriculum covering Python foundations, NumPy/Pandas, Logging, Flask REST APIs, MLflow experiment tracking, DVC data versioning, DagsHub remote S3 storage ([demo-dagshub](https://dagshub.com/DanielGeek/demo-dagshub)), and end-to-end reproducible ML pipelines ([machine-learning-pipeline](https://dagshub.com/DanielGeek/machine-learning-pipeline)).
+
 ---
 
 ## 🛠️ Technical Skills
@@ -1585,7 +1589,7 @@ RATE_LIMIT=20/minute
 
 ## 📊 Project Statistics
 
-- **Total Projects**: 75+
+- **Total Projects**: 86+
 - **Lines of Code**: 50,000+
 - **Production Systems**: 10+
 - **AI/ML Projects**: 40+
