@@ -38,6 +38,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 14 | **DVC Demo** | Data Version Control (DVC) basics, dataset versioning, tracking data files (`.dvc`), and data management |
 | 15 | **DagsHub Demo** | Data Version Control remote tracking with [DagsHub Repository](https://dagshub.com/DanielGeek/demo-dagshub), DVC S3 storage integration (`dagshub`, `dvc`, `dvc_s3`), and cloud dataset management |
 | 16 | **Machine Learning Pipeline** | End-to-end reproducible MLOps pipeline with DVC stages (`preprocess`, `train`, `evaluate`), `dvc.yaml` orchestration, MLflow & [DagsHub Repository](https://dagshub.com/DanielGeek/machine-learning-pipeline) tracking, environment variables (`python-dotenv`), and model artifact versioning |
+| 17 | **MLflow on AWS** | Self-hosted MLflow tracking server setup on AWS EC2 backed by AWS S3 (`s3://...`) for artifact storage, IAM security, AWS CLI configuration (`boto3`), and remote experiment tracking |
 
 ---
 
@@ -175,6 +176,10 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   ├── .env.example               # Environment variables template (`MLFLOW_TRACKING_PASSWORD`, etc.)
 │   ├── requirements.txt           # Pipeline dependencies (`dvc`, `dagshub`, `mlflow`, `scikit-learn`, `python-dotenv`)
 │   └── README.md                  # Module 16 documentation
+├── 17-mlflow-aws/                 # Self-hosted MLflow Server on AWS EC2 & S3
+│   ├── app.py                     # ElasticNet training script with remote AWS EC2 tracking
+│   ├── requirements.txt           # AWS & MLflow dependencies (`mlflow`, `scikit-learn`, `boto3`)
+│   └── README.md                  # Module 17 documentation & AWS EC2 setup guide
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -300,6 +305,28 @@ cp .env.example .env
 
 # Execute reproducible pipeline
 dvc repro
+```
+
+### Installation for Module 17 (MLflow on AWS)
+
+Module 17 (`17-mlflow-aws`) demonstrates self-hosting an MLflow tracking server on an AWS EC2 instance backed by AWS S3 for artifact storage:
+
+```bash
+# Navigate to module directory
+cd 17-mlflow-aws
+
+# Create and activate environment using Conda (Python 3.10)
+conda create -p venv python=3.10 -c conda-forge -y
+conda activate ./venv
+
+# Install AWS & MLflow dependencies
+python -m pip install -r requirements.txt
+
+# Configure AWS CLI credentials
+aws configure
+
+# Execute training script with remote AWS MLflow tracking
+python app.py 0.6 0.4
 ```
 
 
@@ -436,6 +463,7 @@ git log --oneline
 | `dagshub` | Data Science Collaboration Platform (DVC/MLflow integration) |
 | `dvc_s3` | DVC plugin for S3 remote storage compatibility |
 | `python-dotenv` | Load environment variables from `.env` files |
+| `boto3` | AWS SDK for Python (S3 artifact tracking with MLflow) |
 
 All dependencies are defined in `requirements.txt`. If you need additional packages (e.g. `openpyxl` for Excel handling), install them using:
 
@@ -447,7 +475,7 @@ python -m pip install openpyxl
 
 ## Learning Path
 
-This project is **module 01–16** within a broader MLOps curriculum:
+This project is **module 01–17** within a broader MLOps curriculum:
 
 ```
 Python Foundations (you are here) → ML Libraries → MLOps Tooling → Production Deployment

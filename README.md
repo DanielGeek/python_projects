@@ -2,7 +2,7 @@
 
 > **Senior Backend AI/ML Engineer specializing in Production-Ready LLM Applications**
 >
-> 86+ projects | 50K+ lines of code | 10+ production systems | RAG expert | Multi-agent orchestration | MLOps pipelines
+> 87+ projects | 50K+ lines of code | 10+ production systems | RAG expert | Multi-agent orchestration | MLOps pipelines
 
 [![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
 [![LangChain Expert](https://img.shields.io/badge/LangChain-Expert-green.svg)](https://langchain.com/)
@@ -921,7 +921,7 @@ def retrieve(query: str, k: int = 3) -> List[Dict]:
 
 ### **MLOps & Pipeline Engineering**
 
-- **[86-MLOps]** - Complete 16-module MLOps curriculum covering Python foundations, NumPy/Pandas, Logging, Flask REST APIs, MLflow experiment tracking, DVC data versioning, DagsHub remote S3 storage ([demo-dagshub](https://dagshub.com/DanielGeek/demo-dagshub)), and end-to-end reproducible ML pipelines ([machine-learning-pipeline](https://dagshub.com/DanielGeek/machine-learning-pipeline)).
+- **[86-MLOps]** - Complete 17-module MLOps curriculum covering Python foundations, NumPy/Pandas, Logging, Flask REST APIs, MLflow experiment tracking, DVC data versioning, DagsHub remote S3 storage ([demo-dagshub](https://dagshub.com/DanielGeek/demo-dagshub)), end-to-end reproducible ML pipelines ([machine-learning-pipeline](https://dagshub.com/DanielGeek/machine-learning-pipeline)), and self-hosted MLflow servers on AWS EC2 & S3 (`17-mlflow-aws`).
 
 ---
 
@@ -1589,7 +1589,7 @@ RATE_LIMIT=20/minute
 
 ## 📊 Project Statistics
 
-- **Total Projects**: 86+
+- **Total Projects**: 87+
 - **Lines of Code**: 50,000+
 - **Production Systems**: 10+
 - **AI/ML Projects**: 40+
