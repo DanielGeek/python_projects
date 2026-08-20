@@ -39,6 +39,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 15 | **DagsHub Demo** | Data Version Control remote tracking with [DagsHub Repository](https://dagshub.com/DanielGeek/demo-dagshub), DVC S3 storage integration (`dagshub`, `dvc`, `dvc_s3`), and cloud dataset management |
 | 16 | **Machine Learning Pipeline** | End-to-end reproducible MLOps pipeline with DVC stages (`preprocess`, `train`, `evaluate`), `dvc.yaml` orchestration, MLflow & [DagsHub Repository](https://dagshub.com/DanielGeek/machine-learning-pipeline) tracking, environment variables (`python-dotenv`), and model artifact versioning |
 | 17 | **MLflow on AWS** | Self-hosted MLflow tracking server setup on AWS EC2 backed by AWS S3 (`s3://...`) for artifact storage, IAM security, AWS CLI configuration (`boto3`), and remote experiment tracking |
+| 18 | **Docker Hello World** | Docker containerization basics, writing `Dockerfile`, building images (`docker build`), running containers with port mapping (`docker run -p 5001:5001`), and container lifecycle management |
 
 ---
 
@@ -180,6 +181,11 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   ├── app.py                     # ElasticNet training script with remote AWS EC2 tracking
 │   ├── requirements.txt           # AWS & MLflow dependencies (`mlflow`, `scikit-learn`, `boto3`)
 │   └── README.md                  # Module 17 documentation & AWS EC2 setup guide
+├── 18-docker-hello-world/         # Docker Containerization Basics
+│   ├── app.py                     # Minimal Flask web app listening on port 5001
+│   ├── Dockerfile                 # Container image build configuration
+│   ├── requirements.txt           # Flask dependency
+│   └── README.md                  # Module 18 documentation & Docker commands
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
