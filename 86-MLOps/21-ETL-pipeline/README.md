@@ -39,3 +39,11 @@ This stage involves extracting relevant fields like title, explanation, url, and
 3. Load (L):
 The transformed data is loaded into a Postgres table using PostgresHook.
 If the target table doesn’t exist in the Postgres database, it is created automatically as part of the DAG using a create table task.
+
+## Commands
+
+- Install Airflow locally:
+
+```bash
+python -m pip install apache-airflow apache-airflow-providers-http apache-airflow-providers-postgres
+```
