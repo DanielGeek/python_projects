@@ -40,6 +40,8 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 16 | **Machine Learning Pipeline** | End-to-end reproducible MLOps pipeline with DVC stages (`preprocess`, `train`, `evaluate`), `dvc.yaml` orchestration, MLflow & [DagsHub Repository](https://dagshub.com/DanielGeek/machine-learning-pipeline) tracking, environment variables (`python-dotenv`), and model artifact versioning |
 | 17 | **MLflow on AWS** | Self-hosted MLflow tracking server setup on AWS EC2 backed by AWS S3 (`s3://...`) for artifact storage, IAM security, AWS CLI configuration (`boto3`), and remote experiment tracking |
 | 18 | **Docker Hello World** | Docker containerization basics, writing `Dockerfile`, building images (`docker build`), running containers with port mapping (`docker run -p 5001:5001`), and container lifecycle management |
+| 19 | **Docker Compose** | Multi-container application orchestration (`docker-compose.yml`), linking Flask web service with Redis cache service, container networking, and volumes |
+| 20 | **Airflow with Astronomer (Astro)** | Workflow orchestration and DAG scheduling using Astro CLI, traditional `PythonOperator` with XCom communication, and modern Airflow TaskFlow API (`@task` decorator) |
 
 ---
 
@@ -186,6 +188,22 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   ├── Dockerfile                 # Container image build configuration
 │   ├── requirements.txt           # Flask dependency
 │   └── README.md                  # Module 18 documentation & Docker commands
+├── 19-docker-compose/             # Multi-Container Orchestration
+│   ├── app.py                     # Flask web app with Redis hit counter
+│   ├── Dockerfile                 # Web app image definition
+│   ├── docker-compose.yml         # Compose configuration linking web & Redis services
+│   ├── requirements.txt           # Flask & Redis dependencies
+│   └── README.md                  # Module 19 documentation & Compose commands
+├── 20-airflow-astro/              # Workflow Orchestration with Apache Airflow & Astro CLI
+│   ├── dags/                      # Airflow DAGs folder
+│   │   ├── exampledag.py          # Example DAG with Open Notify astronauts API
+│   │   ├── mlpipeline.py          # Multi-stage ML pipeline (preprocess -> train -> evaluate)
+│   │   ├── maths_operation.py     # Mathematical operations using PythonOperator and XComs
+│   │   └── taskflowapi.py         # Mathematical sequence DAG using modern TaskFlow API (@task)
+│   ├── Dockerfile                 # Astro Runtime Docker image
+│   ├── packages.txt               # OS-level packages
+│   ├── requirements.txt           # Python dependencies
+│   └── README.md                  # Module 20 documentation & Astro CLI reference
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -336,11 +354,59 @@ python app.py 0.6 0.4
 ```
 
 
+### Installation for Module 18 (Docker Hello World)
+
+Module 18 (`18-docker-hello-world`) demonstrates containerizing a Flask web application with Docker:
+
+```bash
+# Navigate to module directory
+cd 18-docker-hello-world
+
+# Build Docker image
+docker build -t welcome-app .
+
+# Run container with port mapping
+docker run -p 5001:5001 welcome-app
+```
+
+### Installation for Module 19 (Docker Compose)
+
+Module 19 (`19-docker-compose`) orchestrates multi-container applications (Flask web service + Redis cache):
+
+```bash
+# Navigate to module directory
+cd 19-docker-compose
+
+# Build and start services in detached mode
+docker compose up -d
+
+# Stop services
+docker compose down
+```
+
+### Installation for Module 20 (Airflow with Astronomer CLI)
+
+Module 20 (`20-airflow-astro`) runs Apache Airflow locally using the Astronomer CLI (`astro`):
+
+```bash
+# Navigate to module directory
+cd 20-airflow-astro
+
+# Start local Airflow environment (Postgres, Webserver, Scheduler, Triggerer, DAG Processor)
+astro dev start
+
+# Validate DAG integrity
+astro dev parse
+
+# Stop Airflow environment
+astro dev stop
+```
+
 ---
 
-## Running Notebooks
+## Running Notebooks & Applications
 
-All modules are built as **Jupyter Notebooks (`.ipynb`)**. Start the notebook server from the project root:
+All notebook modules are built as **Jupyter Notebooks (`.ipynb`)**. Start the notebook server from the project root:
 
 ```bash
 # Start Jupyter Notebook
@@ -352,7 +418,7 @@ jupyter lab
 
 Navigate to any module folder (e.g., `01-python-basics/`, `08-class-and-objects/`) and open the corresponding `.ipynb` file.
 
-You can also run individual Python scripts and web applications:
+You can also run individual Python scripts, web applications, and orchestrators:
 
 ```bash
 # Example: run a test script from module 01
@@ -368,6 +434,14 @@ conda activate ./venv
 mlflow ui
 # Or alternatively on-the-fly using uvx:
 uvx mlflow server
+
+# Example: run multi-container Docker Compose app from module 19
+cd 19-docker-compose
+docker compose up
+
+# Example: start Apache Airflow with Astronomer from module 20
+cd 20-airflow-astro
+astro dev start
 ```
 
 ---
@@ -470,6 +544,8 @@ git log --oneline
 | `dvc_s3` | DVC plugin for S3 remote storage compatibility |
 | `python-dotenv` | Load environment variables from `.env` files |
 | `boto3` | AWS SDK for Python (S3 artifact tracking with MLflow) |
+| `redis` | In-memory key-value data store client |
+| `apache-airflow` / Astro | Workflow orchestration and data pipeline scheduling |
 
 All dependencies are defined in `requirements.txt`. If you need additional packages (e.g. `openpyxl` for Excel handling), install them using:
 
@@ -481,13 +557,13 @@ python -m pip install openpyxl
 
 ## Learning Path
 
-This project is **module 01–17** within a broader MLOps curriculum:
+This project covers **modules 01–20** within a broader MLOps curriculum:
 
 ```
-Python Foundations (you are here) → ML Libraries → MLOps Tooling → Production Deployment
+Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro)
 ```
 
-Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, and software engineering practices — the essential prerequisites for machine learning and MLOps.
+Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, machine learning tracking, containerization, and production-ready orchestration pipelines.
 
 ---
 
