@@ -921,7 +921,7 @@ def retrieve(query: str, k: int = 3) -> List[Dict]:
 
 ### **MLOps & Pipeline Engineering**
 
-- **[86-MLOps]** - Complete 20-module MLOps curriculum covering Python foundations, NumPy/Pandas, Logging, Flask REST APIs, MLflow experiment tracking, DVC data versioning, DagsHub remote S3 storage ([demo-dagshub](https://dagshub.com/DanielGeek/demo-dagshub)), end-to-end reproducible ML pipelines ([machine-learning-pipeline](https://dagshub.com/DanielGeek/machine-learning-pipeline)), self-hosted MLflow servers on AWS EC2 & S3 (`17-mlflow-aws`), Docker containerization (`18-docker-hello-world`), Docker Compose multi-container services (`19-docker-compose`), and Apache Airflow workflow orchestration with Astronomer Astro CLI (`20-airflow-astro`).
+- **[86-MLOps]** - Complete 21-module MLOps curriculum covering Python foundations, NumPy/Pandas, Logging, Flask REST APIs, MLflow experiment tracking, DVC data versioning, DagsHub remote S3 storage ([demo-dagshub](https://dagshub.com/DanielGeek/demo-dagshub)), end-to-end reproducible ML pipelines ([machine-learning-pipeline](https://dagshub.com/DanielGeek/machine-learning-pipeline)), self-hosted MLflow servers on AWS EC2 & S3 (`17-mlflow-aws`), Docker containerization (`18-docker-hello-world`), Docker Compose multi-container services (`19-docker-compose`), Apache Airflow workflow orchestration with Astronomer Astro CLI (`20-airflow-astro`), and production ETL pipeline extracting NASA APOD API data into PostgreSQL via Airflow DAGs (`21-ETL-pipeline`).
 
 ---
 

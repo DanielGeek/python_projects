@@ -2,14 +2,14 @@ from airflow import DAG
 from airflow.providers.http.operators.http import HttpOperator as SimpleHttpOperator
 from airflow.decorators import task
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from airflow.utils.dates import days_ago
+from datetime import datetime, timedelta
 import json
 
 
 ## Define the DAG
 with DAG(
     dag_id = "nasa_apod_postgres",
-    start_date = days_ago(1),
+    start_date = datetime(2024, 1, 1),
     schedule = "@daily",
     catchup = False,
 ) as dag:
@@ -27,6 +27,7 @@ with DAG(
             title VARCHAR(255),
             explanation TEXT,
             url TEXT,
+            date DATE,
             media_type VARCHAR(50)
         );
         """
@@ -52,6 +53,7 @@ with DAG(
             "title": response.get("title", ""),
             "explanation": response.get("explanation", ""),
             "url": response.get("url", ""),
+            "date": response.get("date", ""),
             "media_type": response.get("media_type", ""),
         }
         return apod_data
@@ -80,3 +82,9 @@ with DAG(
     ## Step 5: Verify the data DBViewer
 
     ## Step 6: Define the task dependencies
+    create_table() >> extract_apod ## Ensure the table is create before extraction
+    api_response = extract_apod.output
+    ## Transform
+    transformed_data = transform_apod_data(api_response)
+    ## Load
+    load_data_to_postgres(transformed_data)

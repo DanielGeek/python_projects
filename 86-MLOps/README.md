@@ -42,6 +42,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 18 | **Docker Hello World** | Docker containerization basics, writing `Dockerfile`, building images (`docker build`), running containers with port mapping (`docker run -p 5001:5001`), and container lifecycle management |
 | 19 | **Docker Compose** | Multi-container application orchestration (`docker-compose.yml`), linking Flask web service with Redis cache service, container networking, and volumes |
 | 20 | **Airflow with Astronomer (Astro)** | Workflow orchestration and DAG scheduling using Astro CLI, traditional `PythonOperator` with XCom communication, and modern Airflow TaskFlow API (`@task` decorator) |
+| 21 | **ETL Pipeline (NASA APOD + Postgres)** | End-to-end ETL pipeline using Apache Airflow + Astro CLI — extracts NASA Astronomy Picture of the Day data from a public API (`HttpOperator`), transforms the JSON response, and loads it into a PostgreSQL database (`PostgresHook`). Dockerized Postgres via `docker-compose.yml` |
 
 ---
 
@@ -204,6 +205,14 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   ├── packages.txt               # OS-level packages
 │   ├── requirements.txt           # Python dependencies
 │   └── README.md                  # Module 20 documentation & Astro CLI reference
+├── 21-ETL-pipeline/               # ETL Pipeline — NASA APOD API → Airflow → Postgres
+│   ├── dags/
+│   │   └── etl.py                 # DAG: create_table → extract_apod → transform → load_data
+│   ├── docker-compose.yml         # Postgres 13 container for local data persistence
+│   ├── requirements.txt           # providers: apache-airflow-providers-http/postgres
+│   ├── airflow_settings.yaml      # Local Airflow connections/pools/variables config
+│   ├── Dockerfile                 # Astro Runtime image
+│   └── README.md                  # Module 21 documentation
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -402,7 +411,36 @@ astro dev parse
 astro dev stop
 ```
 
+### Installation for Module 21 (ETL Pipeline — NASA APOD + Postgres)
+
+Module 21 (`21-ETL-pipeline`) runs an end-to-end ETL pipeline using Apache Airflow (Astro CLI) + PostgreSQL:
+
+```bash
+# Navigate to module directory
+cd 21-ETL-pipeline
+
+# Start local Airflow with Astro CLI (builds image with providers-http/postgres)
+astro dev start
+
+# Validate DAG integrity
+astro dev parse
+
+# Restart after changes to requirements.txt or dags/
+astro dev restart
+
+# Stop Airflow environment
+astro dev stop
+```
+
+**Airflow Connections required** (set in Airflow UI at http://21-etl-pipeline.localhost:6563 → Admin → Connections):
+
+| Connection ID | Type | Details |
+|---|---|---|
+| `nasa_api` | HTTP | Host: `api.nasa.gov`, Extra: `{"api_key": "YOUR_NASA_API_KEY"}` |
+| `my_postgres_connection` | Postgres | Host: `postgres`, Port: `5432`, DB: `postgres`, User/Pass: `postgres` |
+
 ---
+
 
 ## Running Notebooks & Applications
 
