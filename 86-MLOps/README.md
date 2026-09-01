@@ -43,6 +43,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 19 | **Docker Compose** | Multi-container application orchestration (`docker-compose.yml`), linking Flask web service with Redis cache service, container networking, and volumes |
 | 20 | **Airflow with Astronomer (Astro)** | Workflow orchestration and DAG scheduling using Astro CLI, traditional `PythonOperator` with XCom communication, and modern Airflow TaskFlow API (`@task` decorator) |
 | 21 | **ETL Pipeline (NASA APOD + Postgres)** | End-to-end ETL pipeline using Apache Airflow + Astro CLI — extracts NASA Astronomy Picture of the Day data from a public API (`HttpOperator`), transforms the JSON response, and loads it into a PostgreSQL database (`PostgresHook`). Dockerized Postgres via `docker-compose.yml` |
+| 22 | **GitHub Actions CI/CD** | Automated CI/CD pipeline with GitHub Actions — workflow YAML definitions (`.github/workflows/`), triggers (`push`, `pull_request`), jobs/steps/runners, automated `pytest` testing, dependency caching, and secrets management. See [app-github-action](https://github.com/DanielGeek/app-github-action) |
 
 ---
 
@@ -213,6 +214,8 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   ├── airflow_settings.yaml      # Local Airflow connections/pools/variables config
 │   ├── Dockerfile                 # Astro Runtime image
 │   └── README.md                  # Module 21 documentation
+├── 21-github-action/              # GitHub Actions CI/CD pipeline
+│   └── README.md                  # Module 22 documentation & workflow reference
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -442,6 +445,31 @@ astro dev stop
 ---
 
 
+### Installation for Module 22 (GitHub Actions CI/CD)
+
+Module 22 (`21-github-action`) demonstrates automating CI/CD pipelines using [GitHub Actions](https://github.com/DanielGeek/app-github-action). The pipeline runs automatically on GitHub — no local setup required to trigger it. To run tests locally:
+
+```bash
+# Clone the app repository
+git clone https://github.com/DanielGeek/app-github-action.git
+cd app-github-action
+
+# Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate   # macOS/Linux
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run tests locally
+pytest tests/ -v
+```
+
+The CI/CD workflow () triggers automatically on every push and pull request to the `main` branch and runs the full `pytest` suite on `ubuntu-latest`.
+
+---
+
+
 ## Running Notebooks & Applications
 
 All notebook modules are built as **Jupyter Notebooks (`.ipynb`)**. Start the notebook server from the project root:
@@ -595,13 +623,13 @@ python -m pip install openpyxl
 
 ## Learning Path
 
-This project covers **modules 01–20** within a broader MLOps curriculum:
+This project covers **modules 01–22** within a broader MLOps curriculum:
 
 ```
-Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro)
+Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro) → CI/CD Automation (GitHub Actions)
 ```
 
-Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, machine learning tracking, containerization, and production-ready orchestration pipelines.
+Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, machine learning tracking, containerization, production-ready orchestration pipelines, and automated CI/CD workflows.
 
 ---
 
