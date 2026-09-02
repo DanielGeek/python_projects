@@ -43,7 +43,8 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 19 | **Docker Compose** | Multi-container application orchestration (`docker-compose.yml`), linking Flask web service with Redis cache service, container networking, and volumes |
 | 20 | **Airflow with Astronomer (Astro)** | Workflow orchestration and DAG scheduling using Astro CLI, traditional `PythonOperator` with XCom communication, and modern Airflow TaskFlow API (`@task` decorator) |
 | 21 | **ETL Pipeline (NASA APOD + Postgres)** | End-to-end ETL pipeline using Apache Airflow + Astro CLI — extracts NASA Astronomy Picture of the Day data from a public API (`HttpOperator`), transforms the JSON response, and loads it into a PostgreSQL database (`PostgresHook`). Dockerized Postgres via `docker-compose.yml` |
-| 22 | **GitHub Actions CI/CD** | Automated CI/CD pipeline with GitHub Actions — workflow YAML definitions (`.github/workflows/`), triggers (`push`, `pull_request`), jobs/steps/runners, automated `pytest` testing, dependency caching, and secrets management. See [app-github-action](https://github.com/DanielGeek/app-github-action) |
+| 22 | **GitHub Actions CI/CD + Docker** | Complete CI/CD pipeline with GitHub Actions — automates pytest testing, multi-platform Docker image build (`linux/amd64` + `linux/arm64` via QEMU + Buildx), and publish to Docker Hub. Covers workflow YAML, `needs` job dependencies, repository secrets, and Apple Silicon compatibility. Image: [`danielangelgeek/flasktest-app`](https://hub.docker.com/r/danielangelgeek/flasktest-app) |
+
 
 ---
 
@@ -214,8 +215,8 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   ├── airflow_settings.yaml      # Local Airflow connections/pools/variables config
 │   ├── Dockerfile                 # Astro Runtime image
 │   └── README.md                  # Module 21 documentation
-├── 21-github-action/              # GitHub Actions CI/CD pipeline
-│   └── README.md                  # Module 22 documentation & workflow reference
+├── 22-github-action-docker/       # GitHub Actions CI/CD + Docker — Flask app published to Docker Hub
+│   └── README.md                  # Module 22 documentation & CI/CD reference
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -445,27 +446,39 @@ astro dev stop
 ---
 
 
-### Installation for Module 22 (GitHub Actions CI/CD)
+### Installation for Module 22 (GitHub Actions CI/CD + Docker)
 
-Module 22 (`21-github-action`) demonstrates automating CI/CD pipelines using [GitHub Actions](https://github.com/DanielGeek/app-github-action). The pipeline runs automatically on GitHub — no local setup required to trigger it. To run tests locally:
+Module 22 (`22-github-action-docker`) automates testing, building, and publishing a Dockerized Flask app to Docker Hub using GitHub Actions. The CI/CD pipeline runs automatically on GitHub — no local setup required to trigger it.
+
+**Source repository:** [`github.com/DanielGeek/github-action-docker`](https://github.com/DanielGeek/github-action-docker)  
+**Published image:** [`danielangelgeek/flasktest-app`](https://hub.docker.com/r/danielangelgeek/flasktest-app)
 
 ```bash
-# Clone the app repository
-git clone https://github.com/DanielGeek/app-github-action.git
-cd app-github-action
+# Clone and run tests locally
+git clone https://github.com/DanielGeek/github-action-docker.git
+cd github-action-docker
 
-# Create and activate a virtual environment
+# Create virtual environment
 python -m venv venv
-source venv/bin/activate   # macOS/Linux
+source venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install flask pytest
 
-# Run tests locally
-pytest tests/ -v
+# Run tests
+pytest
+
+# Pull and run the published Docker image (multi-platform: amd64 + arm64)
+docker pull danielangelgeek/flasktest-app
+docker run -p 5001:5001 danielangelgeek/flasktest-app
 ```
 
-The CI/CD workflow () triggers automatically on every push and pull request to the `main` branch and runs the full `pytest` suite on `ubuntu-latest`.
+**GitHub Secrets required** (Settings → Secrets → Actions):
+
+| Secret | Value |
+|---|---|
+| `DOCKER_USERNAME` | Your Docker Hub username |
+| `DOCKER_PASSWORD` | Your Docker Hub access token |
 
 ---
 
