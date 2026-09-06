@@ -44,6 +44,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 20 | **Airflow with Astronomer (Astro)** | Workflow orchestration and DAG scheduling using Astro CLI, traditional `PythonOperator` with XCom communication, and modern Airflow TaskFlow API (`@task` decorator) |
 | 21 | **ETL Pipeline (NASA APOD + Postgres)** | End-to-end ETL pipeline using Apache Airflow + Astro CLI — extracts NASA Astronomy Picture of the Day data from a public API (`HttpOperator`), transforms the JSON response, and loads it into a PostgreSQL database (`PostgresHook`). Dockerized Postgres via `docker-compose.yml` |
 | 22 | **GitHub Actions CI/CD + Docker** | Complete CI/CD pipeline with GitHub Actions — automates pytest testing, multi-platform Docker image build (`linux/amd64` + `linux/arm64` via QEMU + Buildx), and publish to Docker Hub. Covers workflow YAML, `needs` job dependencies, repository secrets, and Apple Silicon compatibility. Image: [`danielangelgeek/flasktest-app`](https://hub.docker.com/r/danielangelgeek/flasktest-app) |
+| 23 | **End-to-End Data Science & MLOps Pipeline** | Production-ready Wine Quality prediction pipeline following a modular 8-step architecture: Data Ingestion, Data Validation (Schema validation), Data Transformation (split), ElasticNet Model Training, Model Evaluation with remote MLflow & DagsHub tracking ([data-science-project](https://github.com/DanielGeek/data-science-project)), Model Registry, and interactive Flask web application for real-time inference (`/predict`) and retraining (`/train`) |
 
 
 ---
@@ -217,6 +218,8 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   └── README.md                  # Module 21 documentation
 ├── 22-github-action-docker/       # GitHub Actions CI/CD + Docker — Flask app published to Docker Hub
 │   └── README.md                  # Module 22 documentation & CI/CD reference
+├── 23-data-science-project/       # End-to-End Data Science & MLOps Pipeline (Wine Quality)
+│   └── README.md                  # Module 23 documentation & MLOps pipeline reference
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -636,10 +639,10 @@ python -m pip install openpyxl
 
 ## Learning Path
 
-This project covers **modules 01–22** within a broader MLOps curriculum:
+This project covers **modules 01–23** within a broader MLOps curriculum:
 
 ```
-Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro) → CI/CD Automation (GitHub Actions)
+Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro) → CI/CD Automation (GitHub Actions) → End-to-End Production MLOps Pipelines
 ```
 
 Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, machine learning tracking, containerization, production-ready orchestration pipelines, and automated CI/CD workflows.
