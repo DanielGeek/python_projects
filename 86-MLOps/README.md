@@ -45,6 +45,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 21 | **ETL Pipeline (NASA APOD + Postgres)** | End-to-end ETL pipeline using Apache Airflow + Astro CLI — extracts NASA Astronomy Picture of the Day data from a public API (`HttpOperator`), transforms the JSON response, and loads it into a PostgreSQL database (`PostgresHook`). Dockerized Postgres via `docker-compose.yml` |
 | 22 | **GitHub Actions CI/CD + Docker** | Complete CI/CD pipeline with GitHub Actions — automates pytest testing, multi-platform Docker image build (`linux/amd64` + `linux/arm64` via QEMU + Buildx), and publish to Docker Hub. Covers workflow YAML, `needs` job dependencies, repository secrets, and Apple Silicon compatibility. Image: [`danielangelgeek/flasktest-app`](https://hub.docker.com/r/danielangelgeek/flasktest-app) |
 | 23 | **End-to-End Data Science & MLOps Pipeline** | Production-ready Wine Quality prediction pipeline following a modular 8-step architecture: Data Ingestion, Data Validation (Schema validation), Data Transformation (split), ElasticNet Model Training, Model Evaluation with remote MLflow & DagsHub tracking ([data-science-project](https://github.com/DanielGeek/data-science-project)), Model Registry, and interactive Flask web application for real-time inference (`/predict`) and retraining (`/train`) |
+| 24 | **Network Security & Production MLOps Pipeline** | Enterprise phishing detection system featuring cloud MongoDB Atlas ingestion, Kolmogorov-Smirnov (`ks_2samp`) data drift detection, KNN imputation, multi-model GridSearchCV hyperparameter tuning (>99.1% F1-score), remote MLflow & DagsHub tracking ([network-security](https://github.com/DanielGeek/network-security)), Model Registry, automated AWS S3 artifact sync, FastAPI web interface with batch prediction table, and full GitHub Actions CI/CD to AWS (ECR + EC2 self-hosted runner) |
 
 
 ---
@@ -220,6 +221,8 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   └── README.md                  # Module 22 documentation & CI/CD reference
 ├── 23-data-science-project/       # End-to-End Data Science & MLOps Pipeline (Wine Quality)
 │   └── README.md                  # Module 23 documentation & MLOps pipeline reference
+├── 24-network-security/           # Network Security Phishing Detection & MLOps Pipeline
+│   └── README.md                  # Module 24 documentation & AWS/CI-CD reference
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -639,10 +642,10 @@ python -m pip install openpyxl
 
 ## Learning Path
 
-This project covers **modules 01–23** within a broader MLOps curriculum:
+This project covers **modules 01–24** within a broader MLOps curriculum:
 
 ```
-Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro) → CI/CD Automation (GitHub Actions) → End-to-End Production MLOps Pipelines
+Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro) → CI/CD Automation (GitHub Actions) → End-to-End Production MLOps Pipelines (AWS, ECR, S3, MongoDB)
 ```
 
 Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, machine learning tracking, containerization, production-ready orchestration pipelines, and automated CI/CD workflows.
