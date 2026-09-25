@@ -1,5 +1,12 @@
 venv/
 artifacts/
+research/*.json
+research/pegasus-samsum-model/*
+research/pegasus-samsum/*
+research/samsum_dataset/*
+research/tokenizer/*
+research/*.zip
+research/*.csv
 __pycache__/
 .pytest_cache/
 .DS_Store

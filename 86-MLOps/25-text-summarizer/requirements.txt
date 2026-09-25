@@ -1,16 +1,26 @@
-transformers
+# Core ML / NLP
+torch
 transformers[sentencepiece]
+accelerate
 datasets
-sacrebleu 
-rouge_score 
+evaluate
+sentencepiece
+
+# Metrics & data
+sacrebleu
+rouge_score
 py7zr
 pandas
 nltk
 tqdm
 PyYAML
 matplotlib
-torch
+
+# Notebook / Jupyter (Cursor / VS Code)
 notebook
+ipykernel
+
+# App / infra
 boto3
 mypy-boto3-s3
 python-box==6.0.2
@@ -18,4 +28,3 @@ ensure==1.0.2
 fastapi==0.78.0
 uvicorn==0.18.3
 Jinja2==3.1.2
-evaluate
