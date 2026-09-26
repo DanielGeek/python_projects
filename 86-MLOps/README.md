@@ -46,7 +46,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 22 | **GitHub Actions CI/CD + Docker** | Complete CI/CD pipeline with GitHub Actions — automates pytest testing, multi-platform Docker image build (`linux/amd64` + `linux/arm64` via QEMU + Buildx), and publish to Docker Hub. Covers workflow YAML, `needs` job dependencies, repository secrets, and Apple Silicon compatibility. Image: [`danielangelgeek/flasktest-app`](https://hub.docker.com/r/danielangelgeek/flasktest-app) |
 | 23 | **End-to-End Data Science & MLOps Pipeline** | Production-ready Wine Quality prediction pipeline following a modular 8-step architecture: Data Ingestion, Data Validation (Schema validation), Data Transformation (split), ElasticNet Model Training, Model Evaluation with remote MLflow & DagsHub tracking ([data-science-project](https://github.com/DanielGeek/data-science-project)), Model Registry, and interactive Flask web application for real-time inference (`/predict`) and retraining (`/train`) |
 | 24 | **Network Security & Production MLOps Pipeline** | Enterprise phishing detection system featuring cloud MongoDB Atlas ingestion, Kolmogorov-Smirnov (`ks_2samp`) data drift detection, KNN imputation, multi-model GridSearchCV hyperparameter tuning (>99.1% F1-score), remote MLflow & DagsHub tracking ([network-security](https://github.com/DanielGeek/network-security)), Model Registry, automated AWS S3 artifact sync, FastAPI web interface with batch prediction table, and full GitHub Actions CI/CD to AWS (ECR + EC2 self-hosted runner) |
-| 25 | **Student Exam Performance Predictor** | End-to-end student math score regression pipeline: modular data ingestion, preprocessing (scaling + one-hot encoding), multi-model training & selection (Random Forest, Gradient Boosting, XGBoost, CatBoost, AdaBoost, Linear/Decision Tree), Flask web UI for real-time inference (`/predictdata`), Docker packaging, and GitHub Actions CI/CD to AWS ECR & Elastic Beanstalk ([ML_project](https://github.com/DanielGeek/ML_project)) |
+| 25 | **Text Summarizer (Hugging Face Pegasus)** | End-to-end NLP summarization MLOps pipeline: data ingestion, tokenization/transformation, Pegasus fine-tuning (`Trainer`), ROUGE evaluation, modular `src/` components + Configuration Manager, and FastAPI inference (`/predict`, `/train`) for real-time abstractive summaries |
 
 
 ---
@@ -224,9 +224,8 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   └── README.md                  # Module 23 documentation & MLOps pipeline reference
 ├── 24-network-security/           # Network Security Phishing Detection & MLOps Pipeline
 │   └── README.md                  # Module 24 documentation & AWS/CI-CD reference
-├── 25-ML_project/                 # Student Exam Performance Predictor (external repo)
-│   └── README.md                  # Module 25 documentation & AWS ECR/EB reference
-│                                  # Full project: https://github.com/DanielGeek/ML_project
+├── 25-text-summarizer/            # Text Summarizer — Hugging Face Pegasus + FastAPI
+│   └── README.md                  # Module 25 documentation (training pipeline + /predict API)
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -492,16 +491,13 @@ docker run -p 5001:5001 danielangelgeek/flasktest-app
 
 ---
 
-### Installation for Module 25 (Student Exam Performance Predictor)
+### Installation for Module 25 (Text Summarizer)
 
-Module 25 is the end-to-end [ML_project](https://github.com/DanielGeek/ML_project) — a student math score regression pipeline with Flask inference, Docker, and GitHub Actions CI/CD to AWS ECR & Elastic Beanstalk.
-
-**Source repository:** [`github.com/DanielGeek/ML_project`](https://github.com/DanielGeek/ML_project)
+Module 25 (`25-text-summarizer`) is an end-to-end Hugging Face Pegasus summarization pipeline with modular training stages and a FastAPI prediction API.
 
 ```bash
-# Clone the project
-git clone https://github.com/DanielGeek/ML_project.git
-cd ML_project
+# Navigate to the module
+cd 25-text-summarizer
 
 # Create and activate environment (Python 3.10)
 python3.10 -m venv venv
@@ -510,15 +506,18 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Run the Flask app
-python app.py
-# Open http://localhost:8001/predictdata
+# Optional: pre-download base model weights (~2.3 GB)
+hf download google/pegasus-cnn_dailymail --exclude "rust_model.ot"
 
-# Or build and run with Docker
-docker build -t ml_project .
-docker run -d -p 8001:8001 ml_project
-# Open http://localhost:8001/predictdata
+# Run the full training pipeline
+python main.py
+
+# Serve the FastAPI app
+python app.py
+# Open http://localhost:8080/docs
 ```
+
+**Related external project:** Student Exam Performance Predictor ([ML_project](https://github.com/DanielGeek/ML_project)) — regression MLOps pipeline with Flask + AWS ECR/Elastic Beanstalk.
 
 ---
 
