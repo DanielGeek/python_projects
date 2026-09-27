@@ -47,6 +47,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 23 | **End-to-End Data Science & MLOps Pipeline** | Production-ready Wine Quality prediction pipeline following a modular 8-step architecture: Data Ingestion, Data Validation (Schema validation), Data Transformation (split), ElasticNet Model Training, Model Evaluation with remote MLflow & DagsHub tracking ([data-science-project](https://github.com/DanielGeek/data-science-project)), Model Registry, and interactive Flask web application for real-time inference (`/predict`) and retraining (`/train`) |
 | 24 | **Network Security & Production MLOps Pipeline** | Enterprise phishing detection system featuring cloud MongoDB Atlas ingestion, Kolmogorov-Smirnov (`ks_2samp`) data drift detection, KNN imputation, multi-model GridSearchCV hyperparameter tuning (>99.1% F1-score), remote MLflow & DagsHub tracking ([network-security](https://github.com/DanielGeek/network-security)), Model Registry, automated AWS S3 artifact sync, FastAPI web interface with batch prediction table, and full GitHub Actions CI/CD to AWS (ECR + EC2 self-hosted runner) |
 | 25 | **Text Summarizer (Hugging Face Pegasus)** | End-to-end NLP summarization MLOps pipeline: data ingestion, tokenization/transformation, Pegasus fine-tuning (`Trainer`), ROUGE evaluation, modular `src/` components + Configuration Manager, and FastAPI inference (`/predict`, `/train`) for real-time abstractive summaries |
+| 26 | **AWS SageMaker (Mobile Price Classification)** | Managed training on Amazon SageMaker with **SDK v3** (`ModelTrainer`): S3 data upload, scikit-learn Random Forest training script, spot instances, model artifact retrieval from S3, and notebook-driven endpoint workflow |
 
 
 ---
@@ -226,6 +227,12 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   └── README.md                  # Module 24 documentation & AWS/CI-CD reference
 ├── 25-text-summarizer/            # Text Summarizer — Hugging Face Pegasus + FastAPI
 │   └── README.md                  # Module 25 documentation (training pipeline + /predict API)
+├── 26-AWS-Sagemaker/              # AWS SageMaker — Mobile Price Classification (SDK v3)
+│   ├── research.ipynb             # EDA → S3 → ModelTrainer → artifacts / endpoint
+│   ├── script.py                  # SageMaker training entry script (RandomForest)
+│   ├── .env.example               # Region, S3 bucket, SAGEMAKER_ROLE
+│   ├── requirements.txt           # sagemaker>=3, scikit-learn, boto3 stack
+│   └── README.md                  # Module 26 documentation
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -521,6 +528,35 @@ python app.py
 
 ---
 
+### Installation for Module 26 (AWS SageMaker)
+
+Module 26 (`26-AWS-Sagemaker`) trains a scikit-learn Random Forest on SageMaker using the **Python SDK v3** (`ModelTrainer`), with data and model artifacts in S3.
+
+```bash
+# Navigate to the module
+cd 26-AWS-Sagemaker
+
+# Create and activate environment (Python 3.10)
+conda create -p venv python==3.10 -y
+conda activate ./venv
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure AWS + project env
+cp .env.example .env
+# Set AWS_DEFAULT_REGION, MOB_BUCKET_SAGEMAKER, SAGEMAKER_ROLE
+# Ensure local AWS credentials are configured (aws configure)
+
+# Open the research notebook and run cells in order
+# research.ipynb
+```
+
+> [!IMPORTANT]
+> Select the `26-AWS-Sagemaker/venv` Jupyter kernel. SDK **v3** replaces `SKLearn` estimators with `ModelTrainer` — see the module README for the v2→v3 mapping.
+
+---
+
 
 ## Running Notebooks & Applications
 
@@ -675,13 +711,13 @@ python -m pip install openpyxl
 
 ## Learning Path
 
-This project covers **modules 01–25** within a broader MLOps curriculum:
+This project covers **modules 01–26** within a broader MLOps curriculum:
 
 ```
-Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro) → CI/CD Automation (GitHub Actions) → End-to-End Production MLOps Pipelines (AWS, ECR, S3, MongoDB)
+Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro) → CI/CD Automation (GitHub Actions) → End-to-End Production MLOps Pipelines (AWS, ECR, S3, MongoDB, SageMaker)
 ```
 
-Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, machine learning tracking, containerization, production-ready orchestration pipelines, and automated CI/CD workflows.
+Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, machine learning tracking, containerization, production-ready orchestration pipelines, automated CI/CD workflows, and managed training on Amazon SageMaker.
 
 ---
 
