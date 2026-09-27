@@ -1,14 +1,20 @@
-import argparse
-import os
 
-import joblib
-import pandas as pd
-import sklearn
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     accuracy_score,
     classification_report,
+    confusion_matrix,
+    precision_score,
 )
+import sklearn
+import joblib
+import boto3
+import pathlib
+from io import StringIO
+import argparse
+import os
+import numpy as np
+import pandas as pd
 
 
 def model_fn(model_dir):

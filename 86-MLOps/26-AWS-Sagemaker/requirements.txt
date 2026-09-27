@@ -1,4 +1,4 @@
-sagemaker
+sagemaker>=3
 scikit-learn
 pandas
 numpy
