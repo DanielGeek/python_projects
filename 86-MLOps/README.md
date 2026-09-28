@@ -48,6 +48,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 24 | **Network Security & Production MLOps Pipeline** | Enterprise phishing detection system featuring cloud MongoDB Atlas ingestion, Kolmogorov-Smirnov (`ks_2samp`) data drift detection, KNN imputation, multi-model GridSearchCV hyperparameter tuning (>99.1% F1-score), remote MLflow & DagsHub tracking ([network-security](https://github.com/DanielGeek/network-security)), Model Registry, automated AWS S3 artifact sync, FastAPI web interface with batch prediction table, and full GitHub Actions CI/CD to AWS (ECR + EC2 self-hosted runner) |
 | 25 | **Text Summarizer (Hugging Face Pegasus)** | End-to-end NLP summarization MLOps pipeline: data ingestion, tokenization/transformation, Pegasus fine-tuning (`Trainer`), ROUGE evaluation, modular `src/` components + Configuration Manager, and FastAPI inference (`/predict`, `/train`) for real-time abstractive summaries |
 | 26 | **AWS SageMaker (Mobile Price Classification)** | Managed training on Amazon SageMaker with **SDK v3** (`ModelTrainer`): S3 data upload, scikit-learn Random Forest training script, spot instances, model artifact retrieval from S3, and notebook-driven endpoint workflow |
+| 27 | **Grafana Observability (Banking Stream)** | Synthetic banking transaction generator with fraud-style rules, continuous inserts into PostgreSQL (Docker Compose or AWS RDS), and Grafana-ready SQL panels (`queries.txt`) for live monitoring |
 
 
 ---
@@ -233,6 +234,13 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   ├── .env.example               # Region, S3 bucket, SAGEMAKER_ROLE
 │   ├── requirements.txt           # sagemaker>=3, scikit-learn, boto3 stack
 │   └── README.md                  # Module 26 documentation
+├── 27-grafana/                    # Grafana — banking transaction stream + Postgres
+│   ├── app.ipynb                  # Faker generator, rules engine, DB insert loop
+│   ├── docker-compose.yml         # Official Postgres 16 (Alpine)
+│   ├── queries.txt                # Sample Grafana panel SQL
+│   ├── .env.example               # Postgres host/credentials + batch settings
+│   ├── requirements.txt           # psycopg2-binary, faker, pandas, python-dotenv
+│   └── README.md                  # Module 27 documentation
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -557,6 +565,33 @@ cp .env.example .env
 
 ---
 
+### Installation for Module 27 (Grafana Observability)
+
+Module 27 (`27-grafana`) streams synthetic banking transactions into PostgreSQL (local Docker or AWS RDS) for Grafana dashboards.
+
+```bash
+# Navigate to the module
+cd 27-grafana
+
+# Create and activate environment (Python 3.10)
+conda create -p venv python==3.10 -y
+conda activate ./venv
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure env + start local Postgres
+cp .env.example .env
+docker compose up -d
+
+# Open app.ipynb and run cells (venv kernel)
+```
+
+> [!IMPORTANT]
+> Use `psycopg2-binary` (already in `requirements.txt`). Plain `psycopg2` often fails on macOS with missing `libssl.1.1.dylib`.
+
+---
+
 
 ## Running Notebooks & Applications
 
@@ -711,13 +746,13 @@ python -m pip install openpyxl
 
 ## Learning Path
 
-This project covers **modules 01–26** within a broader MLOps curriculum:
+This project covers **modules 01–27** within a broader MLOps curriculum:
 
 ```
-Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro) → CI/CD Automation (GitHub Actions) → End-to-End Production MLOps Pipelines (AWS, ECR, S3, MongoDB, SageMaker)
+Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro) → CI/CD Automation (GitHub Actions) → End-to-End Production MLOps Pipelines (AWS, ECR, S3, MongoDB, SageMaker) → Observability (Grafana + Postgres)
 ```
 
-Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, machine learning tracking, containerization, production-ready orchestration pipelines, automated CI/CD workflows, and managed training on Amazon SageMaker.
+Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, machine learning tracking, containerization, production-ready orchestration pipelines, automated CI/CD workflows, managed training on Amazon SageMaker, and live monitoring with Grafana.
 
 ---
 
