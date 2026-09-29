@@ -50,6 +50,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 26 | **AWS SageMaker (Mobile Price Classification)** | Managed training on Amazon SageMaker with **SDK v3** (`ModelTrainer`): S3 data upload, scikit-learn Random Forest training script, spot instances, model artifact retrieval from S3, and notebook-driven endpoint workflow |
 | 27 | **Grafana Observability (Banking Stream)** | Synthetic banking transaction generator with fraud-style rules, continuous inserts into PostgreSQL (Docker Compose or AWS RDS), and Grafana-ready SQL panels (`queries.txt`) for live monitoring |
 | 28 | **Blog Generation with AWS Bedrock** | Lambda-style blog generator using Amazon Bedrock (Meta Llama 2 chat), boto3 `bedrock-runtime` invoke, and S3 upload of generated posts under `blog-output/` |
+| 29 | **AWS SageMaker Hugging Face Inference** | Deploy Hugging Face models on SageMaker: Falcon-40B-Instruct via LLM DLC/TGI on `ml.g5.12xlarge`, and DistilBERT SQuAD QA on `ml.m5.xlarge`, plus prompt engineering labs |
 
 
 ---
@@ -246,6 +247,10 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   ├── app.py                     # lambda_handler + Bedrock invoke + S3 put_object
 │   ├── requirements.txt           # boto3
 │   └── README.md                  # Module 28 documentation
+├── 29-aws-sagemaker/              # SageMaker Hugging Face LLM + NLP inference labs
+│   ├── falcon40B-instruct-notebook-full.ipynb  # Falcon-40B-Instruct + TGI (g5.12xlarge)
+│   ├── lab2.ipynb                 # DistilBERT QA endpoint (m5.xlarge)
+│   └── README.md                  # Module 29 documentation
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -624,6 +629,27 @@ python -c 'import json; from app import lambda_handler; print(lambda_handler(jso
 
 ---
 
+### Installation for Module 29 (AWS SageMaker Hugging Face Inference)
+
+Module 29 (`29-aws-sagemaker`) deploys Hugging Face models on SageMaker Inference: Falcon-40B-Instruct (LLM DLC / TGI) and DistilBERT question answering.
+
+```bash
+# Prefer SageMaker Studio / Notebook Instance
+cd 29-aws-sagemaker
+
+# Lab 1 — large LLM (requires ml.g5.12xlarge quota; costly)
+# Open: falcon40B-instruct-notebook-full.ipynb
+# Run cells top-to-bottom; always delete endpoint at the end
+
+# Lab 2 — DistilBERT QA on ml.m5.xlarge
+# Open: lab2.ipynb
+```
+
+> [!IMPORTANT]
+> Lab 1 uses a GPU endpoint (`ml.g5.12xlarge`). Delete the model/endpoint when finished to avoid ongoing charges. This module complements `26-AWS-Sagemaker` (tabular training) with **HF inference** labs.
+
+---
+
 
 ## Running Notebooks & Applications
 
@@ -778,13 +804,13 @@ python -m pip install openpyxl
 
 ## Learning Path
 
-This project covers **modules 01–28** within a broader MLOps curriculum:
+This project covers **modules 01–29** within a broader MLOps curriculum:
 
 ```
-Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro) → CI/CD Automation (GitHub Actions) → End-to-End Production MLOps Pipelines (AWS, ECR, S3, MongoDB, SageMaker) → Observability (Grafana + Postgres) → Generative AI on AWS (Bedrock + Lambda + S3)
+Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro) → CI/CD Automation (GitHub Actions) → End-to-End Production MLOps Pipelines (AWS, ECR, S3, MongoDB, SageMaker) → Observability (Grafana + Postgres) → Generative AI on AWS (Bedrock + Lambda + S3) → Hugging Face LLM Inference on SageMaker
 ```
 
-Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, machine learning tracking, containerization, production-ready orchestration pipelines, automated CI/CD workflows, managed training on Amazon SageMaker, live monitoring with Grafana, and generative AI with Amazon Bedrock.
+Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, machine learning tracking, containerization, production-ready orchestration pipelines, automated CI/CD workflows, managed training on Amazon SageMaker, live monitoring with Grafana, generative AI with Amazon Bedrock, and Hugging Face LLM/NLP endpoints on SageMaker.
 
 ---
 
