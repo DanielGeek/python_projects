@@ -49,6 +49,7 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 | 25 | **Text Summarizer (Hugging Face Pegasus)** | End-to-end NLP summarization MLOps pipeline: data ingestion, tokenization/transformation, Pegasus fine-tuning (`Trainer`), ROUGE evaluation, modular `src/` components + Configuration Manager, and FastAPI inference (`/predict`, `/train`) for real-time abstractive summaries |
 | 26 | **AWS SageMaker (Mobile Price Classification)** | Managed training on Amazon SageMaker with **SDK v3** (`ModelTrainer`): S3 data upload, scikit-learn Random Forest training script, spot instances, model artifact retrieval from S3, and notebook-driven endpoint workflow |
 | 27 | **Grafana Observability (Banking Stream)** | Synthetic banking transaction generator with fraud-style rules, continuous inserts into PostgreSQL (Docker Compose or AWS RDS), and Grafana-ready SQL panels (`queries.txt`) for live monitoring |
+| 28 | **Blog Generation with AWS Bedrock** | Lambda-style blog generator using Amazon Bedrock (Meta Llama 2 chat), boto3 `bedrock-runtime` invoke, and S3 upload of generated posts under `blog-output/` |
 
 
 ---
@@ -241,6 +242,10 @@ The curriculum progresses from **Python basics** (syntax, variables, data types)
 │   ├── .env.example               # Postgres host/credentials + batch settings
 │   ├── requirements.txt           # psycopg2-binary, faker, pandas, python-dotenv
 │   └── README.md                  # Module 27 documentation
+├── 28-blog-generation-aws/        # AWS Bedrock blog generation → S3
+│   ├── app.py                     # lambda_handler + Bedrock invoke + S3 put_object
+│   ├── requirements.txt           # boto3
+│   └── README.md                  # Module 28 documentation
 ├── requirements.txt               # Project-wide Python dependencies
 └── README.md                      # This file
 ```
@@ -592,6 +597,33 @@ docker compose up -d
 
 ---
 
+### Installation for Module 28 (Blog Generation with AWS Bedrock)
+
+Module 28 (`28-blog-generation-aws`) generates short blog posts via Amazon Bedrock (Llama 2) and stores them in S3 using a Lambda-compatible handler.
+
+```bash
+# Navigate to the module
+cd 28-blog-generation-aws
+
+# Create and activate environment (Python 3.10)
+conda create -p venv python==3.10 -y
+conda activate ./venv
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Ensure AWS credentials + Bedrock model access (us-east-1) + S3 bucket
+aws configure
+
+# Local smoke test
+python -c 'import json; from app import lambda_handler; print(lambda_handler(json.dumps({"blog_topic": "MLOps on AWS"}), None))'
+```
+
+> [!IMPORTANT]
+> Enable Bedrock access for `meta.llama2-13b-chat-v1` (or update the model ID in `app.py`). The handler expects `event` as a JSON **string** with key `blog_topic`.
+
+---
+
 
 ## Running Notebooks & Applications
 
@@ -746,13 +778,13 @@ python -m pip install openpyxl
 
 ## Learning Path
 
-This project covers **modules 01–27** within a broader MLOps curriculum:
+This project covers **modules 01–28** within a broader MLOps curriculum:
 
 ```
-Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro) → CI/CD Automation (GitHub Actions) → End-to-End Production MLOps Pipelines (AWS, ECR, S3, MongoDB, SageMaker) → Observability (Grafana + Postgres)
+Python Foundations → ML Libraries → MLOps Tooling (DVC, MLflow) → Containerization (Docker, Compose) → Workflow Orchestration (Airflow/Astro) → CI/CD Automation (GitHub Actions) → End-to-End Production MLOps Pipelines (AWS, ECR, S3, MongoDB, SageMaker) → Observability (Grafana + Postgres) → Generative AI on AWS (Bedrock + Lambda + S3)
 ```
 
-Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, machine learning tracking, containerization, production-ready orchestration pipelines, automated CI/CD workflows, managed training on Amazon SageMaker, and live monitoring with Grafana.
+Each module builds on the previous one. By the end, you will have a solid grasp of Python programming, data manipulation, machine learning tracking, containerization, production-ready orchestration pipelines, automated CI/CD workflows, managed training on Amazon SageMaker, live monitoring with Grafana, and generative AI with Amazon Bedrock.
 
 ---
 
