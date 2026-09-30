@@ -62,6 +62,14 @@ const RADII = [0, 16, 30, 50];   // by size 1, 2, 3
 const SPEEDS = [0, 85, 55, 32];   // base speed by size
 const POINTS = [0, 100, 50, 20];  // points by size
 
+// Fixed large-asteroid silhouette (traced from a reference image, 400x400 px)
+const NOTCHED_SHAPE = {
+  center: [195, 199],
+  extent: 137,
+  points: [[188, 63], [265, 86], [251, 171], [331, 195], [308, 282],
+  [238, 279], [205, 335], [108, 287], [62, 206], [83, 119]],
+};
+
 class Asteroid {
   constructor(x, y, size = 3) {
     this.x = x;
@@ -77,13 +85,22 @@ class Asteroid {
     this.rotSpeed = rand(-1.2, 1.2);
     this.rot = rand(0, Math.PI * 2);
 
-    // Irregular polygon
-    const n = randInt(8, 13);
     this.verts = [];
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2;
-      const r = this.radius * rand(0.6, 1.0);
-      this.verts.push([Math.cos(a) * r, Math.sin(a) * r]);
+    if (size === 3 && Math.random() < 0.25) {
+      // One of the large-asteroid variants: the fixed notched shape
+      const { center, extent, points } = NOTCHED_SHAPE;
+      const k = this.radius / extent;
+      for (const [px, py] of points) {
+        this.verts.push([(px - center[0]) * k, (py - center[1]) * k]);
+      }
+    } else {
+      // Irregular polygon
+      const n = randInt(8, 13);
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2;
+        const r = this.radius * rand(0.6, 1.0);
+        this.verts.push([Math.cos(a) * r, Math.sin(a) * r]);
+      }
     }
   }
 
