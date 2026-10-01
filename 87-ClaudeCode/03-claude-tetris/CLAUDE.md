@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Vanilla JavaScript Tetris (HTML5 Canvas + CSS). No dependencies, no build step, no tests, no linter. The README is in Spanish, as are in-game strings (e.g. "PAUSA", "Puntuación:").
+Vanilla JavaScript Tetris (HTML5 Canvas + CSS). No dependencies, no build step, no tests, no linter. Everything (README, UI strings) is in English.
 
 ## Running
 
