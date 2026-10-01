@@ -3,12 +3,9 @@ name: Claude Code Review
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review, reopened]
-    # Optional: Only run on specific file changes
-    # paths:
-    #   - "src/**/*.ts"
-    #   - "src/**/*.tsx"
-    #   - "src/**/*.js"
-    #   - "src/**/*.jsx"
+    # Only review PRs that touch the Tetris project
+    paths:
+      - "87-ClaudeCode/03-claude-tetris/**"
 
 jobs:
   claude-review:
