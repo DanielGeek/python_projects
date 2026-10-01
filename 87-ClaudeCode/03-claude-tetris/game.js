@@ -15,6 +15,18 @@ const COLORS = [
   '#ffb74d', // L - orange
 ];
 
+// Slightly deeper tones so pieces and the ghost stay visible on a white board.
+const LIGHT_COLORS = [
+  null,
+  '#00acc1', // I
+  '#f9a825', // O
+  '#8e24aa', // T
+  '#43a047', // S
+  '#e53935', // Z
+  '#1e88e5', // J
+  '#fb8c00', // L
+];
+
 const PIECES = [
   null,
   [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], // I
@@ -39,6 +51,13 @@ const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
+const themeToggle = document.getElementById('theme-toggle');
+const themeToggleIcon = document.getElementById('theme-toggle-icon');
+const themeToggleText = document.getElementById('theme-toggle-text');
+
+const THEME_KEY = 'tetris-theme';
+let gridColor = '#22222e';
+let palette = COLORS;
 
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 
@@ -158,7 +177,7 @@ function updateHUD() {
 
 function drawBlock(context, x, y, colorIndex, size, alpha) {
   if (!colorIndex) return;
-  const color = COLORS[colorIndex];
+  const color = palette[colorIndex];
   context.globalAlpha = alpha ?? 1;
   context.fillStyle = color;
   context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
@@ -169,7 +188,7 @@ function drawBlock(context, x, y, colorIndex, size, alpha) {
 }
 
 function drawGrid() {
-  ctx.strokeStyle = '#22222e';
+  ctx.strokeStyle = gridColor;
   ctx.lineWidth = 0.5;
   for (let c = 1; c < COLS; c++) {
     ctx.beginPath();
@@ -300,5 +319,35 @@ document.addEventListener('keydown', e => {
 });
 
 restartBtn.addEventListener('click', init);
+
+function loadTheme() {
+  try {
+    return localStorage.getItem(THEME_KEY) === 'light' ? 'light' : 'dark';
+  } catch {
+    return 'dark';
+  }
+}
+
+function applyTheme(theme) {
+  const isLight = theme === 'light';
+  document.documentElement.dataset.theme = theme;
+  palette = isLight ? LIGHT_COLORS : COLORS;
+  themeToggle.setAttribute('aria-pressed', String(isLight));
+  themeToggleIcon.textContent = isLight ? '☾' : '☀';
+  themeToggleText.textContent = isLight ? 'Dark' : 'Light';
+  // The canvas can't read CSS variables, so cache the grid color here.
+  gridColor = getComputedStyle(document.documentElement).getPropertyValue('--grid').trim() || gridColor;
+  // The loop is stopped while paused/game over, so repaint explicitly.
+  if (board) { draw(); drawNext(); }
+}
+
+themeToggle.addEventListener('click', () => {
+  const theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+  try { localStorage.setItem(THEME_KEY, theme); } catch { /* storage unavailable */ }
+  applyTheme(theme);
+  themeToggle.blur(); // keep Space/Enter from re-triggering the toggle
+});
+
+applyTheme(loadTheme());
 
 init();

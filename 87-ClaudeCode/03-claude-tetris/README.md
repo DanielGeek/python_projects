@@ -42,6 +42,7 @@ A playable version of classic Tetris with all the mechanics you would expect:
 - Classic Tetris **scoring system** (100 / 300 / 500 / 800 multiplied by level).
 - **Levels** that increase every 10 lines and speed up the fall.
 - **Pause** and **Game Over** with a restart option.
+- **Light / dark theme toggle** (top-right button). Dark is the default; the choice is remembered in `localStorage`.
 
 ---
 
