@@ -4,18 +4,21 @@ on:
   issues:
     types: [opened, edited, labeled]
 
-# Only the latest run per issue matters (rapid edits cancel older analyses).
-concurrency:
-  group: issue-triage-${{ github.event.issue.number }}
-  cancel-in-progress: true
-
 jobs:
   triage:
+    # Job-level (not workflow-level) so runs skipped by the `if` below never
+    # cancel an analysis that is already in progress.
+    concurrency:
+      group: issue-triage-${{ github.event.issue.number }}
+      cancel-in-progress: true
     # Tetris issues only:
     #  - opened: has the `tetris` label or mentions "tetris" in title/body
     #  - edited: same, but only when the title or body actually changed
-    #  - labeled: only when the `tetris` label is added (opt-in by a maintainer)
+    #  - labeled: only when a human adds the `tetris` label (opt-in by a maintainer)
+    # Events sent by bots are ignored: Claude's own label/comment changes use the
+    # GitHub App token and would otherwise re-trigger this workflow.
     if: |
+      github.event.sender.type != 'Bot' && (
       (github.event.action == 'opened' && (
         contains(github.event.issue.labels.*.name, 'tetris') ||
         contains(github.event.issue.title, 'tetris') ||
@@ -27,6 +30,7 @@ jobs:
         contains(github.event.issue.body, 'tetris')
       )) ||
       (github.event.action == 'labeled' && github.event.label.name == 'tetris')
+      )
     runs-on: ubuntu-latest
     permissions:
       contents: read
