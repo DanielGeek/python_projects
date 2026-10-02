@@ -13,6 +13,11 @@ const COLORS = [
   '#e57373', // Z - red
   '#90caf9', // J - pale blue
   '#ffb74d', // L - orange
+  '#4db6ac', // + - teal
+  '#a1887f', // U - brown
+  '#dce775', // Y - lime
+  '#cfd8dc', // single - silver
+  '#ff8a65', // ring - coral
 ];
 
 // Slightly deeper tones so pieces and the ghost stay visible on a white board.
@@ -25,6 +30,11 @@ const LIGHT_COLORS = [
   '#e53935', // Z
   '#1e88e5', // J
   '#fb8c00', // L
+  '#00897b', // +
+  '#6d4c41', // U
+  '#afb42b', // Y
+  '#546e7a', // single
+  '#f4511e', // ring
 ];
 
 const PIECES = [
@@ -36,12 +46,24 @@ const PIECES = [
   [[5,5,0],[0,5,5],[0,0,0]],                  // Z
   [[6,0,0],[6,6,6],[0,0,0]],                  // J
   [[0,0,7],[7,7,7],[0,0,0]],                  // L
+  [[0,8,0],[8,8,8],[0,8,0]],                  // + (pentomino)
+  [[9,0,9],[9,9,9],[0,0,0]],                  // U (pentomino)
+  [[0,10,0,0],[10,10,10,10],[0,0,0,0],[0,0,0,0]], // Y (pentomino)
+  [[11]],                                      // single (reward after a Tetris)
+  [[12,12,12],[12,0,12],[12,12,12]],          // hollow 3x3 ring (challenge)
 ];
+
+// Non-standard pieces. Types 1-7 are the classic set; the rest appear occasionally.
+const PENTOMINOES = [8, 9, 10];
+const SINGLE = 11;
+const RING = 12;
+const PENTOMINO_CHANCE = 0.12;
+const RING_CHANCE = 0.03;
 
 const LINE_SCORES = [0, 100, 300, 500, 800];
 
 // Power-ups: a one-block special piece appears every POWER_EVERY lines.
-const POWER_BLOCK = 8; // shape cell value for a power-up block (never stored on the board)
+const POWER_BLOCK = 13; // shape cell value for a power-up block (never stored on the board)
 const POWER_EVERY = 5;
 const FREEZE_MS = 5000;
 const POWER_SCORE = 10; // per block destroyed
@@ -69,16 +91,23 @@ let powerColor = '#f06292';
 let palette = COLORS;
 
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
-let nextPowerAt, powerPending, freezeLeft;
+let nextPowerAt, powerPending, freezeLeft, singlePending;
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
 }
 
-function randomPiece() {
-  const type = Math.floor(Math.random() * 7) + 1;
+function pieceOfType(type) {
   const shape = PIECES[type].map(row => [...row]);
   return { type, shape, x: Math.floor(COLS / 2) - Math.floor(shape[0].length / 2), y: 0 };
+}
+
+function randomPiece() {
+  const roll = Math.random();
+  if (roll < RING_CHANCE) return pieceOfType(RING);
+  if (roll < RING_CHANCE + PENTOMINO_CHANCE)
+    return pieceOfType(PENTOMINOES[Math.floor(Math.random() * PENTOMINOES.length)]);
+  return pieceOfType(Math.floor(Math.random() * 7) + 1);
 }
 
 function powerUpPiece() {
@@ -149,6 +178,7 @@ function clearLines() {
     score += (LINE_SCORES[cleared] || 0) * level;
     level = Math.floor(lines / 10) + 1;
     dropInterval = Math.max(100, 1000 - (level - 1) * 90);
+    if (cleared === 4) singlePending = true; // Tetris reward: next piece is a single block
     if (lines >= nextPowerAt) {
       powerPending = true;
       nextPowerAt = (Math.floor(lines / POWER_EVERY) + 1) * POWER_EVERY;
@@ -260,6 +290,9 @@ function spawn() {
   if (powerPending) {
     powerPending = false;
     next = powerUpPiece();
+  } else if (singlePending) {
+    singlePending = false;
+    next = pieceOfType(SINGLE);
   } else {
     next = randomPiece();
   }
@@ -416,6 +449,7 @@ function init() {
   dropAccum = 0;
   nextPowerAt = POWER_EVERY;
   powerPending = false;
+  singlePending = false;
   freezeLeft = 0;
   lastTime = performance.now();
   next = randomPiece();
