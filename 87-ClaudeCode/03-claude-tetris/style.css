@@ -329,3 +329,55 @@ kbd {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+/* ---- Skin selector ---- */
+.skin-select {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  background: var(--kbd-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.skin-select:hover {
+  border-color: var(--accent);
+}
+
+.skin-select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Neon is dark-only: these win over [data-theme="light"] (same specificity, later in the file). */
+:root[data-skin="neon"] {
+  color-scheme: dark;
+  --bg: #000000;
+  --text: #e0f7ff;
+  --accent: #00f5ff;
+  --accent-hover: #7dfbff;
+  --accent-contrast: #000000;
+  --board-bg: #000000;
+  --border: #0b4f5c;
+  --shadow: rgba(0, 245, 255, 0.25);
+  --label: #3fa8b8;
+  --muted: #7fb8c4;
+  --kbd-bg: #05141a;
+  --kbd-border: #0b4f5c;
+  --kbd-text: #9fe8f5;
+  --overlay-bg: rgba(0, 0, 0, 0.8);
+  --danger: #ff1744;
+  --grid: #0a2a33;
+  --power: #ff4081;
+  --combo: #fff700;
+}
+
+:root[data-skin="neon"] #board {
+  box-shadow: 0 0 18px rgba(0, 245, 255, 0.45);
+}

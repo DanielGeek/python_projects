@@ -41,6 +41,45 @@ const LIGHT_COLORS = [
   '#90a4ae', // garbage
 ];
 
+// Visual skins: each has dark/light color tables (same indexing as COLORS) and a block draw style.
+// Retro is the original flat look; Neon is dark-only (see applyTheme()).
+const SKINS = {
+  retro: { name: 'Retro', draw: drawBlockRetro, dark: COLORS, light: LIGHT_COLORS },
+  neon: {
+    name: 'Neon', draw: drawBlockNeon, forceDark: true,
+    dark: [
+      null, '#00f5ff', '#fff700', '#d500f9', '#39ff14', '#ff1744', '#448aff', '#ff9100',
+      '#1de9b6', '#ff6e40', '#c6ff00', '#e0f7fa', '#ff4081', '#ffd740', '#90a4ae',
+    ],
+  },
+  pastel: {
+    name: 'Pastel', draw: drawBlockPastel,
+    dark: [
+      null, '#a8e6ef', '#fff2b3', '#d7b8f0', '#b5e8b9', '#f7b5b5', '#b9d6f7', '#fbd0a0',
+      '#a6e0d6', '#d9c3b9', '#e6efa8', '#e3eaee', '#ffc4ae', '#e6d38a', '#b8c6cc',
+    ],
+    light: [
+      null, '#6fcfdc', '#f5d66e', '#be93e0', '#8fd494', '#ee8f8f', '#8fbcee', '#f5b574',
+      '#78cbbf', '#c2a496', '#d0de7a', '#b7c4cb', '#f7a587', '#d4b95a', '#a3b4bc',
+    ],
+  },
+  pixel: {
+    name: 'Pixel art', draw: drawBlockPixel,
+    dark: [
+      null, '#29b6d6', '#f2c200', '#9c27b0', '#4caf50', '#e53935', '#3f7fd6', '#f57c00',
+      '#00897b', '#8d6e63', '#9ccc20', '#b0bec5', '#ff5722', '#b8860b', '#607d8b',
+    ],
+    light: [
+      null, '#0097a7', '#e0a800', '#7b1fa2', '#388e3c', '#c62828', '#1565c0', '#e65100',
+      '#00695c', '#6d4c41', '#7cb342', '#78909c', '#d84315', '#8d6508', '#78909c',
+    ],
+  },
+};
+for (const id in SKINS) {
+  SKINS[id].light = SKINS[id].light || SKINS[id].dark;
+}
+const SKIN_KEY = 'tetris-skin';
+
 const PIECES = [
   null,
   [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], // I
@@ -133,6 +172,8 @@ let gridColor = '#22222e';
 let powerColor = '#f06292';
 let comboColor = '#ffca28';
 let palette = COLORS;
+let skinId = 'retro';
+let skin = SKINS.retro;
 
 let board, current, queue, held, holdUsed, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 let nextPowerAt, powerPending, freezeLeft, singlePending;
@@ -743,13 +784,9 @@ function drawBlock(context, x, y, colorIndex, size, alpha, power) {
   if (!colorIndex) return;
   const color = power ? powerColor : palette[colorIndex];
   context.globalAlpha = alpha ?? 1;
-  context.fillStyle = color;
-  context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
-  // highlight
-  context.fillStyle = 'rgba(255,255,255,0.12)';
-  context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
+  skin.draw(context, x * size, y * size, size, color);
   if (power) {
-    // fillStyle is still the 12%-alpha highlight here; reset it or the glyph is near-invisible.
+    // The skin draw may leave a translucent fillStyle; reset it or the glyph is near-invisible.
     context.fillStyle = '#fff';
     context.font = `${Math.floor(size * 0.6)}px sans-serif`;
     context.textAlign = 'center';
@@ -757,6 +794,90 @@ function drawBlock(context, x, y, colorIndex, size, alpha, power) {
     context.fillText(POWER_GLYPHS[power], x * size + size / 2, y * size + size / 2 + 1);
   }
   context.globalAlpha = 1;
+}
+
+function drawBlockRetro(context, px, py, size, color) {
+  context.fillStyle = color;
+  context.fillRect(px + 1, py + 1, size - 2, size - 2);
+  // highlight
+  context.fillStyle = 'rgba(255,255,255,0.12)';
+  context.fillRect(px + 1, py + 1, size - 2, 4);
+}
+
+function drawBlockNeon(context, px, py, size, color) {
+  context.shadowColor = color;
+  context.shadowBlur = Math.max(4, size * 0.4);
+  context.fillStyle = color;
+  context.fillRect(px + 2, py + 2, size - 4, size - 4);
+  context.shadowBlur = 0; // never leave the glow on for other drawing
+  context.fillStyle = 'rgba(255,255,255,0.35)';
+  context.fillRect(px + 4, py + 4, size - 8, 2);
+}
+
+// Rounded-rect path; falls back to arcTo where roundRect is missing.
+function roundedPath(context, x, y, w, h, r) {
+  context.beginPath();
+  if (context.roundRect) {
+    context.roundRect(x, y, w, h, r);
+    return;
+  }
+  context.moveTo(x + r, y);
+  context.arcTo(x + w, y, x + w, y + h, r);
+  context.arcTo(x + w, y + h, x, y + h, r);
+  context.arcTo(x, y + h, x, y, r);
+  context.arcTo(x, y, x + w, y, r);
+  context.closePath();
+}
+
+function drawBlockPastel(context, px, py, size, color) {
+  const r = Math.max(2, size * 0.28);
+  roundedPath(context, px + 1.5, py + 1.5, size - 3, size - 3, r);
+  context.fillStyle = color;
+  context.fill();
+  context.strokeStyle = 'rgba(255,255,255,0.55)';
+  context.lineWidth = 1;
+  context.stroke();
+  context.fillStyle = 'rgba(255,255,255,0.3)';
+  roundedPath(context, px + size * 0.22, py + size * 0.18, size * 0.56, size * 0.14, size * 0.07);
+  context.fill();
+}
+
+let pixelTexture = null; // 4x4 checker tile, built once and shared by every context
+function getPixelTexture(context) {
+  if (pixelTexture === null) {
+    pixelTexture = false;
+    try {
+      const tile = document.createElement('canvas');
+      tile.width = tile.height = 4;
+      const t = tile.getContext('2d');
+      t.fillStyle = 'rgba(255,255,255,0.16)';
+      t.fillRect(0, 0, 2, 2);
+      t.fillRect(2, 2, 2, 2);
+      t.fillStyle = 'rgba(0,0,0,0.14)';
+      t.fillRect(2, 0, 2, 2);
+      t.fillRect(0, 2, 2, 2);
+      pixelTexture = context.createPattern(tile, 'repeat') || false;
+    } catch { /* no pattern support: bevel only */ }
+  }
+  return pixelTexture;
+}
+
+function drawBlockPixel(context, px, py, size, color) {
+  const x = px + 1, y = py + 1, s = size - 2;
+  const b = Math.max(2, Math.round(size / 10)); // bevel width
+  context.fillStyle = color;
+  context.fillRect(x, y, s, s);
+  const tex = getPixelTexture(context);
+  if (tex) {
+    context.fillStyle = tex;
+    context.fillRect(x + b, y + b, s - 2 * b, s - 2 * b);
+  }
+  context.fillStyle = 'rgba(255,255,255,0.4)';
+  context.fillRect(x, y, s, b);
+  context.fillRect(x, y, b, s);
+  context.fillStyle = 'rgba(0,0,0,0.4)';
+  context.fillRect(x, y + s - b, s, b);
+  context.fillRect(x + s - b, y, b, s);
 }
 
 function drawGrid() {
@@ -1000,7 +1121,8 @@ function loadTheme() {
 function applyTheme(theme) {
   const isLight = theme === 'light';
   document.documentElement.dataset.theme = theme;
-  palette = isLight ? LIGHT_COLORS : COLORS;
+  // Neon is dark-only; the other skins follow the theme toggle.
+  palette = isLight && !skin.forceDark ? skin.light : skin.dark;
   themeToggle.setAttribute('aria-pressed', String(isLight));
   themeToggleIcon.textContent = isLight ? '☾' : '☀';
   themeToggleText.textContent = isLight ? 'Dark' : 'Light';
@@ -1020,8 +1142,38 @@ themeToggle.addEventListener('click', () => {
   themeToggle.blur(); // keep Space/Enter from re-triggering the toggle
 });
 
+// ---- Skins ----
+const skinSelect = document.getElementById('skin-select');
+
+function loadSkin() {
+  try {
+    const id = localStorage.getItem(SKIN_KEY);
+    return SKINS[id] ? id : 'retro';
+  } catch {
+    return 'retro';
+  }
+}
+
+// Switches skin without reloading: sets data-skin, then re-runs applyTheme() so the palette and
+// the CSS-cached colors are refreshed (and the canvas repainted when a game exists).
+function applySkin(id) {
+  if (!SKINS[id]) id = 'retro';
+  skinId = id;
+  skin = SKINS[id];
+  document.documentElement.dataset.skin = id;
+  skinSelect.value = id;
+  applyTheme(document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
+}
+
+skinSelect.addEventListener('change', () => {
+  try { localStorage.setItem(SKIN_KEY, skinSelect.value); } catch { /* storage unavailable */ }
+  applySkin(skinSelect.value);
+  skinSelect.blur(); // keep Space/Enter from re-opening the select (Space is hard drop)
+});
+
 muted = loadMuted();
 muteText.textContent = muted ? 'unmute' : 'mute';
+applySkin(loadSkin());
 applyTheme(loadTheme());
 
 showStartMenu();
