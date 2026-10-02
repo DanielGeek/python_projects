@@ -109,7 +109,7 @@ Provides the _dark / retro arcade_ look: dark background, monospaced font for th
 
 Contains all the game logic. In broad strokes:
 
-- **Board model**: a `ROWS × COLS` matrix where each cell holds `0` (empty) or a color index (1–12) identifying the piece.
+- **Board model**: a `ROWS × COLS` matrix where each cell holds `0` (empty) or a color index (1–13) identifying the piece.
 - **Pieces**: defined as square matrices. Rotation is computed as transpose + row reversal (`rotateCW`).
 - **Collision detection** (`collide`): checks that no piece cell leaves the board or overlaps already locked blocks.
 - **Wall kicks** (`tryRotate`): if the rotation collides, it tries shifting the piece ±1 and ±2 columns before discarding the turn.

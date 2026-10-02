@@ -18,6 +18,7 @@ const COLORS = [
   '#dce775', // Y - lime
   '#cfd8dc', // single - silver
   '#ff8a65', // ring - coral
+  '#c9a227', // nut - brass
 ];
 
 // Slightly deeper tones so pieces and the ghost stay visible on a white board.
@@ -35,6 +36,7 @@ const LIGHT_COLORS = [
   '#afb42b', // Y
   '#546e7a', // single
   '#f4511e', // ring
+  '#9e7c0c', // nut
 ];
 
 const PIECES = [
@@ -51,19 +53,31 @@ const PIECES = [
   [[0,10,0,0],[10,10,10,10],[0,0,0,0],[0,0,0,0]], // Y (pentomino)
   [[11]],                                      // single (reward after a Tetris)
   [[12,12,12],[12,0,12],[12,12,12]],          // hollow 3x3 ring (challenge)
+  [[0,13,0],[13,0,13],[0,13,0]],              // nut: hex-like diamond, empty center (challenge)
 ];
 
 // Non-standard pieces. Types 1-7 are the classic set; the rest appear occasionally.
 const PENTOMINOES = [8, 9, 10];
 const SINGLE = 11;
 const RING = 12;
+const NUT = 13;
 const PENTOMINO_CHANCE = 0.12;
 const RING_CHANCE = 0.03;
+const NUT_CHANCE = 0.03;
+
+// Combo / bonus scoring. Line points are multiplied by the current level.
+const TSPIN_SCORES = [400, 800, 1200, 1600]; // by lines cleared (0-3)
+const B2B_MULTIPLIER = 1.5; // consecutive "difficult" clears (Tetris / T-spin with lines)
+const PERFECT_CLEAR_BONUS = 2000;
+const CLEAR_NAMES = ['', 'SINGLE', 'DOUBLE', 'TRIPLE', 'TETRIS'];
+const BANNER_MS = 1400;
+const MAX_BANNERS = 4;
+const MUTE_KEY = 'tetris-muted';
 
 const LINE_SCORES = [0, 100, 300, 500, 800];
 
 // Power-ups: a one-block special piece appears every POWER_EVERY lines.
-const POWER_BLOCK = 13; // shape cell value for a power-up block (never stored on the board)
+const POWER_BLOCK = 14; // shape cell value for a power-up block (never stored on the board)
 const POWER_EVERY = 5;
 const FREEZE_MS = 5000;
 const POWER_SCORE = 10; // per block destroyed
@@ -81,6 +95,9 @@ const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
 const resumeBtn = document.getElementById('resume-btn');
+const comboEl = document.getElementById('combo');
+const b2bEl = document.getElementById('b2b');
+const muteText = document.getElementById('mute-text');
 const themeToggle = document.getElementById('theme-toggle');
 const themeToggleIcon = document.getElementById('theme-toggle-icon');
 const themeToggleText = document.getElementById('theme-toggle-text');
@@ -88,10 +105,14 @@ const themeToggleText = document.getElementById('theme-toggle-text');
 const THEME_KEY = 'tetris-theme';
 let gridColor = '#22222e';
 let powerColor = '#f06292';
+let comboColor = '#ffca28';
 let palette = COLORS;
 
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 let nextPowerAt, powerPending, freezeLeft, singlePending;
+let combo, b2b, banners, flash;
+let audioCtx = null;
+let muted = false;
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
@@ -105,7 +126,8 @@ function pieceOfType(type) {
 function randomPiece() {
   const roll = Math.random();
   if (roll < RING_CHANCE) return pieceOfType(RING);
-  if (roll < RING_CHANCE + PENTOMINO_CHANCE)
+  if (roll < RING_CHANCE + NUT_CHANCE) return pieceOfType(NUT);
+  if (roll < RING_CHANCE + NUT_CHANCE + PENTOMINO_CHANCE)
     return pieceOfType(PENTOMINOES[Math.floor(Math.random() * PENTOMINOES.length)]);
   return pieceOfType(Math.floor(Math.random() * 7) + 1);
 }
@@ -151,6 +173,7 @@ function tryRotate() {
     if (!collide(rotated, current.x + kick, current.y)) {
       current.shape = rotated;
       current.x += kick;
+      current.rotated = true; // T-spin detection needs the last move to be a rotation
       return;
     }
   }
@@ -163,7 +186,19 @@ function merge() {
         board[current.y + r][current.x + c] = current.shape[r][c];
 }
 
-function clearLines() {
+function isTSpin(piece) {
+  if (piece.type !== 3 || !piece.rotated) return false;
+  // 3-corner rule: at least 3 of the 4 corners around the T's center are blocked.
+  let filled = 0;
+  for (const [dx, dy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+    const x = piece.x + 1 + dx;
+    const y = piece.y + 1 + dy;
+    if (x < 0 || x >= COLS || y >= ROWS || (y >= 0 && board[y][x])) filled++;
+  }
+  return filled >= 3;
+}
+
+function clearLines(tspin) {
   let cleared = 0;
   for (let r = ROWS - 1; r >= 0; r--) {
     if (board[r].every(v => v !== 0)) {
@@ -173,9 +208,9 @@ function clearLines() {
       r++;
     }
   }
+  scoreClear(cleared, tspin); // uses the level before this clear raises it
   if (cleared) {
     lines += cleared;
-    score += (LINE_SCORES[cleared] || 0) * level;
     level = Math.floor(lines / 10) + 1;
     dropInterval = Math.max(100, 1000 - (level - 1) * 90);
     if (cleared === 4) singlePending = true; // Tetris reward: next piece is a single block
@@ -183,8 +218,128 @@ function clearLines() {
       powerPending = true;
       nextPowerAt = (Math.floor(lines / POWER_EVERY) + 1) * POWER_EVERY;
     }
-    updateHUD();
   }
+  updateHUD();
+}
+
+function scoreClear(cleared, tspin) {
+  if (cleared) {
+    combo++;
+  } else {
+    combo = 0; // a lock without a line clear breaks the chain
+    if (!tspin) return;
+  }
+  const hard = cleared === 4 || (tspin && cleared > 0);
+  let points = (tspin ? TSPIN_SCORES[cleared] : LINE_SCORES[cleared]) * level;
+  let b2bHit = false;
+  let perfect = false;
+  if (tspin) addBanner(`T-SPIN ${CLEAR_NAMES[cleared]}`.trim(), 'combo');
+  else if (cleared === 4) addBanner('TETRIS', 'combo');
+  if (cleared) {
+    if (hard && b2b) {
+      b2bHit = true;
+      points = Math.floor(points * B2B_MULTIPLIER);
+      addBanner('BACK-TO-BACK', 'combo');
+    }
+    b2b = hard; // a plain 1-3 line clear ends the back-to-back chain
+    if (combo >= 2) {
+      points *= combo;
+      addBanner(`COMBO x${combo}`, 'combo');
+    }
+    perfect = board.every(row => row.every(v => v === 0));
+    if (perfect) {
+      points += PERFECT_CLEAR_BONUS * level;
+      addBanner('PERFECT CLEAR!', 'perfect');
+    }
+  }
+  score += points;
+  if (points) addBanner(`+${points.toLocaleString()}`, 'plain');
+  if (perfect) startFlash(0.5, 900);
+  else if (hard || tspin) startFlash(0.3, 450);
+  else startFlash(0.15, 250);
+  playClearSound(cleared, tspin, b2bHit, perfect);
+}
+
+function addBanner(text, kind) {
+  banners.push({ text, kind, age: 0 });
+  if (banners.length > MAX_BANNERS) banners.shift();
+}
+
+function startFlash(alpha, total) {
+  flash = { alpha, total, left: total };
+}
+
+function updateEffects(dt) {
+  for (const b of banners) b.age += dt;
+  banners = banners.filter(b => b.age < BANNER_MS);
+  if (flash.left > 0) flash.left = Math.max(0, flash.left - dt);
+}
+
+function drawEffects() {
+  if (flash.left > 0) {
+    ctx.globalAlpha = flash.alpha * (flash.left / flash.total);
+    ctx.fillStyle = comboColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1;
+  }
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  banners.forEach((b, i) => {
+    const t = b.age / BANNER_MS;
+    ctx.globalAlpha = t < 0.7 ? 1 : (1 - t) / 0.3;
+    ctx.font = `bold ${b.kind === 'plain' ? 16 : 22}px sans-serif`;
+    ctx.fillStyle = b.kind === 'perfect' ? `hsl(${(performance.now() / 4) % 360} 90% 60%)` : comboColor;
+    ctx.shadowColor = ctx.fillStyle;
+    ctx.shadowBlur = 8;
+    ctx.fillText(b.text, canvas.width / 2, 150 + i * 32 - t * 24);
+    ctx.shadowBlur = 0;
+  });
+  ctx.globalAlpha = 1;
+}
+
+function loadMuted() {
+  try {
+    return localStorage.getItem(MUTE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function ensureAudio() {
+  try {
+    audioCtx ??= new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  } catch {
+    audioCtx = null; // audio unavailable; the game stays silent
+  }
+}
+
+function toggleMute() {
+  muted = !muted;
+  muteText.textContent = muted ? 'unmute' : 'mute';
+  try { localStorage.setItem(MUTE_KEY, muted ? '1' : '0'); } catch { /* storage unavailable */ }
+}
+
+function tone(freq, delay, dur, type = 'square', vol = 0.06) {
+  if (muted || !audioCtx) return;
+  const t0 = audioCtx.currentTime + delay;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, t0);
+  gain.gain.setValueAtTime(vol, t0);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(t0);
+  osc.stop(t0 + dur);
+}
+
+function playClearSound(cleared, tspin, b2bHit, perfect) {
+  // Pitch climbs one semitone per combo step so chains sound like they escalate.
+  const base = 261.63 * 2 ** (Math.min(Math.max(combo - 1, 0), 12) / 12);
+  const steps = perfect ? [1, 1.25, 1.5, 2, 2.5, 3] : [1, 1.25, 1.5, 2].slice(0, Math.max(cleared, 1));
+  steps.forEach((m, i) => tone(base * m, i * 0.07, 0.18, tspin ? 'sawtooth' : 'square'));
+  if (b2bHit) tone(base * 4, steps.length * 0.07, 0.25, 'triangle', 0.08);
 }
 
 function destroyCell(r, c) {
@@ -264,6 +419,7 @@ function ghostY() {
 function hardDrop() {
   const gy = ghostY();
   score += (gy - current.y) * 2;
+  if (gy !== current.y) current.rotated = false;
   current.y = gy;
   lockPiece();
 }
@@ -271,6 +427,7 @@ function hardDrop() {
 function softDrop() {
   if (!collide(current.shape, current.x, current.y + 1)) {
     current.y++;
+    current.rotated = false;
     score += 1;
     updateHUD();
   } else {
@@ -279,9 +436,10 @@ function softDrop() {
 }
 
 function lockPiece() {
+  const tspin = !current.power && isTSpin(current);
   if (current.power) applyPower(current);
   else merge();
-  clearLines();
+  clearLines(tspin);
   spawn();
 }
 
@@ -306,6 +464,8 @@ function updateHUD() {
   scoreEl.textContent = score.toLocaleString();
   linesEl.textContent = lines;
   levelEl.textContent = level;
+  comboEl.textContent = combo >= 2 ? `x${combo}` : '–';
+  b2bEl.hidden = !b2b;
 }
 
 function drawBlock(context, x, y, colorIndex, size, alpha, power) {
@@ -377,6 +537,8 @@ function draw() {
     ctx.fillStyle = powerColor;
     ctx.fillText(`❄️ FROZEN ${Math.ceil(freezeLeft / 1000)}s`, canvas.width / 2, 8);
   }
+
+  drawEffects();
 }
 
 function drawNext() {
@@ -424,10 +586,12 @@ function loop(ts) {
   } else {
     dropAccum += dt;
   }
+  updateEffects(dt);
   if (dropAccum >= dropInterval) {
     dropAccum = 0;
     if (!collide(current.shape, current.x, current.y + 1)) {
       current.y++;
+      current.rotated = false;
     } else {
       lockPiece();
     }
@@ -451,6 +615,10 @@ function init() {
   powerPending = false;
   singlePending = false;
   freezeLeft = 0;
+  combo = 0;
+  b2b = false;
+  banners = [];
+  flash = { alpha: 0, total: 1, left: 0 };
   lastTime = performance.now();
   next = randomPiece();
   spawn();
@@ -461,14 +629,16 @@ function init() {
 }
 
 document.addEventListener('keydown', e => {
+  ensureAudio(); // browsers only allow audio after a user gesture
+  if (e.code === 'KeyM') { toggleMute(); return; }
   if (e.code === 'KeyP') { togglePause(); return; }
   if (paused || gameOver) return;
   switch (e.code) {
     case 'ArrowLeft':
-      if (!collide(current.shape, current.x - 1, current.y)) current.x--;
+      if (!collide(current.shape, current.x - 1, current.y)) { current.x--; current.rotated = false; }
       break;
     case 'ArrowRight':
-      if (!collide(current.shape, current.x + 1, current.y)) current.x++;
+      if (!collide(current.shape, current.x + 1, current.y)) { current.x++; current.rotated = false; }
       break;
     case 'ArrowDown':
       softDrop();
@@ -510,6 +680,7 @@ function applyTheme(theme) {
   const styles = getComputedStyle(document.documentElement);
   gridColor = styles.getPropertyValue('--grid').trim() || gridColor;
   powerColor = styles.getPropertyValue('--power').trim() || powerColor;
+  comboColor = styles.getPropertyValue('--combo').trim() || comboColor;
   // The loop is stopped while paused/game over, so repaint explicitly.
   if (board) { draw(); drawNext(); }
 }
@@ -521,6 +692,8 @@ themeToggle.addEventListener('click', () => {
   themeToggle.blur(); // keep Space/Enter from re-triggering the toggle
 });
 
+muted = loadMuted();
+muteText.textContent = muted ? 'unmute' : 'mute';
 applyTheme(loadTheme());
 
 init();
