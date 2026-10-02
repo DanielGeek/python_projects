@@ -141,6 +141,11 @@ let energy, previewLeft, slowLeft, lastSnapshot;
 let modeId = 'classic';
 let modeTime, garbageAccum;
 let menu = null; // open overlay menu: { items, cancelable }
+const START_LEVEL_KEY = 'tetris-start-level';
+const MAX_START_LEVEL = 10;
+let pauseMenuOpen = false; // the pause menu (or its controls view) is showing; closing it unpauses
+let startLevel = loadStartLevel(); // level the next Classic game begins at
+let gameStartLevel = 1; // level the running game began at (fixed in init())
 let audioCtx = null;
 let muted = false;
 
@@ -333,7 +338,7 @@ function clearLines(tspin) {
     lines += cleared;
     energy = Math.min(ENERGY_MAX, energy + cleared * ENERGY_PER_LINE);
     const prevLevel = level;
-    level = Math.floor(lines / (mode.linesPerLevel ?? 10)) + 1;
+    level = gameStartLevel + Math.floor(lines / (mode.linesPerLevel ?? 10));
     if (rotationReversed() && prevLevel < mode.reverseFrom) addBanner('ROTATION REVERSED', 'combo');
     dropInterval = Math.max(100, 1000 - (level - 1) * 90);
     if (cleared === 4) singlePending = true; // Tetris reward: next piece is a single block
@@ -599,13 +604,67 @@ function showOverlay(title, text, { resume = false, restart = false, menuButton 
   overlay.classList.remove('hidden');
 }
 
+function loadStartLevel() {
+  try {
+    const n = parseInt(localStorage.getItem(START_LEVEL_KEY), 10);
+    return n >= 1 && n <= MAX_START_LEVEL ? n : 1;
+  } catch {
+    return 1;
+  }
+}
+
+function effectiveStartLevel() {
+  return modeId === 'classic' ? startLevel : 1; // challenge modes always start at 1
+}
+
+function stepStartLevel(dir) {
+  startLevel = (startLevel - 1 + dir + MAX_START_LEVEL) % MAX_START_LEVEL + 1;
+  try { localStorage.setItem(START_LEVEL_KEY, String(startLevel)); } catch {}
+  showPauseMenu();
+}
+
+const CONTROLS = [
+  ['Left / Right', 'Move'],
+  ['Up / X', 'Rotate'],
+  ['Down', 'Soft drop'],
+  ['Space', 'Hard drop'],
+  ['C / Shift', 'Hold'],
+  ['E', 'Skill (full energy)'],
+  ['P / Esc', 'Pause'],
+  ['M', 'Mute'],
+];
+
+function showPauseMenu() {
+  paused = true;
+  openMenu('PAUSED', 'Game on hold', [
+    { label: 'Resume', action: () => {} },
+    { label: 'Restart', action: () => init() },
+    { label: 'View controls', keepOpen: true, action: showControls },
+    {
+      label: `Start level: ${startLevel}${modeId === 'classic' ? '' : ' (Classic only)'} ◂ ▸`,
+      keepOpen: true,
+      action: () => stepStartLevel(1),
+      step: stepStartLevel,
+    },
+    { label: 'Main menu', action: showStartMenu },
+  ], true, 'good');
+  pauseMenuOpen = true;
+}
+
+function showControls() {
+  openMenu('CONTROLS', 'Keyboard', [
+    { label: 'Back', keepOpen: true, action: showPauseMenu },
+    ...CONTROLS.map(([k, v]) => ({ label: `${k}: ${v}`, info: true, disabled: true })),
+  ], false, 'good');
+}
+
 function openMenu(title, subtitle, items, cancelable, tone = 'good') {
   menu = { items, cancelable };
   showOverlay(title, subtitle, { tone });
   menuList.replaceChildren(...items.map((item, i) => {
     const button = document.createElement('button');
-    button.className = 'menu-item';
-    button.textContent = `${i + 1}. ${item.label}`;
+    button.className = item.info ? 'menu-item menu-info' : 'menu-item';
+    button.textContent = item.info ? item.label : `${i + 1}. ${item.label}`;
     button.disabled = !!item.disabled;
     button.addEventListener('click', () => chooseMenu(i));
     return button;
@@ -621,6 +680,7 @@ function resumeLoop() {
 }
 
 function closeMenu() {
+  if (pauseMenuOpen) { pauseMenuOpen = false; paused = false; }
   menu = null;
   menuList.hidden = true;
   overlay.classList.add('hidden');
@@ -635,6 +695,7 @@ function afterMenu() {
 function chooseMenu(i) {
   const item = menu?.items[i];
   if (!item || item.disabled) return;
+  if (item.keepOpen) { item.action(); return; } // re-renders its own menu
   closeMenu();
   item.action();
   afterMenu();
@@ -858,16 +919,10 @@ function winGame() {
 }
 
 function togglePause() {
-  if (gameOver || !current || menu) return;
-  paused = !paused;
-  if (!paused) {
-    overlay.classList.add('hidden');
-    lastTime = performance.now();
-    loop(lastTime);
-  } else {
-    cancelAnimationFrame(animId);
-    showOverlay('PAUSED', 'Press P to resume', { resume: true, restart: true, menuButton: true });
-  }
+  if (gameOver || !current) return;
+  if (pauseMenuOpen) { cancelMenu(); return; }
+  if (menu) return;
+  showPauseMenu();
 }
 
 function loop(ts) {
@@ -906,10 +961,12 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  gameStartLevel = effectiveStartLevel();
+  level = gameStartLevel;
   paused = false;
+  pauseMenuOpen = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = Math.max(100, 1000 - (level - 1) * 90);
   dropAccum = 0;
   nextPowerAt = POWER_EVERY;
   powerPending = false;
@@ -948,9 +1005,14 @@ document.addEventListener('keydown', e => {
     const digit = /^(?:Digit|Numpad)([1-9])$/.exec(e.code);
     if (digit) chooseMenu(Number(digit[1]) - 1);
     else if (e.code === 'Escape') cancelMenu();
+    else if (e.code === 'KeyP' && pauseMenuOpen && menu.cancelable) cancelMenu();
+    else if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
+      const step = menu.items.find(it => it.step)?.step;
+      if (step) step(e.code === 'ArrowLeft' ? -1 : 1);
+    }
     return;
   }
-  if (e.code === 'KeyP') { togglePause(); return; }
+  if (e.code === 'KeyP' || e.code === 'Escape') { togglePause(); return; }
   if (paused || gameOver || !current) return;
   switch (e.code) {
     case 'KeyC':

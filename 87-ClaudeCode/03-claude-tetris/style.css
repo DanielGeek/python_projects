@@ -329,3 +329,8 @@ kbd {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+.menu-item.menu-info {
+  text-align: left;
+  opacity: 0.85;
+}
