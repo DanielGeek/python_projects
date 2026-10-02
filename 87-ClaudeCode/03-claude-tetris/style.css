@@ -188,7 +188,8 @@ kbd {
   color: var(--accent);
 }
 
-#restart-btn {
+#restart-btn,
+#resume-btn {
   margin-top: 8px;
   background: var(--accent);
   color: var(--accent-contrast);
@@ -202,7 +203,8 @@ kbd {
   transition: background 0.15s;
 }
 
-#restart-btn:hover {
+#restart-btn:hover,
+#resume-btn:hover {
   background: var(--accent-hover);
 }
 

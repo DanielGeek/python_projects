@@ -51,6 +51,7 @@ const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
+const resumeBtn = document.getElementById('resume-btn');
 const themeToggle = document.getElementById('theme-toggle');
 const themeToggleIcon = document.getElementById('theme-toggle-icon');
 const themeToggleText = document.getElementById('theme-toggle-text');
@@ -242,6 +243,7 @@ function endGame() {
   cancelAnimationFrame(animId);
   overlayTitle.textContent = 'GAME OVER';
   overlayScore.textContent = `Score: ${score.toLocaleString()}`;
+  resumeBtn.hidden = true;
   overlay.classList.remove('hidden');
 }
 
@@ -249,12 +251,14 @@ function togglePause() {
   if (gameOver) return;
   paused = !paused;
   if (!paused) {
+    overlay.classList.add('hidden');
     lastTime = performance.now();
     loop(lastTime);
   } else {
     cancelAnimationFrame(animId);
     overlayTitle.textContent = 'PAUSED';
-    overlayScore.textContent = '';
+    overlayScore.textContent = 'Press P to resume';
+    resumeBtn.hidden = false;
     overlay.classList.remove('hidden');
   }
 }
@@ -272,6 +276,8 @@ function loop(ts) {
     }
   }
   draw();
+  // lockPiece() may have ended the game from inside this frame; don't re-arm the loop.
+  if (gameOver) return;
   animId = requestAnimationFrame(loop);
 }
 
@@ -319,6 +325,10 @@ document.addEventListener('keydown', e => {
 });
 
 restartBtn.addEventListener('click', init);
+resumeBtn.addEventListener('click', () => {
+  resumeBtn.blur(); // keep Space/Enter from re-triggering the button
+  togglePause();
+});
 
 function loadTheme() {
   try {
