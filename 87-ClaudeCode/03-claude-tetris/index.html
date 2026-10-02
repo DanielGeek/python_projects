@@ -17,9 +17,23 @@
 
     <div class="play-area">
     <div class="game-container">
-      <canvas id="board" width="300" height="600"></canvas>
+      <aside class="panel" aria-label="Game status">
+        <div class="panel-section" id="hold-section">
+          <span class="label">HOLD</span>
+          <canvas id="hold-canvas" width="120" height="120"></canvas>
+        </div>
 
-      <aside class="panel">
+        <div class="panel-section">
+          <span class="label">ENERGY</span>
+          <div class="energy" id="energy"><div id="energy-fill"></div></div>
+          <span class="energy-text" id="energy-text">0%</span>
+        </div>
+
+        <div class="panel-section" id="goal-section" hidden>
+          <span class="label">GOAL</span>
+          <span class="goal" id="goal"></span>
+        </div>
+
         <div class="panel-section">
           <span class="label">SCORE</span>
           <span class="value" id="score">0</span>
@@ -38,10 +52,19 @@
           <span class="value value-small" id="combo">–</span>
           <span class="label b2b" id="b2b" hidden>BACK-TO-BACK</span>
         </div>
+      </aside>
 
+      <canvas id="board" width="300" height="600"></canvas>
+
+      <aside class="panel" aria-label="Upcoming pieces and controls">
         <div class="panel-section">
           <span class="label">NEXT</span>
           <canvas id="next-canvas" width="120" height="120"></canvas>
+        </div>
+
+        <div class="panel-section" id="queue-section" hidden>
+          <span class="label">THEN</span>
+          <canvas id="queue-canvas" width="112" height="112"></canvas>
         </div>
 
         <div class="panel-section controls">
@@ -51,6 +74,8 @@
             <li><kbd>↑</kbd> rotate</li>
             <li><kbd>↓</kbd> soft drop</li>
             <li><kbd>Space</kbd> hard drop</li>
+            <li><kbd>C</kbd><kbd>Shift</kbd> hold</li>
+            <li><kbd>E</kbd> skill</li>
             <li><kbd>P</kbd> pause</li>
             <li><kbd>M</kbd> <span id="mute-text">mute</span></li>
           </ul>
@@ -62,8 +87,10 @@
       <div class="overlay-box">
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
+        <div id="menu-list" class="menu-list" hidden></div>
         <button id="resume-btn" hidden>Resume</button>
         <button id="restart-btn">Restart</button>
+        <button id="menu-btn" class="secondary" hidden>Menu</button>
       </div>
     </div>
     </div>

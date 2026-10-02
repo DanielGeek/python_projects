@@ -38,10 +38,12 @@ A playable version of classic Tetris with all the mechanics you would expect:
 - **Rotation** with basic _wall kicks_ (small offsets so a piece can rotate next to a wall).
 - **Soft drop** (faster fall) and **hard drop** (instant fall).
 - **Ghost piece**: shows where the current piece will land.
-- **Preview** of the next piece.
+- **Preview** of the next piece, plus a **Hold** slot (`C` / `Shift`, once per piece).
 - Classic Tetris **scoring system** (100 / 300 / 500 / 800 multiplied by level).
 - **Levels** that increase every 10 lines and speed up the fall.
 - **Pause** and **Game Over** with a restart option.
+- **Energy and skills**: clearing lines fills the energy bar; at 100% press `E` to pick a skill (see next 5, swap piece, slow time, undo last placement, extra hold).
+- **Modes** chosen from a start menu: Classic, Sprint (40 lines in 2:00), Rising garbage, Dig, Invisible pieces and Reverse rotation.
 - **Light / dark theme toggle** (top-right button). Dark is the default; the choice is remembered in `localStorage`.
 
 ---
@@ -85,6 +87,9 @@ Then open `http://localhost:8000` in your browser.
 | `↑` or `X` | Rotate the piece clockwise |
 | `↓`       | Soft drop (fall faster)     |
 | `Space`   | Hard drop (instant fall)    |
+| `C` / `Shift` | Hold / swap the held piece (once per piece) |
+| `E`       | Open the skill menu (energy full) |
+| `1`–`9`   | Choose a menu option        |
 | `P`       | Pause / resume              |
 
 ---
