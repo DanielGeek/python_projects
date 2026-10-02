@@ -17,6 +17,7 @@
   --overlay-bg: rgba(10, 10, 20, 0.75);
   --danger: #e57373;
   --grid: #22222e;
+  --power: #f06292;
 }
 
 :root[data-theme="light"] {
@@ -37,6 +38,7 @@
   --overlay-bg: rgba(241, 243, 249, 0.8);
   --danger: #c62828;
   --grid: #e3e6f0;
+  --power: #d81b60;
 }
 
 *, *::before, *::after {

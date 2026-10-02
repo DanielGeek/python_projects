@@ -40,6 +40,13 @@ const PIECES = [
 
 const LINE_SCORES = [0, 100, 300, 500, 800];
 
+// Power-ups: a one-block special piece appears every POWER_EVERY lines.
+const POWER_BLOCK = 8; // shape cell value for a power-up block (never stored on the board)
+const POWER_EVERY = 5;
+const FREEZE_MS = 5000;
+const POWER_SCORE = 10; // per block destroyed
+const POWER_GLYPHS = { bomb: '💣', bolt: '⚡', tint: '🎨', gravity: '⏬', freeze: '❄️' };
+
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
 const nextCanvas = document.getElementById('next-canvas');
@@ -58,9 +65,11 @@ const themeToggleText = document.getElementById('theme-toggle-text');
 
 const THEME_KEY = 'tetris-theme';
 let gridColor = '#22222e';
+let powerColor = '#f06292';
 let palette = COLORS;
 
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
+let nextPowerAt, powerPending, freezeLeft;
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
@@ -70,6 +79,18 @@ function randomPiece() {
   const type = Math.floor(Math.random() * 7) + 1;
   const shape = PIECES[type].map(row => [...row]);
   return { type, shape, x: Math.floor(COLS / 2) - Math.floor(shape[0].length / 2), y: 0 };
+}
+
+function powerUpPiece() {
+  const names = Object.keys(POWER_GLYPHS);
+  return {
+    type: POWER_BLOCK,
+    power: names[Math.floor(Math.random() * names.length)],
+    axis: Math.random() < 0.5 ? 'row' : 'col', // only used by bolt
+    shape: [[POWER_BLOCK]],
+    x: Math.floor(COLS / 2),
+    y: 0,
+  };
 }
 
 function collide(shape, ox, oy) {
@@ -128,8 +149,80 @@ function clearLines() {
     score += (LINE_SCORES[cleared] || 0) * level;
     level = Math.floor(lines / 10) + 1;
     dropInterval = Math.max(100, 1000 - (level - 1) * 90);
+    if (lines >= nextPowerAt) {
+      powerPending = true;
+      nextPowerAt = (Math.floor(lines / POWER_EVERY) + 1) * POWER_EVERY;
+    }
     updateHUD();
   }
+}
+
+function destroyCell(r, c) {
+  if (r < 0 || r >= ROWS || c < 0 || c >= COLS || !board[r][c]) return;
+  board[r][c] = 0;
+  score += POWER_SCORE;
+}
+
+function colorBelow(x, y) {
+  if (y + 1 < ROWS && board[y + 1][x]) return board[y + 1][x];
+  // Landed on the floor: fall back to the most common color on the board.
+  const counts = new Array(COLORS.length).fill(0);
+  for (const row of board) for (const v of row) if (v) counts[v]++;
+  const best = Math.max(...counts);
+  return best ? counts.indexOf(best) : 0;
+}
+
+function compactColumns() {
+  for (let c = 0; c < COLS; c++) {
+    let write = ROWS - 1;
+    for (let r = ROWS - 1; r >= 0; r--) {
+      if (!board[r][c]) continue;
+      board[write][c] = board[r][c];
+      if (write !== r) board[r][c] = 0;
+      write--;
+    }
+  }
+}
+
+function boltClear(x, y, axis) {
+  if (axis === 'row') {
+    for (let c = 0; c < COLS; c++) destroyCell(y, c);
+    board.splice(y, 1);
+    board.unshift(new Array(COLS).fill(0));
+  } else {
+    for (let r = 0; r < ROWS; r++) destroyCell(r, x);
+  }
+}
+
+function tintClear(x, y) {
+  const color = colorBelow(x, y);
+  if (!color) return;
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      if (board[r][c] === color) destroyCell(r, c);
+}
+
+function applyPower(piece) {
+  const { x, y } = piece;
+  switch (piece.power) {
+    case 'bomb':
+      for (let r = y - 1; r <= y + 1; r++)
+        for (let c = x - 1; c <= x + 1; c++) destroyCell(r, c);
+      break;
+    case 'bolt':
+      boltClear(x, y, piece.axis);
+      break;
+    case 'tint':
+      tintClear(x, y);
+      break;
+    case 'gravity':
+      compactColumns();
+      break;
+    case 'freeze':
+      freezeLeft = FREEZE_MS;
+      break;
+  }
+  updateHUD();
 }
 
 function ghostY() {
@@ -156,14 +249,20 @@ function softDrop() {
 }
 
 function lockPiece() {
-  merge();
+  if (current.power) applyPower(current);
+  else merge();
   clearLines();
   spawn();
 }
 
 function spawn() {
   current = next;
-  next = randomPiece();
+  if (powerPending) {
+    powerPending = false;
+    next = powerUpPiece();
+  } else {
+    next = randomPiece();
+  }
   if (collide(current.shape, current.x, current.y)) {
     endGame();
   }
@@ -176,15 +275,23 @@ function updateHUD() {
   levelEl.textContent = level;
 }
 
-function drawBlock(context, x, y, colorIndex, size, alpha) {
+function drawBlock(context, x, y, colorIndex, size, alpha, power) {
   if (!colorIndex) return;
-  const color = palette[colorIndex];
+  const color = power ? powerColor : palette[colorIndex];
   context.globalAlpha = alpha ?? 1;
   context.fillStyle = color;
   context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
   // highlight
   context.fillStyle = 'rgba(255,255,255,0.12)';
   context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
+  if (power) {
+    // fillStyle is still the 12%-alpha highlight here; reset it or the glyph is near-invisible.
+    context.fillStyle = '#fff';
+    context.font = `${Math.floor(size * 0.6)}px sans-serif`;
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(POWER_GLYPHS[power], x * size + size / 2, y * size + size / 2 + 1);
+  }
   context.globalAlpha = 1;
 }
 
@@ -219,12 +326,24 @@ function draw() {
   for (let r = 0; r < current.shape.length; r++)
     for (let c = 0; c < current.shape[r].length; c++)
       if (current.shape[r][c])
-        drawBlock(ctx, current.x + c, gy + r, current.shape[r][c], BLOCK, 0.2);
+        drawBlock(ctx, current.x + c, gy + r, current.shape[r][c], BLOCK, 0.2, current.power);
 
   // current piece
   for (let r = 0; r < current.shape.length; r++)
     for (let c = 0; c < current.shape[r].length; c++)
-      drawBlock(ctx, current.x + c, current.y + r, current.shape[r][c], BLOCK);
+      drawBlock(ctx, current.x + c, current.y + r, current.shape[r][c], BLOCK, 1, current.power);
+
+  if (freezeLeft > 0) {
+    ctx.globalAlpha = 0.12;
+    ctx.fillStyle = powerColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1;
+    ctx.font = 'bold 16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = powerColor;
+    ctx.fillText(`❄️ FROZEN ${Math.ceil(freezeLeft / 1000)}s`, canvas.width / 2, 8);
+  }
 }
 
 function drawNext() {
@@ -235,7 +354,7 @@ function drawNext() {
   const offY = Math.floor((4 - shape.length) / 2);
   for (let r = 0; r < shape.length; r++)
     for (let c = 0; c < shape[r].length; c++)
-      drawBlock(nextCtx, offX + c, offY + r, shape[r][c], NB);
+      drawBlock(nextCtx, offX + c, offY + r, shape[r][c], NB, 1, next.power);
 }
 
 function endGame() {
@@ -266,7 +385,12 @@ function togglePause() {
 function loop(ts) {
   const dt = ts - lastTime;
   lastTime = ts;
-  dropAccum += dt;
+  if (freezeLeft > 0) {
+    freezeLeft = Math.max(0, freezeLeft - dt);
+    dropAccum = 0;
+  } else {
+    dropAccum += dt;
+  }
   if (dropAccum >= dropInterval) {
     dropAccum = 0;
     if (!collide(current.shape, current.x, current.y + 1)) {
@@ -290,6 +414,9 @@ function init() {
   gameOver = false;
   dropInterval = 1000;
   dropAccum = 0;
+  nextPowerAt = POWER_EVERY;
+  powerPending = false;
+  freezeLeft = 0;
   lastTime = performance.now();
   next = randomPiece();
   spawn();
@@ -346,7 +473,9 @@ function applyTheme(theme) {
   themeToggleIcon.textContent = isLight ? '☾' : '☀';
   themeToggleText.textContent = isLight ? 'Dark' : 'Light';
   // The canvas can't read CSS variables, so cache the grid color here.
-  gridColor = getComputedStyle(document.documentElement).getPropertyValue('--grid').trim() || gridColor;
+  const styles = getComputedStyle(document.documentElement);
+  gridColor = styles.getPropertyValue('--grid').trim() || gridColor;
+  powerColor = styles.getPropertyValue('--power').trim() || powerColor;
   // The loop is stopped while paused/game over, so repaint explicitly.
   if (board) { draw(); drawNext(); }
 }
