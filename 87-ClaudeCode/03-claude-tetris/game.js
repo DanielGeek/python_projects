@@ -75,6 +75,9 @@ const CLEAR_NAMES = ['', 'SINGLE', 'DOUBLE', 'TRIPLE', 'TETRIS'];
 const BANNER_MS = 1400;
 const MAX_BANNERS = 4;
 const MUTE_KEY = 'tetris-muted';
+const RECORDS_KEY = 'tetris-records';
+const MAX_RECORDS = 5;
+const NAME_KEY = 'tetris-name';
 
 const LINE_SCORES = [0, 100, 300, 500, 800];
 
@@ -124,6 +127,12 @@ const goalEl = document.getElementById('goal');
 const goalSection = document.getElementById('goal-section');
 const menuList = document.getElementById('menu-list');
 const menuBtn = document.getElementById('menu-btn');
+const nameForm = document.getElementById('name-form');
+const nameInput = document.getElementById('name-input');
+const recordsBox = document.getElementById('records');
+const recordsList = document.getElementById('records-list');
+const recordsStats = document.getElementById('records-stats');
+const resetRecordsBtn = document.getElementById('reset-records');
 const themeToggle = document.getElementById('theme-toggle');
 const themeToggleIcon = document.getElementById('theme-toggle-icon');
 const themeToggleText = document.getElementById('theme-toggle-text');
@@ -134,6 +143,8 @@ let powerColor = '#f06292';
 let comboColor = '#ffca28';
 let palette = COLORS;
 
+let pendingEntry = null; // ranking run waiting for a name
+let maxCombo = 0; // best combo reached in the current game
 let board, current, queue, held, holdUsed, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 let nextPowerAt, powerPending, freezeLeft, singlePending;
 let combo, b2b, banners, flash;
@@ -348,6 +359,7 @@ function clearLines(tspin) {
 function scoreClear(cleared, tspin) {
   if (cleared) {
     combo++;
+    maxCombo = Math.max(maxCombo, combo);
   } else {
     combo = 0; // a lock without a line clear breaks the chain
     if (!tspin) return;
@@ -586,6 +598,7 @@ function showStartMenu() {
     label: `${m.name} · ${m.blurb}`,
     action: () => { modeId = id; init(); },
   })), false, 'good');
+  renderRecords(loadRecords().scores);
 }
 
 function showOverlay(title, text, { resume = false, restart = false, menuButton = false, tone = '' } = {}) {
@@ -596,6 +609,8 @@ function showOverlay(title, text, { resume = false, restart = false, menuButton 
   restartBtn.hidden = !restart;
   menuBtn.hidden = !menuButton;
   menuList.hidden = true;
+  nameForm.hidden = true;
+  recordsBox.hidden = true;
   overlay.classList.remove('hidden');
 }
 
@@ -841,12 +856,108 @@ function drawPreviews() {
   if (previewLeft > 0) drawPieceGrid(queueCtx, queueCanvas, queue.slice(1, 5), 14, 2);
 }
 
+function loadRecords() {
+  const empty = { scores: [], bestCombo: 0, maxLines: 0 };
+  try {
+    const data = JSON.parse(localStorage.getItem(RECORDS_KEY));
+    if (!data || !Array.isArray(data.scores)) return empty;
+    return {
+      scores: data.scores.filter(r => r && Number.isFinite(r.score)).slice(0, MAX_RECORDS),
+      bestCombo: Number(data.bestCombo) || 0,
+      maxLines: Number(data.maxLines) || 0,
+    };
+  } catch {
+    return empty;
+  }
+}
+
+function saveRecords(records) {
+  try { localStorage.setItem(RECORDS_KEY, JSON.stringify(records)); } catch { /* storage unavailable */ }
+}
+
+// Draws the top-5 table; `highlight` is the entry to mark as the current run.
+function renderRecords(scores, highlight = null) {
+  const { bestCombo, maxLines } = loadRecords();
+  recordsList.replaceChildren(...scores.map(r => {
+    const li = document.createElement('li');
+    if (r === highlight) li.className = 'new';
+    const name = document.createElement('span');
+    name.className = 'rec-name';
+    name.textContent = r.name || 'Anonymous';
+    const pts = document.createElement('span');
+    pts.className = 'rec-score';
+    pts.textContent = r.score.toLocaleString();
+    li.append(name, pts);
+    return li;
+  }));
+  if (!scores.length) {
+    const li = document.createElement('li');
+    li.className = 'empty';
+    li.textContent = 'No records yet';
+    recordsList.append(li);
+  }
+  recordsStats.textContent = `Best combo x${bestCombo} · Most lines ${maxLines}`;
+  resetRecordsBtn.textContent = 'Reset records';
+  recordsBox.hidden = false;
+}
+
+// Called once per finished game: updates the stat records and offers the name form if the score ranks.
+function recordRun() {
+  const records = loadRecords();
+  records.bestCombo = Math.max(records.bestCombo, maxCombo);
+  records.maxLines = Math.max(records.maxLines, lines);
+  const ranks = score > 0 && (records.scores.length < MAX_RECORDS || score > records.scores[records.scores.length - 1].score);
+  saveRecords(records);
+  if (!ranks) {
+    renderRecords(records.scores);
+    return;
+  }
+  const entry = { name: '', score, lines, mode: modeId };
+  const preview = [...records.scores, entry].sort((a, b) => b.score - a.score);
+  renderRecords(preview, entry);
+  overlayScore.textContent += ` · NEW RECORD #${preview.indexOf(entry) + 1}`;
+  nameForm.hidden = false;
+  try { nameInput.value = localStorage.getItem(NAME_KEY) || ''; } catch { nameInput.value = ''; }
+  nameInput.focus();
+  nameInput.select();
+  pendingEntry = entry;
+}
+
+nameForm.addEventListener('submit', e => {
+  e.preventDefault();
+  if (!pendingEntry) return;
+  const entry = { ...pendingEntry, name: nameInput.value.trim().slice(0, 12) || 'Anonymous' };
+  pendingEntry = null;
+  try { localStorage.setItem(NAME_KEY, entry.name); } catch { /* storage unavailable */ }
+  const records = loadRecords();
+  records.scores = [...records.scores, entry].sort((a, b) => b.score - a.score).slice(0, MAX_RECORDS);
+  saveRecords(records);
+  nameForm.hidden = true;
+  renderRecords(records.scores, records.scores.find(r => r.score === entry.score && r.name === entry.name));
+  restartBtn.focus();
+});
+
+resetRecordsBtn.addEventListener('click', () => {
+  if (resetRecordsBtn.dataset.armed !== '1') { // two clicks so a stray one can't wipe the table
+    resetRecordsBtn.dataset.armed = '1';
+    resetRecordsBtn.textContent = 'Click again to confirm';
+    return;
+  }
+  resetRecordsBtn.dataset.armed = '';
+  pendingEntry = null;
+  nameForm.hidden = true;
+  saveRecords({ scores: [], bestCombo: 0, maxLines: 0 });
+  renderRecords([]);
+  resetRecordsBtn.blur();
+});
+
 function endGame(title = 'GAME OVER') {
   gameOver = true;
   cancelAnimationFrame(animId);
   draw(); // reveals the board in the invisible challenge
   const challenge = modeId === 'classic' ? '' : `${mode.name} · `;
   showOverlay(title, `${challenge}Score: ${score.toLocaleString()}`, { restart: true, menuButton: true });
+  recordRun();
 }
 
 function winGame() {
@@ -855,6 +966,7 @@ function winGame() {
   draw();
   showOverlay('CHALLENGE COMPLETE', `${mode.name} · Score: ${score.toLocaleString()} · ${fmtTime(modeTime)}`,
     { restart: true, menuButton: true, tone: 'good' });
+  recordRun();
 }
 
 function togglePause() {
@@ -916,6 +1028,7 @@ function init() {
   singlePending = false;
   freezeLeft = 0;
   combo = 0;
+  maxCombo = 0;
   b2b = false;
   banners = [];
   flash = { alpha: 0, total: 1, left: 0 };
@@ -931,6 +1044,7 @@ function init() {
   fillQueue();
   mode.setup?.();
   menu = null;
+  pendingEntry = null;
   lastTime = performance.now();
   spawn();
   if (modeId !== 'classic') addBanner(mode.name.toUpperCase(), 'combo');
@@ -942,6 +1056,7 @@ function init() {
 }
 
 document.addEventListener('keydown', e => {
+  if (e.target === nameInput) return; // typing a name must not trigger game keys
   ensureAudio(); // browsers only allow audio after a user gesture
   if (e.code === 'KeyM') { toggleMute(); return; }
   if (menu) {
