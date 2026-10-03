@@ -41,7 +41,10 @@ A playable version of classic Tetris with all the mechanics you would expect:
 - **Preview** of the next piece, plus a **Hold** slot (`C` / `Shift`, once per piece).
 - Classic Tetris **scoring system** (100 / 300 / 500 / 800 multiplied by level).
 - **Levels** that increase every 10 lines and speed up the fall.
-- **Pause** and **Game Over** with a restart option.
+- **Pause menu** (`P` or `Esc`): Resume, Restart, View controls and a **Start level** selector (1–10), with game keys blocked while it is open.
+- **Records**: Top 5 scores with player name, best combo and max lines, stored in `localStorage` and shown on the start screen and game-over overlay, with a Reset button.
+- **Skins** (selector top-left): Retro, Neon, Pastel and Pixel art; the choice is remembered.
+- **Game Over** with a restart option.
 - **Energy and skills**: clearing lines fills the energy bar; at 100% press `E` to pick a skill (see next 5, swap piece, slow time, undo last placement, extra hold).
 - **Modes** chosen from a start menu: Classic, Sprint (40 lines in 2:00), Rising garbage, Dig, Invisible pieces and Reverse rotation.
 - **Light / dark theme toggle** (top-right button). Dark is the default; the choice is remembered in `localStorage`.
@@ -90,7 +93,7 @@ Then open `http://localhost:8000` in your browser.
 | `C` / `Shift` | Hold / swap the held piece (once per piece) |
 | `E`       | Open the skill menu (energy full) |
 | `1`–`9`   | Choose a menu option        |
-| `P`       | Pause / resume              |
+| `P` / `Esc` | Pause menu / resume       |
 
 ---
 
