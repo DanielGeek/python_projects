@@ -107,7 +107,6 @@ const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
-const resumeBtn = document.getElementById('resume-btn');
 const comboEl = document.getElementById('combo');
 const b2bEl = document.getElementById('b2b');
 const muteText = document.getElementById('mute-text');
@@ -140,7 +139,9 @@ let combo, b2b, banners, flash;
 let energy, previewLeft, slowLeft, lastSnapshot;
 let modeId = 'classic';
 let modeTime, garbageAccum;
-let menu = null; // open overlay menu: { items, cancelable }
+let menu = null; // open overlay menu: { items, cancelable, pause }
+let startLevel = 1; // level the next game begins at (chosen in the pause menu)
+const MAX_START_LEVEL = 10;
 let audioCtx = null;
 let muted = false;
 
@@ -333,9 +334,9 @@ function clearLines(tspin) {
     lines += cleared;
     energy = Math.min(ENERGY_MAX, energy + cleared * ENERGY_PER_LINE);
     const prevLevel = level;
-    level = Math.floor(lines / (mode.linesPerLevel ?? 10)) + 1;
+    level = levelForLines(lines);
     if (rotationReversed() && prevLevel < mode.reverseFrom) addBanner('ROTATION REVERSED', 'combo');
-    dropInterval = Math.max(100, 1000 - (level - 1) * 90);
+    dropInterval = dropIntervalFor(level);
     if (cleared === 4) singlePending = true; // Tetris reward: next piece is a single block
     if (lines >= nextPowerAt) {
       powerPending = true;
@@ -581,6 +582,19 @@ function openSwapMenu() {
   })), true);
 }
 
+// Modes with their own level goal (linesPerLevel) ignore the chosen starting level.
+function baseLevel() {
+  return mode.linesPerLevel ? 0 : startLevel - 1;
+}
+
+function levelForLines(n) {
+  return Math.floor(n / (mode.linesPerLevel ?? 10)) + 1 + baseLevel();
+}
+
+function dropIntervalFor(lvl) {
+  return Math.max(100, 1000 - (lvl - 1) * 90);
+}
+
 function showStartMenu() {
   openMenu('TETRIS', 'Choose a mode', Object.entries(MODES).map(([id, m]) => ({
     label: `${m.name} · ${m.blurb}`,
@@ -588,19 +602,18 @@ function showStartMenu() {
   })), false, 'good');
 }
 
-function showOverlay(title, text, { resume = false, restart = false, menuButton = false, tone = '' } = {}) {
+function showOverlay(title, text, { restart = false, menuButton = false, tone = '' } = {}) {
   overlayTitle.textContent = title;
   overlayTitle.className = tone;
   overlayScore.textContent = text;
-  resumeBtn.hidden = !resume;
   restartBtn.hidden = !restart;
   menuBtn.hidden = !menuButton;
   menuList.hidden = true;
   overlay.classList.remove('hidden');
 }
 
-function openMenu(title, subtitle, items, cancelable, tone = 'good') {
-  menu = { items, cancelable };
+function openMenu(title, subtitle, items, cancelable, tone = 'good', pause = false, onCancel = null) {
+  menu = { items, cancelable, pause, onCancel };
   showOverlay(title, subtitle, { tone });
   menuList.replaceChildren(...items.map((item, i) => {
     const button = document.createElement('button');
@@ -642,7 +655,9 @@ function chooseMenu(i) {
 
 function cancelMenu() {
   if (!menu?.cancelable) return;
+  const { onCancel } = menu;
   closeMenu();
+  onCancel?.();
   afterMenu();
 }
 
@@ -857,16 +872,49 @@ function winGame() {
     { restart: true, menuButton: true, tone: 'good' });
 }
 
+const CONTROLS = [
+  ['← →', 'Move'],
+  ['↑ / X', 'Rotate'],
+  ['↓', 'Soft drop'],
+  ['Space', 'Hard drop'],
+  ['C / Shift', 'Hold'],
+  ['E', 'Skill (full energy)'],
+  ['P / Esc', 'Pause menu'],
+  ['M', 'Mute'],
+];
+
+function showPauseMenu() {
+  openMenu('PAUSED', `Next game starts at level ${startLevel}`, [
+    { label: 'Resume', action: resumeGame },
+    { label: 'Restart', action: () => init() },
+    { label: 'View controls', action: showControlsMenu },
+    { label: `Starting level: ${startLevel} (next game)`, action: cycleStartLevel },
+  ], true, '', true, resumeGame);
+}
+
+function showControlsMenu() {
+  openMenu('CONTROLS', CONTROLS.map(([key, what]) => `${key}: ${what}`).join(' · '), [
+    { label: 'Back', action: showPauseMenu },
+  ], true, '', true, showPauseMenu);
+}
+
+function cycleStartLevel() {
+  startLevel = startLevel % MAX_START_LEVEL + 1;
+  showPauseMenu();
+}
+
+function resumeGame() {
+  paused = false;
+  lastTime = performance.now();
+}
+
 function togglePause() {
-  if (gameOver || !current || menu) return;
-  paused = !paused;
-  if (!paused) {
-    overlay.classList.add('hidden');
-    lastTime = performance.now();
-    loop(lastTime);
-  } else {
-    cancelAnimationFrame(animId);
-    showOverlay('PAUSED', 'Press P to resume', { resume: true, restart: true, menuButton: true });
+  if (gameOver || !current) return;
+  if (paused) {
+    if (menu?.pause) { closeMenu(); resumeGame(); afterMenu(); }
+  } else if (!menu) {
+    paused = true;
+    showPauseMenu();
   }
 }
 
@@ -906,10 +954,10 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  level = 1 + baseLevel();
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = dropIntervalFor(level);
   dropAccum = 0;
   nextPowerAt = POWER_EVERY;
   powerPending = false;
@@ -945,12 +993,13 @@ document.addEventListener('keydown', e => {
   ensureAudio(); // browsers only allow audio after a user gesture
   if (e.code === 'KeyM') { toggleMute(); return; }
   if (menu) {
+    if (menu.pause && e.code === 'KeyP') { togglePause(); return; }
     const digit = /^(?:Digit|Numpad)([1-9])$/.exec(e.code);
     if (digit) chooseMenu(Number(digit[1]) - 1);
     else if (e.code === 'Escape') cancelMenu();
     return;
   }
-  if (e.code === 'KeyP') { togglePause(); return; }
+  if (e.code === 'KeyP' || e.code === 'Escape') { togglePause(); return; }
   if (paused || gameOver || !current) return;
   switch (e.code) {
     case 'KeyC':
@@ -984,10 +1033,7 @@ document.addEventListener('keydown', e => {
 
 restartBtn.addEventListener('click', init);
 menuBtn.addEventListener('click', showStartMenu);
-resumeBtn.addEventListener('click', () => {
-  resumeBtn.blur(); // keep Space/Enter from re-triggering the button
-  togglePause();
-});
+
 
 function loadTheme() {
   try {
