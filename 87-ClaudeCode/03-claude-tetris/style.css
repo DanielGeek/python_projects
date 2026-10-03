@@ -43,6 +43,36 @@
   --combo: #e65100;
 }
 
+/* Skins: board backdrop/grid per skin (declared after the themes so they win). */
+:root[data-skin="neon"] {
+  --board-bg: #000;
+  --grid: #14142a;
+}
+
+:root[data-skin="neon"] #board {
+  border-color: var(--accent);
+  box-shadow: 0 0 24px var(--accent), 0 0 60px var(--shadow);
+}
+
+:root[data-skin="pastel"] {
+  --board-bg: #231f30;
+  --grid: #2e2a3d;
+}
+
+:root[data-skin="pastel"][data-theme="light"] {
+  --board-bg: #fff8fb;
+  --grid: #f1e6ee;
+}
+
+:root[data-skin="pastel"] #board {
+  border-radius: 14px;
+}
+
+:root[data-skin="pixel"] #board {
+  border-radius: 0;
+  border-width: 3px;
+}
+
 [hidden] {
   display: none !important;
 }
@@ -303,10 +333,40 @@ kbd {
 }
 
 /* ---- Theme toggle ---- */
-.theme-toggle {
+.toolbar {
   position: fixed;
   top: 16px;
   right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.skin-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.skin-picker select {
+  background: var(--kbd-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.skin-picker select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.theme-toggle {
   display: inline-flex;
   align-items: center;
   gap: 6px;

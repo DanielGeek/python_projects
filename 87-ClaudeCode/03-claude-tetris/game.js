@@ -128,11 +128,14 @@ const themeToggle = document.getElementById('theme-toggle');
 const themeToggleIcon = document.getElementById('theme-toggle-icon');
 const themeToggleText = document.getElementById('theme-toggle-text');
 
+const skinSelect = document.getElementById('skin-select');
 const THEME_KEY = 'tetris-theme';
 let gridColor = '#22222e';
 let powerColor = '#f06292';
 let comboColor = '#ffca28';
 let palette = COLORS;
+const SKIN_KEY = 'tetris-skin';
+let skin; // active entry of SKINS, set by applySkin()
 
 let board, current, queue, held, holdUsed, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 let nextPowerAt, powerPending, freezeLeft, singlePending;
@@ -739,17 +742,86 @@ function updateHUD() {
   if (queueSection.hidden === previewLeft > 0) drawPreviews(); // preview skill started or ran out
 }
 
+// Each skin paints one block (px/py = top-left pixel of its cell, `size` = cell size) in `color`.
+// Callers set context.globalAlpha beforehand; skins that vary it must restore it.
+const SKINS = {
+  retro: {
+    name: 'Retro',
+    colors: light => (light ? LIGHT_COLORS : COLORS),
+    paint(context, px, py, size, color) {
+      context.fillStyle = color;
+      context.fillRect(px + 1, py + 1, size - 2, size - 2);
+      context.fillStyle = 'rgba(255,255,255,0.12)'; // highlight
+      context.fillRect(px + 1, py + 1, size - 2, 4);
+    },
+  },
+  neon: {
+    name: 'Neon',
+    colors: () => COLORS, // the board is black under this skin in both themes
+    paint(context, px, py, size, color) {
+      const a = context.globalAlpha;
+      const inset = Math.max(1.5, size * 0.1);
+      context.shadowColor = color;
+      context.shadowBlur = size * 0.6;
+      context.strokeStyle = color;
+      context.lineWidth = Math.max(1, size / 14);
+      context.strokeRect(px + inset, py + inset, size - inset * 2, size - inset * 2);
+      context.shadowBlur = 0;
+      context.globalAlpha = a * 0.3;
+      context.fillStyle = color;
+      context.fillRect(px + inset, py + inset, size - inset * 2, size - inset * 2);
+      context.globalAlpha = a;
+    },
+  },
+  pastel: {
+    name: 'Pastel',
+    colors: light => (light ? LIGHT_COLORS : COLORS).map(c => c && mixWithWhite(c, light ? 0.35 : 0.5)),
+    paint(context, px, py, size, color) {
+      const r = size * 0.3;
+      context.fillStyle = color;
+      context.beginPath();
+      context.roundRect(px + 1, py + 1, size - 2, size - 2, r);
+      context.fill();
+      context.fillStyle = 'rgba(255,255,255,0.35)'; // soft sheen
+      context.beginPath();
+      context.roundRect(px + size * 0.2, py + size * 0.14, size * 0.6, size * 0.2, size * 0.1);
+      context.fill();
+    },
+  },
+  pixel: {
+    name: 'Pixel art',
+    colors: light => (light ? LIGHT_COLORS : COLORS),
+    paint(context, px, py, size, color) {
+      const u = Math.max(1, Math.round(size / 10)); // one "pixel" of the texture
+      const x = px + 1, y = py + 1, w = size - 2;
+      context.fillStyle = color;
+      context.fillRect(x, y, w, w);
+      context.fillStyle = 'rgba(0,0,0,0.14)'; // dither checker inside the bevel
+      for (let i = 1; i * u < w - u; i++)
+        for (let j = 1; j * u < w - u; j++)
+          if ((i + j) % 2 === 0) context.fillRect(x + i * u, y + j * u, u, u);
+      context.fillStyle = 'rgba(255,255,255,0.45)'; // lit top/left edge
+      context.fillRect(x, y, w, u);
+      context.fillRect(x, y, u, w);
+      context.fillStyle = 'rgba(0,0,0,0.35)'; // shaded bottom/right edge
+      context.fillRect(x, y + w - u, w, u);
+      context.fillRect(x + w - u, y, u, w);
+    },
+  },
+};
+
+function mixWithWhite(hex, t) {
+  const n = parseInt(hex.slice(1), 16);
+  const mix = v => Math.round(v + (255 - v) * t);
+  return `rgb(${mix(n >> 16)},${mix((n >> 8) & 255)},${mix(n & 255)})`;
+}
+
 function drawBlock(context, x, y, colorIndex, size, alpha, power) {
   if (!colorIndex) return;
   const color = power ? powerColor : palette[colorIndex];
   context.globalAlpha = alpha ?? 1;
-  context.fillStyle = color;
-  context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
-  // highlight
-  context.fillStyle = 'rgba(255,255,255,0.12)';
-  context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
+  skin.paint(context, x * size, y * size, size, color);
   if (power) {
-    // fillStyle is still the 12%-alpha highlight here; reset it or the glyph is near-invisible.
     context.fillStyle = '#fff';
     context.font = `${Math.floor(size * 0.6)}px sans-serif`;
     context.textAlign = 'center';
@@ -1000,11 +1072,33 @@ function loadTheme() {
 function applyTheme(theme) {
   const isLight = theme === 'light';
   document.documentElement.dataset.theme = theme;
-  palette = isLight ? LIGHT_COLORS : COLORS;
   themeToggle.setAttribute('aria-pressed', String(isLight));
   themeToggleIcon.textContent = isLight ? '☾' : '☀';
   themeToggleText.textContent = isLight ? 'Dark' : 'Light';
-  // The canvas can't read CSS variables, so cache the grid color here.
+  refreshAppearance();
+}
+
+function loadSkin() {
+  try {
+    const saved = localStorage.getItem(SKIN_KEY);
+    return saved in SKINS ? saved : 'retro';
+  } catch {
+    return 'retro';
+  }
+}
+
+function applySkin(id) {
+  skin = SKINS[id];
+  document.documentElement.dataset.skin = id;
+  skinSelect.value = id;
+  refreshAppearance();
+}
+
+// Theme and skin are independent; both feed the cached palette and CSS-derived colors.
+function refreshAppearance() {
+  if (!skin) return; // skin not applied yet during startup
+  palette = skin.colors(document.documentElement.dataset.theme === 'light');
+  // The canvas can't read CSS variables, so cache them here.
   const styles = getComputedStyle(document.documentElement);
   gridColor = styles.getPropertyValue('--grid').trim() || gridColor;
   powerColor = styles.getPropertyValue('--power').trim() || powerColor;
@@ -1012,6 +1106,12 @@ function applyTheme(theme) {
   // The loop is stopped while paused/game over, so repaint explicitly.
   if (board) { draw(); drawPreviews(); }
 }
+
+skinSelect.addEventListener('change', () => {
+  try { localStorage.setItem(SKIN_KEY, skinSelect.value); } catch { /* storage unavailable */ }
+  applySkin(skinSelect.value);
+  skinSelect.blur(); // keep arrows/Space from changing the skin mid-game
+});
 
 themeToggle.addEventListener('click', () => {
   const theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
@@ -1022,6 +1122,8 @@ themeToggle.addEventListener('click', () => {
 
 muted = loadMuted();
 muteText.textContent = muted ? 'unmute' : 'mute';
+skinSelect.innerHTML = Object.entries(SKINS).map(([id, k]) => `<option value="${id}">${k.name}</option>`).join('');
+applySkin(loadSkin());
 applyTheme(loadTheme());
 
 showStartMenu();
