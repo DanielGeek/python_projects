@@ -14,6 +14,7 @@ const BRICK_W = 72;
 const BRICK_H = 24;
 const BRICK_MARGIN_X = ( CANVAS_W - COLS * BRICK_W ) / 2;
 const BRICK_TOP = 60;
+const LIVES = 3;
 const POINTS_PER_BRICK = 10;
 const ROW_COLORS = [ 'red', 'yellow', 'cyan', 'magenta', 'hotpink', 'green' ]; // top to bottom
 const MAX_STEP = BALL_R / 2; // max ball displacement per sub-step, well below the radius
@@ -41,6 +42,7 @@ function buildBricks() {
 const game = {
   status: 'ready', // 'ready' | 'playing' | 'won' | 'lost'
   score: 0,
+  lives: LIVES,
   paddle: { x: ( CANVAS_W - PADDLE_W ) / 2, y: PADDLE_Y, w: PADDLE_W, h: PADDLE_H },
   ball: { x: 0, y: 0, r: BALL_R, vx: 0, vy: 0 },
   bricks: buildBricks(),
@@ -119,13 +121,31 @@ function stickBallToPaddle() {
 function moveBall( dt ) {
   const b = game.ball;
   const steps = Math.max( 1, Math.ceil( Math.hypot( b.vx, b.vy ) * dt / MAX_STEP ) );
-  for ( let i = 0; i < steps; i++ ) stepBall( dt / steps );
+  for ( let i = 0; i < steps && game.status === 'playing'; i++ ) stepBall( dt / steps );
+}
+
+function loseLife() {
+  const b = game.ball;
+  game.lives--;
+  b.vx = 0;
+  b.vy = 0;
+  if ( game.lives <= 0 ) {
+    game.status = 'lost';
+  } else {
+    game.status = 'ready';
+    stickBallToPaddle();
+  }
 }
 
 function stepBall( dt ) {
   const b = game.ball;
   b.x += b.vx * dt;
   b.y += b.vy * dt;
+
+  if ( b.y - b.r > CANVAS_H ) {
+    loseLife();
+    return;
+  }
 
   if ( b.x - b.r < 0 ) {
     b.x = b.r;
@@ -202,8 +222,19 @@ function update( dt ) {
   else if ( game.status === 'playing' ) moveBall( dt );
 }
 
+function drawHud() {
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 20px monospace';
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'left';
+  ctx.fillText( 'Score: ' + game.score, BRICK_MARGIN_X, 30 );
+  ctx.textAlign = 'right';
+  ctx.fillText( 'Lives: ' + game.lives, CANVAS_W - BRICK_MARGIN_X, 30 );
+}
+
 function draw() {
   ctx.clearRect( 0, 0, CANVAS_W, CANVAS_H );
+  drawHud();
   const p = game.paddle;
   const b = game.ball;
   for ( const brick of game.bricks ) {
