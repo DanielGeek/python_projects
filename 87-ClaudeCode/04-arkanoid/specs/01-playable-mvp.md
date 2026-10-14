@@ -1,6 +1,6 @@
 # SPEC 01 — Playable Arkanoid MVP
 
-> **Status:** Draft
+> **Status:** Approved
 > **Depends on:** none
 > **Date:** 2026-10-14
 > **Objective:** A playable browser Arkanoid with a single 10×6 brick level, three lives, 10 points per brick, and a win / Game Over overlay.
