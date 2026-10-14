@@ -7,6 +7,7 @@ const PADDLE_SPEED = 600; // px/s
 const BALL_R = 8;
 const BALL_SPEED = 400; // px/s, constant for the whole game
 const LAUNCH_ANGLE = 15 * Math.PI / 180; // tilt from the vertical
+const MAX_BOUNCE_ANGLE = 60 * Math.PI / 180; // paddle edge exit angle from the vertical
 
 const canvas = document.getElementById( 'game' );
 const ctx = canvas.getContext( '2d' );
@@ -103,6 +104,26 @@ function moveBall( dt ) {
     b.y = b.r;
     b.vy = Math.abs( b.vy );
   }
+
+  bounceOffPaddle();
+}
+
+function bounceOffPaddle() {
+  const b = game.ball;
+  const p = game.paddle;
+  if ( b.vy <= 0 ) return;
+
+  const overlaps =
+    b.x + b.r >= p.x && b.x - b.r <= p.x + p.w &&
+    b.y + b.r >= p.y && b.y - b.r <= p.y + p.h;
+  if ( !overlaps ) return;
+
+  // -1 at the left edge, 0 at the centre, 1 at the right edge.
+  const hit = Math.max( -1, Math.min( 1, ( b.x - ( p.x + p.w / 2 ) ) / ( p.w / 2 ) ) );
+  const angle = hit * MAX_BOUNCE_ANGLE;
+  b.vx = BALL_SPEED * Math.sin( angle );
+  b.vy = -BALL_SPEED * Math.cos( angle );
+  b.y = p.y - b.r;
 }
 
 function update( dt ) {
