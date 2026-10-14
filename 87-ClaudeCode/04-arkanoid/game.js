@@ -8,14 +8,42 @@ const BALL_R = 8;
 const BALL_SPEED = 400; // px/s, constant for the whole game
 const LAUNCH_ANGLE = 15 * Math.PI / 180; // tilt from the vertical
 const MAX_BOUNCE_ANGLE = 60 * Math.PI / 180; // paddle edge exit angle from the vertical
+const COLS = 10;
+const ROWS = 6;
+const BRICK_W = 72;
+const BRICK_H = 24;
+const BRICK_MARGIN_X = ( CANVAS_W - COLS * BRICK_W ) / 2;
+const BRICK_TOP = 60;
+const POINTS_PER_BRICK = 10;
+const ROW_COLORS = [ 'red', 'yellow', 'cyan', 'magenta', 'hotpink', 'green' ]; // top to bottom
+const MAX_STEP = BALL_R / 2; // max ball displacement per sub-step, well below the radius
 
 const canvas = document.getElementById( 'game' );
 const ctx = canvas.getContext( '2d' );
 
+function buildBricks() {
+  const bricks = [];
+  for ( let row = 0; row < ROWS; row++ ) {
+    for ( let col = 0; col < COLS; col++ ) {
+      bricks.push( {
+        x: BRICK_MARGIN_X + col * BRICK_W,
+        y: BRICK_TOP + row * BRICK_H,
+        w: BRICK_W,
+        h: BRICK_H,
+        color: ROW_COLORS[ row ],
+        alive: true,
+      } );
+    }
+  }
+  return bricks;
+}
+
 const game = {
   status: 'ready', // 'ready' | 'playing' | 'won' | 'lost'
+  score: 0,
   paddle: { x: ( CANVAS_W - PADDLE_W ) / 2, y: PADDLE_Y, w: PADDLE_W, h: PADDLE_H },
   ball: { x: 0, y: 0, r: BALL_R, vx: 0, vy: 0 },
+  bricks: buildBricks(),
 };
 
 const keys = { left: false, right: false };
@@ -87,7 +115,14 @@ function stickBallToPaddle() {
   b.y = p.y - b.r;
 }
 
+// Advances the ball in sub-steps so a single step never exceeds MAX_STEP pixels.
 function moveBall( dt ) {
+  const b = game.ball;
+  const steps = Math.max( 1, Math.ceil( Math.hypot( b.vx, b.vy ) * dt / MAX_STEP ) );
+  for ( let i = 0; i < steps; i++ ) stepBall( dt / steps );
+}
+
+function stepBall( dt ) {
   const b = game.ball;
   b.x += b.vx * dt;
   b.y += b.vy * dt;
@@ -106,6 +141,41 @@ function moveBall( dt ) {
   }
 
   bounceOffPaddle();
+  bounceOffBricks();
+}
+
+function bounceOffBricks() {
+  const b = game.ball;
+  for ( const brick of game.bricks ) {
+    if ( !brick.alive ) continue;
+
+    // Penetration depth of the ball into each side of the brick.
+    const fromLeft = b.x + b.r - brick.x;
+    const fromRight = brick.x + brick.w - ( b.x - b.r );
+    const fromTop = b.y + b.r - brick.y;
+    const fromBottom = brick.y + brick.h - ( b.y - b.r );
+    if ( fromLeft <= 0 || fromRight <= 0 || fromTop <= 0 || fromBottom <= 0 ) continue;
+
+    // Bounce on the axis of least penetration and push the ball out of the brick.
+    const least = Math.min( fromLeft, fromRight, fromTop, fromBottom );
+    if ( least === fromLeft ) {
+      b.x = brick.x - b.r;
+      b.vx = -Math.abs( b.vx );
+    } else if ( least === fromRight ) {
+      b.x = brick.x + brick.w + b.r;
+      b.vx = Math.abs( b.vx );
+    } else if ( least === fromTop ) {
+      b.y = brick.y - b.r;
+      b.vy = -Math.abs( b.vy );
+    } else {
+      b.y = brick.y + brick.h + b.r;
+      b.vy = Math.abs( b.vy );
+    }
+
+    brick.alive = false;
+    game.score += POINTS_PER_BRICK;
+    return; // one brick per sub-step
+  }
 }
 
 function bounceOffPaddle() {
@@ -136,6 +206,9 @@ function draw() {
   ctx.clearRect( 0, 0, CANVAS_W, CANVAS_H );
   const p = game.paddle;
   const b = game.ball;
+  for ( const brick of game.bricks ) {
+    if ( brick.alive ) drawSprite( ctx, 'block_' + brick.color, brick.x, brick.y, brick.w, brick.h );
+  }
   drawSprite( ctx, 'paddle', p.x, p.y, p.w, p.h );
   drawSprite( ctx, 'ball', b.x - b.r, b.y - b.r, b.r * 2, b.r * 2 );
 }
