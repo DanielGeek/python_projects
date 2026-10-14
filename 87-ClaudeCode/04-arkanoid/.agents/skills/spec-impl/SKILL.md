@@ -1,6 +1,6 @@
 ---
 name: spec-impl
-description: Implements an approved spec. Validates that the state means "Approved" (in any language), creates a git branch named after the spec, switches to it, and starts the implementation step by step with pauses to review diffs.
+description: Implements an approved spec. Validates that the state means "Approved" (in any language), creates a git branch named `<type>/NN-slug` (feature/, bugfix/, ...) after the spec, switches to it, and starts the implementation step by step with pauses to review diffs.
 disable-model-invocation: true
 argument-hint: <NN-spec-name>
 allowed-tools: Read, Glob, Grep, Edit, Write, AskUserQuestion, Bash(git status:*), Bash(git branch:*), Bash(git checkout:*), Bash(git log:*), Bash(git diff:*), Bash(git stash:*), Bash(cat:*), Bash(ls:*)
@@ -114,10 +114,16 @@ Once you have confirmed the state means `Approved`:
 
    Wait for the answer. **Do not stash or commit on the user's behalf** unless they explicitly ask for it. If the working tree is clean, skip straight to step 1 without mentioning it.
 
-1. Derive the branch name from the spec file's full name, without the extension. Format: `spec-NN-slug`. Examples:
+1. Derive the branch name as `<type>/NN-slug`, where `NN-slug` is the spec file's full name without the extension and `<type>` is a branch-type prefix:
 
-   - `01-mvp-arkanoid.md` → branch `spec-01-mvp-arkanoid`
-   - `02-powerups.md` → branch `spec-02-powerups`
+   - `feature` — new functionality (the default for most specs).
+   - `bugfix` — the spec fixes a defect.
+   - `refactor`, `docs`, `chore` — when the spec is clearly of that kind.
+
+   Pick `<type>` from the spec's objective and scope. If it is not obvious, ask the user which prefix to use and wait. Examples:
+
+   - `01-mvp-arkanoid.md` (new game) → branch `feature/01-mvp-arkanoid`
+   - `02-fix-ball-tunnelling.md` (defect) → branch `bugfix/02-fix-ball-tunnelling`
 
 2. Read the `AutoCreateBranch` flag from the **Branch-creation config** shown in the session context above.
 
@@ -126,15 +132,15 @@ Once you have confirmed the state means `Approved`:
 
    **If `AutoCreateBranch` is `true` (default):** proceed without asking.
 
-   - If the branch **does not exist**: create it with `git checkout -b spec-NN-slug`.
+   - If the branch **does not exist**: create it with `git checkout -b <type>/NN-slug`.
    - If it **already exists**: this means previous work is being resumed. Switch to it, read `git log --oneline` on the branch, and tell the user which steps of the plan already look done and which step you propose to resume from. Wait for confirmation on the resume point before implementing anything.
-   - In both cases: switch to the branch with `git checkout spec-NN-slug` and confirm the change was successful before continuing.
+   - In both cases: switch to the branch with `git checkout <type>/NN-slug` and confirm the change was successful before continuing.
 
    **If `AutoCreateBranch` is `false`:** ask before touching git. Show:
 
    ```
    AutoCreateBranch is set to false.
-   Create and switch to the branch spec-NN-slug? [y/N]
+   Create and switch to the branch <type>/NN-slug? [y/N]
    ```
 
    - If the user answers **yes**: create/switch to the branch exactly as in the `true` case above.
@@ -146,7 +152,7 @@ Once you have confirmed the state means `Approved`:
    ✅ Ready to implement.
 
    Spec:   specs/NN-slug.md
-   Branch: spec-NN-slug  (active)   (← or the current branch, if no new branch was created)
+   Branch: <type>/NN-slug  (active)   (← or the current branch, if no new branch was created)
    State:  Approved   (← echo back the actual value found in the spec)
    ```
 
@@ -219,7 +225,7 @@ in your repo's language) and make the final commit before merging this branch.
 
   Phase 1  →  Finds specs/01-mvp-arkanoid.md
   Phase 2  →  Reads the state → "Approved" (or "Aprobado", etc.) → ✅ continues
-  Phase 3  →  git checkout -b spec-01-mvp-arkanoid → git checkout spec-01-mvp-arkanoid
+  Phase 3  →  git checkout -b feature/01-mvp-arkanoid → git checkout feature/01-mvp-arkanoid
               Shows objective, scope, plan and criteria
   Phase 4  →  Implements step by step with pauses
               Ends by reminding to verify the acceptance criteria
