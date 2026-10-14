@@ -86,9 +86,29 @@ function stickBallToPaddle() {
   b.y = p.y - b.r;
 }
 
+function moveBall( dt ) {
+  const b = game.ball;
+  b.x += b.vx * dt;
+  b.y += b.vy * dt;
+
+  if ( b.x - b.r < 0 ) {
+    b.x = b.r;
+    b.vx = Math.abs( b.vx );
+  } else if ( b.x + b.r > CANVAS_W ) {
+    b.x = CANVAS_W - b.r;
+    b.vx = -Math.abs( b.vx );
+  }
+
+  if ( b.y - b.r < 0 ) {
+    b.y = b.r;
+    b.vy = Math.abs( b.vy );
+  }
+}
+
 function update( dt ) {
   updatePaddle( dt );
   if ( game.status === 'ready' ) stickBallToPaddle();
+  else if ( game.status === 'playing' ) moveBall( dt );
 }
 
 function draw() {
