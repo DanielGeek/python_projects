@@ -17,7 +17,7 @@ Arkanoid game (browser, Canvas 2D). The repo is at the very start: there is no g
 Features are planned with project skills in `.agents/skills/` (installed from `Klerith/fernando-skills`, pinned in `skills-lock.json`):
 
 - `/spec <one-sentence feature>`: asks clarifying questions, then writes `specs/NN-slug.md` (state `Draft`). Writes no code.
-- `/spec-impl NN-slug`: implements a spec only once its state is Approved. Creates branch `spec-NN-slug` (controlled by `AutoCreateBranch` in `specs/.spec-config.yml`) and works step by step, pausing to review diffs.
+- `/spec-impl NN-slug`: implements a spec only once its state is Approved. Creates branch `<type>/NN-slug`, e.g. `feature/NN-slug` or `bugfix/NN-slug` (controlled by `AutoCreateBranch` in `specs/.spec-config.yml`) and works step by step, pausing to review diffs.
 
 Both skills read `CLAUDE.md` first, then `README.md`, for project context. Spec language and headings follow existing specs in `specs/`.
 

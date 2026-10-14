@@ -69,7 +69,7 @@ Features are planned with a spec-driven workflow. The skills come from `Klerith/
 
 1. Run `/spec <one-sentence feature>`. Claude asks clarifying questions, then saves `specs/NN-slug.md` with state `Draft`.
 2. Review the spec and mark it as Approved.
-3. Run `/spec-impl NN-slug`. Claude creates the branch `spec-NN-slug` and implements the spec step by step, pausing to review diffs.
+3. Run `/spec-impl NN-slug`. Claude creates the branch `<type>/NN-slug` (e.g. `feature/NN-slug`, `bugfix/NN-slug`) and implements the spec step by step, pausing to review diffs.
 
 `AutoCreateBranch` in `specs/.spec-config.yml` controls whether the branch is created without asking.
 
