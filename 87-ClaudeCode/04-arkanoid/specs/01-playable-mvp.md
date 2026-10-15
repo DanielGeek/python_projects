@@ -1,6 +1,6 @@
 # SPEC 01 — Playable Arkanoid MVP
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** none
 > **Date:** 2026-10-14
 > **Objective:** A playable browser Arkanoid with a single 10×6 brick level, three lives, 10 points per brick, and a win / Game Over overlay.
@@ -82,21 +82,21 @@ Conventions:
 
 ## Acceptance criteria
 
-- [ ] Served from the project root, `index.html` loads with no errors in the browser console.
-- [ ] The canvas is exactly 800 × 600 px.
-- [ ] On load, 60 bricks are visible in 10 columns × 6 rows, coloured per `ROW_COLORS` from top to bottom.
-- [ ] The paddle moves with ← / → and A / D, and also by following the mouse over the canvas, without leaving the edges.
-- [ ] At the start the ball is stuck to the paddle and follows it; space or click launches it.
-- [ ] The ball bounces off the side walls and the ceiling, and keeps the same speed for the whole game.
-- [ ] The paddle bounce angle changes with the impact point: centre exits vertically, edges exit tilted, never more than 60° from the vertical.
-- [ ] Touching a brick makes it disappear immediately and the ball bounces.
-- [ ] Each broken brick adds exactly 10 points and the HUD shows the total.
-- [ ] The game starts with 3 lives; when the ball falls one is deducted, the ball returns to the paddle and waits for a new launch.
-- [ ] Losing the third life shows the "Game Over" overlay with the final score.
-- [ ] Breaking all 60 bricks shows the win overlay with the final score (600 points).
-- [ ] From either overlay, space or click restarts the game with 3 lives, 0 points and all 60 bricks.
-- [ ] The game makes no sound and loads no audio file (no requests to `assets/sounds/` in the network tab).
-- [ ] In a normal game the ball does not pass through bricks or the paddle.
+- [x] Served from the project root, `index.html` loads with no errors in the browser console.
+- [x] The canvas is exactly 800 × 600 px.
+- [x] On load, 60 bricks are visible in 10 columns × 6 rows, coloured per `ROW_COLORS` from top to bottom.
+- [x] The paddle moves with ← / → and A / D, and also by following the mouse over the canvas, without leaving the edges.
+- [x] At the start the ball is stuck to the paddle and follows it; space or click launches it.
+- [x] The ball bounces off the side walls and the ceiling, and keeps the same speed for the whole game.
+- [x] The paddle bounce angle changes with the impact point: centre exits vertically, edges exit tilted, never more than 60° from the vertical.
+- [x] Touching a brick makes it disappear immediately and the ball bounces.
+- [x] Each broken brick adds exactly 10 points and the HUD shows the total.
+- [x] The game starts with 3 lives; when the ball falls one is deducted, the ball returns to the paddle and waits for a new launch.
+- [x] Losing the third life shows the "Game Over" overlay with the final score.
+- [x] Breaking all 60 bricks shows the win overlay with the final score (600 points).
+- [x] From either overlay, space or click restarts the game with 3 lives, 0 points and all 60 bricks.
+- [x] The game makes no sound and loads no audio file (no requests to `assets/sounds/` in the network tab).
+- [x] In a normal game the ball does not pass through bricks or the paddle.
 
 ---
 

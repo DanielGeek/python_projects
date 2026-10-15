@@ -57,8 +57,23 @@ const KEY_MAP = {
   KeyD: 'right',
 };
 
+function resetGame() {
+  game.score = 0;
+  game.lives = LIVES;
+  game.bricks = buildBricks();
+  game.status = 'ready';
+  game.ball.vx = 0;
+  game.ball.vy = 0;
+  stickBallToPaddle();
+}
+
+// Space or click: launches the ball when ready, restarts from an overlay.
+function handleAction() {
+  if ( game.status === 'ready' ) launchBall();
+  else if ( game.status === 'won' || game.status === 'lost' ) resetGame();
+}
+
 function launchBall() {
-  if ( game.status !== 'ready' ) return;
   const side = Math.random() < 0.5 ? -1 : 1;
   const b = game.ball;
   b.vx = side * BALL_SPEED * Math.sin( LAUNCH_ANGLE );
@@ -69,7 +84,7 @@ function launchBall() {
 window.addEventListener( 'keydown', ( e ) => {
   if ( e.code === 'Space' ) {
     e.preventDefault();
-    if ( !e.repeat ) launchBall();
+    if ( !e.repeat ) handleAction();
     return;
   }
   const dir = KEY_MAP[ e.code ];
@@ -93,7 +108,7 @@ canvas.addEventListener( 'mousemove', ( e ) => {
   p.x = Math.max( 0, Math.min( CANVAS_W - p.w, mouseX - p.w / 2 ) );
 } );
 
-canvas.addEventListener( 'click', launchBall );
+canvas.addEventListener( 'click', handleAction );
 
 // Releasing focus must not leave a direction stuck.
 window.addEventListener( 'blur', () => {
@@ -194,6 +209,7 @@ function bounceOffBricks() {
 
     brick.alive = false;
     game.score += POINTS_PER_BRICK;
+    if ( game.bricks.every( ( br ) => !br.alive ) ) game.status = 'won';
     return; // one brick per sub-step
   }
 }
@@ -232,6 +248,21 @@ function drawHud() {
   ctx.fillText( 'Lives: ' + game.lives, CANVAS_W - BRICK_MARGIN_X, 30 );
 }
 
+function drawOverlay() {
+  ctx.fillStyle = 'rgba( 0, 0, 0, 0.7 )';
+  ctx.fillRect( 0, 0, CANVAS_W, CANVAS_H );
+
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = 'bold 56px monospace';
+  ctx.fillText( game.status === 'won' ? 'You win!' : 'Game Over', CANVAS_W / 2, CANVAS_H / 2 - 50 );
+  ctx.font = 'bold 28px monospace';
+  ctx.fillText( 'Final score: ' + game.score, CANVAS_W / 2, CANVAS_H / 2 + 10 );
+  ctx.font = '20px monospace';
+  ctx.fillText( 'Press Space or click to restart', CANVAS_W / 2, CANVAS_H / 2 + 60 );
+}
+
 function draw() {
   ctx.clearRect( 0, 0, CANVAS_W, CANVAS_H );
   drawHud();
@@ -242,6 +273,7 @@ function draw() {
   }
   drawSprite( ctx, 'paddle', p.x, p.y, p.w, p.h );
   drawSprite( ctx, 'ball', b.x - b.r, b.y - b.r, b.r * 2, b.r * 2 );
+  if ( game.status === 'won' || game.status === 'lost' ) drawOverlay();
 }
 
 function frame( now ) {
