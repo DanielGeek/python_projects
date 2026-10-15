@@ -1,6 +1,6 @@
 # SPEC 03 — Sound effects
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01, SPEC 02
 > **Date:** 2026-10-14
 > **Objective:** Play `ball-bounce.mp3` when the ball bounces off a wall, the ceiling or the paddle, and `break-sound.mp3` when it destroys a brick, with an `M` key to mute all sound.
@@ -74,10 +74,10 @@ Conventions:
 - [x] Pressing `M` mutes both sounds; pressing `M` again restores them. Holding `M` toggles only once.
 - [x] Mute survives a lost life and a game restart; reloading the page starts unmuted.
 - [x] Muting while a sound is playing stops it immediately.
-- [ ] The first sound plays after the first Space or click launch, with no autoplay error in the console.
+- [x] The first sound plays after the first Space or click launch, with no autoplay error in the console.
 - [x] If an audio file fails to load or play, the game keeps running and the console shows no uncaught exception.
 - [x] The network tab shows requests to exactly `ball-bounce.mp3` and `break-sound.mp3` under `assets/sounds/`.
-- [ ] Ball physics, scoring, lives, explosions and the HUD behave exactly as in SPEC 02.
+- [x] Ball physics, scoring, lives, explosions and the HUD behave exactly as in SPEC 02.
 
 ---
 
