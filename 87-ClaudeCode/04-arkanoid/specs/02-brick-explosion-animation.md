@@ -54,7 +54,7 @@ Conventions:
 3. ✅ Update explosions every frame with the delta time, independent of `game.status === 'playing'`, and drop those with `elapsed >= EXPLOSION_DURATION`. Losing a life does not clear them.
 4. ✅ Draw explosions in `draw()` with `drawFrame( ctx, EXPLOSION_FRAMES[ color ][ index ], x, y, w, h )`, after the bricks and before the paddle, ball and overlay. Manual test: every destroyed brick shows its 4 frames in its own colour and then disappears.
 5. ✅ Change the victory check: set `won` only when no brick is `alive` **and** `game.explosions` is empty. Ignore a lost ball (`loseLife`) while no brick is `alive`, so the 150 ms window cannot turn a cleared level into a Game Over.
-6. Manual test of the full flow: clear the level, confirm the last explosion plays and the "You win!" overlay appears right after; restart mid-explosion and confirm no explosion remains.
+6. ✅ Manual test of the full flow: clear the level, confirm the last explosion plays and the "You win!" overlay appears right after; restart mid-explosion and confirm no explosion remains.
 
 ---
 
