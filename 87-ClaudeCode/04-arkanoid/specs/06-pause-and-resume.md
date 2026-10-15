@@ -68,16 +68,16 @@ Conventions:
 
 ## Acceptance criteria
 
-- [ ] Pressing `P` while playing pauses the game; pressing `P` again resumes it.
-- [ ] Pressing `Esc` while playing pauses the game; pressing `Esc` again resumes it.
-- [ ] Holding `P` or `Esc` toggles the pause only once.
-- [ ] While paused, the ball position, the brick state, the score and the lives do not change.
+- [x] Pressing `P` while playing pauses the game; pressing `P` again resumes it.
+- [x] Pressing `Esc` while playing pauses the game; pressing `Esc` again resumes it.
+- [x] Holding `P` or `Esc` toggles the pause only once.
+- [x] While paused, the ball position, the brick state, the score and the lives do not change.
 - [ ] A brick explosion in progress freezes while paused and continues from the same frame on resume.
 - [ ] While paused, mouse movement and arrow keys do not move the paddle; after resume the paddle is where it was.
 - [ ] After resuming, the ball keeps its speed and direction, with no visible jump.
 - [ ] The "Paused" overlay with "Press P or Esc to resume" shows while paused and is gone after resume.
 - [ ] Space and click do nothing while paused (no launch, no restart).
-- [ ] `P` and `Esc` do nothing in `ready`, `won` and `lost`.
+- [x] `P` and `Esc` do nothing in `ready`, `won` and `lost`.
 - [ ] Switching to another window or tab while playing pauses the game; coming back does not resume it by itself.
 - [ ] `M` still toggles mute while paused, and no sound plays from game events while paused.
 - [ ] Ball physics, scoring, lives, explosions, sound and the HUD behave exactly as in SPEC 03 when the game is not paused.

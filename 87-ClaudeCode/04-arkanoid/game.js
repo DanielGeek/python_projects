@@ -78,7 +78,7 @@ function buildBricks( level ) {
 }
 
 const game = {
-  status: 'ready', // 'ready' | 'playing' | 'won' | 'lost'
+  status: 'ready', // 'ready' | 'playing' | 'paused' | 'won' | 'lost'
   score: 0,
   lives: LIVES,
   level: 0, // index into LEVELS
@@ -128,6 +128,19 @@ function launchBall() {
   game.status = 'playing';
 }
 
+const PAUSE_KEYS = [ 'KeyP', 'Escape' ];
+
+// playing <-> paused. Any other status ignores the pause keys.
+function togglePause() {
+  if ( game.status === 'playing' ) {
+    game.status = 'paused';
+    keys.left = false;
+    keys.right = false;
+  } else if ( game.status === 'paused' ) {
+    game.status = 'playing';
+  }
+}
+
 window.addEventListener( 'keydown', ( e ) => {
   if ( e.code === 'Space' ) {
     e.preventDefault();
@@ -136,6 +149,10 @@ window.addEventListener( 'keydown', ( e ) => {
   }
   if ( e.code === 'KeyM' ) {
     if ( !e.repeat ) toggleMute();
+    return;
+  }
+  if ( PAUSE_KEYS.includes( e.code ) ) {
+    if ( !e.repeat ) togglePause();
     return;
   }
   const dir = KEY_MAP[ e.code ];
@@ -295,6 +312,7 @@ function updateExplosions( dt ) {
 }
 
 function update( dt ) {
+  if ( game.status === 'paused' ) return;
   updatePaddle( dt );
   updateExplosions( dt );
   if ( game.status === 'ready' ) stickBallToPaddle();
