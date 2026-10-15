@@ -68,7 +68,7 @@ Conventions:
 ## Acceptance criteria
 
 - [x] A bounce off the left wall, the right wall and the ceiling each play `ball-bounce.mp3`.
-- [ ] A bounce off the paddle plays `ball-bounce.mp3`.
+- [x] A bounce off the paddle plays `ball-bounce.mp3`.
 - [ ] Destroying a brick plays `break-sound.mp3` and does not play `ball-bounce.mp3` in the same hit.
 - [ ] Two sounds triggered in quick succession restart from the beginning with no console errors.
 - [ ] Pressing `M` mutes both sounds; pressing `M` again restores them. Holding `M` toggles only once.

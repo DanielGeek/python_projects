@@ -251,6 +251,7 @@ function bounceOffPaddle() {
   b.vx = BALL_SPEED * Math.sin( angle );
   b.vy = -BALL_SPEED * Math.cos( angle );
   b.y = p.y - b.r;
+  playSound( sounds.bounce );
 }
 
 function updateExplosions( dt ) {
