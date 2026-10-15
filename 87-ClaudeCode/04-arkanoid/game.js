@@ -289,7 +289,8 @@ function update( dt ) {
   if ( game.status === 'ready' ) stickBallToPaddle();
   else if ( game.status === 'playing' ) moveBall( dt );
   if ( game.status === 'playing' && game.explosions.length === 0 && game.bricks.every( ( br ) => !br.alive ) ) {
-    game.status = 'won';
+    if ( game.level + 1 < LEVELS.length ) loadLevel( game.level + 1 );
+    else game.status = 'won';
   }
 }
 
@@ -299,6 +300,10 @@ function drawHud() {
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left';
   ctx.fillText( 'Score: ' + game.score, BRICK_MARGIN_X, 30 );
+
+  ctx.textAlign = 'center';
+  ctx.fillText( 'Level ' + ( game.level + 1 ) + '/' + LEVELS.length, CANVAS_W / 2, 30 );
+  ctx.textAlign = 'left';
 
   // Lives: one ball sprite per remaining life, right-aligned to the brick margin.
   const size = 16;
