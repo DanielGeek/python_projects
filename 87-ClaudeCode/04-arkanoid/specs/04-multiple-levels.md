@@ -95,7 +95,7 @@ Conventions:
 
 - [x] On load, level 1 shows 60 bricks in 10 × 6, coloured per row exactly as in SPEC 01.
 - [x] `LEVELS` and `LEVEL_COLORS` are defined in `levels.js`, loaded from `index.html` before `game.js`, and `game.js` contains no level grids.
-- [ ] Level 2 shows the 38-brick diamond and level 3 the 40-brick frame, with the layouts and colours defined above.
+- [x] Level 2 shows the 38-brick diamond and level 3 the 40-brick frame, with the layouts and colours defined above.
 - [x] Destroying the last brick of a level plays its full explosion and then loads the next level, with the ball stuck to the paddle in `ready` status.
 - [x] Score and lives are unchanged by the level change.
 - [x] The next level starts only after the last explosion has finished; no explosion from the previous level remains.
@@ -103,7 +103,7 @@ Conventions:
 - [ ] "You win!" appears only after level 3 is cleared, with a final score of 1380 if no brick is missed.
 - [ ] Losing a life keeps the current level and its remaining bricks.
 - [ ] Losing the third life shows "Game Over" on any level; restart goes to level 1 with 3 lives, 0 points and 60 bricks.
-- [ ] The HUD shows "Level 1/3", "Level 2/3" and "Level 3/3" at the right moments.
+- [x] The HUD shows "Level 1/3", "Level 2/3" and "Level 3/3" at the right moments.
 - [ ] Ball speed is the same in all levels.
 - [ ] The browser console shows no errors.
 
