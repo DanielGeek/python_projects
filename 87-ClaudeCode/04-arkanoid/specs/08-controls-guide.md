@@ -1,6 +1,6 @@
 # SPEC 08 — Controls guide
 
-> **Status:** Approved.
+> **Status:** Implemented.
 > **Depends on:** SPEC 01, SPEC 05, SPEC 06
 > **Date:** 2026-10-14
 > **Objective:** Show a static guide under the mute indicator, outside the canvas, that lists how to move, launch the ball and pause, with each key drawn as a small key-cap badge like the `M`.
@@ -86,16 +86,16 @@ Conventions:
 
 ## Acceptance criteria
 
-- [ ] On load, a "Controls" guide shows under the mute indicator, outside the canvas, left-aligned with it and 12 px from the canvas's right edge.
-- [ ] The guide lists, in order: Move (`←` `→`, `A` `D`, mouse), Launch (`Space`, click) and Pause (`P`, `Esc`), with each key in a badge styled like the `M`.
-- [ ] Every key and input listed in the guide does what it says in the game: arrows, `A`, `D` and the mouse move the paddle; Space and a click launch the ball; `P` and `Esc` pause and resume.
-- [ ] At window sizes from 1024 × 700 up to 1920 × 1080 the guide does not overlap the canvas, and no label or key is clipped.
-- [ ] On windows narrower than 968 px the guide is stacked under the mute indicator in the top-right corner of the viewport.
-- [ ] The guide is the same in every game status and does not change when keys are pressed.
-- [ ] Clicking the guide does nothing and does not change the focus or the game; its text cannot be selected.
-- [ ] The guide has the accessible name "Controls".
-- [ ] The mute indicator, canvas size and position, and the game behave exactly as in SPEC 06.
-- [ ] The browser console shows no errors.
+- [x] On load, a "Controls" guide shows under the mute indicator, outside the canvas, left-aligned with it and 12 px from the canvas's right edge.
+- [x] The guide lists, in order: Move (`←` `→`, `A` `D`, mouse), Launch (`Space`, click) and Pause (`P`, `Esc`), with each key in a badge styled like the `M`.
+- [x] Every key and input listed in the guide does what it says in the game: arrows, `A`, `D` and the mouse move the paddle; Space and a click launch the ball; `P` and `Esc` pause and resume.
+- [x] At window sizes from 1024 × 700 up to 1920 × 1080 the guide does not overlap the canvas, and no label or key is clipped.
+- [x] On windows narrower than 968 px the guide is stacked under the mute indicator in the top-right corner of the viewport.
+- [x] The guide is the same in every game status and does not change when keys are pressed.
+- [x] Clicking the guide does nothing and does not change the focus or the game; its text cannot be selected.
+- [x] The guide has the accessible name "Controls".
+- [x] The mute indicator, canvas size and position, and the game behave exactly as in SPEC 06.
+- [x] The browser console shows no errors.
 
 ---
 
