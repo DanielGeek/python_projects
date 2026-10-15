@@ -180,10 +180,12 @@ canvas.addEventListener( 'mousemove', ( e ) => {
 
 canvas.addEventListener( 'click', handleAction );
 
-// Releasing focus must not leave a direction stuck.
+// Releasing focus must not leave a direction stuck, and pauses a running game.
+// Coming back does not resume it: that needs P or Esc.
 window.addEventListener( 'blur', () => {
   keys.left = false;
   keys.right = false;
+  if ( game.status === 'playing' ) togglePause();
 } );
 
 let lastTime = 0;
