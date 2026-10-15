@@ -1,6 +1,6 @@
 # SPEC 02 — Brick explosion animation
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01
 > **Date:** 2026-10-14
 > **Objective:** When the ball destroys a brick, play the 4-frame explosion from `EXPLOSION_FRAMES` in the brick's colour instead of making it vanish instantly.
@@ -60,17 +60,17 @@ Conventions:
 
 ## Acceptance criteria
 
-- [ ] Hitting a brick shows a 4-frame explosion at the brick's exact position and size, then the brick area is empty.
-- [ ] The explosion uses the frames of the destroyed brick's colour (a red brick explodes red, a green brick green, etc.).
-- [ ] The whole animation lasts 150 ms (±1 frame at 60 fps), with the 4 frames shown in order and for equal time.
-- [ ] The ball never collides with an exploding brick and passes through its area freely.
-- [ ] The ball still bounces off the destroyed brick on the hit, exactly as in SPEC 01.
-- [ ] Each brick adds exactly 10 points at the moment of the hit; the HUD updates immediately.
-- [ ] Several explosions can play at the same time without errors or visual glitches.
-- [ ] Destroying the last brick plays its explosion in full and the "You win!" overlay appears only afterwards, with a final score of 600.
-- [ ] Losing a life while explosions are running does not interrupt them.
-- [ ] Restarting the game mid-explosion leaves no explosion on screen and the grid has 60 fresh bricks.
-- [ ] The browser console shows no errors and no request to `assets/sounds/` is made.
+- [x] Hitting a brick shows a 4-frame explosion at the brick's exact position and size, then the brick area is empty.
+- [x] The explosion uses the frames of the destroyed brick's colour (a red brick explodes red, a green brick green, etc.).
+- [x] The whole animation lasts 150 ms (±1 frame at 60 fps), with the 4 frames shown in order and for equal time.
+- [x] The ball never collides with an exploding brick and passes through its area freely.
+- [x] The ball still bounces off the destroyed brick on the hit, exactly as in SPEC 01.
+- [x] Each brick adds exactly 10 points at the moment of the hit; the HUD updates immediately.
+- [x] Several explosions can play at the same time without errors or visual glitches.
+- [x] Destroying the last brick plays its explosion in full and the "You win!" overlay appears only afterwards, with a final score of 600.
+- [x] Losing a life while explosions are running does not interrupt them.
+- [x] Restarting the game mid-explosion leaves no explosion on screen and the grid has 60 fresh bricks.
+- [x] The browser console shows no errors and no request to `assets/sounds/` is made.
 
 ---
 
