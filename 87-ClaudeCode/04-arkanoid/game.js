@@ -439,7 +439,7 @@ function drawMenu() {
   DIFFICULTIES.forEach( ( d, i ) => {
     const selected = i === game.difficulty;
     ctx.fillStyle = selected ? '#fff' : '#888';
-    const text = ( selected ? '> ' : '  ' ) + ( i + 1 ) + '. ' + d.label.padEnd( 6 ) +
+    const text = ( selected ? '> ' : '  ' ) + ( i + 1 ) + '. ' + d.label.padEnd( 8 ) +
       d.ballSpeed + ' px/s  ' + d.lives + ' lives';
     ctx.fillText( text, CANVAS_W / 2, 270 + i * 50 );
   } );
