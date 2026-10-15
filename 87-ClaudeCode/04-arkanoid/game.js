@@ -349,9 +349,25 @@ function drawHud() {
   ctx.fillText( 'Lives:', spritesX - 10, 30 );
 }
 
-function drawOverlay() {
+// Dim layer shared by the pause, win and Game Over overlays.
+function dimField() {
   ctx.fillStyle = 'rgba( 0, 0, 0, 0.7 )';
   ctx.fillRect( 0, 0, CANVAS_W, CANVAS_H );
+}
+
+function drawPausedOverlay() {
+  dimField();
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = 'bold 56px monospace';
+  ctx.fillText( 'Paused', CANVAS_W / 2, CANVAS_H / 2 - 20 );
+  ctx.font = '20px monospace';
+  ctx.fillText( 'Press P or Esc to resume', CANVAS_W / 2, CANVAS_H / 2 + 30 );
+}
+
+function drawOverlay() {
+  dimField();
 
   ctx.fillStyle = '#fff';
   ctx.textAlign = 'center';
@@ -379,6 +395,7 @@ function draw() {
   drawSprite( ctx, 'paddle', p.x, p.y, p.w, p.h );
   drawSprite( ctx, 'ball', b.x - b.r, b.y - b.r, b.r * 2, b.r * 2 );
   if ( game.status === 'won' || game.status === 'lost' ) drawOverlay();
+  else if ( game.status === 'paused' ) drawPausedOverlay();
 }
 
 function frame( now ) {
