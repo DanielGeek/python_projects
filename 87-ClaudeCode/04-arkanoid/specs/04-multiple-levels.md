@@ -1,6 +1,6 @@
 # SPEC 04 — Multiple levels
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01, SPEC 02, SPEC 03
 > **Date:** 2026-10-14
 > **Objective:** Replace the single fixed brick grid with three hand-made levels that advance automatically when a level is cleared, keeping score and lives, and show "You win!" only after the last level.
@@ -100,12 +100,12 @@ Conventions:
 - [x] Score and lives are unchanged by the level change.
 - [x] The next level starts only after the last explosion has finished; no explosion from the previous level remains.
 - [x] The ball falling while the last brick of a level is exploding does not cost a life or cause Game Over (SPEC 02 rule still holds).
-- [ ] "You win!" appears only after level 3 is cleared, with a final score of 1380 if no brick is missed.
-- [ ] Losing a life keeps the current level and its remaining bricks.
-- [ ] Losing the third life shows "Game Over" on any level; restart goes to level 1 with 3 lives, 0 points and 60 bricks.
+- [x] "You win!" appears only after level 3 is cleared, with a final score of 1380 if no brick is missed.
+- [x] Losing a life keeps the current level and its remaining bricks.
+- [x] Losing the third life shows "Game Over" on any level; restart goes to level 1 with 3 lives, 0 points and 60 bricks.
 - [x] The HUD shows "Level 1/3", "Level 2/3" and "Level 3/3" at the right moments.
-- [ ] Ball speed is the same in all levels.
-- [ ] The browser console shows no errors.
+- [x] Ball speed is the same in all levels.
+- [x] The browser console shows no errors.
 
 ---
 
