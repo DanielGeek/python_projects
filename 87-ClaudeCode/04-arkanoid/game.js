@@ -9,14 +9,12 @@ const BALL_SPEED = 400; // px/s, constant for the whole game
 const LAUNCH_ANGLE = 15 * Math.PI / 180; // tilt from the vertical
 const MAX_BOUNCE_ANGLE = 60 * Math.PI / 180; // paddle edge exit angle from the vertical
 const COLS = 10;
-const ROWS = 6;
 const BRICK_W = 72;
 const BRICK_H = 24;
 const BRICK_MARGIN_X = ( CANVAS_W - COLS * BRICK_W ) / 2;
 const BRICK_TOP = 60;
 const LIVES = 3;
 const POINTS_PER_BRICK = 10;
-const ROW_COLORS = [ 'red', 'yellow', 'cyan', 'magenta', 'hotpink', 'green' ]; // top to bottom
 const MAX_STEP = BALL_R / 2; // max ball displacement per sub-step, well below the radius
 
 const canvas = document.getElementById( 'game' );
@@ -46,20 +44,25 @@ function toggleMute() {
   }
 }
 
-function buildBricks() {
+// Builds the bricks of LEVELS[ level ] (levels.js), skipping '.' cells.
+function buildBricks( level ) {
   const bricks = [];
-  for ( let row = 0; row < ROWS; row++ ) {
+  LEVELS[ level ].forEach( ( line, row ) => {
     for ( let col = 0; col < COLS; col++ ) {
+      const letter = line[ col ];
+      if ( letter === '.' ) continue;
+      const color = LEVEL_COLORS[ letter ];
+      if ( !color ) throw new Error( 'Unknown brick letter "' + letter + '" in level ' + ( level + 1 ) + ', row ' + ( row + 1 ) );
       bricks.push( {
         x: BRICK_MARGIN_X + col * BRICK_W,
         y: BRICK_TOP + row * BRICK_H,
         w: BRICK_W,
         h: BRICK_H,
-        color: ROW_COLORS[ row ],
+        color,
         alive: true,
       } );
     }
-  }
+  } );
   return bricks;
 }
 
@@ -67,9 +70,10 @@ const game = {
   status: 'ready', // 'ready' | 'playing' | 'won' | 'lost'
   score: 0,
   lives: LIVES,
+  level: 0, // index into LEVELS
   paddle: { x: ( CANVAS_W - PADDLE_W ) / 2, y: PADDLE_Y, w: PADDLE_W, h: PADDLE_H },
   ball: { x: 0, y: 0, r: BALL_R, vx: 0, vy: 0 },
-  bricks: buildBricks(),
+  bricks: buildBricks( 0 ),
   explosions: [], // { x, y, w, h, color, elapsed } elapsed in ms, 0 → EXPLOSION_DURATION
 };
 
@@ -82,15 +86,21 @@ const KEY_MAP = {
   KeyD: 'right',
 };
 
-function resetGame() {
-  game.score = 0;
-  game.lives = LIVES;
-  game.bricks = buildBricks();
+// Starts a level: fresh bricks, no explosions, ball stuck to the paddle waiting for the launch.
+function loadLevel( index ) {
+  game.level = index;
+  game.bricks = buildBricks( index );
   game.explosions = [];
   game.status = 'ready';
   game.ball.vx = 0;
   game.ball.vy = 0;
   stickBallToPaddle();
+}
+
+function resetGame() {
+  game.score = 0;
+  game.lives = LIVES;
+  loadLevel( 0 );
 }
 
 // Space or click: launches the ball when ready, restarts from an overlay.

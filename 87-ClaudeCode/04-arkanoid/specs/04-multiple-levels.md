@@ -93,8 +93,8 @@ Conventions:
 
 ## Acceptance criteria
 
-- [ ] On load, level 1 shows 60 bricks in 10 × 6, coloured per row exactly as in SPEC 01.
-- [ ] `LEVELS` and `LEVEL_COLORS` are defined in `levels.js`, loaded from `index.html` before `game.js`, and `game.js` contains no level grids.
+- [x] On load, level 1 shows 60 bricks in 10 × 6, coloured per row exactly as in SPEC 01.
+- [x] `LEVELS` and `LEVEL_COLORS` are defined in `levels.js`, loaded from `index.html` before `game.js`, and `game.js` contains no level grids.
 - [ ] Level 2 shows the 38-brick diamond and level 3 the 40-brick frame, with the layouts and colours defined above.
 - [ ] Destroying the last brick of a level plays its full explosion and then loads the next level, with the ball stuck to the paddle in `ready` status.
 - [ ] Score and lives are unchanged by the level change.
