@@ -60,6 +60,34 @@
       border-radius: 4px;
       padding: 1px 6px;
     }
+    #controls-guide {
+      position: absolute;
+      top: 40px;
+      left: calc(100% + 12px);
+      max-width: 100px;
+      color: #c8c8c8;
+      font: 12px monospace;
+      pointer-events: none;
+      user-select: none;
+    }
+    #controls-guide .control + .control {
+      margin-top: 10px;
+    }
+    #controls-guide .control-label {
+      display: block;
+      margin-bottom: 4px;
+    }
+    #controls-guide .control-keys {
+      display: block;
+      line-height: 24px;
+    }
+    #controls-guide kbd {
+      border: 1px solid currentColor;
+      border-radius: 4px;
+      padding: 1px 6px;
+      margin-right: 2px;
+      font: bold 14px monospace;
+    }
     /* No free space beside the canvas (800 px + 2 * 84 px): fall back to the page corner. */
     @media (max-width: 968px) {
       #mute-indicator {
@@ -84,6 +112,22 @@
         <path class="cross" d="M16 9.5l5 5M21 9.5l-5 5"/>
       </svg>
       <span class="key-hint">M</span>
+    </div>
+    <div id="controls-guide" role="group" aria-label="Controls">
+      <div class="control">
+        <span class="control-label">Move</span>
+        <span class="control-keys">
+          <kbd>←</kbd><kbd>→</kbd> <kbd>A</kbd><kbd>D</kbd> <span class="control-or">or mouse</span>
+        </span>
+      </div>
+      <div class="control">
+        <span class="control-label">Launch</span>
+        <span class="control-keys"><kbd>Space</kbd> <span class="control-or">or click</span></span>
+      </div>
+      <div class="control">
+        <span class="control-label">Pause</span>
+        <span class="control-keys"><kbd>P</kbd> <kbd>Esc</kbd></span>
+      </div>
     </div>
   </div>
   <script src="assets/spritesheet.js"></script>
