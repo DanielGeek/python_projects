@@ -290,6 +290,10 @@ function draw() {
   for ( const brick of game.bricks ) {
     if ( brick.alive ) drawSprite( ctx, 'block_' + brick.color, brick.x, brick.y, brick.w, brick.h );
   }
+  for ( const e of game.explosions ) {
+    const index = Math.min( 3, Math.floor( e.elapsed / ( EXPLOSION_DURATION / 4 ) ) );
+    drawFrame( ctx, EXPLOSION_FRAMES[ e.color ][ index ], e.x, e.y, e.w, e.h );
+  }
   drawSprite( ctx, 'paddle', p.x, p.y, p.w, p.h );
   drawSprite( ctx, 'ball', b.x - b.r, b.y - b.r, b.r * 2, b.r * 2 );
   if ( game.status === 'won' || game.status === 'lost' ) drawOverlay();
