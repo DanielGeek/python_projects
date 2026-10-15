@@ -1,6 +1,6 @@
 # SPEC 06 — Pause and resume
 
-> **Status:** Draft
+> **Status:** Approved
 > **Depends on:** SPEC 01, SPEC 02, SPEC 03
 > **Date:** 2026-10-14
 > **Objective:** Let the player pause a running game with `P` or `Esc`, showing a "Paused" overlay with everything frozen, and resume it with the same keys, also pausing automatically when the window loses focus.
