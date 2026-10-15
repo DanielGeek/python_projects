@@ -37,6 +37,15 @@ function playSound( sound ) {
   sound.play().catch( () => {} );
 }
 
+function toggleMute() {
+  muted = !muted;
+  if ( !muted ) return;
+  for ( const sound of Object.values( sounds ) ) {
+    sound.pause();
+    sound.currentTime = 0;
+  }
+}
+
 function buildBricks() {
   const bricks = [];
   for ( let row = 0; row < ROWS; row++ ) {
@@ -102,6 +111,10 @@ window.addEventListener( 'keydown', ( e ) => {
   if ( e.code === 'Space' ) {
     e.preventDefault();
     if ( !e.repeat ) handleAction();
+    return;
+  }
+  if ( e.code === 'KeyM' ) {
+    if ( !e.repeat ) toggleMute();
     return;
   }
   const dir = KEY_MAP[ e.code ];
