@@ -157,8 +157,9 @@ window.addEventListener( 'keydown', ( e ) => {
   }
   const dir = KEY_MAP[ e.code ];
   if ( !dir ) return;
-  keys[ dir ] = true;
   e.preventDefault();
+  if ( game.status === 'paused' ) return; // the paddle is frozen, so a press during pause is not recorded
+  keys[ dir ] = true;
 } );
 
 window.addEventListener( 'keyup', ( e ) => {
@@ -170,6 +171,7 @@ window.addEventListener( 'keyup', ( e ) => {
 // The mouse sets the paddle position directly on movement, the keys move it from
 // wherever it is, so whichever input acted last decides the position.
 canvas.addEventListener( 'mousemove', ( e ) => {
+  if ( game.status === 'paused' ) return;
   const rect = canvas.getBoundingClientRect();
   const mouseX = ( e.clientX - rect.left ) * ( CANVAS_W / rect.width );
   const p = game.paddle;

@@ -73,7 +73,7 @@ Conventions:
 - [x] Holding `P` or `Esc` toggles the pause only once.
 - [x] While paused, the ball position, the brick state, the score and the lives do not change.
 - [ ] A brick explosion in progress freezes while paused and continues from the same frame on resume.
-- [ ] While paused, mouse movement and arrow keys do not move the paddle; after resume the paddle is where it was.
+- [x] While paused, mouse movement and arrow keys do not move the paddle; after resume the paddle is where it was.
 - [ ] After resuming, the ball keeps its speed and direction, with no visible jump.
 - [ ] The "Paused" overlay with "Press P or Esc to resume" shows while paused and is gone after resume.
 - [ ] Space and click do nothing while paused (no launch, no restart).
