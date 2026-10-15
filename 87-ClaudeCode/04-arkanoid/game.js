@@ -46,6 +46,7 @@ const game = {
   paddle: { x: ( CANVAS_W - PADDLE_W ) / 2, y: PADDLE_Y, w: PADDLE_W, h: PADDLE_H },
   ball: { x: 0, y: 0, r: BALL_R, vx: 0, vy: 0 },
   bricks: buildBricks(),
+  explosions: [], // { x, y, w, h, color, elapsed } elapsed in ms, 0 → EXPLOSION_DURATION
 };
 
 const keys = { left: false, right: false };
@@ -61,6 +62,7 @@ function resetGame() {
   game.score = 0;
   game.lives = LIVES;
   game.bricks = buildBricks();
+  game.explosions = [];
   game.status = 'ready';
   game.ball.vx = 0;
   game.ball.vy = 0;
