@@ -69,8 +69,8 @@ Conventions:
 
 ## Acceptance criteria
 
-- [ ] On load, the indicator shows the "sound on" icon and an `M` label in the top-right corner of the page.
-- [ ] The indicator is outside the canvas and never overlaps it at window sizes from 1024 × 700 up to 1920 × 1080.
+- [x] On load, the indicator shows the "sound on" icon and an `M` label in the top-right corner of the page.
+- [x] The indicator is outside the canvas and never overlaps it at window sizes from 1024 × 700 up to 1920 × 1080.
 - [ ] Pressing `M` once switches the icon to "muted"; pressing it again switches back to "sound on".
 - [ ] Holding `M` changes the icon only once (SPEC 03 rule).
 - [ ] The icon always matches the `muted` flag, in `ready`, `playing`, `won` and `lost` states.

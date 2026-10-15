@@ -19,10 +19,58 @@
     canvas {
       background: #000;
     }
+    #mute-indicator {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #c8c8c8;
+      font: bold 14px monospace;
+      pointer-events: none;
+      user-select: none;
+    }
+    #mute-indicator svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    #mute-indicator .icon-body {
+      stroke: none;
+    }
+    #mute-indicator .waves,
+    #mute-indicator .cross {
+      fill: none;
+    }
+    #mute-indicator[data-muted="false"] .icon-off,
+    #mute-indicator[data-muted="true"] .icon-on {
+      display: none;
+    }
+    #mute-indicator .key-hint {
+      border: 1px solid currentColor;
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
   </style>
 </head>
 <body>
   <canvas id="game" width="800" height="600"></canvas>
+  <div id="mute-indicator" data-muted="false" role="img" aria-label="Sound on">
+    <svg class="icon-on" viewBox="0 0 24 24" aria-hidden="true">
+      <path class="icon-body" d="M3 9v6h4l5 4V5L7 9H3z"/>
+      <path class="waves" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>
+    </svg>
+    <svg class="icon-off" viewBox="0 0 24 24" aria-hidden="true">
+      <path class="icon-body" d="M3 9v6h4l5 4V5L7 9H3z"/>
+      <path class="cross" d="M16 9.5l5 5M21 9.5l-5 5"/>
+    </svg>
+    <span class="key-hint">M</span>
+  </div>
   <script src="assets/spritesheet.js"></script>
   <script src="levels.js"></script>
   <script src="game.js"></script>
