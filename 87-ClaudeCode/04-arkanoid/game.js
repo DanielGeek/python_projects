@@ -244,8 +244,18 @@ function drawHud() {
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left';
   ctx.fillText( 'Score: ' + game.score, BRICK_MARGIN_X, 30 );
+
+  // Lives: one ball sprite per remaining life, right-aligned to the brick margin.
+  const size = 16;
+  const gap = 6;
+  const right = CANVAS_W - BRICK_MARGIN_X;
+  const spritesW = game.lives * size + Math.max( 0, game.lives - 1 ) * gap;
+  const spritesX = right - spritesW;
+  for ( let i = 0; i < game.lives; i++ ) {
+    drawSprite( ctx, 'ball', spritesX + i * ( size + gap ), 30 - size / 2, size, size );
+  }
   ctx.textAlign = 'right';
-  ctx.fillText( 'Lives: ' + game.lives, CANVAS_W - BRICK_MARGIN_X, 30 );
+  ctx.fillText( 'Lives:', spritesX - 10, 30 );
 }
 
 function drawOverlay() {
