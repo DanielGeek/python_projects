@@ -235,8 +235,14 @@ function bounceOffPaddle() {
   b.y = p.y - b.r;
 }
 
+function updateExplosions( dt ) {
+  for ( const explosion of game.explosions ) explosion.elapsed += dt * 1000;
+  game.explosions = game.explosions.filter( ( explosion ) => explosion.elapsed < EXPLOSION_DURATION );
+}
+
 function update( dt ) {
   updatePaddle( dt );
+  updateExplosions( dt );
   if ( game.status === 'ready' ) stickBallToPaddle();
   else if ( game.status === 'playing' ) moveBall( dt );
 }
