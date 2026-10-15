@@ -140,6 +140,30 @@ function launchBall() {
   game.status = 'playing';
 }
 
+const MENU_PICK_KEYS = { Digit1: 0, Digit2: 1, Digit3: 2 };
+const MENU_MOVE_KEYS = {
+  ArrowLeft: -1, ArrowUp: -1, KeyA: -1,
+  ArrowRight: 1, ArrowDown: 1, KeyD: 1,
+};
+
+// Menu keys: 1/2/3 pick and start, arrows and A/D move the highlight (no wrapping), Enter/Space start.
+function handleMenuKey( e ) {
+  const pick = MENU_PICK_KEYS[ e.code ];
+  const move = MENU_MOVE_KEYS[ e.code ];
+  const confirm = e.code === 'Space' || e.code === 'Enter';
+  if ( pick === undefined && move === undefined && !confirm ) return;
+  e.preventDefault();
+  if ( e.repeat ) return;
+  if ( pick !== undefined ) {
+    game.difficulty = pick;
+    startRun();
+  } else if ( move !== undefined ) {
+    game.difficulty = Math.max( 0, Math.min( DIFFICULTIES.length - 1, game.difficulty + move ) );
+  } else {
+    startRun();
+  }
+}
+
 const PAUSE_KEYS = [ 'KeyP', 'Escape' ];
 
 // playing <-> paused. Any other status ignores the pause keys.
@@ -159,10 +183,7 @@ window.addEventListener( 'keydown', ( e ) => {
     return;
   }
   if ( game.status === 'menu' ) {
-    if ( e.code === 'Space' || e.code === 'Enter' ) {
-      e.preventDefault();
-      if ( !e.repeat ) startRun();
-    }
+    handleMenuKey( e );
     return;
   }
   if ( e.code === 'Space' ) {
