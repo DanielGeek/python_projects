@@ -1,6 +1,6 @@
 # SPEC 07 — Difficulty selection
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01, SPEC 02, SPEC 03, SPEC 04, SPEC 06
 > **Date:** 2026-10-14
 > **Objective:** Show a start screen where the player picks Easy, Normal or Hard, which sets the ball speed and the number of lives for the whole run, and return to that screen after "You win!" or "Game Over".
