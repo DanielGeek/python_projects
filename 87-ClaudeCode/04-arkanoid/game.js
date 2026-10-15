@@ -83,7 +83,7 @@ const DIFFICULTIES = [
 ];
 
 const game = {
-  status: 'ready', // 'ready' | 'playing' | 'paused' | 'won' | 'lost'
+  status: 'menu', // 'menu' | 'ready' | 'playing' | 'paused' | 'won' | 'lost'
   difficulty: 1, // index into DIFFICULTIES
   score: 0,
   lives: DIFFICULTIES[ 1 ].lives,
@@ -120,7 +120,12 @@ function resetGame() {
   loadLevel( 0 );
 }
 
-// Space or click: launches the ball when ready, restarts from an overlay.
+// The only way out of the menu: starts a fresh run with the highlighted difficulty.
+function startRun() {
+  resetGame();
+}
+
+// Space or click: launches the ball when ready, restarts from an overlay. Does nothing in the menu.
 function handleAction() {
   if ( game.status === 'ready' ) launchBall();
   else if ( game.status === 'won' || game.status === 'lost' ) resetGame();
@@ -149,13 +154,20 @@ function togglePause() {
 }
 
 window.addEventListener( 'keydown', ( e ) => {
+  if ( e.code === 'KeyM' ) {
+    if ( !e.repeat ) toggleMute();
+    return;
+  }
+  if ( game.status === 'menu' ) {
+    if ( e.code === 'Space' || e.code === 'Enter' ) {
+      e.preventDefault();
+      if ( !e.repeat ) startRun();
+    }
+    return;
+  }
   if ( e.code === 'Space' ) {
     e.preventDefault();
     if ( !e.repeat ) handleAction();
-    return;
-  }
-  if ( e.code === 'KeyM' ) {
-    if ( !e.repeat ) toggleMute();
     return;
   }
   if ( PAUSE_KEYS.includes( e.code ) ) {
@@ -178,7 +190,7 @@ window.addEventListener( 'keyup', ( e ) => {
 // The mouse sets the paddle position directly on movement, the keys move it from
 // wherever it is, so whichever input acted last decides the position.
 canvas.addEventListener( 'mousemove', ( e ) => {
-  if ( game.status === 'paused' ) return;
+  if ( game.status === 'paused' || game.status === 'menu' ) return;
   const rect = canvas.getBoundingClientRect();
   const mouseX = ( e.clientX - rect.left ) * ( CANVAS_W / rect.width );
   const p = game.paddle;
@@ -324,7 +336,7 @@ function updateExplosions( dt ) {
 }
 
 function update( dt ) {
-  if ( game.status === 'paused' ) return;
+  if ( game.status === 'paused' || game.status === 'menu' ) return;
   updatePaddle( dt );
   updateExplosions( dt );
   if ( game.status === 'ready' ) stickBallToPaddle();
@@ -390,7 +402,36 @@ function drawOverlay() {
   ctx.fillText( 'Press Space or click to restart', CANVAS_W / 2, CANVAS_H / 2 + 60 );
 }
 
+// Start screen: title, one row per difficulty with its values, the highlighted one marked, key hint.
+function drawMenu() {
+  ctx.fillStyle = '#000';
+  ctx.fillRect( 0, 0, CANVAS_W, CANVAS_H );
+
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = 'bold 72px monospace';
+  ctx.fillText( 'Arkanoid', CANVAS_W / 2, 150 );
+
+  ctx.font = 'bold 28px monospace';
+  DIFFICULTIES.forEach( ( d, i ) => {
+    const selected = i === game.difficulty;
+    ctx.fillStyle = selected ? '#fff' : '#888';
+    const text = ( selected ? '> ' : '  ' ) + ( i + 1 ) + '. ' + d.label.padEnd( 6 ) +
+      d.ballSpeed + ' px/s  ' + d.lives + ' lives';
+    ctx.fillText( text, CANVAS_W / 2, 270 + i * 50 );
+  } );
+
+  ctx.fillStyle = '#aaa';
+  ctx.font = '18px monospace';
+  ctx.fillText( '1-3 pick and start   Arrows or A/D move   Enter or Space start', CANVAS_W / 2, 480 );
+}
+
 function draw() {
+  if ( game.status === 'menu' ) {
+    drawMenu();
+    return;
+  }
   ctx.clearRect( 0, 0, CANVAS_W, CANVAS_H );
   drawHud();
   const p = game.paddle;
