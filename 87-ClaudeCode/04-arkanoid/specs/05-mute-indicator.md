@@ -1,7 +1,7 @@
 # SPEC 05 — Mute indicator
 
-> **Status:** Draft
-> **Depends on:** SPEC 03
+> **Status:** Approved
+> **Depends on:** SPEC 03, SPEC 04
 > **Date:** 2026-10-14
 > **Objective:** Show a speaker icon with a small `M` key hint in the top-right corner of the page, outside the canvas, that switches between "sound on" and "muted" whenever the `M` key toggles mute.
 
