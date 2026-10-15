@@ -210,6 +210,7 @@ function bounceOffBricks() {
     }
 
     brick.alive = false;
+    game.explosions.push( { x: brick.x, y: brick.y, w: brick.w, h: brick.h, color: brick.color, elapsed: 0 } );
     game.score += POINTS_PER_BRICK;
     if ( game.bricks.every( ( br ) => !br.alive ) ) game.status = 'won';
     return; // one brick per sub-step
