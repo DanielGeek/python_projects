@@ -125,10 +125,11 @@ function startRun() {
   resetGame();
 }
 
-// Space or click: launches the ball when ready, restarts from an overlay. Does nothing in the menu.
+// Space or click: launches the ball when ready, returns to the menu from an overlay
+// (game.difficulty stays as the highlight). Does nothing in the menu.
 function handleAction() {
   if ( game.status === 'ready' ) launchBall();
-  else if ( game.status === 'won' || game.status === 'lost' ) resetGame();
+  else if ( game.status === 'won' || game.status === 'lost' ) game.status = 'menu';
 }
 
 function launchBall() {
