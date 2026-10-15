@@ -2,15 +2,37 @@
 
 A browser-based Arkanoid (brick-breaker) game drawn on an HTML5 Canvas.
 
-> **Status:** early stage. The sprite assets and sound effects are in place. The game code (`index.html`, game loop, levels) is not written yet.
+> **Status:** playable. Specs 01–08 are implemented (see `specs/`).
 
 ## How the game works
 
+- **Start screen:** pick a difficulty. It sets the ball speed and the lives for the whole run.
+
+  | Difficulty | Ball speed | Lives |
+  |------------|------------|-------|
+  | Easy       | 300 px/s   | 5     |
+  | Normal     | 400 px/s   | 3     |
+  | Hard       | 500 px/s   | 2     |
+
 - **Paddle:** sits at the bottom and moves left and right.
-- **Ball:** bounces off the walls, the ceiling, the paddle and the bricks. If it falls below the paddle, the player loses a life.
+- **Ball:** starts stuck to the paddle. It bounces off the walls, the ceiling, the paddle and the bricks. If it falls below the paddle, the player loses a life.
 - **Bounce angle:** depends on where the ball hits the paddle. The center sends it straight up. The edges send it out at a sharper angle.
-- **Bricks:** arranged in rows at the top. Each hit breaks a brick, plays an explosion animation and scores points.
-- **Win / lose:** clear all bricks to finish the level. Lose all lives and the game is over.
+- **Bricks:** each hit breaks a brick with a 150 ms explosion animation and scores 10 points.
+- **Levels:** three hand-made levels. Clearing one loads the next, keeping score and lives.
+- **Win / lose:** clear level 3 to win. Lose all lives and the game is over. Either way, Space or a click returns to the start screen.
+- **Sound:** a bounce sound on walls, ceiling and paddle, and a break sound on bricks.
+
+## Controls
+
+| Action | Keys |
+|--------|------|
+| Pick difficulty (start screen) | `1` `2` `3`, or arrows / `A` `D` then `Enter` / `Space` |
+| Move the paddle | `←` `→`, `A` `D`, or the mouse |
+| Launch the ball | `Space` or click |
+| Pause / resume | `P` or `Esc` (the game also pauses when the window loses focus) |
+| Mute / unmute | `M` |
+
+A speaker icon and a controls guide are shown beside the canvas.
 
 ## Project structure
 
@@ -18,6 +40,10 @@ A browser-based Arkanoid (brick-breaker) game drawn on an HTML5 Canvas.
 04-arkanoid/
 ├── README.md
 ├── CLAUDE.md                       # guidance for Claude Code
+├── index.html                      # page, canvas, mute indicator and controls guide
+├── game.js                         # game state, input, loop and drawing
+├── levels.js                       # LEVELS layouts and LEVEL_COLORS
+├── specs/                          # feature specs (01–08)
 ├── skills-lock.json                # pinned versions of the spec skills
 ├── assets/
 │   ├── spritesheet-breakout.png    # sprite atlas
@@ -75,10 +101,10 @@ Features are planned with a spec-driven workflow. The skills come from `Klerith/
 
 ## Running the game
 
-Not available yet. Once `index.html` exists, serve the folder with any static server, for example:
+There is no build step. Serve the project root with any static server, for example:
 
 ```sh
 python3 -m http.server 8000
 ```
 
-Then open `http://localhost:8000`.
+Then open `http://localhost:8000`. The page must be served from the project root so the sprite sheet path resolves.
