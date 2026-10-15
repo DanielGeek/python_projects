@@ -1,6 +1,6 @@
 # SPEC 08 — Controls guide
 
-> **Status:** Draft
+> **Status:** Approved.
 > **Depends on:** SPEC 01, SPEC 05, SPEC 06
 > **Date:** 2026-10-14
 > **Objective:** Show a static guide under the mute indicator, outside the canvas, that lists how to move, launch the ball and pause, with each key drawn as a small key-cap badge like the `M`.
