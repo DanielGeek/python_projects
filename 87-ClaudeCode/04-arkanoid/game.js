@@ -22,6 +22,21 @@ const MAX_STEP = BALL_R / 2; // max ball displacement per sub-step, well below t
 const canvas = document.getElementById( 'game' );
 const ctx = canvas.getContext( '2d' );
 
+const SOUND_BOUNCE = 'assets/sounds/ball-bounce.mp3';
+const SOUND_BREAK = 'assets/sounds/break-sound.mp3';
+
+const sounds = {
+  bounce: new Audio( SOUND_BOUNCE ),
+  brk: new Audio( SOUND_BREAK ),
+};
+let muted = false; // session-only, outside `game` so resetGame() never unmutes
+
+function playSound( sound ) {
+  if ( muted ) return;
+  sound.currentTime = 0;
+  sound.play().catch( () => {} );
+}
+
 function buildBricks() {
   const bricks = [];
   for ( let row = 0; row < ROWS; row++ ) {
