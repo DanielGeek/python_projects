@@ -183,14 +183,17 @@ function stepBall( dt ) {
   if ( b.x - b.r < 0 ) {
     b.x = b.r;
     b.vx = Math.abs( b.vx );
+    playSound( sounds.bounce );
   } else if ( b.x + b.r > CANVAS_W ) {
     b.x = CANVAS_W - b.r;
     b.vx = -Math.abs( b.vx );
+    playSound( sounds.bounce );
   }
 
   if ( b.y - b.r < 0 ) {
     b.y = b.r;
     b.vy = Math.abs( b.vy );
+    playSound( sounds.bounce );
   }
 
   bounceOffPaddle();
