@@ -142,6 +142,7 @@ function moveBall( dt ) {
 }
 
 function loseLife() {
+  if ( game.bricks.every( ( br ) => !br.alive ) ) return; // level cleared: the win is pending on the last explosion
   const b = game.ball;
   game.lives--;
   b.vx = 0;
@@ -212,7 +213,6 @@ function bounceOffBricks() {
     brick.alive = false;
     game.explosions.push( { x: brick.x, y: brick.y, w: brick.w, h: brick.h, color: brick.color, elapsed: 0 } );
     game.score += POINTS_PER_BRICK;
-    if ( game.bricks.every( ( br ) => !br.alive ) ) game.status = 'won';
     return; // one brick per sub-step
   }
 }
@@ -245,6 +245,9 @@ function update( dt ) {
   updateExplosions( dt );
   if ( game.status === 'ready' ) stickBallToPaddle();
   else if ( game.status === 'playing' ) moveBall( dt );
+  if ( game.status === 'playing' && game.explosions.length === 0 && game.bricks.every( ( br ) => !br.alive ) ) {
+    game.status = 'won';
+  }
 }
 
 function drawHud() {
