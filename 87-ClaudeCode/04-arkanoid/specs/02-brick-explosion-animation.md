@@ -1,6 +1,6 @@
 # SPEC 02 — Brick explosion animation
 
-> **Status:** Draft
+> **Status:** Approved
 > **Depends on:** SPEC 01
 > **Date:** 2026-10-14
 > **Objective:** When the ball destroys a brick, play the 4-frame explosion from `EXPLOSION_FRAMES` in the brick's colour instead of making it vanish instantly.
