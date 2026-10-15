@@ -35,8 +35,19 @@ function playSound( sound ) {
   sound.play().catch( () => {} );
 }
 
+const muteIndicator = document.getElementById( 'mute-indicator' );
+
+// Mirrors `muted` in the page indicator (index.html): the CSS picks the icon from data-muted.
+function updateMuteIndicator() {
+  muteIndicator.dataset.muted = String( muted );
+  muteIndicator.setAttribute( 'aria-label', muted ? 'Sound muted' : 'Sound on' );
+}
+
+updateMuteIndicator();
+
 function toggleMute() {
   muted = !muted;
+  updateMuteIndicator();
   if ( !muted ) return;
   for ( const sound of Object.values( sounds ) ) {
     sound.pause();
