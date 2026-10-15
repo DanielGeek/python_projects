@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Standalone HTML games copied into the vault.
+    "public/games/**",
   ]),
 ]);
 
