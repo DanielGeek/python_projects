@@ -5,7 +5,6 @@ const PADDLE_H = 16;
 const PADDLE_Y = CANVAS_H - 40;
 const PADDLE_SPEED = 600; // px/s
 const BALL_R = 8;
-const BALL_SPEED = 400; // px/s, constant for the whole game
 const LAUNCH_ANGLE = 15 * Math.PI / 180; // tilt from the vertical
 const MAX_BOUNCE_ANGLE = 60 * Math.PI / 180; // paddle edge exit angle from the vertical
 const COLS = 10;
@@ -13,7 +12,6 @@ const BRICK_W = 72;
 const BRICK_H = 24;
 const BRICK_MARGIN_X = ( CANVAS_W - COLS * BRICK_W ) / 2;
 const BRICK_TOP = 60;
-const LIVES = 3;
 const POINTS_PER_BRICK = 10;
 const MAX_STEP = BALL_R / 2; // max ball displacement per sub-step, well below the radius
 
@@ -77,10 +75,18 @@ function buildBricks( level ) {
   return bricks;
 }
 
+// ballSpeed in px/s, constant for the whole run.
+const DIFFICULTIES = [
+  { id: 'easy',   label: 'Easy',   ballSpeed: 300, lives: 5 },
+  { id: 'normal', label: 'Normal', ballSpeed: 400, lives: 3 },
+  { id: 'hard',   label: 'Hard',   ballSpeed: 500, lives: 2 },
+];
+
 const game = {
   status: 'ready', // 'ready' | 'playing' | 'paused' | 'won' | 'lost'
+  difficulty: 1, // index into DIFFICULTIES
   score: 0,
-  lives: LIVES,
+  lives: DIFFICULTIES[ 1 ].lives,
   level: 0, // index into LEVELS
   paddle: { x: ( CANVAS_W - PADDLE_W ) / 2, y: PADDLE_Y, w: PADDLE_W, h: PADDLE_H },
   ball: { x: 0, y: 0, r: BALL_R, vx: 0, vy: 0 },
@@ -110,7 +116,7 @@ function loadLevel( index ) {
 
 function resetGame() {
   game.score = 0;
-  game.lives = LIVES;
+  game.lives = DIFFICULTIES[ game.difficulty ].lives;
   loadLevel( 0 );
 }
 
@@ -123,8 +129,9 @@ function handleAction() {
 function launchBall() {
   const side = Math.random() < 0.5 ? -1 : 1;
   const b = game.ball;
-  b.vx = side * BALL_SPEED * Math.sin( LAUNCH_ANGLE );
-  b.vy = -BALL_SPEED * Math.cos( LAUNCH_ANGLE );
+  const speed = DIFFICULTIES[ game.difficulty ].ballSpeed;
+  b.vx = side * speed * Math.sin( LAUNCH_ANGLE );
+  b.vy = -speed * Math.cos( LAUNCH_ANGLE );
   game.status = 'playing';
 }
 
@@ -304,8 +311,9 @@ function bounceOffPaddle() {
   // -1 at the left edge, 0 at the centre, 1 at the right edge.
   const hit = Math.max( -1, Math.min( 1, ( b.x - ( p.x + p.w / 2 ) ) / ( p.w / 2 ) ) );
   const angle = hit * MAX_BOUNCE_ANGLE;
-  b.vx = BALL_SPEED * Math.sin( angle );
-  b.vy = -BALL_SPEED * Math.cos( angle );
+  const speed = DIFFICULTIES[ game.difficulty ].ballSpeed;
+  b.vx = speed * Math.sin( angle );
+  b.vy = -speed * Math.cos( angle );
   b.y = p.y - b.r;
   playSound( sounds.bounce );
 }
