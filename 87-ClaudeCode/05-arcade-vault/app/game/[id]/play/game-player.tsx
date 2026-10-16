@@ -87,6 +87,7 @@ export function GamePlayer({ game }: { game: Game }) {
       />
       <CRTScreen
         aspect={game.aspect}
+        label={game.title}
         on={!loading}
         overlay={
           <>

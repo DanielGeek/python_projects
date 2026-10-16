@@ -130,7 +130,20 @@ export function HUD({
   );
 }
 
-export function CRTScreen({ children, aspect = "4 / 3", on = true, overlay }: { children: ReactNode; aspect?: string; on?: boolean; overlay?: ReactNode }) {
+export function CRTScreen({
+  children,
+  aspect = "4 / 3",
+  on = true,
+  label = "ARCADE VAULT",
+  overlay,
+}: {
+  children: ReactNode;
+  aspect?: string;
+  on?: boolean;
+  /** Centered text in the footer, usually the game title. */
+  label?: string;
+  overlay?: ReactNode;
+}) {
   return (
     <div className="av-crt">
       <div className="av-crt-screen" style={{ aspectRatio: aspect }}>
@@ -138,8 +151,12 @@ export function CRTScreen({ children, aspect = "4 / 3", on = true, overlay }: { 
         {overlay}
       </div>
       <div className="av-crt-foot">
-        <span className="av-crt-brand">ARCADE VAULT</span>
-        <span className={cx("av-led", on && "av-led-on")} aria-hidden />
+        <span className="av-crt-signal">
+          <span className={cx("av-led", on && "av-led-on")} aria-hidden />
+          {on ? "SIGNAL OK" : "NO SIGNAL"}
+        </span>
+        <span className="av-crt-brand">{label.toUpperCase()}</span>
+        <span className="av-crt-spec">CRT-83 · 60 HZ</span>
       </div>
     </div>
   );

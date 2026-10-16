@@ -251,6 +251,10 @@ body { margin: 0; font-family: var(--font-mono); font-size: 16px; line-height: 2
 .av-crt-screen > iframe, .av-crt-screen > canvas, .av-crt-content { display: block; width: 100%; height: 100%; border: 0; }
 .av-crt-screen::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; box-shadow: var(--crt-inset); background: repeating-linear-gradient(to bottom, transparent 0 2px, var(--scanline) 2px 4px); }
 .av-crt-foot { display: flex; align-items: center; justify-content: space-between; padding-top: var(--space-3); }
+.av-crt-signal, .av-crt-spec { display: inline-flex; align-items: center; gap: var(--space-2); flex: 1; font-family: var(--font-display); font-size: 8px; line-height: 12px; letter-spacing: 2px; color: var(--ink-muted); }
+.av-crt-spec { justify-content: flex-end; }
+.av-crt-brand { text-align: center; }
+@media (max-width: 640px) { .av-crt-spec { display: none; } }
 .av-crt-brand { font-family: var(--font-display); font-size: 8px; line-height: 12px; letter-spacing: 2px; color: var(--ink-muted); }
 .av-led { width: 8px; height: 8px; background: var(--magenta); box-shadow: var(--glow-magenta); border-radius: var(--radius-none); }
 .av-led-on { background: var(--cyan); box-shadow: var(--glow-cyan); }
