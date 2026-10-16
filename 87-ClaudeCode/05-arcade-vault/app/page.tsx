@@ -1,5 +1,6 @@
 import { Activity } from "./_home/activity";
 import { Features } from "./_home/features";
+import { FinalCta } from "./_home/final-cta";
 import { GamesRail } from "./_home/games-rail";
 import { Hero } from "./_home/hero";
 import { Pricing } from "./_home/pricing";
@@ -14,6 +15,7 @@ export default function Home() {
       <Stats />
       <Activity />
       <Pricing />
+      <FinalCta />
     </div>
   );
 }

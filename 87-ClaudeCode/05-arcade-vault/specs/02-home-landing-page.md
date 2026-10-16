@@ -126,17 +126,17 @@ app/_home/final-cta.tsx      closing CTA
 ## Acceptance criteria
 
 - [ ] `npm run lint` and `npm run build` finish without errors.
-- [ ] `/` renders the 7 sections in this order: hero, "Why Arcade Vault?", "Games available now", stats, "Live activity", pricing, final CTA.
-- [ ] `/` does not contain the game grid or the search bar.
+- [x] `/` renders the 7 sections in this order: hero, "Why Arcade Vault?", "Games available now", stats, "Live activity", pricing, final CTA.
+- [x] `/` does not contain the game grid or the search bar.
 - [ ] `/library` shows the hero, the search bar, the category chips and the 8-game grid exactly as the old `/` did.
 - [x] The nav shows `Home`, `Library`, `Hall of Fame` and no `About` link, in the top bar and in the drawer.
 - [x] `Home` is highlighted only on `/`. `Library` is highlighted on `/library` and on `/game/*`.
 - [x] "Back to the Vault" on the detail page, the player, and the not-found page navigates to `/library`.
 - [x] "Back to the library" on the Hall of Fame navigates to `/library`.
 - [x] After signing in or choosing "Play as guest", the user lands on `/library`.
-- [ ] All visible landing text is in English, and no Spanish text remains on `/`.
+- [x] All visible landing text is in English, and no Spanish text remains on `/`.
 - [x] The hero shows 8 floating silhouettes and the title lines `THE CLASSIC`, `ARCADE IS`, `BACK`.
-- [ ] Each section below the hero starts hidden and becomes visible when it scrolls into view.
+- [x] Each section below the hero starts hidden and becomes visible when it scrolls into view.
 - [x] "Games available now" shows the first 6 games of `GAMES`, and each card opens `/game/<id>`.
 - [x] The "Create account" button is hidden for a signed-in non-guest user and visible for guests and anonymous users.
 - [x] For a signed-in user, the pricing button reads "Play now →" and goes to `/library`. Otherwise it reads "Start free →" and goes to `/login`.
@@ -144,7 +144,7 @@ app/_home/final-cta.tsx      closing CTA
 - [x] After saving a score in any game, it appears first in "Latest scores" with the game name and `just now`.
 - [x] "Top players · today" lists at most 5 players, best first, one row per player, using their best score of today only.
 - [x] A score saved with a date before today is shown in "Latest scores" but not in "Top players · today".
-- [ ] The landing has no horizontal scroll at 375 px width.
+- [x] The landing has no horizontal scroll at 375 px width.
 - [ ] The previous pages (`/library`, `/game/drop`, `/login`, `/hall-of-fame`) still render without console errors beyond the known Suspense warning.
 
 ---
