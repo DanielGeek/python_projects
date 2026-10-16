@@ -1,6 +1,6 @@
 # SPEC 01 — Visual parity with the reference screens
 
-> **Status:** Approved
+> **Status:** Implemented.
 > **Depends on:** none
 > **Date:** 2026-10-15
 > **Objective:** Close every visual gap between `app/` and the five screens in `references/templates/`, align the catalog with the reference games, and add a working credits counter.
