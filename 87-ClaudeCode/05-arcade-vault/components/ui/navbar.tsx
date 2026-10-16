@@ -8,7 +8,8 @@ import { signOut, useSession } from "@/lib/session";
 import { Button, ButtonLink, NeonLogo } from "./basics";
 
 const LINKS = [
-  { href: "/", label: "Library", match: (p: string) => p === "/" || p.startsWith("/game") },
+  { href: "/", label: "Home", match: (p: string) => p === "/" },
+  { href: "/library", label: "Library", match: (p: string) => p.startsWith("/library") || p.startsWith("/game") },
   { href: "/hall-of-fame", label: "Hall of Fame", match: (p: string) => p.startsWith("/hall-of-fame") },
 ];
 
@@ -67,7 +68,7 @@ export function Navbar() {
   return (
     <div className="av-nav-wrap">
       <nav className="av-nav" aria-label="Main">
-        <Link href="/" className="av-nav-logo" aria-label="Arcade Vault, go to the library">
+        <Link href="/" className="av-nav-logo" aria-label="Arcade Vault, go to the home page">
           <span className="av-logo-mark" aria-hidden />
           <NeonLogo size="sm" flicker={false} />
         </Link>

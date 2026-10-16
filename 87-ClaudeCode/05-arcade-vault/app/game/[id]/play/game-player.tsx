@@ -154,7 +154,7 @@ export function GamePlayer({ game }: { game: Game }) {
             <Button block onClick={restart}>
               Play again
             </Button>
-            <ButtonLink href="/" variant="ghost" block>
+            <ButtonLink href="/library" variant="ghost" block>
               Back to the Vault
             </ButtonLink>
           </>

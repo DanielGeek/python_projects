@@ -20,7 +20,7 @@ export function HallOfFame() {
       {/* key re-runs the staggered row entrance when switching games */}
       <Leaderboard key={gameId} entries={scores} title={false} currentPlayer={me} personalBest={me ? personalBest(scores, me) : undefined} />
       <div className="av-hof-back">
-        <ButtonLink href="/" size="lg">
+        <ButtonLink href="/library" size="lg">
           Back to the library
         </ButtonLink>
       </div>

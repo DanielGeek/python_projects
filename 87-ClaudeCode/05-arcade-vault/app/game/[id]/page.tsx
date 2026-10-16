@@ -50,7 +50,7 @@ export default async function GameDetail({ params }: PageProps<"/game/[id]">) {
           ) : (
             <span className="av-soon">COMING SOON TO THE VAULT</span>
           )}
-          <ButtonLink href="/" variant="ghost">
+          <ButtonLink href="/library" variant="ghost">
             Back to the Vault
           </ButtonLink>
         </div>

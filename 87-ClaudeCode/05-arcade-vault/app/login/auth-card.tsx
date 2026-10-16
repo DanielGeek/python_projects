@@ -28,7 +28,7 @@ export function AuthCard() {
     if (Object.keys(next).length) return;
     // BACKEND: send the credentials to the real auth provider here; the password is never stored locally.
     signIn(user);
-    router.push("/");
+    router.push("/library");
   }
 
   function social(provider: string) {
@@ -90,7 +90,7 @@ export function AuthCard() {
         block
         onClick={() => {
           playAsGuest();
-          router.push("/");
+          router.push("/library");
         }}
       >
         Play as guest

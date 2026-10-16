@@ -129,11 +129,11 @@ app/_home/final-cta.tsx      closing CTA
 - [ ] `/` renders the 7 sections in this order: hero, "Why Arcade Vault?", "Games available now", stats, "Live activity", pricing, final CTA.
 - [ ] `/` does not contain the game grid or the search bar.
 - [ ] `/library` shows the hero, the search bar, the category chips and the 8-game grid exactly as the old `/` did.
-- [ ] The nav shows `Home`, `Library`, `Hall of Fame` and no `About` link, in the top bar and in the drawer.
-- [ ] `Home` is highlighted only on `/`. `Library` is highlighted on `/library` and on `/game/*`.
-- [ ] "Back to the Vault" on the detail page, the player, and the not-found page navigates to `/library`.
-- [ ] "Back to the library" on the Hall of Fame navigates to `/library`.
-- [ ] After signing in or choosing "Play as guest", the user lands on `/library`.
+- [x] The nav shows `Home`, `Library`, `Hall of Fame` and no `About` link, in the top bar and in the drawer.
+- [x] `Home` is highlighted only on `/`. `Library` is highlighted on `/library` and on `/game/*`.
+- [x] "Back to the Vault" on the detail page, the player, and the not-found page navigates to `/library`.
+- [x] "Back to the library" on the Hall of Fame navigates to `/library`.
+- [x] After signing in or choosing "Play as guest", the user lands on `/library`.
 - [ ] All visible landing text is in English, and no Spanish text remains on `/`.
 - [ ] The hero shows 8 floating silhouettes and the title lines `THE CLASSIC`, `ARCADE IS`, `BACK`.
 - [ ] Each section below the hero starts hidden and becomes visible when it scrolls into view.
