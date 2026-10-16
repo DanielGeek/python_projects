@@ -593,7 +593,8 @@ body { margin: 0; font-family: var(--font-mono); font-size: 14px; line-height: 1
 .av-home-stat { text-align: center; padding: 20px; border-left: 1px solid var(--ref-line); }
 .av-home-stat:first-child { border-left: 0; }
 @media (max-width: 720px) { .av-home-stat { border-left: 0; border-top: 1px solid var(--ref-line); } .av-home-stat:first-child { border-top: 0; } }
-.av-home-stat-n { font-family: var(--font-display); font-size: clamp(32px, 5vw, 56px); line-height: 1.5; letter-spacing: 0.04em; overflow-wrap: anywhere; }
+/* Smaller than the reference (clamp(32px, 5vw, 56px)): the English word THOUSANDS does not fit a column at that size. */
+.av-home-stat-n { font-family: var(--font-display); font-size: clamp(22px, 2.4vw, 34px); line-height: 1.5; letter-spacing: 0.04em; }
 .av-home-stat-u { font-size: 13px; letter-spacing: 0.18em; margin-top: 10px; color: var(--ink); }
 .av-home-stat-s { font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); letter-spacing: 0.16em; margin-top: 8px; text-transform: uppercase; }
 
