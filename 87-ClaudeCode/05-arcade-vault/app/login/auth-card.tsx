@@ -39,6 +39,7 @@ export function AuthCard() {
   return (
     <div className="av-auth-card">
       <NeonLogo size="md" className="av-auth-logo" />
+      <p className="av-auth-sub">SYSTEM ACCESS · v2.6</p>
       <Tabs
         fill
         label="Account"
@@ -95,6 +96,7 @@ export function AuthCard() {
         Play as guest
       </Button>
       <p className="av-auth-caption">Without an account, your scores are saved on this device only.</p>
+      <p className="av-auth-terms">BY ENTERING YOU ACCEPT THE ARCADE TERMS</p>
     </div>
   );
 }
