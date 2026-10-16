@@ -59,7 +59,7 @@ export function Navbar() {
         </Button>
       </>
     ) : (
-      <ButtonLink href="/login" variant="outline" size="sm">
+      <ButtonLink href="/login" variant="outline">
         Sign In
       </ButtonLink>
     );
@@ -67,7 +67,8 @@ export function Navbar() {
   return (
     <div className="av-nav-wrap">
       <nav className="av-nav" aria-label="Main">
-        <Link href="/" aria-label="Arcade Vault, go to the library">
+        <Link href="/" className="av-nav-logo" aria-label="Arcade Vault, go to the library">
+          <span className="av-logo-mark" aria-hidden />
           <NeonLogo size="sm" flicker={false} />
         </Link>
         <div className="av-nav-links">{links}</div>

@@ -8,6 +8,8 @@ import { formatDate } from "@/lib/scores";
 import { Button, ScoreBadge, cx, formatScore } from "./basics";
 
 const ART: Record<Accent, string> = { cyan: "var(--cyan)", magenta: "var(--magenta)", yellow: "var(--yellow)", green: "var(--green)" };
+// Play-button color and glow (RGB triplet). Green games use the default cyan button, as in the reference.
+const BTN: Record<Accent, string> = { cyan: "0, 245, 255", magenta: "255, 0, 110", yellow: "245, 255, 0", green: "0, 245, 255" };
 
 export function CoverArt({ id }: { id: string }) {
   return <div className={`av-cover av-cover-${id}`} aria-hidden />;
@@ -40,35 +42,35 @@ export function GameCard({
     const r = el.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width - 0.5;
     const y = (e.clientY - r.top) / r.height - 0.5;
-    el.style.transform = `perspective(800px) rotateX(${(-y * 8).toFixed(2)}deg) rotateY(${(x * 10).toFixed(2)}deg) translateY(-6px) scale(1.03)`;
+    el.style.transform = `translateY(-6px) rotateX(${(-y * 6).toFixed(2)}deg) rotateY(${(x * 8).toFixed(2)}deg)`;
   }
   return (
     <article
       ref={ref}
       className="av-card"
-      style={{ "--av-art": ART[accent] } as CSSProperties}
+      style={{ "--av-art": ART[accent], "--av-rgb": BTN[accent] } as CSSProperties}
       onMouseMove={move}
       onMouseLeave={() => ref.current && (ref.current.style.transform = "")}
     >
       <div className="av-card-art">
         {category && <span className="av-card-cat">{category.toUpperCase()}</span>}
         <CoverArt id={id} />
-        <div className="av-card-badge">
-          <ScoreBadge score={highScore} />
-        </div>
       </div>
       <div className="av-card-body">
         <h3 className="av-card-title">{title}</h3>
         <p className="av-card-desc">{description}</p>
-        {available ? (
-          <Link href={href} className="av-btn av-btn-outline av-btn-block" aria-label={`Play ${title}`}>
-            Play
-          </Link>
-        ) : (
-          <Button variant="outline" block disabled>
-            Coming soon
-          </Button>
-        )}
+        <div className="av-card-row">
+          <ScoreBadge score={highScore} />
+          {available ? (
+            <Link href={href} className="av-btn av-btn-outline" aria-label={`Play ${title}`}>
+              PLAY
+            </Link>
+          ) : (
+            <Button variant="outline" disabled>
+              COMING SOON
+            </Button>
+          )}
+        </div>
       </div>
     </article>
   );

@@ -30,7 +30,7 @@ export function SearchBar({
   categories,
   category,
   onCategoryChange,
-  placeholder = "Search by name or category…",
+  placeholder = "Search for a game by name…",
 }: {
   value: string;
   onChange: (q: string) => void;
@@ -43,7 +43,9 @@ export function SearchBar({
   return (
     <div className="av-search" role="search">
       <div className="av-search-box">
-        <span className="av-search-icon" aria-hidden />
+        <span className="av-search-icon" aria-hidden>
+          ⌕
+        </span>
         <label className="av-sr" htmlFor={id}>
           Search games
         </label>
