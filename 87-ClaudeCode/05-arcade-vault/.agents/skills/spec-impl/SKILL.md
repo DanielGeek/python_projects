@@ -1,6 +1,6 @@
 ---
 name: spec-impl
-description: Implements an approved spec. Validates that the state means "Approved" (in any language), creates a git branch named `feature/<slug>` or `fix/<slug>` after the spec, switches to it, and starts the implementation step by step with pauses to review diffs.
+description: Implements an approved spec. Validates that the state means "Approved" (in any language), creates a git branch named `feature/<slug>`, `bugfix/<slug>` or `hotfix/<slug>` (Git Flow) after the spec, switches to it, and starts the implementation step by step with pauses to review diffs.
 disable-model-invocation: true
 argument-hint: <NN-spec-name>
 allowed-tools: Read, Glob, Grep, Edit, Write, AskUserQuestion, Bash(git status:*), Bash(git branch:*), Bash(git checkout:*), Bash(git log:*), Bash(git diff:*), Bash(git stash:*), Bash(cat:*), Bash(ls:*)
@@ -114,19 +114,22 @@ Once you have confirmed the state means `Approved`:
 
    Wait for the answer. **Do not stash or commit on the user's behalf** unless they explicitly ask for it. If the working tree is clean, skip straight to step 1 without mentioning it.
 
-1. Derive the branch name as `<prefix>/<slug>`:
+1. Derive the branch name as `<prefix>/<slug>`, following Git Flow naming:
 
-   - **`<slug>`** is the spec file name without the extension and without the leading `NN-` number.
+   - **`<slug>`** is the spec file name without the extension and without the leading `NN-` number. Lowercase, words separated by hyphens.
    - **`<prefix>`** depends on the kind of work the spec describes:
      - `feature/` — new functionality, improvements, refactors, UI work (the default).
-     - `fix/` — the spec fixes a bug or a defect in existing behavior.
-   - Decide the prefix from the spec's title, objective and scope. If it is not clearly a feature or a fix, ask the user: "Is this a feature or a fix?" and wait for the answer.
+     - `bugfix/` — the spec fixes a bug or a defect found during development.
+     - `hotfix/` — the spec is an urgent fix for something already in production.
+     - `release/` is not used by specs: it is created manually when preparing a version.
+   - Decide the prefix from the spec's title, objective and scope. If it is not clearly one of the three, ask the user: "Is this a feature, a bugfix or a hotfix?" and wait for the answer.
 
    Examples:
 
    - `01-mvp-arkanoid.md` (new functionality) → branch `feature/mvp-arkanoid`
    - `02-powerups.md` (new functionality) → branch `feature/powerups`
-   - `03-fix-ball-stuck-on-paddle.md` (bug fix) → branch `fix/fix-ball-stuck-on-paddle`
+   - `03-ball-stuck-on-paddle.md` (bug) → branch `bugfix/ball-stuck-on-paddle`
+   - `04-score-not-saved-in-prod.md` (urgent production fix) → branch `hotfix/score-not-saved-in-prod`
 
 2. Read the `AutoCreateBranch` flag from the **Branch-creation config** shown in the session context above.
 

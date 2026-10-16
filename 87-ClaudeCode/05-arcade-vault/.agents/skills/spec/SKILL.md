@@ -122,7 +122,7 @@ When the content is ready (either because you had everything, or because all sec
    # spec workflow configuration
    #
    # AutoCreateBranch — controls whether /spec-impl creates the git branch automatically.
-   #   true  (default) → /spec-impl creates and switches to feature/<slug> or fix/<slug> without asking
+   #   true  (default) → /spec-impl creates and switches to feature/<slug>, bugfix/<slug> or hotfix/<slug> without asking
    #   false           → /spec-impl asks for [y/N] confirmation before creating the branch
    AutoCreateBranch: true
    ```
