@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/", label: "Home", match: (p: string) => p === "/" },
   { href: "/library", label: "Library", match: (p: string) => p.startsWith("/library") || p.startsWith("/game") },
   { href: "/hall-of-fame", label: "Hall of Fame", match: (p: string) => p.startsWith("/hall-of-fame") },
+  { href: "/about", label: "About", match: (p: string) => p.startsWith("/about") },
 ];
 
 function Credits() {
