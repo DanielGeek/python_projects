@@ -125,10 +125,10 @@ app/_home/final-cta.tsx      closing CTA
 
 ## Acceptance criteria
 
-- [ ] `npm run lint` and `npm run build` finish without errors.
+- [x] `npm run lint` and `npm run build` finish without errors.
 - [x] `/` renders the 7 sections in this order: hero, "Why Arcade Vault?", "Games available now", stats, "Live activity", pricing, final CTA.
 - [x] `/` does not contain the game grid or the search bar.
-- [ ] `/library` shows the hero, the search bar, the category chips and the 8-game grid exactly as the old `/` did.
+- [x] `/library` shows the hero, the search bar, the category chips and the 8-game grid exactly as the old `/` did.
 - [x] The nav shows `Home`, `Library`, `Hall of Fame` and no `About` link, in the top bar and in the drawer.
 - [x] `Home` is highlighted only on `/`. `Library` is highlighted on `/library` and on `/game/*`.
 - [x] "Back to the Vault" on the detail page, the player, and the not-found page navigates to `/library`.
@@ -145,7 +145,7 @@ app/_home/final-cta.tsx      closing CTA
 - [x] "Top players · today" lists at most 5 players, best first, one row per player, using their best score of today only.
 - [x] A score saved with a date before today is shown in "Latest scores" but not in "Top players · today".
 - [x] The landing has no horizontal scroll at 375 px width.
-- [ ] The previous pages (`/library`, `/game/drop`, `/login`, `/hall-of-fame`) still render without console errors beyond the known Suspense warning.
+- [x] The previous pages (`/library`, `/game/drop`, `/login`, `/hall-of-fame`) still render without console errors beyond the known Suspense warning.
 
 ---
 

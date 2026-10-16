@@ -19,13 +19,14 @@ Next 16.4.1 / React 19.3 / Tailwind 4 (`@tailwindcss/turbopack`). APIs differ fr
 
 ## Architecture
 
-- `app/` — App Router. Routes: `/` (library), `/game/[id]` (detail), `/game/[id]/play` (player), `/login`, `/hall-of-fame`.
+- `app/` — App Router. Routes: `/` (landing), `/library` (game library), `/game/[id]` (detail), `/game/[id]/play` (player), `/login`, `/hall-of-fame`. Anything that means "back to the library" links to `/library`; the logo links to `/`.
+- `app/_home/` — landing sections, one file each: `hero`, `features`, `games-rail`, `stats`, `activity`, `pricing`, `final-cta`, plus `silhouettes`, `section-head` and `reveal` (client wrapper that fades a section in once, using `IntersectionObserver`). `hero` and `pricing` read `useSession` to hide "Create account" and turn "Start free" into "Play now". `stats` and `pricing` are static marketing copy; `activity` shows real scores. The `_` prefix keeps the folder out of routing. Landing CSS is `av-home-*` in `app/globals.css`, ported from `references/templates/home-about/`.
 - `components/ui/` — shared UI primitives (`basics.tsx` has `cx` and base components; `interactive.tsx` has client components such as `Input` and `SearchBar`; `game.tsx` has `GameCard`, `CoverArt`, `HUD`, `CRTScreen`, `Podium`, `Leaderboard`). Per-game cover art is CSS only: `av-cover-<gameId>` in `app/globals.css`. They use `av-*` CSS class names defined in `app/globals.css`.
 - `lib/` — client-side data layer, all stand-ins for a future backend:
   - `games.ts` — static `GAMES` catalog (8 games), `CATEGORIES` (Arcade, Puzzle, Shooter, Versus), `getGame`. Accents: cyan, magenta, yellow, green. `difficulty`, `plays` and `tags` feed the detail stat strip (`plays` is mock data). `src: null` means the game is listed but not playable yet (serpent, muncher, invaders, froggy, pixel-duel).
   - `session.ts` — fake auth in localStorage (`arcade-vault:session`), exposed via `useSession` (`useSyncExternalStore`). Guests are named `GUEST`.
   - `credits.ts` — per-device credit counter in localStorage (`arcade-vault:credits`, starts at 3), exposed via `useCredits`, `spendCredit`, `insertCoin`. The player spends one credit per game start (mount and "Play again"); at 0 it shows `INSERT COIN` instead of the game. The Nav shows the balance.
-  - `scores.ts` — per-game leaderboards in localStorage (`arcade-vault:scores:<gameId>`, top 50). `useScores` subscribes to a custom `arcade-vault:scores` event plus `storage`.
+  - `scores.ts` — per-game leaderboards in localStorage (`arcade-vault:scores:<gameId>`, top 50). `useScores` subscribes to a custom `arcade-vault:scores` event plus `storage`. Cross-game helpers for the landing: `useAllScores`, `latestScores`, `topPlayersToday` (best score per player, local calendar day) and `timeAgo`.
   - These modules carry `BACKEND:` comments marking where the real API or Supabase calls should replace the localStorage code. Keep the exported function signatures stable when swapping.
 - `public/games/<id>/` — playable games (brick-buster, drop, rocks) are static HTML/canvas copies of sibling projects, embedded in the host page via iframe. They are not part of the React build.
 
