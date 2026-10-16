@@ -7,7 +7,7 @@ import type { ScoreEntry } from "@/lib/scores";
 import { formatDate } from "@/lib/scores";
 import { Button, ScoreBadge, cx, formatScore } from "./basics";
 
-const ART: Record<Accent, string> = { cyan: "var(--cyan)", magenta: "var(--magenta)", yellow: "var(--yellow)" };
+const ART: Record<Accent, string> = { cyan: "var(--cyan)", magenta: "var(--magenta)", yellow: "var(--yellow)", green: "var(--green)" };
 
 export function GameCard({
   href,

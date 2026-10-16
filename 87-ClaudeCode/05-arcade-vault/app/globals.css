@@ -12,6 +12,7 @@
   --cyan: #00f5ff;
   --magenta: #ff006e;
   --yellow: #f5ff00;
+  --green: #00ff88;
   --on-neon: var(--void);
   --gold: #ffd23f;
   --silver: #c8d3e0;
@@ -23,6 +24,7 @@
   --glow-cyan-strong: 0 0 8px #00f5ffcc, 0 0 28px #00f5ff99, 0 0 56px #00f5ff4d;
   --glow-magenta: 0 0 6px #ff006e99, 0 0 18px #ff006e4d;
   --glow-yellow: 0 0 6px #f5ff0099, 0 0 18px #f5ff004d;
+  --glow-green: 0 0 6px #00ff8899, 0 0 18px #00ff884d;
   --glow-gold: 0 0 6px #ffd23f99, 0 0 18px #ffd23f4d;
   --press: inset 0 -4px 0 #0000008c;
   --crt-inset: inset 0 0 80px #000000d9, inset 0 0 14px #00f5ff33;
