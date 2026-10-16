@@ -320,6 +320,17 @@ body { margin: 0; font-family: var(--font-mono); font-size: 16px; line-height: 2
 @media (max-width: 860px) { .av-detail { grid-template-columns: 1fr; gap: var(--space-8); } }
 .av-detail-main { display: flex; flex-direction: column; gap: var(--space-6); align-items: flex-start; }
 .av-detail-cat { position: static; }
+.av-detail-cover { position: relative; width: 100%; aspect-ratio: 16 / 10; overflow: hidden; border: 2px solid var(--line); border-radius: var(--radius-pixel); }
+.av-detail-cover::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(to bottom, transparent 0 2px, var(--scanline) 2px 4px); pointer-events: none; }
+.av-detail-tags { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.av-detail-tag { font-family: var(--font-display); font-size: 8px; line-height: 12px; letter-spacing: 1px; padding: var(--space-1) var(--space-2); border: 1px solid var(--line); color: var(--ink-muted); }
+.av-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; width: 100%; margin: 0; background: var(--line); border: 1px solid var(--line); }
+.av-stats > div { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-3) var(--space-4); background: var(--surface); }
+.av-stats dt { font-size: 10px; line-height: 14px; letter-spacing: 1.5px; color: var(--ink-muted); }
+.av-stats dd { margin: 0; font-family: var(--font-display); font-size: 14px; line-height: 20px; color: var(--cyan); text-shadow: var(--glow-cyan); overflow-wrap: anywhere; }
+.av-stats .av-stat-best { color: var(--magenta); text-shadow: var(--glow-magenta); }
+.av-stats .av-stat-stars { color: var(--yellow); text-shadow: var(--glow-yellow); }
+@media (max-width: 640px) { .av-stats dd { font-size: 11px; } .av-stats > div { padding: var(--space-3); } }
 .av-detail-title { font-family: var(--font-display); font-size: 40px; line-height: 48px; margin: 0; color: var(--cyan); text-shadow: var(--glow-cyan-strong); text-transform: uppercase; overflow-wrap: anywhere; }
 @media (max-width: 640px) { .av-detail-title { font-size: 24px; line-height: 32px; } }
 .av-detail-desc { font-size: 16px; line-height: 24px; color: var(--ink); max-width: 60ch; margin: 0; }
