@@ -1,6 +1,6 @@
 # SPEC 02 — Home landing page
 
-> **Status:** Draft
+> **Status:** Approved
 > **Depends on:** SPEC 01
 > **Date:** 2026-10-16
 > **Objective:** Replace the homepage at `/` with the landing page from `references/templates/home-about/home.jsx`, and move the current library to `/library`.
