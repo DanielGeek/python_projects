@@ -140,27 +140,27 @@ Conventions:
 
 ## Acceptance criteria
 
-- [ ] `npm run lint` and `npm run build` finish without errors.
-- [ ] Library lists exactly 8 games with the ids from the catalog table and four category chips (`Arcade`, `Puzzle`, `Shooter`, `Versus`) after `All`.
-- [ ] Only `brick-buster`, `drop` and `rocks` have a Play link. The other five show a disabled "Coming soon" button.
-- [ ] `/game/arkanoid`, `/game/tetris` and `/game/asteroids` return the not-found page.
-- [ ] `/game/brick-buster/play`, `/game/drop/play` and `/game/rocks/play` load their game and the HUD score changes while playing.
-- [ ] Every Library card and Detail page shows its own cover art, not a letter glyph.
-- [ ] The Detail page shows the category tag, the extra tags, Plays, Global best and a difficulty row of five stars.
-- [ ] Global best on Detail equals the top entry in that game's leaderboard, or `—` when there are no scores.
-- [ ] Hall of Fame shows a three-slot podium. A game with no scores shows `---` in all three slots.
-- [ ] Saving a score in `drop` makes it appear in the podium and the table of `drop` after opening Hall of Fame.
-- [ ] Hall of Fame has a "Back to the library" button that navigates to `/`.
-- [ ] `/login` shows `SYSTEM ACCESS · v2.6` and the terms caption.
-- [ ] The footer appears on every route and does not cause horizontal scroll at 375 px width.
-- [ ] The Game Over modal title reads `GAME OVER`.
-- [ ] The CRT footer shows `SIGNAL OK`, the game title and `CRT-83 · 60 HZ`.
-- [ ] On a fresh browser profile the Nav shows `CREDITS · 03`.
-- [ ] Opening a playable game's play page lowers the Nav counter by exactly 1.
-- [ ] Clicking "Play again" after Game Over lowers the counter by exactly 1.
-- [ ] With the counter at 0, the play page shows `INSERT COIN` and no iframe is mounted.
-- [ ] Clicking "Insert coin" sets the counter to 3, starts the game and then lowers it to 2.
-- [ ] Reloading the page keeps the credit balance.
+- [x] `npm run lint` and `npm run build` finish without errors.
+- [x] Library lists exactly 8 games with the ids from the catalog table and four category chips (`Arcade`, `Puzzle`, `Shooter`, `Versus`) after `All`.
+- [x] Only `brick-buster`, `drop` and `rocks` have a Play link. The other five show a disabled "Coming soon" button.
+- [x] `/game/arkanoid`, `/game/tetris` and `/game/asteroids` return the not-found page.
+- [x] `/game/brick-buster/play`, `/game/drop/play` and `/game/rocks/play` load their game and the HUD score changes while playing.
+- [x] Every Library card and Detail page shows its own cover art, not a letter glyph.
+- [x] The Detail page shows the category tag, the extra tags, Plays, Global best and a difficulty row of five stars.
+- [x] Global best on Detail equals the top entry in that game's leaderboard, or `—` when there are no scores.
+- [x] Hall of Fame shows a three-slot podium. A game with no scores shows `---` in all three slots.
+- [x] Saving a score in `drop` makes it appear in the podium and the table of `drop` after opening Hall of Fame.
+- [x] Hall of Fame has a "Back to the library" button that navigates to `/`.
+- [x] `/login` shows `SYSTEM ACCESS · v2.6` and the terms caption.
+- [x] The footer appears on every route and does not cause horizontal scroll at 375 px width.
+- [x] The Game Over modal title reads `GAME OVER`.
+- [x] The CRT footer shows `SIGNAL OK`, the game title and `CRT-83 · 60 HZ`.
+- [x] On a fresh browser profile the Nav shows `CREDITS · 03`.
+- [x] Opening a playable game's play page lowers the Nav counter by exactly 1.
+- [x] Clicking "Play again" after Game Over lowers the counter by exactly 1.
+- [x] With the counter at 0, the play page shows `INSERT COIN` and no iframe is mounted.
+- [x] Clicking "Insert coin" sets the counter to 3, starts the game and then lowers it to 2.
+- [x] Reloading the page keeps the credit balance.
 
 ---
 

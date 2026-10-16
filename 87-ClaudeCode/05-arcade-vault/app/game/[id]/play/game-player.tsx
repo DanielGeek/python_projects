@@ -6,6 +6,7 @@ import { Button, ButtonLink, PixelSpinner, formatScore } from "@/components/ui/b
 import { CRTScreen, HUD } from "@/components/ui/game";
 import { Input, Modal, Typewriter } from "@/components/ui/interactive";
 import type { Game } from "@/lib/games";
+import { insertCoin, spendCredit } from "@/lib/credits";
 import { saveScore } from "@/lib/scores";
 import { useSession } from "@/lib/session";
 
@@ -16,6 +17,8 @@ interface GameState {
   over: boolean;
 }
 
+type Status = "checking" | "playing" | "no-credit";
+
 const INITIAL: GameState = { score: 0, lives: null, level: 1, over: false };
 
 export function GamePlayer({ game }: { game: Game }) {
@@ -24,6 +27,8 @@ export function GamePlayer({ game }: { game: Game }) {
   const frame = useRef<HTMLIFrameElement>(null);
   const [run, setRun] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState<Status>("checking");
+  const spentRun = useRef<number | null>(null);
   const [state, setState] = useState<GameState>(INITIAL);
   const [paused, setPaused] = useState(false);
   const [finalScore, setFinalScore] = useState<number | null>(null);
@@ -32,6 +37,13 @@ export function GamePlayer({ game }: { game: Game }) {
 
   const signedIn = !!session && !session.guest;
   const player = session?.name ?? "GUEST";
+
+  // One credit per game start. The ref keeps Strict Mode's double effect from spending twice.
+  useEffect(() => {
+    if (spentRun.current === run) return;
+    spentRun.current = run;
+    setStatus(spendCredit() ? "playing" : "no-credit");
+  }, [run]);
 
   // State reported by public/games/bridge.js inside the iframe.
   useEffect(() => {
@@ -57,13 +69,19 @@ export function GamePlayer({ game }: { game: Game }) {
     if (paused) frame.current?.focus();
   }
 
-  function playAgain() {
+  function restart() {
+    setStatus("checking");
     setState(INITIAL);
     setFinalScore(null);
     setSaved(false);
     setPaused(false);
     setLoading(true);
     setRun((r) => r + 1);
+  }
+
+  function addCoins() {
+    insertCoin();
+    restart();
   }
 
   function submit(e: React.FormEvent) {
@@ -88,10 +106,16 @@ export function GamePlayer({ game }: { game: Game }) {
       <CRTScreen
         aspect={game.aspect}
         label={game.title}
-        on={!loading}
+        on={status === "playing" && !loading}
         overlay={
           <>
-            {loading && (
+            {status === "no-credit" && (
+              <button type="button" className="av-screen-overlay av-paused" onClick={addCoins}>
+                <span className="av-paused-title">INSERT COIN</span>
+                <span className="av-paused-hint">Out of credits · click to add 3</span>
+              </button>
+            )}
+            {status !== "no-credit" && loading && (
               <div className="av-screen-overlay av-wipe">
                 <PixelSpinner label="STARTING GAME…" />
               </div>
@@ -105,19 +129,21 @@ export function GamePlayer({ game }: { game: Game }) {
           </>
         }
       >
-        <iframe
-          key={run}
-          ref={frame}
-          src={game.src!}
-          title={game.title}
-          // First-party games from public/games: same origin so Tetris can keep its own records.
-          // Games from other origins should drop allow-same-origin.
-          sandbox="allow-scripts allow-same-origin allow-pointer-lock"
-          onLoad={() => {
-            setLoading(false);
-            frame.current?.focus();
-          }}
-        />
+        {status === "playing" && (
+          <iframe
+            key={run}
+            ref={frame}
+            src={game.src!}
+            title={game.title}
+            // First-party games from public/games: same origin so Tetris can keep its own records.
+            // Games from other origins should drop allow-same-origin.
+            sandbox="allow-scripts allow-same-origin allow-pointer-lock"
+            onLoad={() => {
+              setLoading(false);
+              frame.current?.focus();
+            }}
+          />
+        )}
       </CRTScreen>
       <p className="av-player-controls">{game.controls}</p>
 
@@ -125,7 +151,7 @@ export function GamePlayer({ game }: { game: Game }) {
         open={finalScore != null}
         actions={
           <>
-            <Button block onClick={playAgain}>
+            <Button block onClick={restart}>
               Play again
             </Button>
             <ButtonLink href="/" variant="ghost" block>
