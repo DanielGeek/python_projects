@@ -1,3 +1,4 @@
+import { Activity } from "./_home/activity";
 import { Features } from "./_home/features";
 import { GamesRail } from "./_home/games-rail";
 import { Hero } from "./_home/hero";
@@ -10,6 +11,7 @@ export default function Home() {
       <Features />
       <GamesRail />
       <Stats />
+      <Activity />
     </div>
   );
 }

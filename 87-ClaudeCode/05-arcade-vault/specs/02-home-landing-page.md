@@ -140,10 +140,10 @@ app/_home/final-cta.tsx      closing CTA
 - [x] "Games available now" shows the first 6 games of `GAMES`, and each card opens `/game/<id>`.
 - [x] The "Create account" button is hidden for a signed-in non-guest user and visible for guests and anonymous users.
 - [ ] For a signed-in user, the pricing button reads "Play now →" and goes to `/library`. Otherwise it reads "Start free →" and goes to `/login`.
-- [ ] With no saved scores, both "Live activity" cards show `No scores yet. Be the first to play!`.
-- [ ] After saving a score in any game, it appears first in "Latest scores" with the game name and `just now`.
-- [ ] "Top players · today" lists at most 5 players, best first, one row per player, using their best score of today only.
-- [ ] A score saved with a date before today is shown in "Latest scores" but not in "Top players · today".
+- [x] With no saved scores, both "Live activity" cards show `No scores yet. Be the first to play!`.
+- [x] After saving a score in any game, it appears first in "Latest scores" with the game name and `just now`.
+- [x] "Top players · today" lists at most 5 players, best first, one row per player, using their best score of today only.
+- [x] A score saved with a date before today is shown in "Latest scores" but not in "Top players · today".
 - [ ] The landing has no horizontal scroll at 375 px width.
 - [ ] The previous pages (`/library`, `/game/drop`, `/login`, `/hall-of-fame`) still render without console errors beyond the known Suspense warning.
 
