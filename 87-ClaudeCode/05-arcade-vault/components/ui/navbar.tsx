@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useCredits } from "@/lib/credits";
 import { signOut, useSession } from "@/lib/session";
 import { Button, ButtonLink, NeonLogo } from "./basics";
 
@@ -12,10 +13,11 @@ const LINKS = [
 ];
 
 function Credits() {
+  const credits = useCredits();
   return (
     <span className="av-credits">
       <span className="av-coin" aria-hidden />
-      CREDITS · 03
+      CREDITS · {String(credits).padStart(2, "0")}
     </span>
   );
 }
