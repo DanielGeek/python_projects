@@ -303,6 +303,10 @@ body { margin: 0; font-family: var(--font-mono); font-size: 16px; line-height: 2
 .av-app .av-backdrop-floor { position: fixed; }
 .av-app .av-backdrop-scan { position: fixed; }
 .av-main { padding-bottom: var(--space-16); }
+.av-footer { position: relative; padding: var(--space-6) var(--space-4); border-top: 2px solid var(--line); text-align: center; font-size: 11px; line-height: 16px; letter-spacing: 2px; color: var(--ink-muted); background: var(--void); }
+.av-credits { display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-display); font-size: 9px; line-height: 14px; color: var(--yellow); white-space: nowrap; }
+.av-coin { width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff8b0, #f5ff00 60%, #b0b800); box-shadow: var(--glow-yellow); }
+.av-drawer .av-credits { justify-content: center; padding-top: var(--space-4); border-top: 2px solid var(--line); }
 .av-page { animation: av-page-in 160ms ease-out; }
 @keyframes av-page-in { from { opacity: 0; transform: translateY(8px); } }
 .av-container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 var(--space-8); box-sizing: border-box; }

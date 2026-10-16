@@ -11,6 +11,15 @@ const LINKS = [
   { href: "/hall-of-fame", label: "Hall of Fame", match: (p: string) => p.startsWith("/hall-of-fame") },
 ];
 
+function Credits() {
+  return (
+    <span className="av-credits">
+      <span className="av-coin" aria-hidden />
+      CREDITS · 03
+    </span>
+  );
+}
+
 export function Navbar() {
   const pathname = usePathname();
   const session = useSession();
@@ -60,7 +69,10 @@ export function Navbar() {
           <NeonLogo size="sm" flicker={false} />
         </Link>
         <div className="av-nav-links">{links}</div>
-        <div className="av-nav-right">{auth}</div>
+        <div className="av-nav-right">
+          <Credits />
+          {auth}
+        </div>
         <button type="button" className="av-burger" aria-label="Open menu" aria-expanded={open} onClick={() => setOpen(true)}>
           <span />
         </button>
@@ -74,6 +86,7 @@ export function Navbar() {
             </Button>
             {links}
             <div className="av-drawer-auth">{auth}</div>
+            <Credits />
           </div>
         </>
       )}

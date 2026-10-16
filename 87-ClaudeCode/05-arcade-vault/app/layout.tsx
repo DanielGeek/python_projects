@@ -31,6 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Navbar />
           </Suspense>
           <main className="av-main">{children}</main>
+          <footer className="av-footer">© 2026 ARCADE VAULT · MADE WITH PIXELS AND NEON · v2.6.0</footer>
         </ArcadeBackdrop>
       </body>
     </html>
