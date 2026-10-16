@@ -28,6 +28,10 @@ Next 16.4.1 / React 19.3 / Tailwind 4 (`@tailwindcss/turbopack`). APIs differ fr
   - Both modules carry `BACKEND:` comments marking where the real API or Supabase calls should replace the localStorage code. Keep the exported function signatures stable when swapping.
 - `public/games/<id>/` — playable games (arkanoid, tetris, asteroids) are static HTML/canvas copies of sibling projects, embedded in the host page via iframe. They are not part of the React build.
 
+## Skills
+
+Use **/frontend-design** to scaffold and manage frontend components and architecture.
+
 ### Host ↔ game bridge
 
 `public/games/bridge.js` is loaded by each game's `index.html` **before** its own scripts, with `data-game="<id>"` on the script tag. It:
