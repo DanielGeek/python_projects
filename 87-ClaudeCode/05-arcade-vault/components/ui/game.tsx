@@ -9,7 +9,12 @@ import { Button, ScoreBadge, cx, formatScore } from "./basics";
 
 const ART: Record<Accent, string> = { cyan: "var(--cyan)", magenta: "var(--magenta)", yellow: "var(--yellow)", green: "var(--green)" };
 
+export function CoverArt({ id }: { id: string }) {
+  return <div className={`av-cover av-cover-${id}`} aria-hidden />;
+}
+
 export function GameCard({
+  id,
   href,
   title,
   description,
@@ -18,6 +23,8 @@ export function GameCard({
   highScore,
   available = true,
 }: {
+  /** Game id, selects the cover art. */
+  id: string;
   href: string;
   title: string;
   description: string;
@@ -45,9 +52,7 @@ export function GameCard({
     >
       <div className="av-card-art">
         {category && <span className="av-card-cat">{category.toUpperCase()}</span>}
-        <span className="av-card-glyph" aria-hidden>
-          {title.charAt(0)}
-        </span>
+        <CoverArt id={id} />
         <div className="av-card-badge">
           <ScoreBadge score={highScore} />
         </div>

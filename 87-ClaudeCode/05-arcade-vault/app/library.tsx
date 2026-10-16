@@ -14,6 +14,7 @@ function LibraryCard({ game }: { game: Game }) {
   const scores = useScores(game.id);
   return (
     <GameCard
+      id={game.id}
       href={`/game/${game.id}`}
       title={game.title}
       description={game.tagline}
