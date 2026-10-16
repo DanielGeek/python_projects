@@ -22,78 +22,78 @@ export const GAMES: Game[] = [
   {
     id: "arkanoid",
     title: "Arkanoid",
-    category: "Rompeladrillos",
-    tagline: "Rompe todos los ladrillos con tu nave y la bola de energía.",
+    category: "Breakout",
+    tagline: "Smash every brick with your paddle and energy ball.",
     description:
-      "Controla la nave Vaus y devuelve la bola de energía para destruir cada muro de ladrillos. Cada nivel cambia la formación y la bola acelera. No la dejes caer: tus vidas son limitadas.",
+      "Steer the Vaus paddle and bounce the energy ball to destroy every wall of bricks. Each level changes the layout and the ball speeds up. Don't let it drop: your lives are limited.",
     accent: "cyan",
     src: "/games/arkanoid/index.html",
     aspect: "4 / 3",
-    controls: "← → o A/D para mover · ESPACIO para lanzar · 1-3 elige dificultad",
+    controls: "← → or A/D to move · SPACE to launch · 1-3 to pick difficulty",
   },
   {
     id: "tetris",
     title: "Tetris",
-    category: "Puzle",
-    tagline: "Encaja las piezas que caen y limpia líneas sin parar.",
+    category: "Puzzle",
+    tagline: "Fit the falling pieces and clear lines nonstop.",
     description:
-      "Gira y coloca las piezas que caen para completar líneas horizontales. Cuantas más líneas limpies a la vez, más puntos ganas. La velocidad sube con cada nivel.",
+      "Rotate and drop the falling pieces to complete horizontal lines. The more lines you clear at once, the more points you score. The speed rises with every level.",
     accent: "magenta",
     src: "/games/tetris/index.html",
     aspect: "4 / 3",
-    controls: "← → para mover · ↑ o X para girar · ↓ para bajar · ESPACIO para soltar · C para guardar",
+    controls: "← → to move · ↑ or X to rotate · ↓ to soft drop · SPACE to hard drop · C to hold",
   },
   {
     id: "asteroids",
     title: "Asteroids",
-    category: "Disparos",
-    tagline: "Pulveriza asteroides en el vacío del espacio.",
+    category: "Shooter",
+    tagline: "Blast asteroids in the void of space.",
     description:
-      "Pilota tu nave en el espacio profundo y dispara a los asteroides antes de que te golpeen. Los grandes se parten en pedazos más pequeños y rápidos. Sobrevive a cada oleada para subir de nivel.",
+      "Pilot your ship through deep space and shoot the asteroids before they hit you. Big ones split into smaller, faster pieces. Survive each wave to level up.",
     accent: "yellow",
     src: "/games/asteroids/index.html",
     aspect: "4 / 3",
-    controls: "← → para girar · ↑ para acelerar · ESPACIO para disparar",
+    controls: "← → to rotate · ↑ to thrust · SPACE to fire",
   },
   {
     id: "snake",
     title: "Snake",
-    category: "Clásicos",
-    tagline: "Come, crece y no te muerdas la cola.",
+    category: "Classics",
+    tagline: "Eat, grow and don't bite your own tail.",
     description:
-      "Guía a la serpiente por el tablero y come todo lo que aparezca. Cada bocado te hace más larga y más difícil de controlar. Un choque y se acabó.",
+      "Guide the snake around the board and eat everything that appears. Every bite makes it longer and harder to control. One crash and it's over.",
     accent: "cyan",
     src: null,
     aspect: "1 / 1",
-    controls: "Flechas para moverte",
+    controls: "Arrow keys to move",
   },
   {
     id: "pac-man",
     title: "Pac-Man",
-    category: "Clásicos",
-    tagline: "Devora puntos y huye de los fantasmas.",
+    category: "Classics",
+    tagline: "Gobble dots and run from the ghosts.",
     description:
-      "Recorre el laberinto comiendo todos los puntos mientras cuatro fantasmas te persiguen. Las píldoras de poder te permiten darles la vuelta por unos segundos. Limpia el laberinto para pasar de nivel.",
+      "Roam the maze eating every dot while four ghosts chase you. Power pellets let you turn the tables for a few seconds. Clear the maze to reach the next level.",
     accent: "yellow",
     src: null,
     aspect: "1 / 1",
-    controls: "Flechas para moverte",
+    controls: "Arrow keys to move",
   },
   {
     id: "space-invaders",
     title: "Space Invaders",
-    category: "Disparos",
-    tagline: "Detén la invasión alienígena antes de que aterrice.",
+    category: "Shooter",
+    tagline: "Stop the alien invasion before it lands.",
     description:
-      "Filas de invasores descienden hacia tu planeta. Muévete tras los escudos y dispara antes de que lleguen al suelo. Cada oleada es más rápida que la anterior.",
+      "Rows of invaders descend on your planet. Move behind the shields and fire before they reach the ground. Each wave is faster than the last.",
     accent: "magenta",
     src: null,
     aspect: "4 / 3",
-    controls: "← → para mover · ESPACIO para disparar",
+    controls: "← → to move · SPACE to fire",
   },
 ];
 
-export const CATEGORIES = ["Todos", ...Array.from(new Set(GAMES.map((g) => g.category)))];
+export const CATEGORIES = ["All", ...Array.from(new Set(GAMES.map((g) => g.category)))];
 
 export function getGame(id: string): Game | undefined {
   return GAMES.find((g) => g.id === id);

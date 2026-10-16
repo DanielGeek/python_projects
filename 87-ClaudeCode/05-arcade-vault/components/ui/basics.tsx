@@ -50,7 +50,7 @@ export function ButtonLink({ href, children, ...style }: ButtonStyleProps & { hr
   );
 }
 
-export function ScoreBadge({ score, label = "MEJOR PUNTUACIÓN", className }: { score: number | null | undefined; label?: string; className?: string }) {
+export function ScoreBadge({ score, label = "HIGH SCORE", className }: { score: number | null | undefined; label?: string; className?: string }) {
   return (
     <div className={cx("av-badge", className)}>
       <span className="av-badge-label">{label}</span>
@@ -59,7 +59,7 @@ export function ScoreBadge({ score, label = "MEJOR PUNTUACIÓN", className }: { 
   );
 }
 
-export function PixelSpinner({ label = "CARGANDO…" }: { label?: string | false }) {
+export function PixelSpinner({ label = "LOADING…" }: { label?: string | false }) {
   const order = [0, 1, 2, 5, 8, 7, 6, 3];
   return (
     <div className="av-spinner" role="status">
@@ -75,5 +75,5 @@ export function PixelSpinner({ label = "CARGANDO…" }: { label?: string | false
 }
 
 export function formatScore(n: number) {
-  return n.toLocaleString("es-ES");
+  return n.toLocaleString("en-US");
 }

@@ -7,12 +7,12 @@ export function generateStaticParams() {
   return GAMES.filter((g) => g.src).map((g) => ({ id: g.id }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/juegos/[id]/jugar">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/game/[id]/play">): Promise<Metadata> {
   const game = getGame((await params).id);
-  return { title: game ? `Jugando ${game.title} · Arcade Vault` : "Arcade Vault" };
+  return { title: game ? `Playing ${game.title} · Arcade Vault` : "Arcade Vault" };
 }
 
-export default async function PlayPage({ params }: PageProps<"/juegos/[id]/jugar">) {
+export default async function PlayPage({ params }: PageProps<"/game/[id]/play">) {
   const game = getGame((await params).id);
   if (!game?.src) notFound();
   return <GamePlayer game={game} />;

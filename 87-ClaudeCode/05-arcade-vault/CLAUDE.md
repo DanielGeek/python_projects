@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Arcade Vault: a web platform for playing arcade games online and competing for the highest score. Built with spec-driven design (`/spec` and `/spec-impl` skills, installed via `npx skills@latest add Klerith/fernando-skills`). Specs and docs must be written in English. The UI copy and game data in `lib/games.ts` are in Spanish.
+Arcade Vault: a web platform for playing arcade games online and competing for the highest score. Built with spec-driven design (`/spec` and `/spec-impl` skills, installed via `npx skills@latest add Klerith/fernando-skills`). Specs and docs must be written in English. The UI copy and game data in `lib/games.ts` are in English.
 
 ## Commands
 
@@ -19,11 +19,11 @@ Next 16.4.1 / React 19.3 / Tailwind 4 (`@tailwindcss/turbopack`). APIs differ fr
 
 ## Architecture
 
-- `app/` — App Router. `app/page.tsx` is still the default create-next-app boilerplate; the real screens are not built yet.
+- `app/` — App Router. Routes: `/` (library), `/game/[id]` (detail), `/game/[id]/play` (player), `/login`, `/hall-of-fame`.
 - `components/ui/` — shared UI primitives (`basics.tsx` has `cx` and base components; `interactive.tsx` has client components such as `Input` and `SearchBar`). They use `av-*` CSS class names defined in `app/globals.css`.
 - `lib/` — client-side data layer, all stand-ins for a future backend:
   - `games.ts` — static `GAMES` catalog, `CATEGORIES`, `getGame`. `src: null` means the game is listed but not playable yet (snake, pac-man, space-invaders).
-  - `session.ts` — fake auth in localStorage (`arcade-vault:session`), exposed via `useSession` (`useSyncExternalStore`). Guests are named `INVITADO`.
+  - `session.ts` — fake auth in localStorage (`arcade-vault:session`), exposed via `useSession` (`useSyncExternalStore`). Guests are named `GUEST`.
   - `scores.ts` — per-game leaderboards in localStorage (`arcade-vault:scores:<gameId>`, top 50). `useScores` subscribes to a custom `arcade-vault:scores` event plus `storage`.
   - Both modules carry `BACKEND:` comments marking where the real API or Supabase calls should replace the localStorage code. Keep the exported function signatures stable when swapping.
 - `public/games/<id>/` — playable games (arkanoid, tetris, asteroids) are static HTML/canvas copies of sibling projects, embedded in the host page via iframe. They are not part of the React build.

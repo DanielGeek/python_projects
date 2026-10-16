@@ -30,7 +30,7 @@ export function SearchBar({
   categories,
   category,
   onCategoryChange,
-  placeholder = "Busca por nombre o categoría…",
+  placeholder = "Search by name or category…",
 }: {
   value: string;
   onChange: (q: string) => void;
@@ -45,11 +45,11 @@ export function SearchBar({
       <div className="av-search-box">
         <span className="av-search-icon" aria-hidden />
         <label className="av-sr" htmlFor={id}>
-          Buscar juegos
+          Search games
         </label>
         <input id={id} type="search" className="av-input" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
       </div>
-      <div className="av-chips" role="group" aria-label="Filtrar por categoría">
+      <div className="av-chips" role="group" aria-label="Filter by category">
         {categories.map((c) => (
           <button key={c} type="button" className="av-chip" aria-pressed={c === category} onClick={() => onCategoryChange(c)}>
             {c}
@@ -92,7 +92,7 @@ function prefersReducedMotion() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-export function Typewriter({ text = "PUNTUACIÓN GUARDADA", speed = 60 }: { text?: string; speed?: number }) {
+export function Typewriter({ text = "SCORE SAVED", speed = 60 }: { text?: string; speed?: number }) {
   const [n, setN] = useState(0);
   // Only mounted after a user action, so reading the media query during render cannot cause a hydration mismatch.
   const count = prefersReducedMotion() ? text.length : n;
@@ -116,7 +116,7 @@ export function Typewriter({ text = "PUNTUACIÓN GUARDADA", speed = 60 }: { text
 
 export function Modal({
   open,
-  title = "FIN DEL JUEGO",
+  title = "GAME OVER",
   tone = "magenta",
   onClose,
   actions,

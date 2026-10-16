@@ -14,7 +14,7 @@ function LibraryCard({ game }: { game: Game }) {
   const scores = useScores(game.id);
   return (
     <GameCard
-      href={`/juegos/${game.id}`}
+      href={`/game/${game.id}`}
       title={game.title}
       description={game.tagline}
       category={game.category}
@@ -27,13 +27,13 @@ function LibraryCard({ game }: { game: Game }) {
 
 export function Library() {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("Todos");
+  const [category, setCategory] = useState("All");
   const q = normalize(query.trim());
   const games = GAMES.filter(
-    (g) => (category === "Todos" || g.category === category) && (!q || normalize(`${g.title} ${g.category}`).includes(q)),
+    (g) => (category === "All" || g.category === category) && (!q || normalize(`${g.title} ${g.category}`).includes(q)),
   );
   return (
-    <section aria-label="Biblioteca de juegos" className="av-library">
+    <section aria-label="Game library" className="av-library">
       <SearchBar value={query} onChange={setQuery} categories={CATEGORIES} category={category} onCategoryChange={setCategory} />
       {games.length > 0 ? (
         <div className="av-grid-cards">
@@ -42,7 +42,7 @@ export function Library() {
           ))}
         </div>
       ) : (
-        <p className="av-empty">No hay juegos que coincidan con tu búsqueda.</p>
+        <p className="av-empty">No games match your search.</p>
       )}
     </section>
   );

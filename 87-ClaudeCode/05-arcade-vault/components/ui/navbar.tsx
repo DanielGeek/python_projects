@@ -7,8 +7,8 @@ import { signOut, useSession } from "@/lib/session";
 import { Button, ButtonLink, NeonLogo } from "./basics";
 
 const LINKS = [
-  { href: "/", label: "Biblioteca", match: (p: string) => p === "/" || p.startsWith("/juegos") },
-  { href: "/salon-de-la-fama", label: "Salón de la Fama", match: (p: string) => p.startsWith("/salon-de-la-fama") },
+  { href: "/", label: "Library", match: (p: string) => p === "/" || p.startsWith("/game") },
+  { href: "/hall-of-fame", label: "Hall of Fame", match: (p: string) => p.startsWith("/hall-of-fame") },
 ];
 
 export function Navbar() {
@@ -44,33 +44,33 @@ export function Navbar() {
         </span>
         <span className="av-avatar-name">{session.name}</span>
         <Button variant="ghost" size="sm" onClick={signOut}>
-          Salir
+          Sign out
         </Button>
       </>
     ) : (
-      <ButtonLink href="/acceso" variant="outline" size="sm">
-        Iniciar Sesión
+      <ButtonLink href="/login" variant="outline" size="sm">
+        Sign In
       </ButtonLink>
     );
 
   return (
     <div className="av-nav-wrap">
-      <nav className="av-nav" aria-label="Principal">
-        <Link href="/" aria-label="Arcade Vault, ir a la biblioteca">
+      <nav className="av-nav" aria-label="Main">
+        <Link href="/" aria-label="Arcade Vault, go to the library">
           <NeonLogo size="sm" flicker={false} />
         </Link>
         <div className="av-nav-links">{links}</div>
         <div className="av-nav-right">{auth}</div>
-        <button type="button" className="av-burger" aria-label="Abrir menú" aria-expanded={open} onClick={() => setOpen(true)}>
+        <button type="button" className="av-burger" aria-label="Open menu" aria-expanded={open} onClick={() => setOpen(true)}>
           <span />
         </button>
       </nav>
       {open && (
         <>
           <div className="av-drawer-scrim" onClick={() => setOpen(false)} />
-          <div className="av-drawer" role="dialog" aria-modal aria-label="Menú">
+          <div className="av-drawer" role="dialog" aria-modal aria-label="Menu">
             <Button variant="ghost" size="sm" className="av-drawer-close" onClick={() => setOpen(false)}>
-              Cerrar ✕
+              Close ✕
             </Button>
             {links}
             <div className="av-drawer-auth">{auth}</div>
@@ -85,7 +85,7 @@ export function Navbar() {
 export function NavbarFallback() {
   return (
     <div className="av-nav-wrap">
-      <nav className="av-nav" aria-label="Principal">
+      <nav className="av-nav" aria-label="Main">
         <NeonLogo size="sm" flicker={false} />
       </nav>
     </div>

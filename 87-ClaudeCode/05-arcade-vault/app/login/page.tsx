@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { AuthCard } from "./auth-card";
 
-export const metadata: Metadata = { title: "Iniciar sesión · Arcade Vault" };
+export const metadata: Metadata = { title: "Sign in · Arcade Vault" };
 
 export default function AccessPage() {
   return (

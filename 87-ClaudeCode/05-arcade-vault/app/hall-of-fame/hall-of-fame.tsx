@@ -14,7 +14,7 @@ export function HallOfFame() {
   const me = session && !session.guest ? session.name : undefined;
   return (
     <div className="av-hof">
-      <Tabs label="Juegos" value={gameId} onChange={setGameId} tabs={GAMES.map((g) => ({ id: g.id, label: g.title }))} />
+      <Tabs label="Games" value={gameId} onChange={setGameId} tabs={GAMES.map((g) => ({ id: g.id, label: g.title }))} />
       {/* key re-runs the staggered row entrance when switching games */}
       <Leaderboard key={gameId} entries={scores} title={false} currentPlayer={me} personalBest={me ? personalBest(scores, me) : undefined} />
     </div>

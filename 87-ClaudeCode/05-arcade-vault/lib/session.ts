@@ -43,7 +43,7 @@ function write(session: Session | null) {
 }
 
 export const signIn = (name: string) => write({ name: name.trim().toUpperCase(), guest: false });
-export const playAsGuest = () => write({ name: "INVITADO", guest: true });
+export const playAsGuest = () => write({ name: "GUEST", guest: true });
 export const signOut = () => write(null);
 
 function subscribe(cb: () => void) {

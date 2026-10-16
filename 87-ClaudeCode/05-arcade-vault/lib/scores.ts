@@ -71,5 +71,5 @@ export function personalBest(list: ScoreEntry[], player: string) {
 
 export function formatDate(iso: string) {
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" });
+  return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" });
 }

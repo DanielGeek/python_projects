@@ -31,7 +31,7 @@ export function GamePlayer({ game }: { game: Game }) {
   const [saved, setSaved] = useState(false);
 
   const signedIn = !!session && !session.guest;
-  const player = session?.name ?? "INVITADO";
+  const player = session?.name ?? "GUEST";
 
   // State reported by public/games/bridge.js inside the iframe.
   useEffect(() => {
@@ -69,7 +69,7 @@ export function GamePlayer({ game }: { game: Game }) {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (finalScore == null) return;
-    const playerName = signedIn ? player : (name.trim() || "INVITADO").toUpperCase().slice(0, 12);
+    const playerName = signedIn ? player : (name.trim() || "GUEST").toUpperCase().slice(0, 12);
     saveScore(game.id, { player: playerName, score: finalScore, date: new Date().toISOString() });
     setSaved(true);
   }
@@ -83,7 +83,7 @@ export function GamePlayer({ game }: { game: Game }) {
         player={player}
         paused={paused}
         onPause={togglePause}
-        onExit={() => router.push(`/juegos/${game.id}`)}
+        onExit={() => router.push(`/game/${game.id}`)}
       />
       <CRTScreen
         aspect={game.aspect}
@@ -92,13 +92,13 @@ export function GamePlayer({ game }: { game: Game }) {
           <>
             {loading && (
               <div className="av-screen-overlay av-wipe">
-                <PixelSpinner label="INICIANDO JUEGO…" />
+                <PixelSpinner label="STARTING GAME…" />
               </div>
             )}
             {paused && (
               <button type="button" className="av-screen-overlay av-paused" onClick={togglePause}>
-                <span className="av-paused-title">PAUSA</span>
-                <span className="av-paused-hint">Haz clic para reanudar</span>
+                <span className="av-paused-title">PAUSED</span>
+                <span className="av-paused-hint">Click to resume</span>
               </button>
             )}
           </>
@@ -125,34 +125,34 @@ export function GamePlayer({ game }: { game: Game }) {
         actions={
           <>
             <Button block onClick={playAgain}>
-              Jugar de nuevo
+              Play again
             </Button>
             <ButtonLink href="/" variant="ghost" block>
-              Volver al Vault
+              Back to the Vault
             </ButtonLink>
           </>
         }
       >
         <div>
-          <div className="av-final-label">PUNTUACIÓN FINAL</div>
+          <div className="av-final-label">FINAL SCORE</div>
           <div className="av-final-score">{formatScore(finalScore ?? 0)}</div>
         </div>
         {saved ? (
           <div className="av-saved">
-            <Typewriter text="PUNTUACIÓN GUARDADA" />
+            <Typewriter text="SCORE SAVED" />
           </div>
         ) : (
           <form className="av-save-form" onSubmit={submit}>
             {signedIn ? (
-              <p className="av-modal-note">Se guardará como {player}.</p>
+              <p className="av-modal-note">It will be saved as {player}.</p>
             ) : (
               <>
-                <Input label="Tu nombre" placeholder="INVITADO" maxLength={12} value={name} onChange={(e) => setName(e.target.value)} />
-                <p className="av-modal-note">Juegas como invitado: tu puntuación se guarda solo en este dispositivo.</p>
+                <Input label="Your name" placeholder="GUEST" maxLength={12} value={name} onChange={(e) => setName(e.target.value)} />
+                <p className="av-modal-note">Playing as a guest: your score is saved on this device only.</p>
               </>
             )}
             <Button type="submit" variant="outline" block>
-              Guardar puntuación
+              Save score
             </Button>
           </form>
         )}

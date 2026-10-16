@@ -8,12 +8,12 @@ export function generateStaticParams() {
   return GAMES.map((g) => ({ id: g.id }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/juegos/[id]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/game/[id]">): Promise<Metadata> {
   const game = getGame((await params).id);
-  return { title: game ? `${game.title} · Arcade Vault` : "Juego no encontrado · Arcade Vault" };
+  return { title: game ? `${game.title} · Arcade Vault` : "Game not found · Arcade Vault" };
 }
 
-export default async function GameDetail({ params }: PageProps<"/juegos/[id]">) {
+export default async function GameDetail({ params }: PageProps<"/game/[id]">) {
   const game = getGame((await params).id);
   if (!game) notFound();
 
@@ -26,19 +26,19 @@ export default async function GameDetail({ params }: PageProps<"/juegos/[id]">) 
         <h1 className="av-detail-title">{game.title}</h1>
         <p className="av-detail-desc">{game.description}</p>
         <p className="av-detail-controls">
-          <span className="av-hud-label">CONTROLES</span>
+          <span className="av-hud-label">CONTROLS</span>
           {game.controls}
         </p>
         <div className="av-detail-actions">
           {game.src ? (
-            <ButtonLink href={`/juegos/${game.id}/jugar`} size="lg" pulse>
-              Jugar ahora
+            <ButtonLink href={`/game/${game.id}/play`} size="lg" pulse>
+              Play now
             </ButtonLink>
           ) : (
-            <span className="av-soon">PRÓXIMAMENTE EN EL VAULT</span>
+            <span className="av-soon">COMING SOON TO THE VAULT</span>
           )}
           <ButtonLink href="/" variant="ghost">
-            Volver al Vault
+            Back to the Vault
           </ButtonLink>
         </div>
       </div>

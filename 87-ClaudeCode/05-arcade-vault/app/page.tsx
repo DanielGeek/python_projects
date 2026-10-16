@@ -7,7 +7,7 @@ export default function Home() {
       <header className="av-hero">
         <h1 className="av-sr">Arcade Vault</h1>
         <NeonLogo size="lg" />
-        <p className="av-tagline">INSERTA UNA MONEDA PARA JUGAR</p>
+        <p className="av-tagline">INSERT A COIN TO PLAY</p>
       </header>
       <Library />
     </div>

@@ -19,12 +19,12 @@ const courierPrime = Courier_Prime({
 
 export const metadata: Metadata = {
   title: "Arcade Vault",
-  description: "Inserta una moneda para jugar: clásicos arcade en tu navegador y el salón de la fama.",
+  description: "Insert a coin to play: arcade classics in your browser, plus a hall of fame.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" data-theme="arcade" className={`${pressStart.variable} ${courierPrime.variable}`}>
+    <html lang="en" data-theme="arcade" className={`${pressStart.variable} ${courierPrime.variable}`}>
       <body>
         <ArcadeBackdrop className="av-app">
           <Suspense fallback={<NavbarFallback />}>

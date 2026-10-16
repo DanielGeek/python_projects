@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Standalone HTML games copied into the vault.
     "public/games/**",
+    // Standalone prototype templates (not part of the app build).
+    "references/**",
   ]),
 ]);
 

@@ -56,12 +56,12 @@ export function GameCard({
         <h3 className="av-card-title">{title}</h3>
         <p className="av-card-desc">{description}</p>
         {available ? (
-          <Link href={href} className="av-btn av-btn-outline av-btn-block" aria-label={`Jugar a ${title}`}>
-            Jugar
+          <Link href={href} className="av-btn av-btn-outline av-btn-block" aria-label={`Play ${title}`}>
+            Play
           </Link>
         ) : (
           <Button variant="outline" block disabled>
-            Próximamente
+            Coming soon
           </Button>
         )}
       </div>
@@ -92,13 +92,13 @@ export function HUD({
   return (
     <div className="av-hud">
       <div className="av-hud-stat">
-        <span className="av-hud-label">PUNTUACIÓN</span>
+        <span className="av-hud-label">SCORE</span>
         <span className="av-hud-value av-hud-score">{String(score).padStart(6, "0")}</span>
       </div>
       {lives != null && (
         <div className="av-hud-stat">
-          <span className="av-hud-label">VIDAS</span>
-          <span className="av-lives" aria-label={`${lives} vidas`}>
+          <span className="av-hud-label">LIVES</span>
+          <span className="av-lives" aria-label={`${lives} lives`}>
             {Array.from({ length: pips }, (_, i) => (
               <span key={i} className={cx("av-life", i >= lives && "av-life-off")} />
             ))}
@@ -106,19 +106,19 @@ export function HUD({
         </div>
       )}
       <div className="av-hud-stat">
-        <span className="av-hud-label">NIVEL</span>
+        <span className="av-hud-label">LEVEL</span>
         <span className="av-hud-value">{level ?? 1}</span>
       </div>
       <div className="av-hud-stat">
-        <span className="av-hud-label">JUGADOR</span>
+        <span className="av-hud-label">PLAYER</span>
         <span className="av-hud-player">{player}</span>
       </div>
       <div className="av-hud-actions">
         <Button variant="outline" size="sm" onClick={onPause}>
-          {paused ? "Reanudar" : "Pausa"}
+          {paused ? "Resume" : "Pause"}
         </Button>
         <Button variant="secondary" size="sm" onClick={onExit}>
-          Salir
+          Exit
         </Button>
       </div>
     </div>
@@ -142,7 +142,7 @@ export function CRTScreen({ children, aspect = "4 / 3", on = true, overlay }: { 
 
 export function Leaderboard({
   entries,
-  title = "Mejores puntuaciones",
+  title = "Top scores",
   currentPlayer,
   personalBest,
   showDate = true,
@@ -157,22 +157,22 @@ export function Leaderboard({
 }) {
   const rows = entries.slice(0, limit);
   return (
-    <section className="av-board" aria-label={title || "Mejores puntuaciones"}>
+    <section className="av-board" aria-label={title || "Top scores"}>
       {title !== false && <h3 className="av-board-title">{title}</h3>}
       {rows.length === 0 ? (
-        <p className="av-board-empty">Aún no hay puntuaciones. ¡Sé el primero en jugar!</p>
+        <p className="av-board-empty">No scores yet. Be the first to play!</p>
       ) : (
         <table className="av-table">
           <thead>
             <tr>
-              <th scope="col">RANGO</th>
-              <th scope="col">JUGADOR</th>
+              <th scope="col">RANK</th>
+              <th scope="col">PLAYER</th>
               <th scope="col" className="av-num">
-                PUNTUACIÓN
+                SCORE
               </th>
               {showDate && (
                 <th scope="col" className="av-num">
-                  FECHA
+                  DATE
                 </th>
               )}
             </tr>
@@ -185,7 +185,7 @@ export function Leaderboard({
                   <td className="av-rank">{String(i + 1).padStart(2, "0")}</td>
                   <td className="av-player">
                     {r.player}
-                    {you && <span className="av-you-tag">TÚ</span>}
+                    {you && <span className="av-you-tag">YOU</span>}
                   </td>
                   <td className="av-num av-score">{formatScore(r.score)}</td>
                   {showDate && <td className="av-num av-date">{formatDate(r.date)}</td>}
@@ -197,7 +197,7 @@ export function Leaderboard({
       )}
       {personalBest && (
         <div className="av-pb">
-          <span className="av-pb-label">TU MEJOR MARCA</span>
+          <span className="av-pb-label">YOUR PERSONAL BEST</span>
           <span className="av-date">
             #{personalBest.rank} · {personalBest.date}
           </span>
