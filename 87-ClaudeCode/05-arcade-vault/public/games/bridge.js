@@ -27,9 +27,9 @@
   // ---- state readers: each game keeps its state in top-level globals ----
   /* global score, lives, level, state, gameOver, game */
   var readers = {
-    asteroids: function () { return { score: score || 0, lives: lives, level: level, over: state === 'gameover' }; },
-    tetris: function () { return { score: score || 0, lives: null, level: level, over: !!gameOver }; },
-    arkanoid: function () { return { score: game.score, lives: game.lives, level: game.level + 1, over: game.status === 'lost' || game.status === 'won' }; },
+    rocks: function () { return { score: score || 0, lives: lives, level: level, over: state === 'gameover' }; },
+    drop: function () { return { score: score || 0, lives: null, level: level, over: !!gameOver }; },
+    "brick-buster": function () { return { score: game.score, lives: game.lives, level: game.level + 1, over: game.status === 'lost' || game.status === 'won' }; },
   };
 
   var last = '';
