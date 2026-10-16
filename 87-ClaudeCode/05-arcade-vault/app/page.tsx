@@ -1,4 +1,4 @@
-import { Library } from "./library";
+import { Library } from "./library/library";
 
 export default function Home() {
   return (
