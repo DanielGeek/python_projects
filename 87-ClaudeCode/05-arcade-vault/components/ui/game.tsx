@@ -212,3 +212,29 @@ export function Leaderboard({
     </section>
   );
 }
+
+const PODIUM = [
+  { place: 2, tone: "silver" },
+  { place: 1, tone: "gold" },
+  { place: 3, tone: "bronze" },
+] as const;
+
+/** Top-3 podium, silver / gold / bronze. Missing places show `---`. */
+export function Podium({ entries }: { entries: ScoreEntry[] }) {
+  return (
+    <div className="av-podium" role="list" aria-label="Top three">
+      {PODIUM.map(({ place, tone }) => {
+        const e = entries[place - 1];
+        return (
+          <div key={place} role="listitem" className={cx("av-podium-slot", `av-podium-${tone}`)}>
+            {place === 1 && <span className="av-podium-crown">CHAMPION</span>}
+            <span className="av-podium-rank">{String(place).padStart(2, "0")}</span>
+            <span className="av-podium-name">{e ? e.player : "---"}</span>
+            <span className="av-podium-score">{e ? formatScore(e.score) : "000000"}</span>
+            <span className="av-podium-date">{e ? formatDate(e.date) : " "}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}

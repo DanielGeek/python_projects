@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Leaderboard } from "@/components/ui/game";
+import { ButtonLink } from "@/components/ui/basics";
+import { Leaderboard, Podium } from "@/components/ui/game";
 import { Tabs } from "@/components/ui/interactive";
 import { GAMES } from "@/lib/games";
 import { personalBest, useScores } from "@/lib/scores";
@@ -15,8 +16,14 @@ export function HallOfFame() {
   return (
     <div className="av-hof">
       <Tabs label="Games" value={gameId} onChange={setGameId} tabs={GAMES.map((g) => ({ id: g.id, label: g.title }))} />
+      <Podium key={`podium-${gameId}`} entries={scores} />
       {/* key re-runs the staggered row entrance when switching games */}
       <Leaderboard key={gameId} entries={scores} title={false} currentPlayer={me} personalBest={me ? personalBest(scores, me) : undefined} />
+      <div className="av-hof-back">
+        <ButtonLink href="/" size="lg">
+          Back to the library
+        </ButtonLink>
+      </div>
     </div>
   );
 }
