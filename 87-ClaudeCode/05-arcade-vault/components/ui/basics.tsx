@@ -27,18 +27,20 @@ export function ArcadeBackdrop({ children, className, style }: { children?: Reac
 type Variant = "primary" | "secondary" | "outline" | "ghost";
 interface ButtonStyleProps {
   variant?: Variant;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
+  /** Accent for the outline variant. Defaults to cyan. */
+  tone?: "magenta";
   pulse?: boolean;
   block?: boolean;
   className?: string;
 }
 
-function buttonClass({ variant = "primary", size = "md", pulse, block, className }: ButtonStyleProps) {
-  return cx("av-btn", `av-btn-${variant}`, size !== "md" && `av-btn-${size}`, pulse && "av-pulse", block && "av-btn-block", className);
+function buttonClass({ variant = "primary", size = "md", tone, pulse, block, className }: ButtonStyleProps) {
+  return cx("av-btn", `av-btn-${variant}`, size !== "md" && `av-btn-${size}`, tone && `av-btn-tone-${tone}`, pulse && "av-pulse", block && "av-btn-block", className);
 }
 
-export function Button({ variant, size, pulse, block, className, type = "button", ...rest }: ButtonStyleProps & ButtonHTMLAttributes<HTMLButtonElement>) {
-  return <button type={type} {...rest} className={buttonClass({ variant, size, pulse, block, className })} />;
+export function Button({ variant, size, tone, pulse, block, className, type = "button", ...rest }: ButtonStyleProps & ButtonHTMLAttributes<HTMLButtonElement>) {
+  return <button type={type} {...rest} className={buttonClass({ variant, size, tone, pulse, block, className })} />;
 }
 
 /** A Next.js Link styled as a Button. */

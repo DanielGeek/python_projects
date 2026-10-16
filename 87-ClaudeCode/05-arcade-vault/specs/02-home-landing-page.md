@@ -135,10 +135,10 @@ app/_home/final-cta.tsx      closing CTA
 - [x] "Back to the library" on the Hall of Fame navigates to `/library`.
 - [x] After signing in or choosing "Play as guest", the user lands on `/library`.
 - [ ] All visible landing text is in English, and no Spanish text remains on `/`.
-- [ ] The hero shows 8 floating silhouettes and the title lines `THE CLASSIC`, `ARCADE IS`, `BACK`.
+- [x] The hero shows 8 floating silhouettes and the title lines `THE CLASSIC`, `ARCADE IS`, `BACK`.
 - [ ] Each section below the hero starts hidden and becomes visible when it scrolls into view.
 - [ ] "Games available now" shows the first 6 games of `GAMES`, and each card opens `/game/<id>`.
-- [ ] The "Create account" button is hidden for a signed-in non-guest user and visible for guests and anonymous users.
+- [x] The "Create account" button is hidden for a signed-in non-guest user and visible for guests and anonymous users.
 - [ ] For a signed-in user, the pricing button reads "Play now →" and goes to `/library`. Otherwise it reads "Start free →" and goes to `/login`.
 - [ ] With no saved scores, both "Live activity" cards show `No scores yet. Be the first to play!`.
 - [ ] After saving a score in any game, it appears first in "Latest scores" with the game name and `just now`.
