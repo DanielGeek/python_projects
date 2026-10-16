@@ -149,7 +149,7 @@ lib/contact.ts                  LIMITS and validateContact, shared by form and r
 6. **Contact section (static).** Create `contact-form.tsx` with the intro, the three tips and the form fields. The submit button only prevents default. Wrap the section in `Reveal`. Manual test: layout matches the reference, two columns above 900 px and one below.
 7. **Validation and API route.** Create `lib/contact.ts` with `LIMITS` and `validateContact`. Create `app/api/contact/route.ts` with `POST`: parse JSON, honeypot check, validation, env check, Resend call, and the status codes from the data model. Manual test with `curl`: invalid JSON and invalid fields return 400, a missing `RESEND_API_KEY` returns 500, and a filled `website` returns 200 without sending.
 8. **Wire the form.** In `contact-form.tsx`, run `validateContact` on submit (shake and field errors, no request), then `fetch("/api/contact", { method: "POST" })` with a JSON body. Add the hidden honeypot input, the `SENDING…` disabled button, the server `fieldErrors`, and the inline `[ERR]` line. Manual test: empty submit shakes without a network request; typed values survive an error.
-9. **Success screen.** Render the `VAULT-OS // TERMINAL` block when the status is `sent`, with `THANK YOU, <NAME>.` and the `SEND ANOTHER MESSAGE` button that resets the form. Manual test: with a real `RESEND_API_KEY` in `.env.local`, a submitted message arrives at `salomons.cripto@gmail.com` and the success screen shows.
+9. **Success screen.** Render the `VAULT-OS // TERMINAL` block when the status is `sent`, with `THANK YOU, <NAME>.` and the `SEND ANOTHER MESSAGE` button that resets the form. Manual test: with a real `RESEND_API_KEY` in `.env`, a submitted message arrives at `salomons.cripto@gmail.com` and the success screen shows.
 10. **Docs.** Update `CLAUDE.md`: the `/about` route, the `app/about/` files, `POST /api/contact`, `lib/contact.ts` and the three environment variables.
 
 ---
@@ -186,7 +186,7 @@ lib/contact.ts                  LIMITS and validateContact, shared by form and r
 - **Yes:** one validation function in `lib/contact.ts`, used by the form for the shake and by the route as the authority. It avoids two copies of the limits drifting apart. The browser check is only a convenience.
 - **Yes:** distinct status codes (400, 500, 502) with a generic `error` text. The client only needs the message, and the real cause goes to the server log.
 - **Yes:** the recipient `salomons.cripto@gmail.com` goes in `CONTACT_TO_EMAIL`, not in the code. This was an explicit user decision.
-- **Yes:** the API key is supplied later by the user and lives only in `.env.local`. The spec and the repo contain no key.
+- **Yes:** the API key is supplied later by the user and lives only in `.env`. The spec and the repo contain no key.
 - **Yes:** `CONTACT_FROM_EMAIL` defaults to `Arcade Vault <onboarding@resend.dev>`. It needs no domain setup, and the Resend sandbox only delivers to the address that owns the Resend account. Using the owner's Gmail as the recipient makes that work. A verified domain is a later change of one variable.
 - **Yes:** `replyTo` is the visitor's email. The `from` stays fixed because sending as an arbitrary visitor address would fail SPF/DKIM checks and be marked as spam.
 - **Yes:** server validation plus a honeypot. It stops lazy bots with no dependency. **No:** rate limiting in memory, because on serverless the memory is not shared between instances and gives false confidence. **No:** CAPTCHA, which adds a third-party script to a retro-styled page.
