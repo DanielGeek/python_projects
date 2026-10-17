@@ -723,3 +723,5 @@ body { margin: 0; font-family: var(--font-mono); font-size: 14px; line-height: 1
 .av-about-term-dim { color: var(--ink-dim); }
 .av-about-term-success { margin-top: 12px; color: var(--green); text-shadow: 0 0 6px rgba(0, 255, 136, 0.45); font-weight: 700; white-space: pre-wrap; overflow-wrap: anywhere; }
 .av-about-term-caret { animation: av-blink 1s steps(1) infinite; }
+.av-about-error { padding: 10px 12px; background: rgba(255, 0, 110, 0.08); border: 1px solid var(--magenta); font-family: var(--font-mono); font-size: 13px; line-height: 1.6; color: var(--ink); overflow-wrap: anywhere; }
+.av-about-error-tag { color: var(--magenta); font-weight: 700; text-shadow: 0 0 6px rgba(255, 0, 110, 0.5); }
