@@ -1,6 +1,6 @@
 # SPEC 03 — About page and contact email
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 02
 > **Date:** 2026-10-16
 > **Objective:** Add the `/about` page exactly as in `references/templates/home-about/about.jsx`, with a contact form that sends a real email to the team through Resend.
