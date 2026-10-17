@@ -69,7 +69,7 @@ interface ContactRequest extends ContactInput {
 // Responses
 // 200 { ok: true }
 // 400 { ok: false; error: string; fieldErrors?: Partial<Record<ContactField, string>> }  invalid JSON or invalid fields
-// 500 { ok: false; error: string }                       RESEND_API_KEY or CONTACT_TO_EMAIL missing
+// 500 { ok: false; error: string }                       RESEND_API_KEY, CONTACT_TO_EMAIL or CONTACT_FROM_EMAIL missing
 // 502 { ok: false; error: string }                       Resend returned an error
 ```
 
@@ -187,7 +187,7 @@ lib/contact.ts                  LIMITS and validateContact, shared by form and r
 - **Yes:** distinct status codes (400, 500, 502) with a generic `error` text. The client only needs the message, and the real cause goes to the server log.
 - **Yes:** the recipient `salomons.cripto@gmail.com` goes in `CONTACT_TO_EMAIL`, not in the code. This was an explicit user decision.
 - **Yes:** the API key is supplied later by the user and lives only in `.env`. The spec and the repo contain no key.
-- **Yes:** `CONTACT_FROM_EMAIL` defaults to `Arcade Vault <onboarding@resend.dev>`. It needs no domain setup, and the Resend sandbox only delivers to the address that owns the Resend account. Using the owner's Gmail as the recipient makes that work. A verified domain is a later change of one variable.
+- **Yes:** `CONTACT_FROM_EMAIL` is read only from the environment, with no default in the code. This was an explicit user decision. A missing value answers 500, like the other two variables. `.env.template` and `.env` use `Arcade Vault <onboarding@resend.dev>`. It needs no domain setup, and the Resend sandbox only delivers to the address that owns the Resend account. Using the owner's Gmail as the recipient makes that work. A verified domain is a later change of one variable.
 - **Yes:** `replyTo` is the visitor's email. The `from` stays fixed because sending as an arbitrary visitor address would fail SPF/DKIM checks and be marked as spam.
 - **Yes:** server validation plus a honeypot. It stops lazy bots with no dependency. **No:** rate limiting in memory, because on serverless the memory is not shared between instances and gives false confidence. **No:** CAPTCHA, which adds a third-party script to a retro-styled page.
 - **Yes:** a honeypot hit answers `sent`, so the bot gets no signal to adapt.
