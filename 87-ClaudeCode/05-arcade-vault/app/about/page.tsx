@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Divider } from "./divider";
 import { Highlights } from "./highlights";
 
 export const metadata: Metadata = { title: "About · Arcade Vault" };
@@ -15,6 +16,7 @@ export default function AboutPage() {
         </p>
         <Highlights />
       </section>
+      <Divider />
     </div>
   );
 }
