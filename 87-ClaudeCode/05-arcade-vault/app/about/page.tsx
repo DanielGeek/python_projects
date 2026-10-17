@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ContactSection } from "./contact-form";
 import { Divider } from "./divider";
 import { Highlights } from "./highlights";
 
@@ -17,6 +18,7 @@ export default function AboutPage() {
         <Highlights />
       </section>
       <Divider />
+      <ContactSection />
     </div>
   );
 }
