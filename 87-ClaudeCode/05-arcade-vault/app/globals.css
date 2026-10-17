@@ -659,3 +659,67 @@ body { margin: 0; font-family: var(--font-mono); font-size: 14px; line-height: 1
 .av-home-faq-item:nth-child(3) { border-left-color: var(--yellow); }
 .av-home-faq-q { font-size: 10px; letter-spacing: 0.12em; color: var(--ink); margin-bottom: 8px; }
 .av-home-faq-a { font-family: var(--font-mono); font-size: 13px; color: var(--ink-dim); line-height: 1.6; }
+
+/* ===== ABOUT PAGE (ported from references/templates/home-about/styles.css) ===== */
+.av-about { position: relative; }
+.av-about-hero { max-width: 1100px; margin: 0 auto; padding: 80px 32px 40px; text-align: center; box-sizing: border-box; }
+.av-about-kicker { font-size: 11px; letter-spacing: 0.24em; margin-bottom: 18px; }
+.av-about-title { font-family: var(--font-display); font-size: clamp(26px, 5vw, 52px); line-height: 1.4; letter-spacing: 0.06em; margin: 0; background: linear-gradient(180deg, #fff, var(--cyan) 80%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 14px rgba(0, 245, 255, 0.4)); }
+.av-about-mission { max-width: 720px; margin: 28px auto 0; font-size: 15px; line-height: 1.8; color: var(--ink-dim); letter-spacing: 0.03em; }
+.av-about-highlights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 52px; }
+@media (max-width: 820px) { .av-about-highlights { grid-template-columns: 1fr; } }
+.av-about-highlight { display: flex; align-items: center; gap: 16px; padding: 18px 20px; background: var(--bg-2); border: 1px solid var(--ref-line); text-align: left; transition: transform 220ms, border-color 220ms, box-shadow 220ms; }
+.av-about-highlight-cyan { color: var(--cyan); }
+.av-about-highlight-magenta { color: var(--magenta); }
+.av-about-highlight-green { color: var(--green); }
+.av-about-highlight:hover { transform: translateY(-3px); border-color: currentColor; box-shadow: 0 12px 28px -14px currentColor; }
+.av-about-hl-icon { width: 36px; height: 36px; flex: none; filter: drop-shadow(0 0 6px currentColor); image-rendering: pixelated; }
+.av-about-hl-text { font-family: var(--font-display); font-size: 10px; letter-spacing: 0.1em; line-height: 1.5; color: var(--ink); text-shadow: none; }
+
+.av-about-divider { max-width: 1200px; margin: 60px auto; padding: 0 32px; display: flex; align-items: center; gap: 16px; box-sizing: border-box; }
+.av-about-bar { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--magenta), transparent); }
+.av-about-pixels { display: flex; gap: 4px; }
+.av-about-pixels span { width: 6px; height: 6px; background: var(--cyan); box-shadow: 0 0 6px var(--cyan); animation: av-about-pxblink 2.4s steps(2) infinite; }
+.av-about-pixels span:nth-child(3n) { background: var(--magenta); box-shadow: 0 0 6px var(--magenta); }
+.av-about-pixels span:nth-child(5n) { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+@keyframes av-about-pxblink { 50% { opacity: 0.2; } }
+
+.av-about-contact { max-width: 1200px; margin: 0 auto 80px; padding: 0 32px; box-sizing: border-box; }
+.av-about-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; align-items: start; }
+@media (max-width: 900px) { .av-about-grid { grid-template-columns: 1fr; gap: 24px; } }
+.av-about-contact-kicker { font-size: 11px; letter-spacing: 0.24em; margin-bottom: 14px; }
+.av-about-contact-title { font-family: var(--font-display); font-size: clamp(22px, 3.5vw, 36px); line-height: 1.4; letter-spacing: 0.06em; margin: 0; color: var(--cyan); text-shadow: 0 0 12px rgba(0, 245, 255, 0.4); }
+.av-about-contact-sub { color: var(--ink-dim); font-size: 14px; line-height: 1.7; margin: 18px 0 24px; }
+.av-about-tips { display: flex; flex-direction: column; gap: 10px; }
+.av-about-tip { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 9px; color: var(--ink-dim); letter-spacing: 0.14em; }
+.av-about-tip-led { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+.av-about-tip-led-y { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+.av-about-tip-led-m { background: var(--magenta); box-shadow: 0 0 6px var(--magenta); }
+
+.av-about-form { background: var(--bg-2); border: 1px solid var(--ref-line); padding: 28px; position: relative; display: flex; flex-direction: column; gap: 18px; box-sizing: border-box; min-width: 0; }
+.av-about-form::before { content: ''; position: absolute; inset: 4px; border: 1px dashed rgba(0, 245, 255, 0.15); pointer-events: none; }
+.av-about-shake { animation: av-about-shake 0.4s; }
+@keyframes av-about-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); } 40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); } 80% { transform: translateX(4px); }
+}
+.av-about-textarea { width: 100%; box-sizing: border-box; min-height: 110px; padding: 12px; background: var(--void); border: 1px solid var(--ref-line); outline: 0; font-family: var(--font-mono); font-size: 14px; color: var(--ink); resize: vertical; transition: border-color 140ms, box-shadow 140ms; }
+.av-about-textarea:focus { border-color: var(--cyan); box-shadow: 0 0 12px rgba(0, 245, 255, 0.35); }
+.av-about-textarea::placeholder { color: var(--ink-faint); }
+.av-field-error .av-about-textarea { border-color: var(--magenta); }
+.av-about-honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+
+.av-about-term { background: #000; border: 1px solid var(--green); box-shadow: 0 0 22px rgba(0, 255, 136, 0.25); font-family: var(--font-mono); overflow: hidden; }
+.av-about-term-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--void); border-bottom: 1px solid var(--ref-line); }
+.av-about-term-dot { width: 10px; height: 10px; border-radius: 50%; }
+.av-about-term-dot-r { background: #ff5f56; }
+.av-about-term-dot-y { background: #ffbd2e; }
+.av-about-term-dot-g { background: #27c93f; }
+.av-about-term-title { margin-left: 8px; font-family: var(--font-display); font-size: 9px; color: var(--ink-faint); letter-spacing: 0.14em; }
+.av-about-term-body { padding: 18px 18px 22px; font-size: 13px; line-height: 1.8; }
+.av-about-term-line { color: var(--green); }
+.av-about-term-prompt { color: var(--cyan); margin-right: 8px; }
+.av-about-term-dim { color: var(--ink-dim); }
+.av-about-term-success { margin-top: 12px; color: var(--green); text-shadow: 0 0 6px rgba(0, 255, 136, 0.45); font-weight: 700; white-space: pre-wrap; overflow-wrap: anywhere; }
+.av-about-term-caret { animation: av-blink 1s steps(1) infinite; }
