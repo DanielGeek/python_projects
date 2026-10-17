@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type SubmitEvent as FormSubmitEvent } from "react";
 import { Button, cx } from "@/components/ui/basics";
 import { Input } from "@/components/ui/interactive";
 import { validateContact, type ContactField } from "@/lib/contact";
@@ -33,7 +33,7 @@ export function ContactSection() {
     setFieldErrors((e) => (e[field] ? { ...e, [field]: undefined } : e));
   };
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormSubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (status.kind === "sending") return;
 
@@ -69,6 +69,13 @@ export function ContactSection() {
 
   const sending = status.kind === "sending";
 
+  const reset = () => {
+    setStatus({ kind: "idle" });
+    setForm(EMPTY);
+    setWebsite("");
+    setFieldErrors({});
+  };
+
   return (
     <Reveal className="av-about-contact">
       <div className="av-about-grid">
@@ -79,82 +86,110 @@ export function ContactSection() {
           <div className="av-about-tips">
             <div className="av-about-tip">
               <span className="av-about-tip-led" />
-              REPLY IN 24-48H
+              <span>REPLY IN 24-48H</span>
             </div>
             <div className="av-about-tip">
               <span className="av-about-tip-led av-about-tip-led-y" />
-              SUGGESTIONS WELCOME
+              <span>SUGGESTIONS WELCOME</span>
             </div>
             <div className="av-about-tip">
               <span className="av-about-tip-led av-about-tip-led-m" />
-              NO SPAM, EVER
+              <span>NO SPAM, EVER</span>
             </div>
           </div>
         </div>
 
-        <form className={cx("av-about-form", shake && "av-about-shake")} onSubmit={onSubmit} noValidate>
-          <Input
-            label="NAME"
-            name="name"
-            placeholder="px_kai"
-            autoComplete="name"
-            value={form.name}
-            error={fieldErrors.name}
-            disabled={sending}
-            onChange={(e) => setField("name", e.target.value)}
-          />
-          <Input
-            label="EMAIL"
-            name="email"
-            type="email"
-            placeholder="player@vault.gg"
-            autoComplete="email"
-            value={form.email}
-            error={fieldErrors.email}
-            disabled={sending}
-            onChange={(e) => setField("email", e.target.value)}
-          />
-          <div className={cx("av-field", fieldErrors.message && "av-field-error")}>
-            <label className="av-field-label" htmlFor={messageId}>
-              MESSAGE
-            </label>
-            <textarea
-              id={messageId}
-              name="message"
-              className="av-about-textarea"
-              rows={5}
-              placeholder="Tell us what is on your mind…"
-              value={form.message}
+        {status.kind === "sent" ? (
+          <div className="av-about-term">
+            <div className="av-about-term-bar">
+              <span className="av-about-term-dot av-about-term-dot-r" />
+              <span className="av-about-term-dot av-about-term-dot-y" />
+              <span className="av-about-term-dot av-about-term-dot-g" />
+              <span className="av-about-term-title">VAULT-OS // TERMINAL</span>
+            </div>
+            <div className="av-about-term-body">
+              <div className="av-about-term-line">
+                <span className="av-about-term-prompt">vault@arcade:~$</span>
+                <span>./send_message --to=team</span>
+              </div>
+              <div className="av-about-term-line av-about-term-dim">[OK] Connecting to server…</div>
+              <div className="av-about-term-line av-about-term-dim">[OK] Validating content…</div>
+              <div className="av-about-term-line av-about-term-dim">[OK] Transmitting packet…</div>
+              <div className="av-about-term-success" role="status">
+                &gt; MESSAGE RECEIVED. WE WILL REPLY SOON. THANK YOU, {status.name.toUpperCase()}.<span className="av-about-term-caret">_</span>
+              </div>
+              <div style={{ marginTop: 18 }}>
+                <Button variant="ghost" onClick={reset}>
+                  SEND ANOTHER MESSAGE
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <form className={cx("av-about-form", shake && "av-about-shake")} onSubmit={onSubmit} noValidate>
+            <Input
+              label="NAME"
+              name="name"
+              placeholder="px_kai"
+              autoComplete="name"
+              value={form.name}
+              error={fieldErrors.name}
               disabled={sending}
-              aria-invalid={fieldErrors.message ? true : undefined}
-              aria-describedby={fieldErrors.message ? `${messageId}-error` : undefined}
-              onChange={(e) => setField("message", e.target.value)}
+              onChange={(e) => setField("name", e.target.value)}
             />
-            {fieldErrors.message && (
-              <div className="av-field-hint" id={`${messageId}-error`}>
-                {fieldErrors.message}
+            <Input
+              label="EMAIL"
+              name="email"
+              type="email"
+              placeholder="player@vault.gg"
+              autoComplete="email"
+              value={form.email}
+              error={fieldErrors.email}
+              disabled={sending}
+              onChange={(e) => setField("email", e.target.value)}
+            />
+            <div className={cx("av-field", fieldErrors.message && "av-field-error")}>
+              <label className="av-field-label" htmlFor={messageId}>
+                MESSAGE
+              </label>
+              <textarea
+                id={messageId}
+                name="message"
+                className="av-about-textarea"
+                rows={5}
+                placeholder="Tell us what is on your mind…"
+                value={form.message}
+                disabled={sending}
+                aria-invalid={fieldErrors.message ? true : undefined}
+                aria-describedby={fieldErrors.message ? `${messageId}-error` : undefined}
+                onChange={(e) => setField("message", e.target.value)}
+              />
+              {fieldErrors.message && (
+                <div className="av-field-hint" id={`${messageId}-error`}>
+                  {fieldErrors.message}
+                </div>
+              )}
+            </div>
+
+            {/* Honeypot: hidden from people and screen readers. Bots fill it. */}
+            <div className="av-about-honeypot" aria-hidden="true">
+              <label>
+                <span>Website</span>
+                <input type="text" name="website" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
+              </label>
+            </div>
+
+            {status.kind === "error" && (
+              <div className="av-about-error" role="alert">
+                <span className="av-about-error-tag">[ERR]</span> {status.message}
               </div>
             )}
-          </div>
 
-          {/* Honeypot: hidden from people and screen readers. Bots fill it. */}
-          <div className="av-about-honeypot" aria-hidden="true">
-            <label>
-              Website
-              <input type="text" name="website" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
-            </label>
-          </div>
-
-          {status.kind === "error" && (
-            <div className="av-about-error" role="alert">
-              <span className="av-about-error-tag">[ERR]</span> {status.message}
-            </div>
-          )}
-
-          <Button type="submit" variant="outline" size="xl" block disabled={sending}>
-            {sending ? "SENDING…" : "▶ SEND MESSAGE"}
-          </Button>
-        </form>
+            <Button type="submit" variant="outline" size="xl" block disabled={sending}>
+              {sending ? "SENDING…" : "▶ SEND MESSAGE"}
+            </Button>
+          </form>
+        )}
       </div>
     </Reveal>
   );
