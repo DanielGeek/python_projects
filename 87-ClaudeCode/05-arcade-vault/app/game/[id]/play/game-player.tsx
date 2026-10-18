@@ -34,6 +34,8 @@ export function GamePlayer({ game }: { game: Game }) {
   const [finalScore, setFinalScore] = useState<number | null>(null);
   const [name, setName] = useState("");
   const [saved, setSaved] = useState(false);
+  // True when storage refused the score: it is only kept until the tab closes.
+  const [volatile, setVolatile] = useState(false);
 
   const signedIn = !!session && !session.guest;
   const player = session?.name ?? "GUEST";
@@ -48,7 +50,8 @@ export function GamePlayer({ game }: { game: Game }) {
   // State reported by public/games/bridge.js inside the iframe.
   useEffect(() => {
     function onMessage(e: MessageEvent) {
-      if (e.source !== frame.current?.contentWindow || e.data?.source !== "arcade-vault-game") return;
+      if (e.source !== frame.current?.contentWindow || e.data?.source !== "arcade-vault-game")
+        return;
       const next = e.data.state as GameState;
       setState((prev) => {
         if (next.over && !prev.over) setFinalScore(next.score);
@@ -74,6 +77,7 @@ export function GamePlayer({ game }: { game: Game }) {
     setState(INITIAL);
     setFinalScore(null);
     setSaved(false);
+    setVolatile(false);
     setPaused(false);
     setLoading(true);
     setRun((r) => r + 1);
@@ -88,7 +92,12 @@ export function GamePlayer({ game }: { game: Game }) {
     e.preventDefault();
     if (finalScore == null) return;
     const playerName = signedIn ? player : (name.trim() || "GUEST").toUpperCase().slice(0, 12);
-    saveScore(game.id, { player: playerName, score: finalScore, date: new Date().toISOString() });
+    const persisted = saveScore(game.id, {
+      player: playerName,
+      score: finalScore,
+      date: new Date().toISOString(),
+    });
+    setVolatile(!persisted);
     setSaved(true);
   }
 
@@ -166,7 +175,12 @@ export function GamePlayer({ game }: { game: Game }) {
         </div>
         {saved ? (
           <div className="av-saved">
-            <Typewriter text="SCORE SAVED" />
+            <Typewriter text={volatile ? "SCORE KEPT" : "SCORE SAVED"} />
+            {volatile && (
+              <p className="av-modal-note">
+                Storage is unavailable, so the score is kept only until you close this tab.
+              </p>
+            )}
           </div>
         ) : (
           <form className="av-save-form" onSubmit={submit}>
@@ -174,8 +188,16 @@ export function GamePlayer({ game }: { game: Game }) {
               <p className="av-modal-note">It will be saved as {player}.</p>
             ) : (
               <>
-                <Input label="Your name" placeholder="GUEST" maxLength={12} value={name} onChange={(e) => setName(e.target.value)} />
-                <p className="av-modal-note">Playing as a guest: your score is saved on this device only.</p>
+                <Input
+                  label="Your name"
+                  placeholder="GUEST"
+                  maxLength={12}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <p className="av-modal-note">
+                  Playing as a guest: your score is saved on this device only.
+                </p>
               </>
             )}
             <Button type="submit" variant="outline" block>

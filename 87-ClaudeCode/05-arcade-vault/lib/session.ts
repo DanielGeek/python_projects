@@ -14,32 +14,52 @@ const KEY = "arcade-vault:session";
 const EVENT = "arcade-vault:session";
 let cached: { raw: string | null; session: Session | null } = { raw: null, session: null };
 
-function read(): Session | null {
+// Answers when localStorage is blocked: the session then lasts only for this page view.
+let memory: Session | null = null;
+let degraded = false;
+
+function isSession(value: unknown): value is Session {
+  if (typeof value !== "object" || value === null) return false;
+  const { name, guest } = value as Record<string, unknown>;
+  return typeof name === "string" && name.length > 0 && typeof guest === "boolean";
+}
+
+export function readSession(): Session | null {
+  if (degraded) return memory;
   let raw: string | null = null;
   try {
     raw = window.localStorage.getItem(KEY);
   } catch {
-    return null;
+    degraded = true;
+    return memory;
   }
   if (raw === cached.raw) return cached.session;
   let session: Session | null = null;
   try {
-    session = raw ? (JSON.parse(raw) as Session) : null;
+    const data: unknown = raw ? JSON.parse(raw) : null;
+    session = isSession(data) ? data : null;
   } catch {
     session = null;
   }
+  if (raw && !session) console.warn("[session] ignored an invalid stored session");
   cached = { raw, session };
   return session;
 }
 
-function write(session: Session | null) {
+/** Returns false when the session could not be persisted; it is then kept in memory only. */
+function write(session: Session | null): boolean {
+  memory = session;
+  let saved = true;
   try {
     if (session) window.localStorage.setItem(KEY, JSON.stringify(session));
     else window.localStorage.removeItem(KEY);
-  } catch {
-    // Blocked storage: the session lasts only for this page view.
+  } catch (error) {
+    saved = false;
+    degraded = true;
+    console.warn("[session] could not persist the session", error);
   }
   window.dispatchEvent(new Event(EVENT));
+  return saved;
 }
 
 export const signIn = (name: string) => write({ name: name.trim().toUpperCase(), guest: false });
@@ -56,5 +76,5 @@ function subscribe(cb: () => void) {
 }
 
 export function useSession(): Session | null {
-  return useSyncExternalStore(subscribe, read, () => null);
+  return useSyncExternalStore(subscribe, readSession, () => null);
 }

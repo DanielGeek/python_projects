@@ -9,24 +9,38 @@ const KEY = "arcade-vault:credits";
 const EVENT = "arcade-vault:credits";
 export const INITIAL_CREDITS = 3;
 
+// Last known balance. It answers when localStorage cannot (blocked or full), so the balance still
+// goes down for this page view instead of resetting to INITIAL_CREDITS on every read.
+let memory = INITIAL_CREDITS;
+let degraded = false;
+
 export function readCredits(): number {
+  if (degraded) return memory;
   try {
     const raw = window.localStorage.getItem(KEY);
-    if (raw === null) return INITIAL_CREDITS;
-    const n = Number.parseInt(raw, 10);
-    return Number.isInteger(n) && n >= 0 ? n : INITIAL_CREDITS;
+    if (raw === null) return (memory = INITIAL_CREDITS);
+    // Strict digits only: parseInt would accept "2abc" and a tampered value must not grant credits.
+    const n = /^\d+$/.test(raw) ? Number(raw) : 0;
+    return (memory = Number.isSafeInteger(n) ? n : 0);
   } catch {
-    return INITIAL_CREDITS;
+    degraded = true;
+    return memory;
   }
 }
 
-function writeCredits(n: number) {
+/** Returns false when the balance could not be persisted; it is then kept in memory only. */
+function writeCredits(n: number): boolean {
+  memory = n;
+  let saved = true;
   try {
     window.localStorage.setItem(KEY, String(n));
-  } catch {
-    // Storage blocked: the balance simply does not persist.
+  } catch (error) {
+    saved = false;
+    degraded = true;
+    console.warn("[credits] could not persist the balance", error);
   }
   window.dispatchEvent(new Event(EVENT));
+  return saved;
 }
 
 /** Spends one credit. Returns false, and changes nothing, when the balance is 0. */
@@ -37,9 +51,9 @@ export function spendCredit(): boolean {
   return true;
 }
 
-/** Restores the balance to INITIAL_CREDITS. */
-export function insertCoin() {
-  writeCredits(INITIAL_CREDITS);
+/** Restores the balance to INITIAL_CREDITS. Returns false when it could not be persisted. */
+export function insertCoin(): boolean {
+  return writeCredits(INITIAL_CREDITS);
 }
 
 function subscribe(cb: () => void) {
