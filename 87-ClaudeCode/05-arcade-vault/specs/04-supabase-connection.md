@@ -127,18 +127,18 @@ app/api/health/supabase/route.ts   GET handler
 ## Acceptance criteria
 
 - [ ] `npm run lint`, `npm test` and `npm run build` finish without errors, also with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` unset.
-- [ ] `package.json` lists `@supabase/supabase-js` and `@supabase/ssr` as dependencies.
-- [ ] `getSupabaseEnv` returns `{ url, publishableKey }` when both variables are set.
-- [ ] `getSupabaseEnv` throws an error whose message names the missing variable when either one is missing or empty.
+- [x] `package.json` lists `@supabase/supabase-js` and `@supabase/ssr` as dependencies.
+- [x] `getSupabaseEnv` returns `{ url, publishableKey }` when both variables are set.
+- [x] `getSupabaseEnv` throws an error whose message names the missing variable when either one is missing or empty.
 - [ ] `GET /api/health/supabase` answers `200 { "ok": true }` with the real variables in `.env`.
 - [ ] `GET /api/health/supabase` answers 500 with `{ "ok": false, "error": <generic text> }` when a variable is missing, and when the key is wrong.
 - [ ] The 500 response body contains neither the URL, the key nor a stack trace.
 - [ ] `POST /api/health/supabase` answers 405.
-- [ ] `lib/supabase/client.ts` and `lib/supabase/server.ts` each export a `createClient` function and create the client inside it, not at module load.
-- [ ] `SUPABASE_DB_PASSWORD` appears in `.env.template`; `SUPASE_DB_PASSWORD` appears nowhere in the repo.
-- [ ] `.env.template` lists the two public variables with no real values, and `.env` is not tracked by git.
+- [x] `lib/supabase/client.ts` and `lib/supabase/server.ts` each export a `createClient` function and create the client inside it, not at module load.
+- [x] `SUPABASE_DB_PASSWORD` appears in `.env.template`; `SUPASE_DB_PASSWORD` appears nowhere in the repo.
+- [x] `.env.template` lists the two public variables with no real values, and `.env` is not tracked by git.
 - [ ] No service role key and no `SUPABASE_DB_PASSWORD` value appears in the client bundle or in any file tracked by git.
-- [ ] No page, component or `lib/` module other than the new ones imports from `lib/supabase/`.
+- [x] No page, component or `lib/` module other than the new ones imports from `lib/supabase/`.
 - [ ] The existing pages (`/`, `/library`, `/game/drop`, `/login`, `/about`, `/hall-of-fame`) render without new console errors, and `/login` still signs in with the local session.
 - [ ] `CLAUDE.md` documents `lib/supabase/`, the health route and the variables.
 
