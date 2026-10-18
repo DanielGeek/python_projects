@@ -63,9 +63,9 @@ class Bullet {
 }
 
 // ── Asteroid ──────────────────────────────────────────────────────────────────
-const RADII = [ 0, 16, 30, 50 ];   // por tamaño 1, 2, 3
-const SPEEDS = [ 0, 85, 55, 32 ];   // velocidad base por tamaño
-const POINTS = [ 0, 100, 50, 20 ];  // puntos por tamaño
+const RADII = [ 0, 16, 30, 50 ];   // by size 1, 2, 3
+const SPEEDS = [ 0, 85, 55, 32 ];   // base speed by size
+const POINTS = [ 0, 100, 50, 20 ];  // points by size
 
 class Asteroid {
   constructor( x, y, size = 3 ) {
@@ -82,7 +82,7 @@ class Asteroid {
     this.rotSpeed = rand( -1.2, 1.2 );
     this.rot = rand( 0, Math.PI * 2 );
 
-    // Polígono irregular
+    // Irregular polygon
     const n = randInt( 8, 13 );
     this.verts = [];
     for ( let i = 0; i < n; i++ ) {
@@ -226,7 +226,7 @@ class Ship {
 
   draw() {
     if ( this.dead ) return;
-    // Parpadeo durante invencibilidad de reaparición
+    // Blink while invincible after respawn
     if ( this.invincible > 0 && Math.floor( this.invincible * 8 ) % 2 === 0 ) return;
 
     ctx.save();
@@ -236,16 +236,16 @@ class Ship {
     ctx.lineWidth = 1.5;
     ctx.lineJoin = 'round';
 
-    // Silueta clásica: triángulo con muesca trasera
+    // Classic silhouette: triangle with a rear notch
     ctx.beginPath();
-    ctx.moveTo( 20, 0 );   // nariz
-    ctx.lineTo( -12, -9 );   // ala izquierda
-    ctx.lineTo( -7, 0 );   // muesca trasera
-    ctx.lineTo( -12, 9 );   // ala derecha
+    ctx.moveTo( 20, 0 );   // nose
+    ctx.lineTo( -12, -9 );   // left wing
+    ctx.lineTo( -7, 0 );   // rear notch
+    ctx.lineTo( -12, 9 );   // right wing
     ctx.closePath();
     ctx.stroke();
 
-    // Llama del propulsor
+    // Thruster flame
     if ( this.thrusting && Math.random() > 0.35 ) {
       ctx.beginPath();
       ctx.moveTo( -8, -4 );
@@ -259,7 +259,7 @@ class Ship {
   }
 }
 
-// ── Partículas (explosión) ────────────────────────────────────────────────────
+// ── Particles (explosion) ─────────────────────────────────────────────────────
 class Particle {
   constructor( x, y ) {
     this.x = x;
@@ -291,7 +291,7 @@ class Particle {
   }
 }
 
-// ── Estado del juego ──────────────────────────────────────────────────────────
+// ── Game state ────────────────────────────────────────────────────────────────
 let ship, bullets, asteroids, particles, powerUps;
 let score, lives, level;
 let state;      // 'playing' | 'dead' | 'gameover'
@@ -371,7 +371,7 @@ function update( dt ) {
     return;
   }
 
-  // Disparar
+  // Shoot
   if ( pressed( 'Space' ) ) {
     bullets.push( ...ship.tryShoot() );
   }
@@ -393,7 +393,7 @@ function update( dt ) {
     }
   }
 
-  // Bala vs asteroide
+  // Bullet vs asteroid
   const newAsteroids = [];
   for ( const b of bullets ) {
     for ( const a of asteroids ) {
@@ -417,7 +417,7 @@ function update( dt ) {
   asteroids = asteroids.filter( a => !a.dead ).concat( newAsteroids );
   bullets = bullets.filter( b => !b.dead );
 
-  // Nave vs asteroide
+  // Ship vs asteroid
   if ( ship.invincible <= 0 ) {
     for ( const a of asteroids ) {
       if ( dist( ship, a ) < ship.radius + a.radius * 0.82 ) {
@@ -427,7 +427,7 @@ function update( dt ) {
     }
   }
 
-  // Nivel completado
+  // Level complete
   if ( asteroids.length === 0 ) nextLevel();
 }
 
@@ -457,7 +457,7 @@ function drawHUD() {
   ctx.fillText( `SCORE  ${ score }`, 14, 26 );
 
   ctx.textAlign = 'center';
-  ctx.fillText( `NIVEL ${ level }`, W / 2, 26 );
+  ctx.fillText( `LEVEL ${ level }`, W / 2, 26 );
 
   for ( let i = 0; i < lives; i++ )
     drawLifeIcon( W - 16 - i * 22, 18 );
@@ -492,7 +492,7 @@ function draw() {
   drawHUD();
 
   if ( state === 'gameover' )
-    drawOverlay( 'GAME OVER', `PUNTAJE: ${ score }   —   ESPACIO PARA REINICIAR` );
+    drawOverlay( 'GAME OVER', `SCORE: ${ score }   —   PRESS SPACE TO RESTART` );
 }
 
 // ── Loop principal ────────────────────────────────────────────────────────────

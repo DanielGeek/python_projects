@@ -188,10 +188,10 @@ function drawPauseOverlay() {
   ctx.font = 'bold 56px monospace';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('PAUSA', canvas.width / 2, 260);
+  ctx.fillText('PAUSED', canvas.width / 2, 260);
 
   ctx.font = 'bold 16px monospace';
-  ctx.fillText('Saltar al nivel:', canvas.width / 2, 310);
+  ctx.fillText('Jump to level:', canvas.width / 2, 310);
 
   for (let i = 0; i < 5; i++) {
     const bx = PAUSE_BTN_ROW_X + i * (PAUSE_BTN_W + PAUSE_BTN_GAP);
@@ -234,7 +234,7 @@ function draw() {
     ctx.textBaseline = 'top';
     ctx.fillText('Score: ' + score, 10, 10);
     ctx.textAlign = 'center';
-    ctx.fillText('Nivel: ' + currentLevel, canvas.width / 2, 10);
+    ctx.fillText('Level: ' + currentLevel, canvas.width / 2, 10);
     const ballSize = 16;
     const ballSpacing = 4;
     for (let i = 0; i < lives; i++) {
@@ -244,7 +244,7 @@ function draw() {
   }
 
   if (gameState === 'gameover') drawOverlay('GAME OVER');
-  if (gameState === 'win')      drawOverlay('¡Completaste el juego!');
+  if (gameState === 'win')      drawOverlay('You beat the game!');
   if (isPaused)                 drawPauseOverlay();
 }
 

@@ -1,49 +1,49 @@
 # Asteroids
 
-Clon del clásico arcade **Asteroids** implementado en canvas HTML5 puro, sin dependencias ni bundler.
+Clone of the classic arcade game **Asteroids** built with plain HTML5 canvas, with no dependencies and no bundler.
 
 ## Demo:
 
 [Asteroids demo](https://klerith.github.io/claude-asteroids/)
 
-## Descripción
+## Description
 
-Nave espacial en un campo de asteroides con envolvimiento de bordes (el espacio es toroidal). Destruye asteroides para sumar puntos: los grandes se parten en medianos, los medianos en pequeños.
+A spaceship in an asteroid field with wrapping edges (space is toroidal). Destroy asteroids to score points: large ones split into medium ones, and medium ones into small ones.
 
-## Tecnologías
+## Technologies
 
-- **HTML5 Canvas** — renderizado 2D
-- **JavaScript (ES6+)** — lógica del juego en un solo archivo `game.js`
-- Sin frameworks, sin bundler, sin dependencias
+- **HTML5 Canvas** — 2D rendering
+- **JavaScript (ES6+)** — game logic in a single `game.js` file
+- No frameworks, no bundler, no dependencies
 
-## Cómo correr
+## How to run
 
-Abre `index.html` directamente en el navegador (doble clic), o usa un servidor local:
+Open `index.html` directly in the browser (double click), or use a local server:
 
 ```bash
 npx serve .
 ```
 
-Luego visita `http://localhost:3000`.
+Then visit `http://localhost:3000`.
 
-## Controles
+## Controls
 
-| Tecla     | Acción     |
-| --------- | ---------- |
-| `←` `→`   | Rotar nave |
-| `↑`       | Propulsar  |
-| `Espacio` | Disparar   |
+| Key     | Action      |
+| ------- | ----------- |
+| `←` `→` | Rotate ship |
+| `↑`     | Thrust      |
+| `Space` | Shoot       |
 
-## Puntuación
+## Scoring
 
-| Objeto  | Puntos |
-| ------- | ------ |
-| Grande  | 20     |
-| Mediano | 50     |
-| Pequeño | 100    |
+| Object | Points |
+| ------ | ------ |
+| Large  | 20     |
+| Medium | 50     |
+| Small  | 100    |
 
-## Características
+## Features
 
-- 3 vidas con invencibilidad temporal al reaparecer (parpadeo)
-- Asteroides se parten en fragmentos más pequeños al ser destruidos
-- Partículas de explosión al destruir asteroides
+- 3 lives with temporary invincibility after respawning (blinking)
+- Asteroids split into smaller fragments when destroyed
+- Explosion particles when an asteroid is destroyed

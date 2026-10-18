@@ -13,7 +13,7 @@ const COLORS = [
   '#e57373', // Z - red
   '#90caf9', // J - pale blue
   '#ffb74d', // L - orange
-  '#9e9e9e', // N - tuerca (gris metálico)
+  '#9e9e9e', // N - nut (metallic gray)
 ];
 
 const PIECES = [
@@ -25,7 +25,7 @@ const PIECES = [
   [[5,5,0],[0,5,5],[0,0,0]],                  // Z
   [[6,0,0],[6,6,6],[0,0,0]],                  // J
   [[0,0,7],[7,7,7],[0,0,0]],                  // L
-  [[8,8,8],[8,0,8],[8,8,8]],                  // N (tuerca)
+  [[8,8,8],[8,0,8],[8,8,8]],                  // N (nut)
 ];
 
 const LINE_SCORES = [0, 100, 300, 500, 800];
@@ -224,7 +224,7 @@ function endGame() {
   gameOver = true;
   cancelAnimationFrame(animId);
   overlayTitle.textContent = 'GAME OVER';
-  overlayScore.textContent = `Puntuación: ${score.toLocaleString()}`;
+  overlayScore.textContent = `Score: ${score.toLocaleString()}`;
   overlay.classList.remove('hidden');
 }
 
@@ -236,7 +236,7 @@ function togglePause() {
     loop(lastTime);
   } else {
     cancelAnimationFrame(animId);
-    overlayTitle.textContent = 'PAUSA';
+    overlayTitle.textContent = 'PAUSED';
     overlayScore.textContent = '';
     overlay.classList.remove('hidden');
   }
