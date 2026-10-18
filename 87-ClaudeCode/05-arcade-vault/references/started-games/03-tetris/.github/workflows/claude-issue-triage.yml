@@ -25,60 +25,60 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: '--allowed-tools "Bash(gh issue *),Bash(gh label *),Read,Glob,Grep"'
           prompt: |
-            Analiza el issue #${{ github.event.issue.number }} del repositorio ${{ github.repository }}.
+            Analyze issue #${{ github.event.issue.number }} of the repository ${{ github.repository }}.
 
-            Título del issue: ${{ github.event.issue.title }}
+            Issue title: ${{ github.event.issue.title }}
 
-            Sigue estos pasos en orden:
+            Follow these steps in order:
 
-            1. Lee el contenido completo del issue:
+            1. Read the full content of the issue:
                `gh issue view ${{ github.event.issue.number }}`
 
-            2. Revisa los labels ya existentes en el repo:
+            2. Review the labels that already exist in the repo:
                `gh label list`
 
-            3. Asigna entre 1 y 4 labels apropiados al issue:
+            3. Assign between 1 and 4 appropriate labels to the issue:
                `gh issue edit ${{ github.event.issue.number }} --add-label "<label>"`
-               Categorías sugeridas: bug, feature, enhancement, question, documentation,
+               Suggested categories: bug, feature, enhancement, question, documentation,
                ui, gameplay, performance, refactor, good-first-issue, priority/high, priority/medium, priority/low.
-               Si un label necesario no existe, créalo primero:
-               `gh label create "<name>" --color <hex> --description "<descripción>"`
+               If a needed label does not exist, create it first:
+               `gh label create "<name>" --color <hex> --description "<description>"`
 
-            4. Explora los archivos del repositorio que sean relevantes para el issue
-               usando las herramientas Read, Glob y Grep según necesites.
+            4. Explore the repository files that are relevant to the issue
+               using the Read, Glob and Grep tools as needed.
 
-            5. Publica UN comentario de diagnóstico en el issue:
-               `gh issue comment ${{ github.event.issue.number }} --body "<contenido>"`
+            5. Post ONE diagnostic comment on the issue:
+               `gh issue comment ${{ github.event.issue.number }} --body "<content>"`
 
-               El contenido debe estar escrito en Markdown compatible con GitHub (GFM):
-               usa encabezados con `##`, listas con `-`, bloques de código con triple backtick,
-               negritas con `**`, y referencias a archivos como `ruta/archivo.js:42`.
-               No uses HTML ni sintaxis que GitHub no renderice en comentarios de issues.
+               The content must be written in GitHub-compatible Markdown (GFM):
+               use headings with `##`, lists with `-`, code blocks with triple backticks,
+               bold with `**`, and file references as `path/file.js:42`.
+               Do not use HTML or syntax that GitHub does not render in issue comments.
 
-               El comentario debe tener exactamente esta estructura en español:
+               The comment must have exactly this structure, in English:
 
-               ## 🔍 Diagnóstico automático
+               ## 🔍 Automatic diagnosis
 
-               **Categoría:** <tipo: bug / feature / mejora / pregunta / documentación>
-               <2-4 líneas describiendo el issue y su impacto>
+               **Category:** <type: bug / feature / improvement / question / documentation>
+               <2-4 lines describing the issue and its impact>
 
-               ## 📁 Área del código afectada
-               <lista de archivos, funciones o constantes relevantes con referencias file:línea>
+               ## 📁 Affected code area
+               <list of relevant files, functions or constants with file:line references>
 
-               ## 🧠 Causa raíz / análisis técnico
-               <explicación técnica de por qué ocurre el problema o por qué falta la funcionalidad>
+               ## 🧠 Root cause / technical analysis
+               <technical explanation of why the problem happens or why the feature is missing>
 
-               ## 🛠️ Propuesta de solución
-               <pasos concretos de implementación numerados, indicando qué archivos tocar y qué cambiar>
+               ## 🛠️ Proposed solution
+               <numbered concrete implementation steps, stating which files to touch and what to change>
 
-               ## ⚠️ Riesgos y consideraciones
-               <regresiones posibles, edge cases, dependencias a tener en cuenta>
+               ## ⚠️ Risks and considerations
+               <possible regressions, edge cases, dependencies to keep in mind>
 
                ---
-               *Diagnóstico generado automáticamente por Claude. Verificar antes de implementar.*
+               *Diagnosis generated automatically by Claude. Verify before implementing.*
 
-            Notas importantes:
-            - Si el issue es ambiguo o le falta información, pídela en el comentario en lugar de inventar.
-            - Si ya existe un comentario previo de diagnóstico de Claude (caso de issue editado),
-              edita ese comentario en lugar de crear uno nuevo para no duplicar.
-            - Sé técnico y preciso: este diagnóstico será usado directamente como base para implementar la solución.
+            Important notes:
+            - If the issue is ambiguous or lacks information, ask for it in the comment instead of making things up.
+            - If a previous Claude diagnostic comment already exists (case of an edited issue),
+              edit that comment instead of creating a new one to avoid duplicates.
+            - Be technical and precise: this diagnosis will be used directly as the basis for implementing the solution.

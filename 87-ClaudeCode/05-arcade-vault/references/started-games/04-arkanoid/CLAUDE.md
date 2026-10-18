@@ -2,108 +2,108 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Proyecto
+## Project
 
-Juego de Arkanoid en HTML, CSS y JavaScript puro — sin dependencias, cero frameworks. Se abre directamente en el navegador (`open index.html`).
+Arkanoid game in plain HTML, CSS and JavaScript — no dependencies, zero frameworks. It opens directly in the browser (`open index.html`).
 
-## Desarrollo
+## Development
 
-No hay paso de build ni servidor requerido. Para probar cambios: `open index.html`.
+There is no build step and no server required. To test changes: `open index.html`.
 
-## Arquitectura
+## Architecture
 
-### Archivos principales
+### Main files
 
-| Archivo | Rol |
+| File | Role |
 |---|---|
-| `index.html` | Punto de entrada; carga scripts y el `<canvas>` de 800×600 px |
-| `game.js` | Toda la lógica del juego (estado, loop, físicas, render, HUD, overlays) |
-| `levels.js` | Define `LEVELS`: array de 5 niveles con `blocks[]` y `ballSpeedMultiplier` |
-| `assets/spritesheet.js` | Carga el spritesheet y expone helpers de dibujo |
+| `index.html` | Entry point; loads the scripts and the 800×600 px `<canvas>` |
+| `game.js` | All the game logic (state, loop, physics, render, HUD, overlays) |
+| `levels.js` | Defines `LEVELS`: array of 5 levels with `blocks[]` and `ballSpeedMultiplier` |
+| `assets/spritesheet.js` | Loads the spritesheet and exposes drawing helpers |
 
 ### Assets
 
-- **`assets/spritesheet-breakout.png`** — spritesheet único con todos los sprites
-- **`assets/sounds/ball-bounce.mp3`** y **`assets/sounds/break-sound.mp3`** — efectos de sonido
+- **`assets/spritesheet-breakout.png`** — single spritesheet with all the sprites
+- **`assets/sounds/ball-bounce.mp3`** and **`assets/sounds/break-sound.mp3`** — sound effects
 
-### API de `spritesheet.js`
+### `spritesheet.js` API
 
 ```js
-loadSpritesheet(cb)                        // carga la imagen; llama cb al terminar
-drawSprite(ctx, name, x, y, w, h)          // dibuja un sprite por nombre
-drawFrame(ctx, frame, x, y, w, h)          // dibuja un frame de animación
-// Constantes exportadas: SPRITES, EXPLOSION_FRAMES, EXPLOSION_DURATION
+loadSpritesheet(cb)                        // loads the image; calls cb when done
+drawSprite(ctx, name, x, y, w, h)          // draws a sprite by name
+drawFrame(ctx, frame, x, y, w, h)          // draws an animation frame
+// Exported constants: SPRITES, EXPLOSION_FRAMES, EXPLOSION_DURATION
 ```
 
-### Sprites disponibles
+### Available sprites
 
-| Nombre | Descripción |
+| Name | Description |
 |---|---|
-| `paddle` | Paleta (162×14 px) |
-| `ball` | Pelota (16×16 px) |
-| `block_gray`, `block_red`, `block_yellow`, `block_cyan`, `block_magenta`, `block_hotpink`, `block_green` | Bloques por color |
+| `paddle` | Paddle (162×14 px) |
+| `ball` | Ball (16×16 px) |
+| `block_gray`, `block_red`, `block_yellow`, `block_cyan`, `block_magenta`, `block_hotpink`, `block_green` | Blocks by color |
 
-Las explosiones usan `EXPLOSION_FRAMES[color]` (4 frames) y duran `EXPLOSION_DURATION` ms.
+Explosions use `EXPLOSION_FRAMES[color]` (4 frames) and last `EXPLOSION_DURATION` ms.
 
-### Estado del juego (en `game.js`)
+### Game state (in `game.js`)
 
 ```js
 gameState   // 'playing' | 'paused' | 'gameover' | 'win'
 score       // number
-lives       // number (inicia en 3)
-currentLevel // número de nivel activo (0-indexed sobre LEVELS)
+lives       // number (starts at 3)
+currentLevel // active level number (0-indexed over LEVELS)
 paddle      // { x, y, w: 162, h: 14 }
 ball        // { x, y, w: 16, h: 16, vx, vy }
 blocks[]    // [{ x, y, w, h, color, alive }]
-explosions[]// animaciones activas
+explosions[]// active animations
 ```
 
-## Flujo de trabajo spec-driven
+## Spec-driven workflow
 
-Este proyecto usa desarrollo guiado por specs. **No escribir código sin spec aprobada.**
+This project uses spec-driven development. **Do not write code without an approved spec.**
 
-### Comandos
+### Commands
 
-| Comando | Acción |
+| Command | Action |
 |---|---|
-| `/spec [descripción]` | Diseña una spec nueva haciendo preguntas primero. Guarda en `specs/NN-slug.md` con estado `Draft`. |
-| `/spec-impl NN-slug` | Implementa la spec aprobada paso a paso, creando rama `spec-NN-slug` y pausando tras cada paso. |
+| `/spec [description]` | Designs a new spec, asking questions first. Saves to `specs/NN-slug.md` with status `Draft`. |
+| `/spec-impl NN-slug` | Implements the approved spec step by step, creating branch `spec-NN-slug` and pausing after each step. |
 
-### Ciclo de vida de una spec
+### Spec lifecycle
 
 ```
-Draft → Approved → Implementado
-               ↘ Obsoleto
+Draft → Approved → Implemented
+               ↘ Obsolete
 ```
 
-El estado se cambia **manualmente** antes de ejecutar `/spec-impl`. Nunca implementar una spec en estado `Draft`.
+The status is changed **manually** before running `/spec-impl`. Never implement a spec in `Draft` status.
 
-### Estructura de una spec (`specs/NN-slug.md`)
+### Spec structure (`specs/NN-slug.md`)
 
 ```markdown
-# NN — Título breve
+# NN — Short title
 
-- **Estado:** Draft | Approved | Implementado | Obsoleto
-- **Fecha:** YYYY-MM-DD
-- **Dependencias:** specs previas requeridas
-- **Objetivo:** una sola frase
+- **Status:** Draft | Approved | Implemented | Obsolete
+- **Date:** YYYY-MM-DD
+- **Dependencies:** required previous specs
+- **Objective:** a single sentence
 
-## Alcance
-## Modelo de datos
-## Plan de implementación   ← pasos numerados, cada uno commiteable
-## Criterios de aceptación  ← checklist booleano
-## Decisiones               ← qué se consideró y por qué
-## Qué NO incluye este spec
+## Scope
+## Data model
+## Implementation plan      ← numbered steps, each committable
+## Acceptance criteria      ← boolean checklist
+## Decisions                ← what was considered and why
+## What this spec does NOT include
 ```
 
-La referencia completa está en `.agents/skills/spec/template.md`.
+The full reference is in `.agents/skills/spec/template.md`.
 
-### Specs existentes
+### Existing specs
 
-| # | Slug | Estado |
+| # | Slug | Status |
 |---|---|---|
-| 01 | `mvp-arkanoid` | Implementado |
-| 02 | `animacion-explosion-bloques` | Implementado |
-| 03 | `sonidos-y-niveles` | Implementado |
+| 01 | `mvp-arkanoid` | Implemented |
+| 02 | `block-explosion-animation` | Implemented |
+| 03 | `sounds-and-levels` | Implemented |
 
-El próximo spec será `04-...`.
+The next spec will be `04-...`.

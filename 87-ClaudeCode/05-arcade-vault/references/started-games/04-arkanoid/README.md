@@ -1,62 +1,62 @@
 # Arkanoid
 
-Juego de Arkanoid en HTML, CSS y JavaScript puro — sin dependencias, cero frameworks.
+Arkanoid game in plain HTML, CSS and JavaScript — no dependencies, zero frameworks.
 
-## Jugar
+## Play
 
-Abre `index.html` directamente en el navegador. No requiere servidor ni build.
+Open `index.html` directly in the browser. It needs no server and no build.
 
-## Controles
+## Controls
 
-| Acción            | Tecla / Input                      |
-| ----------------- | ---------------------------------- |
-| Mover paddle      | Mouse o ← →                        |
-| Pausar / reanudar | P o Escape                         |
-| Saltar a nivel    | Botones 1–5 en el overlay de pausa |
+| Action         | Key / Input                      |
+| -------------- | -------------------------------- |
+| Move paddle    | Mouse or ← →                     |
+| Pause / resume | P or Escape                      |
+| Jump to level  | Buttons 1–5 in the pause overlay |
 
-## Características
+## Features
 
-- Canvas 800×600 px con sprites del spritesheet
-- Paddle, pelota y colisiones con física básica
-- 3 vidas — al caer la pelota se descuenta una vida y se reposiciona
-- Score acumulado a través de los 5 niveles (10 pts por bloque)
-- HUD con score, vidas y nivel actual
-- 5 niveles con patrones de bloques distintos
-- La pelota aumenta un 10 % de velocidad por nivel (nivel 5 ≈ +46 % vs nivel 1)
-- Animación de explosión al destruir un bloque (4 frames del spritesheet)
-- Efectos de sonido al rebotar y al romper bloques
-- Overlay de pausa con selector de nivel
-- Overlay de Game Over y de victoria ("¡Completaste el juego!")
+- 800×600 px canvas with sprites from the spritesheet
+- Paddle, ball and collisions with basic physics
+- 3 lives — when the ball falls, one life is deducted and the ball is repositioned
+- Score accumulated across the 5 levels (10 pts per block)
+- HUD with score, lives and current level
+- 5 levels with different block patterns
+- The ball speeds up 10 % per level (level 5 ≈ +46 % vs level 1)
+- Explosion animation when a block is destroyed (4 spritesheet frames)
+- Sound effects on bounces and when breaking blocks
+- Pause overlay with a level selector
+- Game Over and victory overlays ("You beat the game!")
 
-## Niveles
+## Levels
 
-| Nivel | Patrón                 | Velocidad |
-| ----- | ---------------------- | --------- |
-| 1     | Parrilla completa 10×6 | ×1.0      |
-| 2     | Pirámide centrada      | ×1.1      |
-| 3     | Tablero de ajedrez     | ×1.21     |
-| 4     | Filas con huecos       | ×1.33     |
-| 5     | Marco + cruz central   | ×1.46     |
+| Level | Pattern               | Speed |
+| ----- | --------------------- | ----- |
+| 1     | Full 10×6 grid        | ×1.0  |
+| 2     | Centered pyramid      | ×1.1  |
+| 3     | Checkerboard          | ×1.21 |
+| 4     | Rows with gaps        | ×1.33 |
+| 5     | Frame + central cross | ×1.46 |
 
-## Estructura del proyecto
+## Project structure
 
 ```
-index.html          # punto de entrada
-game.js             # lógica del juego (estado, loop, físicas, render)
-levels.js           # definición de los 5 niveles (LEVELS)
+index.html          # entry point
+game.js             # game logic (state, loop, physics, render)
+levels.js           # definition of the 5 levels (LEVELS)
 assets/
   spritesheet-breakout.png
-  spritesheet.js    # helpers drawSprite / drawFrame
+  spritesheet.js    # drawSprite / drawFrame helpers
   sounds/
     ball-bounce.mp3
     break-sound.mp3
-specs/              # specs de diseño (flujo spec-driven)
+specs/              # design specs (spec-driven workflow)
 ```
 
-## Specs implementadas
+## Implemented specs
 
-| #   | Spec                                                | Estado       |
-| --- | --------------------------------------------------- | ------------ |
-| 01  | MVP jugable (paddle, pelota, bloques, vidas, score) | Implementado |
-| 02  | Animación de explosión al romper bloques            | Implementado |
-| 03  | Sonidos y 5 niveles con selector en pausa           | Implementado |
+| #   | Spec                                              | Status      |
+| --- | ------------------------------------------------- | ----------- |
+| 01  | Playable MVP (paddle, ball, blocks, lives, score) | Implemented |
+| 02  | Explosion animation when breaking blocks          | Implemented |
+| 03  | Sounds and 5 levels with a selector in the pause  | Implemented |

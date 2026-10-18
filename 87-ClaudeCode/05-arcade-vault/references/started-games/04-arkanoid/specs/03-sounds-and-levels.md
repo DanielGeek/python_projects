@@ -1,162 +1,162 @@
-# 03 — Sonidos y niveles
+# 03 — Sounds and levels
 
-- **Estado:** Implementado
-- **Fecha:** 2026-05-08
-- **Dependencias:** 01-mvp-arkanoid, 02-animacion-explosion-bloques
-- **Objetivo:** Añadir efectos de sonido (rebote y destrucción de bloque) y 5 niveles con patrones de bloques distintos, velocidad de pelota creciente (+10 % por nivel) y selector de nivel accesible desde la pausa (tecla P / Escape).
+- **Status:** Implemented
+- **Date:** 2026-05-08
+- **Dependencies:** 01-mvp-arkanoid, 02-block-explosion-animation
+- **Objective:** Add sound effects (bounce and block destruction) and 5 levels with different block patterns, increasing ball speed (+10 % per level) and a level selector reachable from the pause (P / Escape key).
 
 ---
 
-## Alcance
+## Scope
 
-### Dentro del spec
+### Inside the spec
 
-- Reproducir `ball-bounce.mp3` al rebotar la pelota en paredes y paddle
-- Reproducir `break-sound.mp3` al destruir un bloque
-- Sin control de volumen — siempre activo al volumen por defecto del navegador
-- 5 niveles con patrones de bloques distintos y paletas de colores propias
-- La velocidad base de la pelota aumenta un 10 % acumulado por nivel
-  (nivel 1 = base, nivel 5 ≈ +46 %)
-- Al completar todos los bloques de un nivel se avanza al siguiente automáticamente
-- Al completar el nivel 5 aparece overlay "¡Completaste el juego!"
-- Pausa con tecla P o Escape: overlay semitransparente con botones 1–5
-  para saltar directamente a cualquier nivel
-- Al saltar a un nivel desde la pausa, la velocidad de la pelota corresponde
-  a ese nivel (no siempre arranca desde la base)
-- El score acumula a través de los niveles
+- Play `ball-bounce.mp3` when the ball bounces off walls and the paddle
+- Play `break-sound.mp3` when a block is destroyed
+- No volume control — always on at the browser's default volume
+- 5 levels with different block patterns and their own color palettes
+- The base ball speed increases by a cumulative 10 % per level
+  (level 1 = base, level 5 ≈ +46 %)
+- When all blocks of a level are cleared, the next one starts automatically
+- When level 5 is completed, a "You beat the game!" overlay appears
+- Pause with the P or Escape key: semi-transparent overlay with buttons 1–5
+  to jump directly to any level
+- When jumping to a level from the pause, the ball speed matches that level
+  (it does not always start from the base)
+- The score accumulates across levels
 
-### Fuera del alcance
+### Out of scope
 
-- Control de volumen o mute
-- Más de 5 niveles
+- Volume control or mute
+- More than 5 levels
 - Power-ups
-- Persistencia del progreso entre sesiones
-- Música de fondo
-- Animación de transición entre niveles
+- Persisting progress between sessions
+- Background music
+- Transition animation between levels
 - High scores
 
 ---
 
-## Modelo de datos
+## Data model
 
-### Nuevas variables de estado en `game.js`
+### New state variables in `game.js`
 
 ```js
-currentLevel; // number, 1–5, inicia en 1
-bounceSound; // HTMLAudioElement — cargado al inicio
-breakSound; // HTMLAudioElement — cargado al inicio
+currentLevel; // number, 1–5, starts at 1
+bounceSound; // HTMLAudioElement — loaded at startup
+breakSound; // HTMLAudioElement — loaded at startup
 ```
 
-### Definición de niveles
+### Level definition
 
-Array estático `LEVELS` (constante en `levels.js`), un objeto por nivel:
+Static `LEVELS` array (constant in `levels.js`), one object per level:
 
 ```js
 LEVELS = [
   {
-    speed: 1.0, // multiplicador de velocidad base (vx/vy × speed)
+    speed: 1.0, // base speed multiplier (vx/vy × speed)
     blocks: [
-      // array de { col, row, color } — solo celdas ocupadas
+      // array of { col, row, color } — occupied cells only
       { col: 0, row: 0, color: 'red' },
       // ...
     ],
   },
-  // niveles 2–5...
+  // levels 2–5...
 ];
 ```
 
-Los 5 patrones:
+The 5 patterns:
 
-| Nivel | Patrón             | Descripción                                          |
-| ----- | ------------------ | ---------------------------------------------------- |
-| 1     | Parrilla completa  | 10×6 relleno (igual al MVP), colores por fila        |
-| 2     | Pirámide           | Filas centradas que se estrechan hacia arriba        |
-| 3     | Tablero de ajedrez | Bloques en posiciones (col+row) pares                |
-| 4     | Filas con huecos   | 6 filas con 3–4 bloques ausentes al azar por fila    |
-| 5     | Marco + cruz       | Bloques solo en el borde del área y una cruz central |
+| Level | Pattern       | Description                                          |
+| ----- | ------------- | ---------------------------------------------------- |
+| 1     | Full grid     | Filled 10×6 (same as the MVP), colors per row        |
+| 2     | Pyramid       | Centered rows that narrow towards the top            |
+| 3     | Checkerboard  | Blocks at even (col+row) positions                   |
+| 4     | Rows with gaps | 6 rows with 3–4 random missing blocks per row       |
+| 5     | Frame + cross | Blocks only on the edge of the area and a central cross |
 
-Velocidades: nivel 1 = ×1.0, nivel 2 = ×1.1, nivel 3 = ×1.21, nivel 4 = ×1.33, nivel 5 = ×1.46.
+Speeds: level 1 = ×1.0, level 2 = ×1.1, level 3 = ×1.21, level 4 = ×1.33, level 5 = ×1.46.
 
-### Estado de pausa
+### Pause state
 
 ```js
-isPaused; // boolean, inicia en false
+isPaused; // boolean, starts at false
 ```
 
 ---
 
-## Plan de implementación
+## Implementation plan
 
-1. **Cargar sonidos** — al inicio de `game.js`, crear dos `HTMLAudioElement` apuntando a
-   `assets/sounds/ball-bounce.mp3` y `assets/sounds/break-sound.mp3`, asignarlos a
-   `bounceSound` y `breakSound`.
+1. **Load sounds** — at the top of `game.js`, create two `HTMLAudioElement`s pointing to
+   `assets/sounds/ball-bounce.mp3` and `assets/sounds/break-sound.mp3`, assign them to
+   `bounceSound` and `breakSound`.
 
-2. **Reproducir sonidos** — en `update(dt)`:
+2. **Play sounds** — in `update(dt)`:
 
-   - Donde la pelota rebota en paredes o paddle: llamar `bounceSound.cloneNode().play()`
-   - Donde se marca `block.alive = false`: llamar `breakSound.cloneNode().play()`
-   - Usar `cloneNode()` para permitir solapamiento de sonidos simultáneos.
+   - Where the ball bounces off walls or the paddle: call `bounceSound.cloneNode().play()`
+   - Where `block.alive = false` is set: call `breakSound.cloneNode().play()`
+   - Use `cloneNode()` to allow simultaneous sounds to overlap.
 
-3. **Definir `LEVELS`** — declarar el array estático con los 5 objetos de nivel
-   (patrones y multiplicadores de velocidad) en un archivo independiente `levels.js`,
-   e incluirlo en `index.html` antes de `game.js`.
+3. **Define `LEVELS`** — declare the static array with the 5 level objects
+   (patterns and speed multipliers) in a separate `levels.js` file,
+   and include it in `index.html` before `game.js`.
 
-4. **Función `loadLevel(n)`** — recibe el número de nivel (1–5), reconstruye el array
-   `blocks` según `LEVELS[n-1].blocks`, reposiciona la pelota sobre el paddle,
-   aplica `vx * speed` y `vy * speed` usando la velocidad base, y actualiza
+4. **`loadLevel(n)` function** — receives the level number (1–5), rebuilds the `blocks`
+   array from `LEVELS[n-1].blocks`, repositions the ball on the paddle,
+   applies `vx * speed` and `vy * speed` using the base speed, and updates
    `currentLevel = n`.
 
-5. **Avance automático de nivel** — en `update(dt)`, cuando todos los bloques tienen
-   `alive: false`: si `currentLevel < 5` llamar `loadLevel(currentLevel + 1)`;
-   si `currentLevel === 5` pasar a `gameState = 'win'` con mensaje
-   "¡Completaste el juego!".
+5. **Automatic level advance** — in `update(dt)`, when all blocks have
+   `alive: false`: if `currentLevel < 5` call `loadLevel(currentLevel + 1)`;
+   if `currentLevel === 5` switch to `gameState = 'win'` with the message
+   "You beat the game!".
 
-6. **Pausa** — añadir listener para teclas P y Escape que alternen `isPaused`.
-   En el game loop, si `isPaused === true` saltar el `update(dt)` pero seguir
-   llamando `draw()` para renderizar el overlay.
+6. **Pause** — add a listener for the P and Escape keys that toggles `isPaused`.
+   In the game loop, if `isPaused === true` skip `update(dt)` but keep
+   calling `draw()` to render the overlay.
 
-7. **Overlay de pausa** — en `draw()`, cuando `isPaused === true` dibujar sobre el
-   canvas: fondo semitransparente, texto "PAUSA" y 5 botones numerados centrados.
-   Al hacer clic en un botón: llamar `loadLevel(n)` y desactivar la pausa.
+7. **Pause overlay** — in `draw()`, when `isPaused === true` draw over the
+   canvas: semi-transparent background, "PAUSED" text and 5 centered numbered buttons.
+   When a button is clicked: call `loadLevel(n)` and disable the pause.
 
-8. **HUD de nivel** — en `draw()`, mostrar el nivel actual junto al score y las vidas
-   durante `gameState === 'playing'`.
-
----
-
-## Criterios de aceptación
-
-- [x] Al rebotar la pelota en una pared o en el paddle suena `ball-bounce.mp3`
-- [x] Al destruir un bloque suena `break-sound.mp3` y no suena `ball-bounce.mp3`
-- [x] Dos sonidos pueden sonar simultáneamente sin que uno cancele al otro
-- [x] El nivel 1 muestra la parrilla completa 10×6
-- [x] El nivel 2 muestra un patrón de pirámide centrada
-- [x] El nivel 3 muestra un tablero de ajedrez (posiciones pares ocupadas)
-- [x] El nivel 4 muestra filas con huecos
-- [x] El nivel 5 muestra un marco con cruz central
-- [ ] Cada nivel tiene una paleta de colores distinta a los demás
-- [ ] Al completar todos los bloques de un nivel, se carga el siguiente automáticamente
-- [ ] La pelota es notablemente más rápida en el nivel 5 que en el nivel 1
-- [ ] Al completar el nivel 5 aparece el overlay "¡Completaste el juego!"
-- [ ] Las teclas P y Escape pausan y reanudan el juego
-- [ ] Durante la pausa el juego no avanza (pelota y bloques congelados)
-- [ ] El overlay de pausa muestra 5 botones numerados
-- [ ] Al pulsar un botón de nivel en la pausa, el juego carga ese nivel con su velocidad correcta
-- [ ] El HUD muestra el nivel actual en todo momento durante el juego
-- [ ] El score acumula correctamente al pasar de un nivel a otro
+8. **Level HUD** — in `draw()`, show the current level next to the score and the lives
+   while `gameState === 'playing'`.
 
 ---
 
-## Decisiones tomadas y descartadas
+## Acceptance criteria
 
-| Decisión                     | Elegida                                    | Descartada                        | Motivo                                                        |
-| ---------------------------- | ------------------------------------------ | --------------------------------- | ------------------------------------------------------------- |
-| Sonidos simultáneos          | `cloneNode().play()`                       | Reusar un solo `Audio` por sonido | Un solo elemento se cancela si el sonido aún no terminó       |
-| Control de volumen           | Sin control — volumen por defecto          | Slider o tecla mute               | Fuera del alcance, añade complejidad sin valor claro          |
-| Definición de niveles        | Array estático `LEVELS` en `levels.js`     | Archivo JSON externo              | Sin build ni servidor; JSON requeriría fetch asíncrono        |
-| Velocidad por nivel          | Multiplicador sobre velocidad base (+10 %) | Velocidad fija distinta por nivel | Más predecible y fácil de ajustar                             |
-| Pausa                        | P y Escape alternan `isPaused`             | Solo una tecla                    | Dos teclas cubren convenciones distintas de jugadores         |
-| Selector de nivel            | Botones numéricos en overlay de pausa      | Menú principal separado           | Reutiliza el overlay existente; accesible sin salir del juego |
-| Velocidad al saltar de nivel | Velocidad del nivel elegido                | Siempre velocidad base            | Coherencia — facilita testear el nivel tal como se jugaría    |
-| Transición entre niveles     | Inmediata (carga directa)                  | Animación o pantalla intermedia   | Fuera del alcance; la animación merece su propio spec         |
-| Score al cambiar de nivel    | Acumula entre niveles                      | Reinicia por nivel                | Más motivador; consistente con el HUD actual                  |
+- [x] When the ball bounces off a wall or the paddle, `ball-bounce.mp3` plays
+- [x] When a block is destroyed, `break-sound.mp3` plays and `ball-bounce.mp3` does not
+- [x] Two sounds can play at the same time without one cancelling the other
+- [x] Level 1 shows the full 10×6 grid
+- [x] Level 2 shows a centered pyramid pattern
+- [x] Level 3 shows a checkerboard (even positions occupied)
+- [x] Level 4 shows rows with gaps
+- [x] Level 5 shows a frame with a central cross
+- [ ] Each level has a color palette different from the others
+- [ ] When all blocks of a level are cleared, the next one loads automatically
+- [ ] The ball is noticeably faster on level 5 than on level 1
+- [ ] When level 5 is completed the "You beat the game!" overlay appears
+- [ ] The P and Escape keys pause and resume the game
+- [ ] During the pause the game does not advance (ball and blocks frozen)
+- [ ] The pause overlay shows 5 numbered buttons
+- [ ] Pressing a level button in the pause loads that level with its correct speed
+- [ ] The HUD shows the current level at all times during the game
+- [ ] The score accumulates correctly when moving from one level to another
+
+---
+
+## Decisions taken and discarded
+
+| Decision                  | Chosen                                    | Discarded                        | Reason                                                       |
+| ------------------------- | ----------------------------------------- | -------------------------------- | ------------------------------------------------------------ |
+| Simultaneous sounds       | `cloneNode().play()`                      | Reuse a single `Audio` per sound | A single element cancels itself if the sound has not ended   |
+| Volume control            | No control — default volume               | Slider or mute key               | Out of scope, adds complexity without clear value            |
+| Level definition          | Static `LEVELS` array in `levels.js`      | External JSON file               | No build or server; JSON would require an async fetch        |
+| Speed per level           | Multiplier over base speed (+10 %)        | Different fixed speed per level  | More predictable and easier to tune                          |
+| Pause                     | P and Escape toggle `isPaused`            | Only one key                     | Two keys cover different player conventions                  |
+| Level selector            | Numeric buttons in the pause overlay      | Separate main menu               | Reuses the existing overlay; reachable without leaving the game |
+| Speed when jumping levels | Speed of the chosen level                 | Always base speed                | Consistency — makes it easier to test the level as it would be played |
+| Transition between levels | Immediate (direct load)                   | Animation or intermediate screen | Out of scope; the animation deserves its own spec            |
+| Score when changing level | Accumulates across levels                 | Resets per level                 | More motivating; consistent with the current HUD             |

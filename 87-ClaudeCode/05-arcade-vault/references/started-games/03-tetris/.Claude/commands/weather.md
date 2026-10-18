@@ -1,14 +1,14 @@
-Busca el clima actual usando web search. 
+Look up the current weather using web search.
 
-Si el usuario proporcionó argumentos ($ARGUMENTS), busca el clima de: $ARGUMENTS  
-Si no hay argumentos, busca el clima de: Ottawa, Canadá
+If the user provided arguments ($ARGUMENTS), look up the weather for: $ARGUMENTS
+If there are no arguments, look up the weather for: Ottawa, Canada
 
-Busca información actualizada y reporta:
-- Temperatura actual (°C y °F)
-- Estado del clima (despejado, nublado, lluvia, nieve, etc.)
-- Sensación térmica
-- Humedad
-- Viento (velocidad y dirección)
-- Pronóstico breve para el resto del día
+Search for up-to-date information and report:
+- Current temperature (°C and °F)
+- Weather conditions (clear, cloudy, rain, snow, etc.)
+- Feels-like temperature
+- Humidity
+- Wind (speed and direction)
+- Short forecast for the rest of the day
 
-Responde en español, de forma concisa.
+Reply in English, concisely.
