@@ -10,6 +10,7 @@ const STATS = [
 export function Stats() {
   return (
     <Reveal className="av-home-stats">
+      <div className="av-home-tape" aria-hidden="true" />
       <div className="av-home-stats-inner">
         {STATS.map((st) => (
           <div key={st.u} className="av-home-stat">
@@ -19,6 +20,7 @@ export function Stats() {
           </div>
         ))}
       </div>
+      <div className="av-home-tape" aria-hidden="true" />
     </Reveal>
   );
 }

@@ -43,3 +43,6 @@ next-env.d.ts
 
 # MCP
 .playwright-mcp
+
+# Plugins
+gan-harness/

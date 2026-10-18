@@ -34,42 +34,46 @@ export function Pricing() {
   const signedIn = !!session && !session.guest;
   return (
     <Reveal className="av-home-section">
-      <SectionHead kicker="// 04" tone="green" title="PRICING" />
+      <SectionHead kicker="STAGE 04" tone="green" title="PRICING" />
       <div className="av-home-pricing">
-        <div className="av-home-price">
-          <div className="av-home-price-label av-pixel">SINGLE PLAN</div>
-          <div className="av-home-price-name av-pixel">VAULT PLAYER</div>
-          <div className="av-home-price-amount">
-            <span className="av-home-price-n">$0</span>
-            <span className="av-home-price-u">/ FOREVER</span>
-          </div>
-          <div className="av-home-price-tag">NO TRICKS · NO FINE PRINT</div>
-          <ul className="av-home-price-list">
-            {PERKS.map((p) => (
-              <li key={p}>✔ {p}</li>
-            ))}
-          </ul>
-          {signedIn ? (
-            <ButtonLink href="/library" variant="outline" size="xl" pulse block>
-              PLAY NOW →
-            </ButtonLink>
-          ) : (
-            <ButtonLink href="/login" variant="outline" size="xl" pulse block>
-              START FREE →
-            </ButtonLink>
-          )}
-          <div className="av-home-price-foot">We never ask for a card. We never will.</div>
-          <div className="av-home-price-stamp av-pixel" aria-hidden>
-            FREE
-            <br />
-            PLAY
+        <div className="av-home-price-wrap">
+          <div className="av-home-price">
+            <div className="av-home-price-label av-pixel">SINGLE PLAN</div>
+            <div className="av-home-price-name av-pixel">VAULT PLAYER</div>
+            <div className="av-home-price-amount">
+              <span className="av-home-price-n">$0</span>
+              <span className="av-home-price-u">/ FOREVER</span>
+            </div>
+            <div className="av-home-price-tag">NO TRICKS · NO FINE PRINT</div>
+            <ul className="av-home-price-list">
+              {PERKS.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+            {signedIn ? (
+              <ButtonLink href="/library" variant="outline" size="xl" pulse block>
+                PLAY NOW →
+              </ButtonLink>
+            ) : (
+              <ButtonLink href="/login" variant="outline" size="xl" pulse block>
+                START FREE →
+              </ButtonLink>
+            )}
+            <div className="av-home-price-foot">We never ask for a card. We never will.</div>
+            <div className="av-home-price-stamp av-pixel" aria-hidden>
+              FREE
+              <br />
+              PLAY
+            </div>
           </div>
         </div>
 
         <div className="av-home-faq">
           {FAQ.map((f) => (
             <div key={f.q} className="av-home-faq-item">
-              <div className="av-home-faq-q av-pixel">{f.q}</div>
+              <div className="av-home-faq-q av-pixel">
+                <span aria-hidden="true">Q{String(FAQ.indexOf(f) + 1)}▸</span> {f.q}
+              </div>
               <div className="av-home-faq-a">{f.a}</div>
             </div>
           ))}

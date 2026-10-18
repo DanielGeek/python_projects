@@ -39,7 +39,11 @@ export function Reveal({
   }, []);
 
   return (
-    <Tag ref={ref as never} className={cx("av-reveal", shown && "av-reveal-in", className)} style={style}>
+    <Tag
+      ref={ref as never}
+      className={cx("av-reveal", shown && "av-reveal-in", className)}
+      style={style}
+    >
       {children}
     </Tag>
   );
