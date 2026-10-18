@@ -1,0 +1,8 @@
+.next/
+out/
+build/
+node_modules/
+public/games/
+references/
+package-lock.json
+next-env.d.ts

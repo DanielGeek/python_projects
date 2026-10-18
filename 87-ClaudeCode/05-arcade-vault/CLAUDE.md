@@ -11,7 +11,9 @@ Arcade Vault: a web platform for playing arcade games online and competing for t
 - `npm run dev` — dev server (Turbopack)
 - `npm run build` / `npm start` — production build / serve
 - `npm run lint` — ESLint (flat config, `eslint.config.mjs`)
+- `npm run format` — Prettier over the whole repo (config `.prettierrc.json`, ignores `.prettierignore`).
 - No test runner is configured.
+- Format hook: `.claude/hooks/format.sh` runs as a `PostToolUse` hook (`Write|Edit`, in `.claude/settings.json`). It runs Prettier on the written file, then `eslint --fix` for `.ts/.tsx/.js/.jsx/.mjs/.cjs`. Remaining ESLint errors exit 2 so Claude sees them. Skips `public/games/`, `references/`, `.claude/` and build output.
 
 ## Next.js version warning
 
