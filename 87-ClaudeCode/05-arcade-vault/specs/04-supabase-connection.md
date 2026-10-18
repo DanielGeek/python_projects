@@ -140,7 +140,7 @@ app/api/health/supabase/route.ts   GET handler
 - [ ] No service role key and no `SUPABASE_DB_PASSWORD` value appears in the client bundle or in any file tracked by git.
 - [x] No page, component or `lib/` module other than the new ones imports from `lib/supabase/`.
 - [ ] The existing pages (`/`, `/library`, `/game/drop`, `/login`, `/about`, `/hall-of-fame`) render without new console errors, and `/login` still signs in with the local session.
-- [ ] `CLAUDE.md` documents `lib/supabase/`, the health route and the variables.
+- [x] `CLAUDE.md` documents `lib/supabase/`, the health route and the variables.
 
 ---
 
