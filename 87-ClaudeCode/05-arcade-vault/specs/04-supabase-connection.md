@@ -1,6 +1,6 @@
 # SPEC 04 — Supabase connection
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 03
 > **Date:** 2026-10-18
 > **Objective:** Connect the Next.js app to the existing Supabase project through browser and server clients configured from environment variables, with a health endpoint that proves the connection.
@@ -89,7 +89,7 @@ Conventions:
 - Clients are created inside the factory function, never at module load, so a missing variable does not break `npm run build` or the render of unrelated pages.
 - The health check calls the Auth health endpoint of the project (`<url>/auth/v1/health`) with the publishable key in the `apikey` header. The database has no tables yet, so a table query is not possible. A 200 proves that the URL is right and the key is accepted.
 - Real error details are logged with `console.error` on the server. The response carries a generic message.
-- The route runs on the Node.js runtime (`export const runtime = "nodejs"`), is never cached (`export const dynamic = "force-dynamic"`) and takes no input.
+- The route runs on Node.js, is never cached and takes no input. It sets no `runtime` or `dynamic` export: with `cacheComponents` enabled, Next rejects both, a `GET` handler is dynamic by default and Node.js is the default runtime. The `fetch` uses `cache: "no-store"`.
 - The server client follows the `@supabase/ssr` cookie pattern (`getAll` / `setAll` with `cookies()` from `next/headers`). The `setAll` call is wrapped in `try/catch` because Server Components cannot write cookies. This is inert until the auth spec adds `proxy.ts`.
 - The publishable key is never used for privileged work. No service role key is introduced.
 
@@ -126,21 +126,21 @@ app/api/health/supabase/route.ts   GET handler
 
 ## Acceptance criteria
 
-- [ ] `npm run lint`, `npm test` and `npm run build` finish without errors, also with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` unset.
-- [ ] `package.json` lists `@supabase/supabase-js` and `@supabase/ssr` as dependencies.
-- [ ] `getSupabaseEnv` returns `{ url, publishableKey }` when both variables are set.
-- [ ] `getSupabaseEnv` throws an error whose message names the missing variable when either one is missing or empty.
-- [ ] `GET /api/health/supabase` answers `200 { "ok": true }` with the real variables in `.env`.
-- [ ] `GET /api/health/supabase` answers 500 with `{ "ok": false, "error": <generic text> }` when a variable is missing, and when the key is wrong.
-- [ ] The 500 response body contains neither the URL, the key nor a stack trace.
-- [ ] `POST /api/health/supabase` answers 405.
-- [ ] `lib/supabase/client.ts` and `lib/supabase/server.ts` each export a `createClient` function and create the client inside it, not at module load.
-- [ ] `SUPABASE_DB_PASSWORD` appears in `.env.template`; `SUPASE_DB_PASSWORD` appears nowhere in the repo.
-- [ ] `.env.template` lists the two public variables with no real values, and `.env` is not tracked by git.
-- [ ] No service role key and no `SUPABASE_DB_PASSWORD` value appears in the client bundle or in any file tracked by git.
-- [ ] No page, component or `lib/` module other than the new ones imports from `lib/supabase/`.
-- [ ] The existing pages (`/`, `/library`, `/game/drop`, `/login`, `/about`, `/hall-of-fame`) render without new console errors, and `/login` still signs in with the local session.
-- [ ] `CLAUDE.md` documents `lib/supabase/`, the health route and the variables.
+- [x] `npm run lint`, `npm test` and `npm run build` finish without errors, also with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` unset.
+- [x] `package.json` lists `@supabase/supabase-js` and `@supabase/ssr` as dependencies.
+- [x] `getSupabaseEnv` returns `{ url, publishableKey }` when both variables are set.
+- [x] `getSupabaseEnv` throws an error whose message names the missing variable when either one is missing or empty.
+- [x] `GET /api/health/supabase` answers `200 { "ok": true }` with the real variables in `.env`.
+- [x] `GET /api/health/supabase` answers 500 with `{ "ok": false, "error": <generic text> }` when a variable is missing, and when the key is wrong.
+- [x] The 500 response body contains neither the URL, the key nor a stack trace.
+- [x] `POST /api/health/supabase` answers 405.
+- [x] `lib/supabase/client.ts` and `lib/supabase/server.ts` each export a `createClient` function and create the client inside it, not at module load.
+- [x] `SUPABASE_DB_PASSWORD` appears in `.env.template`; `SUPASE_DB_PASSWORD` appears nowhere in the repo.
+- [x] `.env.template` lists the two public variables with no real values, and `.env` is not tracked by git.
+- [x] No service role key and no `SUPABASE_DB_PASSWORD` value appears in the client bundle or in any file tracked by git.
+- [x] No page, component or `lib/` module other than the new ones imports from `lib/supabase/`.
+- [x] The existing pages (`/`, `/library`, `/game/drop`, `/login`, `/about`, `/hall-of-fame`) render without new console errors, and `/login` still signs in with the local session.
+- [x] `CLAUDE.md` documents `lib/supabase/`, the health route and the variables.
 
 ---
 
