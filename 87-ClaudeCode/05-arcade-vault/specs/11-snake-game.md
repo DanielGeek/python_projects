@@ -203,9 +203,9 @@ CLAUDE.md                                           documents the above
 
 - [ ] `npm run lint`, `npm test` and `npm run build` finish without errors.
 - [ ] `public/games/snake/` contains exactly `index.html`, `game.js`, `sprites.js` and `fruits.png`.
-- [ ] `public/games/snake/index.html` has `lang="en"` and loads `../bridge.js` with `data-game="snake"` before `sprites.js` and `game.js`.
+- [x] `public/games/snake/index.html` has `lang="en"` and loads `../bridge.js` with `data-game="snake"` before `sprites.js` and `game.js`.
 - [ ] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls and no dependencies.
-- [ ] Each key of `SPRITE_ATLAS.fruits` in `public/games/snake/sprites.js` draws the fruit its name says, and `sources.fruits` is `'fruits.png'`.
+- [x] Each key of `SPRITE_ATLAS.fruits` in `public/games/snake/sprites.js` draws the fruit its name says, and `sources.fruits` is `'fruits.png'`.
 - [ ] The snake starts with 3 cells, moving right, at 8 cells per second. Reversing into itself is ignored.
 - [ ] Eating a fruit adds exactly `10 × level` points and one cell, and a new fruit never appears on the snake.
 - [ ] After every 5 fruits the level rises by 1 and the tick rate is `min(20, 7 + level)` cells per second.
