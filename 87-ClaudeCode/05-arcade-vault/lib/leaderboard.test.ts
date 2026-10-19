@@ -1,14 +1,92 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GAMES } from "./games";
-import { rowToEntry } from "./leaderboard";
+import { rowToEntry, submitScore, toScoreRow } from "./leaderboard";
+import { createClient } from "./supabase/client";
+
+vi.mock("./supabase/client", () => ({ createClient: vi.fn() }));
 
 describe("rowToEntry", () => {
   it("maps player, score and created_at to a ScoreEntry", () => {
     expect(
       rowToEntry({ player: "NOVA_RIDER", score: 4820, created_at: "2026-10-17T09:00:00+00:00" }),
     ).toEqual({ player: "NOVA_RIDER", score: 4820, date: "2026-10-17T09:00:00+00:00" });
+  });
+});
+
+describe("toScoreRow", () => {
+  const input = { gameId: "asteroids", player: "ANA", score: 1200 };
+
+  it("maps a valid input to the insert row", () => {
+    expect(toScoreRow(input)).toEqual({ game_id: "asteroids", player: "ANA", score: 1200 });
+  });
+
+  it("trims the name and cuts it to 20 characters", () => {
+    expect(toScoreRow({ ...input, player: "  ANA  " })?.player).toBe("ANA");
+    expect(toScoreRow({ ...input, player: "A".repeat(25) })?.player).toBe("A".repeat(20));
+  });
+
+  it("accepts the score bounds", () => {
+    expect(toScoreRow({ ...input, score: 0 })?.score).toBe(0);
+    expect(toScoreRow({ ...input, score: 9_999_999 })?.score).toBe(9_999_999);
+  });
+
+  it.each([
+    ["an empty name", { player: "" }],
+    ["a name of only spaces", { player: "     " }],
+    ["a negative score", { score: -1 }],
+    ["a score above the maximum", { score: 10_000_000 }],
+    ["a decimal score", { score: 1.5 }],
+    ["a NaN score", { score: Number.NaN }],
+    ["an infinite score", { score: Number.POSITIVE_INFINITY }],
+  ])("returns null for %s", (_label, patch) => {
+    expect(toScoreRow({ ...input, ...patch })).toBeNull();
+  });
+});
+
+describe("submitScore", () => {
+  const input = { gameId: "asteroids", player: "ANA", score: 1200 };
+  const insert = vi.fn();
+  const from = vi.fn(() => ({ insert }));
+
+  beforeEach(() => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    insert.mockReset();
+    from.mockClear();
+    vi.mocked(createClient).mockReset();
+    vi.mocked(createClient).mockReturnValue({ from } as never);
+  });
+
+  it("inserts the row into scores and resolves true", async () => {
+    insert.mockResolvedValue({ error: null });
+    await expect(submitScore(input)).resolves.toBe(true);
+    expect(from).toHaveBeenCalledWith("scores");
+    expect(insert).toHaveBeenCalledWith({ game_id: "asteroids", player: "ANA", score: 1200 });
+  });
+
+  it("resolves false when Supabase answers with an error", async () => {
+    insert.mockResolvedValue({ error: { message: "new row violates row-level security policy" } });
+    await expect(submitScore(input)).resolves.toBe(false);
+  });
+
+  it("resolves false instead of throwing when the request fails", async () => {
+    insert.mockRejectedValue(new TypeError("Failed to fetch"));
+    await expect(submitScore(input)).resolves.toBe(false);
+  });
+
+  it("resolves false instead of throwing when the client cannot be created", async () => {
+    vi.mocked(createClient).mockImplementation(() => {
+      throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL");
+    });
+    await expect(submitScore(input)).resolves.toBe(false);
+  });
+
+  it("does not send anything for an invalid score", async () => {
+    await expect(submitScore({ ...input, player: "   " })).resolves.toBe(false);
+    await expect(submitScore({ ...input, score: -5 })).resolves.toBe(false);
+    expect(createClient).not.toHaveBeenCalled();
+    expect(insert).not.toHaveBeenCalled();
   });
 });
 
