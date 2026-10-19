@@ -197,30 +197,30 @@ CLAUDE.md                                              documents the above
 ## Acceptance criteria
 
 - [ ] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
-- [ ] `supabase/migrations/` has the two new migrations for this spec (`save_scores` and `least_privilege_grants`), and `list_migrations` shows the same names as applied.
-- [ ] `anon` and `authenticated` have only `SELECT` on `games`, and only `SELECT` plus `INSERT` on `game_id`, `player` and `score` of `scores`: no `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES` or `TRIGGER`.
-- [ ] After the migration `public.scores` had 0 rows, and `public.games` has exactly one row, with `id = 'asteroids'`.
+- [x] `supabase/migrations/` has the two new migrations for this spec (`save_scores` and `least_privilege_grants`), and `list_migrations` shows the same names as applied.
+- [x] `anon` and `authenticated` have only `SELECT` on `games`, and only `SELECT` plus `INSERT` on `game_id`, `player` and `score` of `scores`: no `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES` or `TRIGGER`.
+- [x] After the migration `public.scores` had 0 rows, and `public.games` has exactly one row, with `id = 'asteroids'`.
 - [ ] No invented seed score is left in `scores` at the end of the spec: every row comes from a real game played in the app.
-- [ ] `GAMES` has exactly one entry, `asteroids`, unchanged.
-- [ ] `ARCHIVED_GAMES` in `lib/games-archive.ts` has the eight removed entries with their original data, none of its ids is in `GAMES`, and the playable ones (`brick-buster`, `drop`, `rocks`) still have their files under `public/games/`. Nothing imports it except its test.
+- [x] `GAMES` has exactly one entry, `asteroids`, unchanged.
+- [x] `ARCHIVED_GAMES` in `lib/games-archive.ts` has the eight removed entries with their original data, none of its ids is in `GAMES`, and the playable ones (`brick-buster`, `drop`, `rocks`) still have their files under `public/games/`. Nothing imports it except its test.
 - [ ] `/library` lists only Asteroids, and the category filter and the search still work without errors.
-- [ ] `/game/brick-buster`, `/game/drop`, `/game/rocks`, `/game/serpent` and their `/play` routes show the not-found screen. `/game/asteroids` and `/game/asteroids/play` work as before.
+- [x] `/game/brick-buster`, `/game/drop`, `/game/rocks`, `/game/serpent` and their `/play` routes show the not-found screen. `/game/asteroids` and `/game/asteroids/play` work as before.
 - [ ] `/hall-of-fame` shows a single tab, `Asteroids`, with its podium and list from Supabase.
 - [ ] The landing renders with one game, shows no `+0 more in the vault`, and has no layout or console errors.
-- [ ] After loading any page, the localStorage keys `arcade-vault:scores:<id>` of the removed games are gone, and `arcade-vault:scores:asteroids`, `arcade-vault:session` and `arcade-vault:credits` are untouched.
-- [ ] With the publishable key, an insert for `asteroids` with `game_id`, `player` and `score` within the limits answers 201.
-- [ ] With the publishable key, an insert is rejected for: a game other than `asteroids`, an empty name, a name of only spaces, a 21-character name, a negative score, a score above 9,999,999 and an unknown `game_id`.
-- [ ] With the publishable key, an insert that sets `created_at` or `id` is rejected.
+- [x] After loading any page, the localStorage keys `arcade-vault:scores:<id>` of the removed games are gone, and `arcade-vault:scores:asteroids`, `arcade-vault:session` and `arcade-vault:credits` are untouched.
+- [x] With the publishable key, an insert for `asteroids` with `game_id`, `player` and `score` within the limits answers 201.
+- [x] With the publishable key, an insert is rejected for: a game other than `asteroids`, an empty name, a name of only spaces, a 21-character name, a negative score, a score above 9,999,999 and an unknown `game_id`.
+- [x] With the publishable key, an insert that sets `created_at` or `id` is rejected.
 - [ ] With the publishable key, `PATCH` and `DELETE` on `scores` and `games`, and `POST` on `games`, are rejected with `permission denied` (401).
 - [ ] `get_advisors` (security) reports no new warning about `games` or `scores`.
-- [ ] After a game over, saving with a typed name stores that name (uppercased and cut to 12) in `scores` with `game_id = 'asteroids'` and the right score.
+- [x] After a game over, saving with a typed name stores that name (uppercased and cut to 12) in `scores` with `game_id = 'asteroids'` and the right score.
 - [ ] After a game over, saving with an empty name stores `GUEST`.
-- [ ] The save button shows `SAVING…`, is disabled while the request runs, and one press creates exactly one row.
+- [x] The save button shows `SAVING…`, is disabled while the request runs, and one press creates exactly one row.
 - [ ] The saved score appears in `/hall-of-fame` under Asteroids, in the right position.
 - [ ] The local score is still saved in `arcade-vault:scores:asteroids` and still appears in `/library`, `/game/asteroids` and the landing.
 - [ ] With the network blocked, the local score is saved, the `[ERR]` line shows and the page does not break.
-- [ ] `toScoreRow` returns `null` for an empty name, a non-integer, a negative, a too large and a `NaN` score, and `submitScore` resolves `false` instead of throwing.
-- [ ] `lib/leaderboard.test.ts` compares `GAMES` with the rows left in `games` after the migrations, and fails when they differ.
+- [x] `toScoreRow` returns `null` for an empty name, a non-integer, a negative, a too large and a `NaN` score, and `submitScore` resolves `false` instead of throwing.
+- [x] `lib/leaderboard.test.ts` compares `GAMES` with the rows left in `games` after the migrations, and fails when they differ.
 - [ ] The SPEC 06 migration file is unchanged, and the files under `public/games/` are unchanged (`git diff` is empty for them).
 - [ ] `lib/credits.ts`, `lib/session.ts` and `app/hall-of-fame/` have no edits (`git diff` is empty for them).
 - [ ] No service role key and no `SUPABASE_DB_PASSWORD` value appears in the client bundle or in any file tracked by git.

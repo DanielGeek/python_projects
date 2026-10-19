@@ -7,6 +7,7 @@ import { CRTScreen, HUD } from "@/components/ui/game";
 import { Input, Modal, Typewriter } from "@/components/ui/interactive";
 import type { Game } from "@/lib/games";
 import { insertCoin, spendCredit } from "@/lib/credits";
+import { submitScore } from "@/lib/leaderboard";
 import { saveScore } from "@/lib/scores";
 import { useSession } from "@/lib/session";
 
@@ -36,9 +37,18 @@ export function GamePlayer({ game }: { game: Game }) {
   const [saved, setSaved] = useState(false);
   // True when storage refused the score: it is only kept until the tab closes.
   const [volatile, setVolatile] = useState(false);
+  // The request to the global leaderboard: running, and whether it saved (null until it answers).
+  const [sending, setSending] = useState(false);
+  const [shared, setShared] = useState<boolean | null>(null);
+  // The run that is on screen now, so a late answer for a previous run is ignored.
+  const currentRun = useRef(run);
 
   const signedIn = !!session && !session.guest;
   const player = session?.name ?? "GUEST";
+
+  useEffect(() => {
+    currentRun.current = run;
+  }, [run]);
 
   // One credit per game start. The ref keeps Strict Mode's double effect from spending twice.
   useEffect(() => {
@@ -78,6 +88,8 @@ export function GamePlayer({ game }: { game: Game }) {
     setFinalScore(null);
     setSaved(false);
     setVolatile(false);
+    setSending(false);
+    setShared(null);
     setPaused(false);
     setLoading(true);
     setRun((r) => r + 1);
@@ -88,16 +100,23 @@ export function GamePlayer({ game }: { game: Game }) {
     restart();
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (finalScore == null) return;
+    if (finalScore == null || sending) return;
     const playerName = signedIn ? player : (name.trim() || "GUEST").toUpperCase().slice(0, 12);
+    // The local copy goes first, so the score is never lost if the request fails.
     const persisted = saveScore(game.id, {
       player: playerName,
       score: finalScore,
       date: new Date().toISOString(),
     });
     setVolatile(!persisted);
+    setSending(true);
+    const startedRun = currentRun.current;
+    const global = await submitScore({ gameId: game.id, player: playerName, score: finalScore });
+    if (startedRun !== currentRun.current) return;
+    setSending(false);
+    setShared(global);
     setSaved(true);
   }
 
@@ -181,6 +200,16 @@ export function GamePlayer({ game }: { game: Game }) {
                 Storage is unavailable, so the score is kept only until you close this tab.
               </p>
             )}
+            {shared ? (
+              <p className="av-modal-note">Your score is on the global leaderboard.</p>
+            ) : (
+              <div className="av-about-error" role="alert">
+                <span className="av-about-error-tag">[ERR]</span>{" "}
+                {volatile
+                  ? "The global leaderboard could not be reached."
+                  : "Saved on this device only. The global leaderboard could not be reached."}
+              </div>
+            )}
           </div>
         ) : (
           <form className="av-save-form" onSubmit={submit}>
@@ -196,12 +225,12 @@ export function GamePlayer({ game }: { game: Game }) {
                   onChange={(e) => setName(e.target.value)}
                 />
                 <p className="av-modal-note">
-                  Playing as a guest: your score is saved on this device only.
+                  Playing as a guest: your score goes to the global leaderboard under this name.
                 </p>
               </>
             )}
-            <Button type="submit" variant="outline" block>
-              Save score
+            <Button type="submit" variant="outline" block disabled={sending}>
+              {sending ? "SAVING…" : "Save score"}
             </Button>
           </form>
         )}
