@@ -1,6 +1,6 @@
 # SPEC 05 — Asteroids game
 
-> **Status:** Draft
+> **Status:** Approved
 > **Depends on:** SPEC 01
 > **Date:** 2026-10-18
 > **Objective:** Add the reference game `references/started-games/02-asteroids/` to the vault as a new playable catalog entry with id `asteroids`, next to the existing `rocks`.
