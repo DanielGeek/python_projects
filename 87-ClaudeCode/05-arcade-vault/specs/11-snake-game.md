@@ -206,7 +206,7 @@ CLAUDE.md                                           documents the above
 - [x] `public/games/snake/index.html` has `lang="en"` and loads `../bridge.js` with `data-game="snake"` before `sprites.js` and `game.js`.
 - [ ] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls and no dependencies.
 - [x] Each key of `SPRITE_ATLAS.fruits` in `public/games/snake/sprites.js` draws the fruit its name says, and `sources.fruits` is `'fruits.png'`.
-- [ ] The snake starts with 3 cells, moving right, at 8 cells per second. Reversing into itself is ignored.
+- [x] The snake starts with 3 cells, moving right, at 8 cells per second. Reversing into itself is ignored.
 - [ ] Eating a fruit adds exactly `10 × level` points and one cell, and a new fruit never appears on the snake.
 - [ ] After every 5 fruits the level rises by 1 and the tick rate is `min(20, 7 + level)` cells per second.
 - [ ] Hitting a wall or the body ends the run with `GAME OVER`. Filling the grid ends it with `YOU WIN`.
