@@ -163,7 +163,7 @@ CLAUDE.md                                                    documents the above
 - [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
 - [x] `GAMES` has exactly three entries, in the order `asteroids`, `drop`, `brick-buster`. The `brick-buster` entry equals the archived one except for `tags`, which is `["1 PLAYER", "KEYBOARD", "RETRO 1985"]`.
 - [x] `ARCHIVED_GAMES` has six entries, none of them `brick-buster`, and none of its ids is in `GAMES`.
-- [ ] `/library` lists the three games with rendered covers, and the category filter offers `All`, `Shooter`, `Puzzle` and `Arcade`.
+- [x] `/library` lists the three games with rendered covers, and the category filter offers `All`, `Shooter`, `Puzzle` and `Arcade`.
 - [x] `/game/brick-buster` shows the title, description, controls `← → or A/D to move · SPACE to launch · 1-3 to pick difficulty` and the `ARCADE` category.
 - [x] `/game/brick-buster/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
 - [x] While playing, the arrow keys and `Space` do not scroll the host page, and the game's keys and the mouse work as before.
