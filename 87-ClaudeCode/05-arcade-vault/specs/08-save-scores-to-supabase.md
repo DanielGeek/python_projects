@@ -34,6 +34,7 @@ There is still no real authentication (`lib/session.ts` is a localStorage stand-
 - `lib/games-archive.ts` (new): `ARCHIVED_GAMES` keeps the eight removed entries as data, unchanged, so a game can come back later. Nothing imports it.
 - `purgeRemovedGameScores` in `lib/scores.ts`: removes the localStorage keys `arcade-vault:scores:<id>` of every id that is not in `GAMES`. It runs once per page load from `components/ui/navbar.tsx`.
 - The landing games rail (`app/_home/games-rail.tsx`) stops showing `+0 more in the vault` when there is nothing more to show.
+- A CSS rule in `app/globals.css` so the big tile of the landing rail fills the row when it is the only game. Found in step 8: without it the tile collapsed to a 14 px strip, because the square tiles that gave the grid its height are gone.
 - `submitScore` in `lib/leaderboard.ts`: inserts one score into `scores` from the browser and never throws.
 - `toScoreRow` in `lib/leaderboard.ts`: pure function that normalizes the input before the insert.
 - `app/game/[id]/play/game-player.tsx` calls `submitScore` after the existing local `saveScore`, with saving, success and failure states.
@@ -174,6 +175,7 @@ lib/leaderboard.ts                                     adds toScoreRow, submitSc
 lib/leaderboard.test.ts                                tests for toScoreRow and submitScore, updated seed test
 components/ui/navbar.tsx                               calls purgeRemovedGameScores once on load
 app/_home/games-rail.tsx                               hides "+N more" when N is 0
+app/globals.css                                         the big landing tile fills the row when it is alone
 app/game/[id]/play/game-player.tsx                     calls submitScore after saveScore, adds states
 CLAUDE.md                                              documents the above
 ```
@@ -196,34 +198,34 @@ CLAUDE.md                                              documents the above
 
 ## Acceptance criteria
 
-- [ ] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
+- [x] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
 - [x] `supabase/migrations/` has the two new migrations for this spec (`save_scores` and `least_privilege_grants`), and `list_migrations` shows the same names as applied.
 - [x] `anon` and `authenticated` have only `SELECT` on `games`, and only `SELECT` plus `INSERT` on `game_id`, `player` and `score` of `scores`: no `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES` or `TRIGGER`.
 - [x] After the migration `public.scores` had 0 rows, and `public.games` has exactly one row, with `id = 'asteroids'`.
-- [ ] No invented seed score is left in `scores` at the end of the spec: every row comes from a real game played in the app.
+- [x] No invented seed score is left in `scores` at the end of the spec: every row comes from a real game played in the app.
 - [x] `GAMES` has exactly one entry, `asteroids`, unchanged.
 - [x] `ARCHIVED_GAMES` in `lib/games-archive.ts` has the eight removed entries with their original data, none of its ids is in `GAMES`, and the playable ones (`brick-buster`, `drop`, `rocks`) still have their files under `public/games/`. Nothing imports it except its test.
-- [ ] `/library` lists only Asteroids, and the category filter and the search still work without errors.
+- [x] `/library` lists only Asteroids, and the category filter and the search still work without errors.
 - [x] `/game/brick-buster`, `/game/drop`, `/game/rocks`, `/game/serpent` and their `/play` routes show the not-found screen. `/game/asteroids` and `/game/asteroids/play` work as before.
-- [ ] `/hall-of-fame` shows a single tab, `Asteroids`, with its podium and list from Supabase.
-- [ ] The landing renders with one game, shows no `+0 more in the vault`, and has no layout or console errors.
+- [x] `/hall-of-fame` shows a single tab, `Asteroids`, with its podium and list from Supabase.
+- [x] The landing renders with one game, shows no `+0 more in the vault`, and has no layout or console errors.
 - [x] After loading any page, the localStorage keys `arcade-vault:scores:<id>` of the removed games are gone, and `arcade-vault:scores:asteroids`, `arcade-vault:session` and `arcade-vault:credits` are untouched.
 - [x] With the publishable key, an insert for `asteroids` with `game_id`, `player` and `score` within the limits answers 201.
 - [x] With the publishable key, an insert is rejected for: a game other than `asteroids`, an empty name, a name of only spaces, a 21-character name, a negative score, a score above 9,999,999 and an unknown `game_id`.
 - [x] With the publishable key, an insert that sets `created_at` or `id` is rejected.
-- [ ] With the publishable key, `PATCH` and `DELETE` on `scores` and `games`, and `POST` on `games`, are rejected with `permission denied` (401).
-- [ ] `get_advisors` (security) reports no new warning about `games` or `scores`.
+- [x] With the publishable key, `PATCH` and `DELETE` on `scores` and `games`, and `POST` on `games`, are rejected with `permission denied` (401).
+- [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
 - [x] After a game over, saving with a typed name stores that name (uppercased and cut to 12) in `scores` with `game_id = 'asteroids'` and the right score.
-- [ ] After a game over, saving with an empty name stores `GUEST`.
+- [x] After a game over, saving with an empty name stores `GUEST`.
 - [x] The save button shows `SAVING…`, is disabled while the request runs, and one press creates exactly one row.
-- [ ] The saved score appears in `/hall-of-fame` under Asteroids, in the right position.
-- [ ] The local score is still saved in `arcade-vault:scores:asteroids` and still appears in `/library`, `/game/asteroids` and the landing.
-- [ ] With the network blocked, the local score is saved, the `[ERR]` line shows and the page does not break.
+- [x] The saved score appears in `/hall-of-fame` under Asteroids, in the right position.
+- [x] The local score is still saved in `arcade-vault:scores:asteroids` and still appears in `/library`, `/game/asteroids` and the landing.
+- [x] With the network blocked, the local score is saved, the `[ERR]` line shows and the page does not break.
 - [x] `toScoreRow` returns `null` for an empty name, a non-integer, a negative, a too large and a `NaN` score, and `submitScore` resolves `false` instead of throwing.
 - [x] `lib/leaderboard.test.ts` compares `GAMES` with the rows left in `games` after the migrations, and fails when they differ.
-- [ ] The SPEC 06 migration file is unchanged, and the files under `public/games/` are unchanged (`git diff` is empty for them).
-- [ ] `lib/credits.ts`, `lib/session.ts` and `app/hall-of-fame/` have no edits (`git diff` is empty for them).
-- [ ] No service role key and no `SUPABASE_DB_PASSWORD` value appears in the client bundle or in any file tracked by git.
+- [x] The SPEC 06 migration file is unchanged, and the files under `public/games/` are unchanged (`git diff` is empty for them).
+- [x] `lib/credits.ts`, `lib/session.ts` and `app/hall-of-fame/` have no edits (`git diff` is empty for them).
+- [x] No service role key and no `SUPABASE_DB_PASSWORD` value appears in the client bundle or in any file tracked by git.
 - [ ] `CLAUDE.md` documents the one-game catalog, `submitScore`, the insert policy, the local purge and that the seed was removed.
 
 ---
@@ -237,6 +239,7 @@ CLAUDE.md                                              documents the above
 - **Yes:** only Asteroids stays, in the `games` table and in the front (user decision). The user wants the product to show one game for now. The foreign key then also keeps scores for other games out. **No:** keeping the other eight in `games` and hiding them in the UI, which leaves rows that nothing uses.
 - **Yes:** shrink `lib/games.ts` as well as the table, so the catalog and the table cannot disagree. The test keeps them in sync. **No:** a hidden flag on each game, which adds a concept for something temporary. The removed entries are not lost: they are kept in `lib/games-archive.ts` (user decision: "no borres esa información, manténlos en el código").
 - **Yes:** keep the removed games as typed data in `lib/games-archive.ts`, with the steps to bring one back written in the file. It costs one unused file and a test, and restoring a game becomes a move plus a migration. **No:** relying on git history only, which is harder to find. **No:** a flag such as `hidden: true` inside `GAMES`, because `GAMES` feeds the library, the landing, `CATEGORIES`, the Hall of Fame tabs and the local score reads, and every one would need a filter.
+- **Yes:** fix the landing rail with a CSS rule scoped to the lone-tile case (`.av-home-tile-big:first-child:nth-last-child(2)`: the big tile is the first child and only the "view all" tile follows). With five or more games nothing changes. It was found while verifying step 8, and the acceptance criterion "no layout errors" needs it. **No:** changing the rail component or its markup, and **No:** redesigning the landing for one game, which is a later decision.
 - **Yes:** the files of the removed games stay on disk (`public/games/<id>/`, bridge readers, `av-cover-<id>` CSS). They are unreachable, harmless, and a game can come back by restoring its entry and adding a migration. **No:** deleting them now, because it was not asked and it makes bringing a game back much more work.
 - **Yes:** purge the local scores of removed games with a function that runs on load (user decision: "borra del local storage"). A repo change cannot reach every visitor's browser any other way. It only removes keys of ids that are not in `GAMES`. **No:** deleting the whole `arcade-vault:` namespace, which would also drop the session, the credits and the Asteroids scores.
 - **Yes:** the SPEC 06 migration is not edited. It is already applied and committed, and history stays true. The new migration deletes the rows. The seed test applies that delete when it compares the table with `GAMES`.
