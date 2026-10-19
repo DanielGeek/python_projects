@@ -24,12 +24,12 @@ export interface Game {
   tags: string[];
 }
 
-// Asteroids and Drop are in the catalog for now: SPEC 08 cut it down to Asteroids, the first game
-// whose scores are saved to Supabase, and SPEC 09 brought Drop back. Both live in public/games with
-// public/games/bridge.js added to report their state. The other seven games were removed from the
-// catalog and from the `games` table; their entries live in lib/games-archive.ts and their
-// folders in public/games stay on disk. A game that returns is moved from the archive to this
-// array, with a migration that inserts its `games` row.
+// Asteroids, Drop and Brick Buster are in the catalog for now: SPEC 08 cut it down to Asteroids, the
+// first game whose scores are saved to Supabase, SPEC 09 brought Drop back and SPEC 10 brought Brick
+// Buster back. They live in public/games with public/games/bridge.js added to report their state.
+// The other six games were removed from the catalog and from the `games` table; their entries live
+// in lib/games-archive.ts and their folders in public/games stay on disk. A game that returns is
+// moved from the archive to this array, with a migration that inserts its `games` row.
 export const GAMES: Game[] = [
   {
     id: "asteroids",
@@ -59,6 +59,21 @@ export const GAMES: Game[] = [
     controls: "← → to move · ↑ or X to rotate · ↓ to soft drop · SPACE to hard drop · C to hold",
     difficulty: 4,
     plays: "31.8K",
+    tags: ["1 PLAYER", "KEYBOARD", "RETRO 1985"],
+  },
+  {
+    id: "brick-buster",
+    title: "Brick Buster",
+    category: "Arcade",
+    tagline: "Bounce the ball and smash neon walls.",
+    description:
+      "Steer a paddle-ship and bounce a plasma core to pulverize walls of chromatic blocks. Every level rearranges the grid into impossible patterns. How far will your streak go?",
+    accent: "cyan",
+    src: "/games/brick-buster/index.html",
+    aspect: "4 / 3",
+    controls: "← → or A/D to move · SPACE to launch · 1-3 to pick difficulty",
+    difficulty: 3,
+    plays: "12.4K",
     tags: ["1 PLAYER", "KEYBOARD", "RETRO 1985"],
   },
 ];
