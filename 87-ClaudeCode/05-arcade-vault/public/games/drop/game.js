@@ -1177,6 +1177,8 @@ function init() {
 
 document.addEventListener('keydown', e => {
   if (e.target === nameInput) return; // typing a name must not trigger game keys
+  // Inside the host iframe the arrow keys would scroll the host page, also while paused or in a menu.
+  if (e.code.startsWith('Arrow')) e.preventDefault();
   ensureAudio(); // browsers only allow audio after a user gesture
   if (e.code === 'KeyM') { toggleMute(); return; }
   if (menu) {

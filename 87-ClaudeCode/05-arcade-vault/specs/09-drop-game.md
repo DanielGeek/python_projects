@@ -138,7 +138,7 @@ CLAUDE.md                                               documents the above
 - [ ] `/game/drop` shows the title, description, controls `← → to move · ↑ or X to rotate · ↓ to soft drop · SPACE to hard drop · C to hold` and the `PUZZLE` category.
 - [ ] `/game/drop/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
 - [ ] While playing, the arrow keys and `Space` do not scroll the host page, and the game's keys work as before.
-- [ ] Typing a name in the in-game name form still moves the caret with the arrow keys.
+- [x] Typing a name in the in-game name form still moves the caret with the arrow keys.
 - [ ] The host receives `state` messages with `game: "drop"` carrying `score`, `lives: null`, `level` and `over`, and `over` is `true` after a game over.
 - [ ] Pause and resume from the host freeze and resume the game through the bridge.
 - [ ] A finished run shows `SCORE SAVED`, the score is stored in `public.scores` with `game_id = 'drop'`, and it appears in `/hall-of-fame` under `Drop` and not under `Asteroids`.
