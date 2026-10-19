@@ -111,7 +111,7 @@ CLAUDE.md                             lists asteroids among the playable games
 app/game/[id]/play/page.tsx           params access moved inside a <Suspense> boundary
 ```
 
-Suspense fix (`app/game/[id]/play/page.tsx`). The Next.js dev overlay reports `Next.js encountered URL data outside of Suspense` at `const game = getGame((await params).id)` in `PlayPage`. The fix is the "Stream" option from the overlay and from `node_modules/next/dist/docs/01-app/02-guides/instant-navigation.md`: `PlayPage` becomes a synchronous shell that renders `<Suspense fallback={...}>` around an async inner component that awaits `params`, calls `getGame`, runs `notFound()` and renders `<GamePlayer game={game} />`. The behavior stays the same: unknown or non-playable ids still answer 404, `generateStaticParams` and `generateMetadata` stay as they are. The fallback must not change the layout (same frame size as the player, or `null`). The "Block" option (`export const instant = false`) is not used because it only silences the warning.
+Suspense fix (`app/game/[id]/play/page.tsx`). The Next.js dev overlay reports `Next.js encountered URL data outside of Suspense` at `const game = getGame((await params).id)` in `PlayPage`. The fix is the "Stream" option from the overlay and from `node_modules/next/dist/docs/01-app/02-guides/instant-navigation.md`: `PlayPage` becomes a synchronous shell that renders `<Suspense fallback={...}>` around an async inner component that awaits `params`, calls `getGame`, runs `notFound()` and renders `<GamePlayer game={game} />`. The behavior stays the same: unknown or non-playable ids still show the not-found screen (with HTTP 200, the same as before the fix, because the page streams), `generateStaticParams` and `generateMetadata` stay as they are. The fallback must not change the layout (same frame size as the player, or `null`). The "Block" option (`export const instant = false`) is not used because it only silences the warning.
 
 ---
 
@@ -125,7 +125,7 @@ Suspense fix (`app/game/[id]/play/page.tsx`). The Next.js dev overlay reports `N
 6. **Catalog test.** Create `lib/games.test.ts` with the checks listed in the data model. Manual test: `npm test` passes, and fails if `readers.asteroids` is renamed temporarily.
 7. **Play in the platform.** Open `/game/asteroids/play`. Manual test: the game starts in the CRT frame, one credit is spent, the arrow keys and Space do not scroll the page, pause and resume work, and after game over the score appears in the Hall of Fame under Asteroids.
 8. **Docs.** Update `CLAUDE.md`: add `asteroids` to the playable games in the `public/games/<id>/` line and in the `GAMES` description (nine games now).
-9. **Fix the Suspense warning.** In `app/game/[id]/play/page.tsx`, move the `await params` into an inner async component wrapped in `<Suspense>`, as described in the data model. Read `node_modules/next/dist/docs/01-app/02-guides/instant-navigation.md` first. Manual test: open `/game/asteroids/play` and `/game/rocks/play` with `npm run dev`; the dev overlay shows no `Instant` insight and the console has no `instant-shell-url-data` error; both games still start and spend one credit; `/game/serpent/play` and `/game/nope/play` still answer 404; `npm run build` passes.
+9. **Fix the Suspense warning.** In `app/game/[id]/play/page.tsx`, move the `await params` into an inner async component wrapped in `<Suspense>`, as described in the data model. Read `node_modules/next/dist/docs/01-app/02-guides/instant-navigation.md` first. Manual test: open `/game/asteroids/play` and `/game/rocks/play` with `npm run dev`; the dev overlay shows no `Instant` insight and the console has no `instant-shell-url-data` error; both games still start and spend one credit; `/game/serpent/play` and `/game/nope/play` still show the not-found screen (HTTP 200, as before); `npm run build` passes.
 
 ---
 
@@ -150,7 +150,7 @@ Suspense fix (`app/game/[id]/play/page.tsx`). The Next.js dev overlay reports `N
 - [ ] The existing pages (`/`, `/library`, `/game/drop`, `/game/rocks`, `/hall-of-fame`, `/about`, `/login`) render without new console errors.
 - [ ] `CLAUDE.md` lists `asteroids` among the playable games.
 - [ ] `/game/asteroids/play` and `/game/rocks/play` no longer log `Next.js encountered URL data during prerendering or a navigation` and the dev overlay shows no `Instant` insight for them.
-- [ ] `/game/serpent/play` (not playable) and `/game/nope/play` (unknown id) still answer 404, and `game-player.tsx` is unchanged (`git diff` shows no edits to it).
+- [ ] `/game/serpent/play` (not playable) and `/game/nope/play` (unknown id) still show the not-found screen "This page does not exist in the Vault" (HTTP 200, the same as before the fix), and `game-player.tsx` is unchanged (`git diff` shows no edits to it).
 
 ---
 
@@ -183,7 +183,7 @@ Suspense fix (`app/game/[id]/play/page.tsx`). The Next.js dev overlay reports `N
 | `av-cover-asteroids` clashes visually with `av-cover-rocks`, two similar dark space covers side by side.                                                                                                                      | Different accent (cyan against yellow) and a ship plus a single grey rock instead of three rocks. Checked in step 4. |
 | Two near-identical games confuse players.                                                                                                                                                                                     | Accepted, user decision. The cards differ in accent, tagline and description.                                        |
 | The new test depends on reading `public/` and `app/globals.css` from disk, and breaks if a file moves.                                                                                                                        | Paths are resolved from the project root, and the failure message names the missing file and the game id.            |
-| The Suspense fix changes how the play route streams, and could flash an empty page or break the 404 for non-playable ids.                                                                                                     | A layout-neutral fallback, and step 9 re-checks both 404 cases, the credit spend and `npm run build`.                |
+| The Suspense fix changes how the play route streams, and could flash an empty page or break the not-found screen for non-playable ids.                                                                                                     | A layout-neutral fallback, and step 9 re-checks both not-found cases, the credit spend and `npm run build`.                |
 | A future change to the `Game` type or to the reader format makes the test stale.                                                                                                                                              | The test only checks existence and naming, not behavior, so it needs updating only when the bridge contract changes. |
 
 ---
