@@ -129,9 +129,9 @@ CLAUDE.md                                               documents the above
 ## Acceptance criteria
 
 - [ ] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
-- [ ] `supabase/migrations/` has one new migration for this spec, and `list_migrations` shows the same name as applied.
+- [x] `supabase/migrations/` has one new migration for this spec, and `list_migrations` shows the same name as applied.
 - [ ] `public.games` has exactly two rows, `asteroids` and `drop`, and the `drop` row matches `GAMES` in `id`, `title`, `category` and `accent`.
-- [ ] `get_advisors` (security) reports no new warning about `games` or `scores`.
+- [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
 - [ ] `GAMES` has exactly two entries, in the order `asteroids`, `drop`. The `drop` entry equals the archived one except for `tags`, which is `["1 PLAYER", "KEYBOARD", "RETRO 1985"]`.
 - [ ] `ARCHIVED_GAMES` has seven entries, none of them `drop`, and none of its ids is in `GAMES`.
 - [ ] `/library` lists `Asteroids` and `Drop` with rendered covers, and the category filter offers `All`, `Shooter` and `Puzzle`.
