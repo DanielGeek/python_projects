@@ -28,7 +28,8 @@ There is still no real authentication (`lib/session.ts` is a localStorage stand-
   - deletes the other eight rows of `public.games`, so only `asteroids` stays,
   - limits what `anon` and `authenticated` can insert, with column grants,
   - adds an `insert` policy on `public.scores` with value checks.
-- Apply the migration to the Supabase project with `apply_migration`.
+- A second migration `supabase/migrations/<timestamp>_least_privilege_grants.sql` that revokes every privilege of `anon` and `authenticated` on `games` and `scores` and grants back only what the app uses: `select` on both tables, and `insert` on `game_id`, `player` and `score` of `scores`.
+- Apply both migrations to the Supabase project with `apply_migration`.
 - `lib/games.ts`: `GAMES` keeps only the `asteroids` entry.
 - `purgeRemovedGameScores` in `lib/scores.ts`: removes the localStorage keys `arcade-vault:scores:<id>` of every id that is not in `GAMES`. It runs once per page load from `components/ui/navbar.tsx`.
 - The landing games rail (`app/_home/games-rail.tsx`) stops showing `+0 more in the vault` when there is nothing more to show.
@@ -87,6 +88,19 @@ create policy "anyone can submit a score" on public.scores
 ```
 
 The existing table constraints (`char_length(player) between 1 and 20`, `score >= 0`, the FK on `game_id`) keep running as well. The FK means only `asteroids` can receive a score, because it is the only row left in `games`. The policy adds the upper bound on `score` and rejects a name made only of spaces.
+
+Least-privilege grants (second migration, `<timestamp>_least_privilege_grants.sql`). Supabase gives `anon` and `authenticated` every privilege on new public tables and leaves RLS as the only limit, which is fragile: `TRUNCATE`, for example, ignores RLS. The migration revokes everything and grants back only what the app uses:
+
+```sql
+revoke all on public.games from anon, authenticated;
+grant select on public.games to anon, authenticated;
+
+revoke all on public.scores from anon, authenticated;
+grant select on public.scores to anon, authenticated;
+grant insert (game_id, player, score) on public.scores to anon, authenticated;
+```
+
+The `revoke insert` and the column `grant` of the first migration are kept as they were (it is already applied and committed); this one makes the final state explicit. After it, `update`, `delete`, `truncate`, `references` and `trigger` are not granted to the public roles at all, so a call to the REST API fails with `permission denied` (401) instead of relying on RLS to hide rows.
 
 Catalog (`lib/games.ts`): `GAMES` is reduced to the existing `asteroids` entry, unchanged. The other eight entries are deleted from the file; they stay in git history. `getGame` keeps working, so `/game/<other-id>` and `/game/<other-id>/play` now show the not-found screen like any unknown id.
 
@@ -149,6 +163,7 @@ File layout:
 
 ```
 supabase/migrations/<timestamp>_save_scores.sql       delete seed scores and the other games, column grants, insert policy (new)
+supabase/migrations/<timestamp>_least_privilege_grants.sql   revoke all and grant back select and the three insert columns (new)
 lib/games.ts                                           GAMES keeps only asteroids
 lib/scores.ts                                          adds purgeRemovedGameScores
 lib/scores.test.ts                                     test for purgeRemovedGameScores
@@ -165,7 +180,7 @@ CLAUDE.md                                              documents the above
 ## Implementation plan
 
 1. **Inspect before deleting.** With `execute_sql`, count the rows of `scores` and `games`, list the distinct players of `scores`, and read the grants and policies on `scores`. Manual test: `scores` has 40 rows, every player name is one of the SPEC 06 seed names, and `games` has the nine rows. If anything else is there, stop and report instead of deleting.
-2. **Migration.** Create `supabase/migrations/<timestamp>_save_scores.sql` with the four parts from the data model, and apply it with `apply_migration`. Then rename the file to the version that `list_migrations` reports. Manual test: `scores` has 0 rows, `games` has exactly one row (`asteroids`), and `get_advisors` (security) shows no new warning about `games` or `scores`.
+2. **Migration.** Create `supabase/migrations/<timestamp>_save_scores.sql` with the four parts from the data model, and apply it with `apply_migration`. Then rename the file to the version that `list_migrations` reports. Manual test: `scores` has 0 rows, `games` has exactly one row (`asteroids`), and `get_advisors` (security) shows no new warning about `games` or `scores`. Then create `supabase/migrations/<timestamp>_least_privilege_grants.sql`, apply it the same way and rename it too. Manual test (second migration): `anon` and `authenticated` have only `SELECT` on `games`, and `SELECT` plus `INSERT` on `game_id`, `player` and `score` of `scores`; reading with the public key still answers 200.
 3. **Verify the policy with the public key.** With `curl` against `…/rest/v1/scores`. Manual test: a valid insert for `asteroids` answers 201; each of these is rejected (401, 403 or 400): a valid insert for `drop` (FK), empty name, name of only spaces, 21-character name, negative score, score above 9,999,999, unknown `game_id`, a body that sets `created_at` or `id`; `PATCH` and `DELETE` change no row. Delete the valid test row with `execute_sql` afterwards and check the table is empty.
 4. **Shrink the catalog.** Reduce `GAMES` in `lib/games.ts` to `asteroids`, and hide `+N more in the vault` in `app/_home/games-rail.tsx` when N is 0. Manual test: `/library` lists only Asteroids, `/game/drop` shows the not-found screen, and `/game/asteroids` and `/game/asteroids/play` work. `npm test` fails only in the seed test, which step 5 updates.
 5. **Local purge and tests.** Add `purgeRemovedGameScores` to `lib/scores.ts` with its test, call it once from `components/ui/navbar.tsx`, and update the seed test in `lib/leaderboard.test.ts` as described. Manual test: with `arcade-vault:scores:drop` set by hand in the browser, a page load removes it and keeps `arcade-vault:scores:asteroids`, the session and the credits. `npm test` passes.
@@ -179,7 +194,8 @@ CLAUDE.md                                              documents the above
 ## Acceptance criteria
 
 - [ ] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
-- [ ] `supabase/migrations/` has one new migration for this spec, and `list_migrations` shows the same name as applied.
+- [ ] `supabase/migrations/` has the two new migrations for this spec (`save_scores` and `least_privilege_grants`), and `list_migrations` shows the same names as applied.
+- [ ] `anon` and `authenticated` have only `SELECT` on `games`, and only `SELECT` plus `INSERT` on `game_id`, `player` and `score` of `scores`: no `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES` or `TRIGGER`.
 - [ ] After the migration `public.scores` had 0 rows, and `public.games` has exactly one row, with `id = 'asteroids'`.
 - [ ] No invented seed score is left in `scores` at the end of the spec: every row comes from a real game played in the app.
 - [ ] `GAMES` has exactly one entry, `asteroids`, unchanged.
@@ -191,7 +207,7 @@ CLAUDE.md                                              documents the above
 - [ ] With the publishable key, an insert for `asteroids` with `game_id`, `player` and `score` within the limits answers 201.
 - [ ] With the publishable key, an insert is rejected for: a game other than `asteroids`, an empty name, a name of only spaces, a 21-character name, a negative score, a score above 9,999,999 and an unknown `game_id`.
 - [ ] With the publishable key, an insert that sets `created_at` or `id` is rejected.
-- [ ] With the publishable key, `PATCH` and `DELETE` on `scores` change no row.
+- [ ] With the publishable key, `PATCH` and `DELETE` on `scores` and `games`, and `POST` on `games`, are rejected with `permission denied` (401).
 - [ ] `get_advisors` (security) reports no new warning about `games` or `scores`.
 - [ ] After a game over, saving with a typed name stores that name (uppercased and cut to 12) in `scores` with `game_id = 'asteroids'` and the right score.
 - [ ] After a game over, saving with an empty name stores `GUEST`.
@@ -220,6 +236,7 @@ CLAUDE.md                                              documents the above
 - **Yes:** purge the local scores of removed games with a function that runs on load (user decision: "borra del local storage"). A repo change cannot reach every visitor's browser any other way. It only removes keys of ids that are not in `GAMES`. **No:** deleting the whole `arcade-vault:` namespace, which would also drop the session, the credits and the Asteroids scores.
 - **Yes:** the SPEC 06 migration is not edited. It is already applied and committed, and history stays true. The new migration deletes the rows. The seed test applies that delete when it compares the table with `GAMES`.
 - **Yes:** column-level `grant insert (game_id, player, score)` instead of letting the client set every column. A client then cannot choose `created_at` or `id`, which would let it forge dates. **No:** a plain insert policy, which would allow forged dates.
+- **Yes:** least privilege (user decision, "aplica sobre el revoke la mejor práctica"): revoke every privilege of the public roles and grant back only `select` on `games` and `scores`, and `insert` on three columns of `scores`. RLS alone is a single layer, and `TRUNCATE` is not covered by it. **No:** editing the already applied `save_scores` migration: a second migration keeps history true and the applied state matches the files. **No:** also revoking from `service_role` or `postgres`, which the app does not use and the platform needs.
 - **Yes:** an upper bound of 9,999,999 on `score`, generous on purpose. It stops absurd values (such as `2147483647`) without knowing the real range. It is not an anti-cheat measure. **No:** per-game caps, which need real play data that does not exist yet.
 - **Yes:** `toScoreRow` and `submitScore` live in `lib/leaderboard.ts`, next to the global read. **No:** `lib/scores.ts`, which is the localStorage module and carries the `BACKEND:` swap comments with stable signatures. The purge is the exception, because it manages localStorage keys.
 - **Yes:** `submitScore` never throws and returns a boolean, like `fetchTopScores` returns a result. The player only needs to know whether to show the error line.
