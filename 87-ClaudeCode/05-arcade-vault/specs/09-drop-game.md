@@ -1,6 +1,6 @@
 # SPEC 09 — Restore the Drop game
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 06, SPEC 08
 > **Date:** 2026-10-19
 > **Objective:** Bring the archived `drop` (the Tetris game) back into the catalog as a playable game next to Asteroids, fitted to its CRT frame at any size and with its row in `public.games` so the scores it saves reach the global leaderboard.
@@ -141,7 +141,7 @@ CLAUDE.md                                               documents the above
 
 ## Acceptance criteria
 
-- [ ] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
+- [x] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
 - [x] `supabase/migrations/` has one new migration for this spec, and `list_migrations` shows the same name as applied.
 - [x] `public.games` has exactly two rows, `asteroids` and `drop`, and the `drop` row matches `GAMES` in `id`, `title`, `category` and `accent`.
 - [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
@@ -163,9 +163,9 @@ CLAUDE.md                                               documents the above
 - [x] A `POST` with the publishable key to `…/rest/v1/scores` with `game_id = 'drop'` and valid values answers 201, and the test row is deleted afterwards.
 - [x] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `drop`, and the second one fails when the migration file is removed temporarily.
 - [x] The landing and `/library` render with two games, with no overlapping tiles and no new console errors.
-- [ ] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `public/games/bridge.js`, `components/ui/game.tsx`, `app/globals.css` and `public/games/asteroids/` have no edits (`git diff` is empty for them).
-- [ ] `references/started-games/03-tetris/` and the earlier migrations are unchanged.
-- [ ] `CLAUDE.md` documents the two-game catalog, the seven archived games and the new migration.
+- [x] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `public/games/bridge.js`, `components/ui/game.tsx`, `app/globals.css` and `public/games/asteroids/` have no edits (`git diff` is empty for them).
+- [x] `references/started-games/03-tetris/` and the earlier migrations are unchanged.
+- [x] `CLAUDE.md` documents the two-game catalog, the seven archived games and the new migration.
 
 ---
 
