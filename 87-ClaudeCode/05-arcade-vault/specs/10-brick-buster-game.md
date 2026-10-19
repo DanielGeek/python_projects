@@ -1,6 +1,6 @@
 # SPEC 10 — Restore the Brick Buster game
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 06, SPEC 08, SPEC 09
 > **Date:** 2026-10-19
 > **Objective:** Bring the archived `brick-buster` (the Arkanoid game) back into the catalog as a playable game, fitted to its CRT frame at any size and with its row in `public.games` so the scores it saves reach the global leaderboard.
@@ -157,7 +157,7 @@ CLAUDE.md                                                    documents the above
 
 ## Acceptance criteria
 
-- [ ] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
+- [x] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
 - [x] `supabase/migrations/` has one new migration for this spec, and `list_migrations` shows the same name as applied.
 - [x] `public.games` has exactly three rows, `asteroids`, `drop` and `brick-buster`, and the `brick-buster` row matches `GAMES` in `id`, `title`, `category` and `accent`.
 - [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
@@ -175,8 +175,8 @@ CLAUDE.md                                                    documents the above
 - [x] A finished run shows `SCORE SAVED`, the score is stored in `public.scores` with `game_id = 'brick-buster'`, and it appears in `/hall-of-fame` under `Brick Buster` and not under another game.
 - [x] `/hall-of-fame` shows three tabs, and `Asteroids` is still the one selected on load.
 - [x] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `brick-buster`, and the second one fails when the migration file is removed temporarily.
-- [ ] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `public/games/bridge.js`, `components/ui/game.tsx`, `app/globals.css`, `public/games/asteroids/` and `public/games/drop/` have no edits (`git diff` is empty for them).
-- [ ] `references/started-games/04-arkanoid/` and the earlier migrations are unchanged.
+- [x] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `public/games/bridge.js`, `components/ui/game.tsx`, `app/globals.css`, `public/games/asteroids/` and `public/games/drop/` have no edits (`git diff` is empty for them).
+- [x] `references/started-games/04-arkanoid/` and the earlier migrations are unchanged.
 - [x] `CLAUDE.md` documents the three-game catalog, the six archived games and the new migration.
 
 ---
