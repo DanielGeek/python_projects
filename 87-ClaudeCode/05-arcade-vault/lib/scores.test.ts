@@ -156,3 +156,59 @@ describe("timeAgo", () => {
     expect(timeAgo(iso, now)).toBe(formatDate(iso));
   });
 });
+
+describe("purgeRemovedGameScores", () => {
+  const list = JSON.stringify([entry("A", 10)]);
+
+  it("removes the score lists of games that are not in GAMES", async () => {
+    storage.data.set("arcade-vault:scores:drop", list);
+    storage.data.set("arcade-vault:scores:rocks", list);
+    storage.data.set("arcade-vault:scores:tetris", list);
+    const { purgeRemovedGameScores } = await load();
+    purgeRemovedGameScores();
+    expect([...storage.data.keys()]).toEqual([]);
+  });
+
+  it("keeps the scores of games in GAMES, the session and the credits", async () => {
+    storage.data.set("arcade-vault:scores:asteroids", list);
+    storage.data.set("arcade-vault:scores:drop", list);
+    storage.data.set("arcade-vault:session", '{"name":"ANA","guest":false}');
+    storage.data.set("arcade-vault:credits", "3");
+    storage.data.set("unrelated", "x");
+    const { purgeRemovedGameScores } = await load();
+    purgeRemovedGameScores();
+    expect([...storage.data.keys()].sort()).toEqual([
+      "arcade-vault:credits",
+      "arcade-vault:scores:asteroids",
+      "arcade-vault:session",
+      "unrelated",
+    ]);
+  });
+
+  it("notifies subscribers only when it removed something", async () => {
+    const { purgeRemovedGameScores } = await load();
+    const heard = vi.fn();
+    window.addEventListener("arcade-vault:scores", heard);
+    purgeRemovedGameScores();
+    expect(heard).not.toHaveBeenCalled();
+    storage.data.set("arcade-vault:scores:drop", list);
+    purgeRemovedGameScores();
+    expect(heard).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not throw when storage is blocked", async () => {
+    storage.data.set("arcade-vault:scores:drop", list);
+    storage.failReads = true;
+    const { purgeRemovedGameScores } = await load();
+    expect(() => purgeRemovedGameScores()).not.toThrow();
+    storage.failReads = false;
+    expect(storage.data.has("arcade-vault:scores:drop")).toBe(true);
+  });
+
+  it("does not throw when removing fails", async () => {
+    storage.data.set("arcade-vault:scores:drop", list);
+    storage.failWrites = true;
+    const { purgeRemovedGameScores } = await load();
+    expect(() => purgeRemovedGameScores()).not.toThrow();
+  });
+});

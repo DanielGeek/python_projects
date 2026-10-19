@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { GAMES } from "./games";
+import { ARCHIVED_GAMES } from "./games-archive";
 
 const ROOT = process.cwd();
 const read = (path: string) => readFileSync(join(ROOT, path), "utf8");
@@ -43,5 +44,35 @@ describe("GAMES catalog", () => {
     it("has an av-cover rule in globals.css", () => {
       expect(css, `${id}: no .av-cover-${id} rule in app/globals.css`).toContain(`.av-cover-${id}`);
     });
+  });
+});
+
+describe("ARCHIVED_GAMES", () => {
+  it("keeps the games removed by SPEC 08", () => {
+    expect(ARCHIVED_GAMES.map((g) => g.id).sort()).toEqual(
+      [
+        "brick-buster",
+        "drop",
+        "froggy",
+        "invaders",
+        "muncher",
+        "pixel-duel",
+        "rocks",
+        "serpent",
+      ].sort(),
+    );
+  });
+
+  it("has unique ids that are not in GAMES", () => {
+    const ids = ARCHIVED_GAMES.map((g) => g.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    const catalog = new Set(GAMES.map((g) => g.id));
+    expect(ids.filter((id) => catalog.has(id))).toEqual([]);
+  });
+
+  it.each(
+    ARCHIVED_GAMES.filter((g) => g.src !== null).map((g) => [g.id, g.src as string] as const),
+  )("%s keeps its playable files on disk", (id, src) => {
+    expect(existsSync(join(ROOT, "public", src)), `${id}: missing public${src}`).toBe(true);
   });
 });

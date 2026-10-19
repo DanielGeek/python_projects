@@ -12,6 +12,14 @@ export interface FakeStorage {
 export function installFakeWindow(): FakeStorage {
   const fake: FakeStorage = { data: new Map(), failReads: false, failWrites: false };
   const localStorage = {
+    get length() {
+      if (fake.failReads) throw new Error("storage blocked");
+      return fake.data.size;
+    },
+    key(index: number) {
+      if (fake.failReads) throw new Error("storage blocked");
+      return [...fake.data.keys()][index] ?? null;
+    },
     getItem(key: string) {
       if (fake.failReads) throw new Error("storage blocked");
       return fake.data.get(key) ?? null;
