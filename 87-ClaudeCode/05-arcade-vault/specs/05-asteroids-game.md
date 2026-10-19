@@ -29,13 +29,15 @@ Adding a game follows the checklist in `CLAUDE.md` (**Host ↔ game bridge**). N
 - Cover art: an `av-cover-asteroids` rule in `app/globals.css`, CSS only.
 - A catalog integrity test, `lib/games.test.ts`.
 - Update `CLAUDE.md` (playable games list) and the comment above `GAMES` in `lib/games.ts`.
+- Fix the Next.js "URL data outside of Suspense" warning on `/game/[id]/play` (`app/game/[id]/play/page.tsx`): wrap the `params` access in a `<Suspense>` boundary. It was found while testing step 7 and appears for every playable game (`rocks` included), not only for Asteroids. Added to this spec by user decision (see Decisions).
 
 **Out of scope (for future specs):**
 
 - Any change to `rocks`: its folder, its `game.js`, its catalog entry, its cover and its reader.
 - Changes to mechanics or balance, a visible pause, UFOs, sound, touch controls or any feature the reference does not have.
 - Changes to the bridge protocol, for example sending the 3x power-up state to the host HUD.
-- Changes to `lib/scores.ts`, `lib/credits.ts`, the player page or the library layout.
+- Changes to `lib/scores.ts`, `lib/credits.ts`, the player component (`game-player.tsx`) or the library layout. The only change to the play route is the Suspense fix in `app/game/[id]/play/page.tsx` (step 9).
+- The same pattern in `app/game/[id]/page.tsx` (detail page) or any other route, unless the overlay reports it too. If it does, it goes in its own spec.
 - Supabase, auth or scores in the database.
 - Copying the reference `README.md`, `CLAUDE.md` or `.gitignore` into the vault.
 
@@ -106,7 +108,10 @@ lib/games.ts                          adds the entry after rocks, updates the co
 lib/games.test.ts                     catalog integrity test (new)
 app/globals.css                       adds av-cover-asteroids
 CLAUDE.md                             lists asteroids among the playable games
+app/game/[id]/play/page.tsx           params access moved inside a <Suspense> boundary
 ```
+
+Suspense fix (`app/game/[id]/play/page.tsx`). The Next.js dev overlay reports `Next.js encountered URL data outside of Suspense` at `const game = getGame((await params).id)` in `PlayPage`. The fix is the "Stream" option from the overlay and from `node_modules/next/dist/docs/01-app/02-guides/instant-navigation.md`: `PlayPage` becomes a synchronous shell that renders `<Suspense fallback={...}>` around an async inner component that awaits `params`, calls `getGame`, runs `notFound()` and renders `<GamePlayer game={game} />`. The behavior stays the same: unknown or non-playable ids still answer 404, `generateStaticParams` and `generateMetadata` stay as they are. The fallback must not change the layout (same frame size as the player, or `null`). The "Block" option (`export const instant = false`) is not used because it only silences the warning.
 
 ---
 
@@ -120,6 +125,7 @@ CLAUDE.md                             lists asteroids among the playable games
 6. **Catalog test.** Create `lib/games.test.ts` with the checks listed in the data model. Manual test: `npm test` passes, and fails if `readers.asteroids` is renamed temporarily.
 7. **Play in the platform.** Open `/game/asteroids/play`. Manual test: the game starts in the CRT frame, one credit is spent, the arrow keys and Space do not scroll the page, pause and resume work, and after game over the score appears in the Hall of Fame under Asteroids.
 8. **Docs.** Update `CLAUDE.md`: add `asteroids` to the playable games in the `public/games/<id>/` line and in the `GAMES` description (nine games now).
+9. **Fix the Suspense warning.** In `app/game/[id]/play/page.tsx`, move the `await params` into an inner async component wrapped in `<Suspense>`, as described in the data model. Read `node_modules/next/dist/docs/01-app/02-guides/instant-navigation.md` first. Manual test: open `/game/asteroids/play` and `/game/rocks/play` with `npm run dev`; the dev overlay shows no `Instant` insight and the console has no `instant-shell-url-data` error; both games still start and spend one credit; `/game/serpent/play` and `/game/nope/play` still answer 404; `npm run build` passes.
 
 ---
 
@@ -143,6 +149,8 @@ CLAUDE.md                             lists asteroids among the playable games
 - [ ] The landing shows the game count `09` in its stat and `+4 more in the vault` in the rail, with no layout change (the rail still shows the first five games).
 - [ ] The existing pages (`/`, `/library`, `/game/drop`, `/game/rocks`, `/hall-of-fame`, `/about`, `/login`) render without new console errors.
 - [ ] `CLAUDE.md` lists `asteroids` among the playable games.
+- [ ] `/game/asteroids/play` and `/game/rocks/play` no longer log `Next.js encountered URL data during prerendering or a navigation` and the dev overlay shows no `Instant` insight for them.
+- [ ] `/game/serpent/play` (not playable) and `/game/nope/play` (unknown id) still answer 404, and `game-player.tsx` is unchanged (`git diff` shows no edits to it).
 
 ---
 
@@ -161,6 +169,7 @@ CLAUDE.md                             lists asteroids among the playable games
 - **Yes:** the entry goes right after `rocks`, so the two shooters sit together. It is outside the first five games, so the landing rail does not change.
 - **Yes:** the score and lives integration is whatever the bridge and the player already do (user decision). The spec only verifies it works with this game. **No:** bridge extensions in this spec.
 - **Yes:** `lib/games.test.ts` covering every playable game. Adding a game has four manual touch points (folder, bridge, catalog, cover) and a typo in one of them fails silently at runtime. A test makes the `CLAUDE.md` checklist verifiable. **No:** a test only for Asteroids, which would not protect the next game.
+- **Yes:** fix the Suspense warning on `/game/[id]/play` inside this spec (user decision, 2026-10-18), although it is not caused by Asteroids. It was found while verifying step 7 and the user asked for it to be fixed on this branch. The page is touched in a single file and the fix does not change the player. **No:** `export const instant = false`, which hides the warning without fixing it. **No:** touching `game-player.tsx` or the detail page.
 
 ---
 
@@ -174,6 +183,7 @@ CLAUDE.md                             lists asteroids among the playable games
 | `av-cover-asteroids` clashes visually with `av-cover-rocks`, two similar dark space covers side by side.                                                                                                                      | Different accent (cyan against yellow) and a ship plus a single grey rock instead of three rocks. Checked in step 4. |
 | Two near-identical games confuse players.                                                                                                                                                                                     | Accepted, user decision. The cards differ in accent, tagline and description.                                        |
 | The new test depends on reading `public/` and `app/globals.css` from disk, and breaks if a file moves.                                                                                                                        | Paths are resolved from the project root, and the failure message names the missing file and the game id.            |
+| The Suspense fix changes how the play route streams, and could flash an empty page or break the 404 for non-playable ids.                                                                                                     | A layout-neutral fallback, and step 9 re-checks both 404 cases, the credit spend and `npm run build`.                |
 | A future change to the `Game` type or to the reader format makes the test stale.                                                                                                                                              | The test only checks existence and naming, not behavior, so it needs updating only when the bridge contract changes. |
 
 ---
@@ -183,7 +193,7 @@ CLAUDE.md                             lists asteroids among the playable games
 - Any change to `rocks`.
 - Mechanics, balance, UFOs, sound, touch controls or a visible pause.
 - Bridge protocol changes or HUD data for the power-up.
-- Changes to scores, credits, the player or the library layout.
+- Changes to scores, credits, the player component or the library layout. The Suspense fix in the play page (step 9) is the only exception.
 - Supabase or auth.
 
 Each one of those, if it lands, goes in its own spec.
