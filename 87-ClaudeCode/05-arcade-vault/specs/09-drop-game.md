@@ -147,7 +147,7 @@ CLAUDE.md                                               documents the above
 - [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
 - [x] `GAMES` has exactly two entries, in the order `asteroids`, `drop`. The `drop` entry equals the archived one except for `tags`, which is `["1 PLAYER", "KEYBOARD", "RETRO 1985"]`.
 - [x] `ARCHIVED_GAMES` has seven entries, none of them `drop`, and none of its ids is in `GAMES`.
-- [ ] `/library` lists `Asteroids` and `Drop` with rendered covers, and the category filter offers `All`, `Shooter` and `Puzzle`.
+- [x] `/library` lists `Asteroids` and `Drop` with rendered covers, and the category filter offers `All`, `Shooter` and `Puzzle`.
 - [x] `/game/drop` shows the title, description, controls `← → to move · ↑ or X to rotate · ↓ to soft drop · SPACE to hard drop · C to hold` and the `PUZZLE` category.
 - [x] `/game/drop/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
 - [x] While playing, the arrow keys and `Space` do not scroll the host page, and the game's keys work as before.
@@ -162,7 +162,7 @@ CLAUDE.md                                               documents the above
 - [x] `/hall-of-fame` shows two tabs, `Asteroids` and `Drop`, and `Asteroids` is still the one selected on load.
 - [x] A `POST` with the publishable key to `…/rest/v1/scores` with `game_id = 'drop'` and valid values answers 201, and the test row is deleted afterwards.
 - [x] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `drop`, and the second one fails when the migration file is removed temporarily.
-- [ ] The landing and `/library` render with two games, with no overlapping tiles and no new console errors.
+- [x] The landing and `/library` render with two games, with no overlapping tiles and no new console errors.
 - [ ] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `public/games/bridge.js`, `components/ui/game.tsx`, `app/globals.css` and `public/games/asteroids/` have no edits (`git diff` is empty for them).
 - [ ] `references/started-games/03-tetris/` and the earlier migrations are unchanged.
 - [ ] `CLAUDE.md` documents the two-game catalog, the seven archived games and the new migration.
