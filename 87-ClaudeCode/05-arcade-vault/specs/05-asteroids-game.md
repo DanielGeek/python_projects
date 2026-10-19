@@ -142,7 +142,7 @@ Suspense fix (`app/game/[id]/play/page.tsx`). The Next.js dev overlay reports `N
 - [x] `/game/asteroids` shows the title, description, controls `← → to rotate · ↑ to thrust · SPACE to fire` and the `SHOOTER` category.
 - [x] `/game/asteroids/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
 - [x] While playing, the arrow keys and `Space` do not scroll the host page.
-- [ ] The canvas shows `LEVEL <n>` in the HUD and `SCORE: <n>   —   PRESS SPACE TO RESTART` at game over, with no Spanish text.
+- [x] The canvas shows `LEVEL <n>` in the HUD and `SCORE: <n>   —   PRESS SPACE TO RESTART` at game over, with no Spanish text.
 - [x] Destroying a large, a medium and a small rock adds 20, 50 and 100 points.
 - [x] The host receives `state` messages with `game: "asteroids"` carrying `score`, `lives`, `level` and `over`, and `over` is `true` after the third life is lost.
 - [x] A score saved from Asteroids appears in `arcade-vault:scores:asteroids` and in the Hall of Fame, and does not appear under `rocks`.
