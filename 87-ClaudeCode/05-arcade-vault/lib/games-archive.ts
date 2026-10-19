@@ -4,31 +4,16 @@ const TAGS = ["1 PLAYER", "KEYBOARD / TOUCH", "RETRO 1985"];
 
 // Games removed from the catalog by SPEC 08, kept here as data so they can come back. Nothing
 // imports this file on purpose: these entries are not in GAMES, so they are not listed, not
-// playable and not part of the Supabase `games` table. Drop came back with SPEC 09, so it is no
-// longer here.
+// playable and not part of the Supabase `games` table. Drop came back with SPEC 09 and Brick Buster
+// with SPEC 10, so they are no longer here.
 //
 // To bring a game back:
 //   1. Move its entry from this array to GAMES in lib/games.ts.
 //   2. Add a migration that inserts its row in `public.games` (same id, title, category and accent).
 //   3. Playable games (src set) still need their folder in public/games/<id>/, a `readers` entry in
-//      public/games/bridge.js and an `av-cover-<id>` rule in app/globals.css. The folders of
-//      brick-buster and rocks are still on disk; the other five never had one.
+//      public/games/bridge.js and an `av-cover-<id>` rule in app/globals.css. The folder of rocks is
+//      still on disk; the other five never had one.
 export const ARCHIVED_GAMES: Game[] = [
-  {
-    id: "brick-buster",
-    title: "Brick Buster",
-    category: "Arcade",
-    tagline: "Bounce the ball and smash neon walls.",
-    description:
-      "Steer a paddle-ship and bounce a plasma core to pulverize walls of chromatic blocks. Every level rearranges the grid into impossible patterns. How far will your streak go?",
-    accent: "cyan",
-    src: "/games/brick-buster/index.html",
-    aspect: "4 / 3",
-    controls: "← → or A/D to move · SPACE to launch · 1-3 to pick difficulty",
-    difficulty: 3,
-    plays: "12.4K",
-    tags: TAGS,
-  },
   {
     id: "serpent",
     title: "Serpent",

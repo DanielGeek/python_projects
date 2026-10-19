@@ -1,6 +1,6 @@
 # SPEC 10 — Restore the Brick Buster game
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 06, SPEC 08, SPEC 09
 > **Date:** 2026-10-19
 > **Objective:** Bring the archived `brick-buster` (the Arkanoid game) back into the catalog as a playable game, fitted to its CRT frame at any size and with its row in `public.games` so the scores it saves reach the global leaderboard.
@@ -157,27 +157,27 @@ CLAUDE.md                                                    documents the above
 
 ## Acceptance criteria
 
-- [ ] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
-- [ ] `supabase/migrations/` has one new migration for this spec, and `list_migrations` shows the same name as applied.
-- [ ] `public.games` has exactly three rows, `asteroids`, `drop` and `brick-buster`, and the `brick-buster` row matches `GAMES` in `id`, `title`, `category` and `accent`.
-- [ ] `get_advisors` (security) reports no new warning about `games` or `scores`.
-- [ ] `GAMES` has exactly three entries, in the order `asteroids`, `drop`, `brick-buster`. The `brick-buster` entry equals the archived one except for `tags`, which is `["1 PLAYER", "KEYBOARD", "RETRO 1985"]`.
-- [ ] `ARCHIVED_GAMES` has six entries, none of them `brick-buster`, and none of its ids is in `GAMES`.
-- [ ] `/library` lists the three games with rendered covers, and the category filter offers `All`, `Shooter`, `Puzzle` and `Arcade`.
-- [ ] `/game/brick-buster` shows the title, description, controls `← → or A/D to move · SPACE to launch · 1-3 to pick difficulty` and the `ARCADE` category.
-- [ ] `/game/brick-buster/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
-- [ ] While playing, the arrow keys and `Space` do not scroll the host page, and the game's keys and the mouse work as before.
-- [ ] The host receives `state` messages with `game: "brick-buster"` carrying `score`, `lives`, `level` and `over`, and `over` is `true` when the run is lost and when it is won.
-- [ ] Pause and resume from the host freeze and resume the game through the bridge.
-- [ ] At 1530×772 and at 375×812, `/game/brick-buster/play` shows the whole canvas inside the frame, with no overflow in the game document (`scrollHeight <= clientHeight` and `scrollWidth <= clientWidth`) and no horizontal overflow in the host page.
-- [ ] Resizing the window re-fits the game without a reload, and `/games/brick-buster/index.html` opened directly in a window larger than the game keeps its natural size (scale 1).
-- [ ] With the game scaled, the mouse moves the paddle under the cursor, and the keys, the host pause and the `state` messages work the same as without it.
-- [ ] A finished run shows `SCORE SAVED`, the score is stored in `public.scores` with `game_id = 'brick-buster'`, and it appears in `/hall-of-fame` under `Brick Buster` and not under another game.
-- [ ] `/hall-of-fame` shows three tabs, and `Asteroids` is still the one selected on load.
-- [ ] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `brick-buster`, and the second one fails when the migration file is removed temporarily.
-- [ ] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `public/games/bridge.js`, `components/ui/game.tsx`, `app/globals.css`, `public/games/asteroids/` and `public/games/drop/` have no edits (`git diff` is empty for them).
-- [ ] `references/started-games/04-arkanoid/` and the earlier migrations are unchanged.
-- [ ] `CLAUDE.md` documents the three-game catalog, the six archived games and the new migration.
+- [x] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
+- [x] `supabase/migrations/` has one new migration for this spec, and `list_migrations` shows the same name as applied.
+- [x] `public.games` has exactly three rows, `asteroids`, `drop` and `brick-buster`, and the `brick-buster` row matches `GAMES` in `id`, `title`, `category` and `accent`.
+- [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
+- [x] `GAMES` has exactly three entries, in the order `asteroids`, `drop`, `brick-buster`. The `brick-buster` entry equals the archived one except for `tags`, which is `["1 PLAYER", "KEYBOARD", "RETRO 1985"]`.
+- [x] `ARCHIVED_GAMES` has six entries, none of them `brick-buster`, and none of its ids is in `GAMES`.
+- [x] `/library` lists the three games with rendered covers, and the category filter offers `All`, `Shooter`, `Puzzle` and `Arcade`.
+- [x] `/game/brick-buster` shows the title, description, controls `← → or A/D to move · SPACE to launch · 1-3 to pick difficulty` and the `ARCADE` category.
+- [x] `/game/brick-buster/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
+- [x] While playing, the arrow keys and `Space` do not scroll the host page, and the game's keys and the mouse work as before.
+- [x] The host receives `state` messages with `game: "brick-buster"` carrying `score`, `lives`, `level` and `over`, and `over` is `true` when the run is lost and when it is won.
+- [x] Pause and resume from the host freeze and resume the game through the bridge.
+- [x] At 1530×772 and at 375×812, `/game/brick-buster/play` shows the whole canvas inside the frame, with no overflow in the game document (`scrollHeight <= clientHeight` and `scrollWidth <= clientWidth`) and no horizontal overflow in the host page.
+- [x] Resizing the window re-fits the game without a reload, and `/games/brick-buster/index.html` opened directly in a window larger than the game keeps its natural size (scale 1).
+- [x] With the game scaled, the mouse moves the paddle under the cursor, and the keys, the host pause and the `state` messages work the same as without it.
+- [x] A finished run shows `SCORE SAVED`, the score is stored in `public.scores` with `game_id = 'brick-buster'`, and it appears in `/hall-of-fame` under `Brick Buster` and not under another game.
+- [x] `/hall-of-fame` shows three tabs, and `Asteroids` is still the one selected on load.
+- [x] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `brick-buster`, and the second one fails when the migration file is removed temporarily.
+- [x] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `public/games/bridge.js`, `components/ui/game.tsx`, `app/globals.css`, `public/games/asteroids/` and `public/games/drop/` have no edits (`git diff` is empty for them).
+- [x] `references/started-games/04-arkanoid/` and the earlier migrations are unchanged.
+- [x] `CLAUDE.md` documents the three-game catalog, the six archived games and the new migration.
 
 ---
 

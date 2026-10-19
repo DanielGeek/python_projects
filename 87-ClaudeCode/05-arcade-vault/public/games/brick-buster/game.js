@@ -187,6 +187,8 @@ window.addEventListener( 'keydown', ( e ) => {
     handleMenuKey( e );
     return;
   }
+  // The game ignores these two outside the menu, but inside the host iframe they would scroll the page.
+  if ( e.code === 'ArrowUp' || e.code === 'ArrowDown' ) e.preventDefault();
   if ( e.code === 'Space' ) {
     e.preventDefault();
     if ( !e.repeat ) handleAction();
@@ -478,6 +480,16 @@ function frame( now ) {
   draw();
   requestAnimationFrame( frame );
 }
+
+// Scales the stage down so the whole canvas fits the iframe, and never up. CSS zoom changes the layout
+// size, so the page stays centred and does not overflow. The canvas size and the game state are untouched.
+function fitToFrame() {
+  const scale = Math.min( 1, innerWidth / CANVAS_W, innerHeight / CANVAS_H );
+  document.getElementById( 'stage' ).style.zoom = scale;
+}
+
+fitToFrame();
+window.addEventListener( 'resize', fitToFrame );
 
 loadSpritesheet( () => {
   requestAnimationFrame( ( now ) => {
