@@ -26,9 +26,9 @@ export interface Game {
 
 const TAGS = ["1 PLAYER", "KEYBOARD / TOUCH", "RETRO 1985"];
 
-// The three playable games are copies of the sibling projects (02-asteroids → rocks,
-// 03-claude-tetris → drop, 04-arkanoid → brick-buster) living in public/games, each with
-// public/games/bridge.js added to report its state.
+// The four playable games are copies of the sibling projects (02-asteroids → rocks and
+// asteroids, 03-claude-tetris → drop, 04-arkanoid → brick-buster) living in public/games,
+// each with public/games/bridge.js added to report its state.
 export const GAMES: Game[] = [
   {
     id: "brick-buster",
@@ -119,6 +119,21 @@ export const GAMES: Game[] = [
     difficulty: 4,
     plays: "15.6K",
     tags: TAGS,
+  },
+  {
+    id: "asteroids",
+    title: "Asteroids",
+    category: "Shooter",
+    tagline: "Split the rocks before they split you.",
+    description:
+      "A lone ship drifts through a wrapping asteroid field. Shoot large rocks into medium ones and medium ones into small ones, and grab the 3x power-up for a spread shot. Three lives, and every wave brings more rocks.",
+    accent: "cyan",
+    src: "/games/asteroids/index.html",
+    aspect: "4 / 3",
+    controls: "← → to rotate · ↑ to thrust · SPACE to fire",
+    difficulty: 4,
+    plays: "11.3K",
+    tags: ["1 PLAYER", "KEYBOARD", "RETRO 1985"],
   },
   {
     id: "froggy",
