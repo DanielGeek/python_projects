@@ -62,6 +62,8 @@ If either is missing or the URL is not `http(s)`, `getSupabaseEnv` throws and `G
 
 Use **/frontend-design** to scaffold and manage frontend components and architecture.
 
+Use **/add-game** to add a playable game with its global leaderboard. It takes a folder of `references/started-games/` or a new game idea, asks the game-specific questions and writes `specs/NN-<id>-game.md`; the implementation then goes through `/spec-impl`. The skill lives in `.agents/skills/add-game/` (`SKILL.md`, `contract.md`, `spec-template.md`), symlinked from `.claude/skills/`.
+
 ### Host ↔ game bridge
 
 `public/games/bridge.js` is loaded by each game's `index.html` **before** its own scripts, with `data-game="<id>"` on the script tag. It:
