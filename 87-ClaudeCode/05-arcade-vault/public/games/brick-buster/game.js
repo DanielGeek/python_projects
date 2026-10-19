@@ -187,6 +187,8 @@ window.addEventListener( 'keydown', ( e ) => {
     handleMenuKey( e );
     return;
   }
+  // The game ignores these two outside the menu, but inside the host iframe they would scroll the page.
+  if ( e.code === 'ArrowUp' || e.code === 'ArrowDown' ) e.preventDefault();
   if ( e.code === 'Space' ) {
     e.preventDefault();
     if ( !e.repeat ) handleAction();
