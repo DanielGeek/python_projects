@@ -12,26 +12,52 @@ describe("rowToEntry", () => {
   });
 });
 
-describe("games seed", () => {
+interface GameRow {
+  id: string;
+  title: string;
+  category: string;
+  accent: string;
+}
+
+/** Rebuilds the `games` table by applying every migration in order: its inserts, then its deletes. */
+function gamesAfterMigrations(dir: string, files: string[]): GameRow[] {
+  const insertRow = /\(\s*'([^']+)'\s*,\s*'([^']+)'\s*,\s*'([^']+)'\s*,\s*'([^']+)'\s*\)/g;
+  let rows: GameRow[] = [];
+  for (const file of files) {
+    const sql = readFileSync(join(dir, file), "utf8");
+    for (const [, block] of sql.matchAll(/insert into public\.games[^;]*?values([^;]*);/gi)) {
+      for (const [, id, title, category, accent] of block.matchAll(insertRow)) {
+        rows.push({ id, title, category, accent });
+      }
+    }
+    for (const [, keep] of sql.matchAll(/delete from public\.games where id <> '([^']+)'/gi)) {
+      rows = rows.filter((r) => r.id === keep);
+    }
+  }
+  return rows;
+}
+
+describe("games table after the migrations", () => {
   const dir = join(process.cwd(), "supabase/migrations");
-  const file = readdirSync(dir).find((name) => name.endsWith("_games_and_scores.sql"));
-  const sql = file ? readFileSync(join(dir, file), "utf8") : "";
-  const block = sql.split("insert into public.games")[1]?.split(";")[0] ?? "";
-  const rows = [
-    ...block.matchAll(/\(\s*'([^']+)'\s*,\s*'([^']+)'\s*,\s*'([^']+)'\s*,\s*'([^']+)'\s*\)/g),
-  ].map(([, id, title, category, accent]) => ({ id, title, category, accent }));
+  const files = readdirSync(dir)
+    .filter((name) => name.endsWith(".sql"))
+    .sort();
+  const rows = gamesAfterMigrations(dir, files);
 
   it("finds the games_and_scores migration", () => {
-    expect(file, "no supabase/migrations/*_games_and_scores.sql").toBeDefined();
+    expect(
+      files.some((f) => f.endsWith("_games_and_scores.sql")),
+      "no supabase/migrations/*_games_and_scores.sql",
+    ).toBe(true);
   });
 
-  it.each(GAMES.map((g) => [g.id, g] as const))("seeds %s as in lib/games.ts", (id, game) => {
+  it.each(GAMES.map((g) => [g.id, g] as const))("has %s as in lib/games.ts", (id, game) => {
     const row = rows.find((r) => r.id === id);
-    expect(row, `${id}: missing from the games insert in ${file}`).toBeDefined();
+    expect(row, `${id}: not in the games table after ${files.join(", ")}`).toBeDefined();
     expect(row).toEqual({ id, title: game.title, category: game.category, accent: game.accent });
   });
 
-  it("seeds no game that is missing from lib/games.ts", () => {
+  it("has no game that is missing from lib/games.ts", () => {
     const ids = new Set(GAMES.map((g) => g.id));
     expect(rows.filter((r) => !ids.has(r.id)).map((r) => r.id)).toEqual([]);
   });

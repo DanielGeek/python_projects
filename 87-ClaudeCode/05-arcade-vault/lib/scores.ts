@@ -102,6 +102,26 @@ export function useScores(gameId: string): ScoreEntry[] {
   );
 }
 
+/**
+ * Removes the localStorage score lists of games that are not in GAMES anymore (SPEC 08).
+ * Only keys under the scores prefix are looked at, so the session and the credits are never touched.
+ * Never throws: when storage is blocked there is nothing to purge.
+ */
+export function purgeRemovedGameScores(): void {
+  try {
+    const known = new Set(GAMES.map((g) => g.id));
+    const stale: string[] = [];
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const key = window.localStorage.key(i);
+      if (key?.startsWith(PREFIX) && !known.has(key.slice(PREFIX.length))) stale.push(key);
+    }
+    for (const key of stale) window.localStorage.removeItem(key);
+    if (stale.length) window.dispatchEvent(new Event(EVENT));
+  } catch (error) {
+    console.warn("[scores] could not purge the scores of removed games", error);
+  }
+}
+
 export function bestScore(list: ScoreEntry[]): number | null {
   return list.length ? list[0].score : null;
 }

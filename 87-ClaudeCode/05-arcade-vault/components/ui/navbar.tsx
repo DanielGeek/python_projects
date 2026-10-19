@@ -4,13 +4,22 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCredits } from "@/lib/credits";
+import { purgeRemovedGameScores } from "@/lib/scores";
 import { signOut, useSession } from "@/lib/session";
 import { Button, ButtonLink, NeonLogo } from "./basics";
 
 const LINKS = [
   { href: "/", label: "Home", match: (p: string) => p === "/" },
-  { href: "/library", label: "Library", match: (p: string) => p.startsWith("/library") || p.startsWith("/game") },
-  { href: "/hall-of-fame", label: "Hall of Fame", match: (p: string) => p.startsWith("/hall-of-fame") },
+  {
+    href: "/library",
+    label: "Library",
+    match: (p: string) => p.startsWith("/library") || p.startsWith("/game"),
+  },
+  {
+    href: "/hall-of-fame",
+    label: "Hall of Fame",
+    match: (p: string) => p.startsWith("/hall-of-fame"),
+  },
   { href: "/about", label: "About", match: (p: string) => p.startsWith("/about") },
 ];
 
@@ -29,6 +38,11 @@ export function Navbar() {
   const session = useSession();
   const [open, setOpen] = useState(false);
 
+  // Once per page load: drop the local scores of games that left the catalog (SPEC 08).
+  useEffect(() => {
+    purgeRemovedGameScores();
+  }, []);
+
   // Close the mobile panel whenever the route changes.
   const [lastPath, setLastPath] = useState(pathname);
   if (lastPath !== pathname) {
@@ -44,7 +58,12 @@ export function Navbar() {
   }, [open]);
 
   const links = LINKS.map((l) => (
-    <Link key={l.href} href={l.href} className="av-nav-link" aria-current={l.match(pathname) ? "page" : undefined}>
+    <Link
+      key={l.href}
+      href={l.href}
+      className="av-nav-link"
+      aria-current={l.match(pathname) ? "page" : undefined}
+    >
       {l.label}
     </Link>
   ));
@@ -78,7 +97,13 @@ export function Navbar() {
           <Credits />
           {auth}
         </div>
-        <button type="button" className="av-burger" aria-label="Open menu" aria-expanded={open} onClick={() => setOpen(true)}>
+        <button
+          type="button"
+          className="av-burger"
+          aria-label="Open menu"
+          aria-expanded={open}
+          onClick={() => setOpen(true)}
+        >
           <span />
         </button>
       </nav>
@@ -86,7 +111,12 @@ export function Navbar() {
         <>
           <div className="av-drawer-scrim" onClick={() => setOpen(false)} />
           <div className="av-drawer" role="dialog" aria-modal aria-label="Menu">
-            <Button variant="ghost" size="sm" className="av-drawer-close" onClick={() => setOpen(false)}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="av-drawer-close"
+              onClick={() => setOpen(false)}
+            >
               Close ✕
             </Button>
             {links}
