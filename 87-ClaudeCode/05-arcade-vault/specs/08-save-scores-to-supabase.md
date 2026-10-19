@@ -1,6 +1,6 @@
 # SPEC 08 — Save Asteroids scores to Supabase
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 04, SPEC 05, SPEC 06
 > **Date:** 2026-10-19
 > **Objective:** Let the player save a finished Asteroids game's score from the browser into the Supabase `scores` table under the typed name or `GUEST`, with Asteroids as the only game left in the catalog, in the `games` table and in the local scores, and the invented seed scores deleted.
@@ -226,7 +226,7 @@ CLAUDE.md                                              documents the above
 - [x] The SPEC 06 migration file is unchanged, and the files under `public/games/` are unchanged (`git diff` is empty for them).
 - [x] `lib/credits.ts`, `lib/session.ts` and `app/hall-of-fame/` have no edits (`git diff` is empty for them).
 - [x] No service role key and no `SUPABASE_DB_PASSWORD` value appears in the client bundle or in any file tracked by git.
-- [ ] `CLAUDE.md` documents the one-game catalog, `submitScore`, the insert policy, the local purge and that the seed was removed.
+- [x] `CLAUDE.md` documents the one-game catalog, `submitScore`, the insert policy, the local purge and that the seed was removed.
 
 ---
 
@@ -256,19 +256,19 @@ CLAUDE.md                                              documents the above
 
 ## Risks
 
-| Risk                                                                                      | Mitigation                                                                                                               |
-| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Anyone can call the REST API and insert an invented score, or fill the ranking with spam. | Accepted until the auth spec. The policy and column grants bound each row. Rate limiting is out of scope.                |
-| The migration deletes data and cannot be undone.                                          | Step 1 checks the 40 rows are exactly the seed and that `games` is the known catalog. Both can be recreated from git.    |
-| The purge removes a visitor's local scores for the removed games for good.                | It is what the user asked for. It only touches keys of ids not in `GAMES`, never Asteroids, the session or the credits.  |
-| The landing, the About page and the library look empty or odd with a single game.         | Step 8 checks every page with one game. The `+0 more` line is fixed in this spec. Static marketing copy is out of scope. |
+| Risk                                                                                               | Mitigation                                                                                                               |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Anyone can call the REST API and insert an invented score, or fill the ranking with spam.          | Accepted until the auth spec. The policy and column grants bound each row. Rate limiting is out of scope.                |
+| The migration deletes data and cannot be undone.                                                   | Step 1 checks the 40 rows are exactly the seed and that `games` is the known catalog. Both can be recreated from git.    |
+| The purge removes a visitor's local scores for the removed games for good.                         | It is what the user asked for. It only touches keys of ids not in `GAMES`, never Asteroids, the session or the credits.  |
+| The landing, the About page and the library look empty or odd with a single game.                  | Step 8 checks every page with one game. The `+0 more` line is fixed in this spec. Static marketing copy is out of scope. |
 | `CATEGORIES` shrinks with the catalog: it is built from `GAMES`, so it is now `All` and `Shooter`. | Accepted and better than an empty filter. The categories come back by themselves when games return.                      |
-| A policy or grant typo leaves `scores` writable too widely, or not writable at all.       | Step 3 and the acceptance criteria test every accepted and rejected case with the public key, and `get_advisors`.        |
-| The seed test and the migration drift apart when a game returns.                          | The test compares `GAMES` with the table after all migrations, so a missing insert migration fails the test.             |
-| The request is slow and the player thinks the save did nothing.                           | `SAVING…` shows while it runs and the button is disabled.                                                                |
-| The score is saved locally but not globally, so the two sources differ for that player.   | The `[ERR]` line says it was saved on this device only. A retry belongs to a later spec.                                 |
-| A signed-in name from the local session is longer than 20 characters.                     | `toScoreRow` cuts it to 20 before the insert, so the table constraint is not hit.                                        |
-| Test rows created while verifying stay in the table.                                      | Steps 3 and 8 delete them, and an acceptance criterion checks the table only has real scores at the end.                 |
+| A policy or grant typo leaves `scores` writable too widely, or not writable at all.                | Step 3 and the acceptance criteria test every accepted and rejected case with the public key, and `get_advisors`.        |
+| The seed test and the migration drift apart when a game returns.                                   | The test compares `GAMES` with the table after all migrations, so a missing insert migration fails the test.             |
+| The request is slow and the player thinks the save did nothing.                                    | `SAVING…` shows while it runs and the button is disabled.                                                                |
+| The score is saved locally but not globally, so the two sources differ for that player.            | The `[ERR]` line says it was saved on this device only. A retry belongs to a later spec.                                 |
+| A signed-in name from the local session is longer than 20 characters.                              | `toScoreRow` cuts it to 20 before the insert, so the table constraint is not hit.                                        |
+| Test rows created while verifying stay in the table.                                               | Steps 3 and 8 delete them, and an acceptance criterion checks the table only has real scores at the end.                 |
 
 ---
 
