@@ -170,7 +170,7 @@ CLAUDE.md                                                    documents the above
 - [ ] The host receives `state` messages with `game: "brick-buster"` carrying `score`, `lives`, `level` and `over`, and `over` is `true` when the run is lost and when it is won.
 - [ ] Pause and resume from the host freeze and resume the game through the bridge.
 - [ ] At 1530×772 and at 375×812, `/game/brick-buster/play` shows the whole canvas inside the frame, with no overflow in the game document (`scrollHeight <= clientHeight` and `scrollWidth <= clientWidth`) and no horizontal overflow in the host page.
-- [ ] Resizing the window re-fits the game without a reload, and `/games/brick-buster/index.html` opened directly in a window larger than the game keeps its natural size (scale 1).
+- [x] Resizing the window re-fits the game without a reload, and `/games/brick-buster/index.html` opened directly in a window larger than the game keeps its natural size (scale 1).
 - [ ] With the game scaled, the mouse moves the paddle under the cursor, and the keys, the host pause and the `state` messages work the same as without it.
 - [ ] A finished run shows `SCORE SAVED`, the score is stored in `public.scores` with `game_id = 'brick-buster'`, and it appears in `/hall-of-fame` under `Brick Buster` and not under another game.
 - [ ] `/hall-of-fame` shows three tabs, and `Asteroids` is still the one selected on load.

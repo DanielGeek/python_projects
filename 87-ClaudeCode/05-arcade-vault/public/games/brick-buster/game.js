@@ -481,6 +481,16 @@ function frame( now ) {
   requestAnimationFrame( frame );
 }
 
+// Scales the stage down so the whole canvas fits the iframe, and never up. CSS zoom changes the layout
+// size, so the page stays centred and does not overflow. The canvas size and the game state are untouched.
+function fitToFrame() {
+  const scale = Math.min( 1, innerWidth / CANVAS_W, innerHeight / CANVAS_H );
+  document.getElementById( 'stage' ).style.zoom = scale;
+}
+
+fitToFrame();
+window.addEventListener( 'resize', fitToFrame );
+
 loadSpritesheet( () => {
   requestAnimationFrame( ( now ) => {
     lastTime = now;
