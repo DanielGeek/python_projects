@@ -172,8 +172,8 @@ CLAUDE.md                                                    documents the above
 - [x] At 1530×772 and at 375×812, `/game/brick-buster/play` shows the whole canvas inside the frame, with no overflow in the game document (`scrollHeight <= clientHeight` and `scrollWidth <= clientWidth`) and no horizontal overflow in the host page.
 - [x] Resizing the window re-fits the game without a reload, and `/games/brick-buster/index.html` opened directly in a window larger than the game keeps its natural size (scale 1).
 - [x] With the game scaled, the mouse moves the paddle under the cursor, and the keys, the host pause and the `state` messages work the same as without it.
-- [ ] A finished run shows `SCORE SAVED`, the score is stored in `public.scores` with `game_id = 'brick-buster'`, and it appears in `/hall-of-fame` under `Brick Buster` and not under another game.
-- [ ] `/hall-of-fame` shows three tabs, and `Asteroids` is still the one selected on load.
+- [x] A finished run shows `SCORE SAVED`, the score is stored in `public.scores` with `game_id = 'brick-buster'`, and it appears in `/hall-of-fame` under `Brick Buster` and not under another game.
+- [x] `/hall-of-fame` shows three tabs, and `Asteroids` is still the one selected on load.
 - [x] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `brick-buster`, and the second one fails when the migration file is removed temporarily.
 - [ ] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `public/games/bridge.js`, `components/ui/game.tsx`, `app/globals.css`, `public/games/asteroids/` and `public/games/drop/` have no edits (`git diff` is empty for them).
 - [ ] `references/started-games/04-arkanoid/` and the earlier migrations are unchanged.
