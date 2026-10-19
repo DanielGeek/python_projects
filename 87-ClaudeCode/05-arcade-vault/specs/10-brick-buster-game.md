@@ -177,7 +177,7 @@ CLAUDE.md                                                    documents the above
 - [x] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `brick-buster`, and the second one fails when the migration file is removed temporarily.
 - [ ] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `public/games/bridge.js`, `components/ui/game.tsx`, `app/globals.css`, `public/games/asteroids/` and `public/games/drop/` have no edits (`git diff` is empty for them).
 - [ ] `references/started-games/04-arkanoid/` and the earlier migrations are unchanged.
-- [ ] `CLAUDE.md` documents the three-game catalog, the six archived games and the new migration.
+- [x] `CLAUDE.md` documents the three-game catalog, the six archived games and the new migration.
 
 ---
 
