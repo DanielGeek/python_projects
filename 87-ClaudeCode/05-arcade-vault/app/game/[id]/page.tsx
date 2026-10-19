@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { ButtonLink } from "@/components/ui/basics";
 import { CoverArt } from "@/components/ui/game";
 import { GAMES, getGame } from "@/lib/games";
@@ -15,7 +16,15 @@ export async function generateMetadata({ params }: PageProps<"/game/[id]">): Pro
   return { title: game ? `${game.title} · Arcade Vault` : "Game not found · Arcade Vault" };
 }
 
-export default async function GameDetail({ params }: PageProps<"/game/[id]">) {
+export default function GameDetail({ params }: PageProps<"/game/[id]">) {
+  return (
+    <Suspense fallback={null}>
+      <Detail params={params} />
+    </Suspense>
+  );
+}
+
+async function Detail({ params }: { params: PageProps<"/game/[id]">["params"] }) {
   const game = getGame((await params).id);
   if (!game) notFound();
 
@@ -26,7 +35,10 @@ export default async function GameDetail({ params }: PageProps<"/game/[id]">) {
           <CoverArt id={game.id} />
         </div>
         <div className="av-detail-tags">
-          <span className="av-card-cat av-detail-cat" style={{ background: `var(--${game.accent})` }}>
+          <span
+            className="av-card-cat av-detail-cat"
+            style={{ background: `var(--${game.accent})` }}
+          >
             {game.category.toUpperCase()}
           </span>
           {game.tags.map((t) => (
