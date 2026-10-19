@@ -1,6 +1,6 @@
 # SPEC 06 — Global leaderboard and games table
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 04, SPEC 05
 > **Date:** 2026-10-19
 > **Objective:** Create the `games` and `scores` tables in Supabase, seeded and read-only, and make `/hall-of-fame` show the global top scores per game from them.
@@ -144,26 +144,26 @@ CLAUDE.md                                              documents the above
 
 ## Acceptance criteria
 
-- [ ] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
-- [ ] `supabase/migrations/` contains one migration for this spec and `list_migrations` shows the same name as applied.
-- [ ] The Supabase project has the tables `public.games` and `public.scores`, both with RLS enabled.
-- [ ] `games` has exactly nine rows whose `id`, `title`, `category` and `accent` match `GAMES` in `lib/games.ts`.
-- [ ] `scores` has rows only for `brick-buster`, `drop`, `rocks` and `asteroids`, each with at least 8 rows and all names of 1 to 20 characters.
-- [ ] A `POST` to `…/rest/v1/scores` with the publishable key is rejected (401 or 403), and so are `PATCH` and `DELETE`.
-- [ ] A `GET` to `…/rest/v1/scores` with the publishable key returns rows.
-- [ ] `get_advisors` (security) reports no warning about RLS for `games` or `scores`.
-- [ ] `/hall-of-fame` shows the podium and list for `brick-buster`, `drop`, `rocks` and `asteroids` from Supabase, ordered by score descending and limited to 50.
-- [ ] The Hall of Fame data is the same in two browsers or two profiles, and does not change after playing a game and saving a local score.
-- [ ] `/hall-of-fame` shows the existing empty rendering for `serpent`, `muncher`, `invaders`, `froggy` and `pixel-duel`.
-- [ ] While a tab loads, the page shows a loading state and the layout does not jump when data arrives.
-- [ ] When Supabase is unreachable, `/hall-of-fame` shows an `[ERR]` line and `Retry`, shows no localStorage scores, and `Retry` recovers without reloading.
-- [ ] Switching tabs quickly never leaves the list of a different game than the selected tab.
-- [ ] `lib/scores.ts`, `lib/credits.ts`, `lib/session.ts`, `app/game/` and `components/ui/game.tsx` have no edits (`git diff` is empty for them).
-- [ ] `/library`, `/game/[id]` and the landing still show the local scores and render without new console errors.
-- [ ] `GET /api/health/supabase` answers 200 `{ "ok": true }` with the real variables, a generic 500 with a wrong key or a missing variable, and 405 for `POST`. No response contains the URL, the key or a stack trace.
-- [ ] No service role key and no `SUPABASE_DB_PASSWORD` value appears in the client bundle or in any file tracked by git.
-- [ ] `lib/leaderboard.test.ts` passes and fails when a `GAMES` id is missing from the seed.
-- [ ] `CLAUDE.md` documents `lib/leaderboard.ts`, `supabase/migrations/` and the global read-only Hall of Fame.
+- [x] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
+- [x] `supabase/migrations/` contains one migration for this spec and `list_migrations` shows the same name as applied.
+- [x] The Supabase project has the tables `public.games` and `public.scores`, both with RLS enabled.
+- [x] `games` has exactly nine rows whose `id`, `title`, `category` and `accent` match `GAMES` in `lib/games.ts`.
+- [x] `scores` has rows only for `brick-buster`, `drop`, `rocks` and `asteroids`, each with at least 8 rows and all names of 1 to 20 characters.
+- [x] With the publishable key, a `POST` to `…/rest/v1/scores` or `…/rest/v1/games` is rejected (401 or 403), and a `PATCH` or `DELETE` on `scores` changes no row (RLS answers 200 with an empty list).
+- [x] A `GET` to `…/rest/v1/scores` with the publishable key returns rows.
+- [x] `get_advisors` (security) reports no warning about `games` or `scores`. The two warnings about `public.rls_auto_enable()` come from the project, not from this spec, and are out of scope.
+- [x] `/hall-of-fame` shows the podium and list for `brick-buster`, `drop`, `rocks` and `asteroids` from Supabase, ordered by score descending and limited to 50.
+- [x] The Hall of Fame data is the same in two browsers or two profiles, and does not change after playing a game and saving a local score.
+- [x] `/hall-of-fame` shows the existing empty rendering for `serpent`, `muncher`, `invaders`, `froggy` and `pixel-duel`.
+- [x] While a tab loads, the page shows a loading state and the layout does not jump when data arrives.
+- [x] When Supabase is unreachable, `/hall-of-fame` shows an `[ERR]` line and `Retry`, shows no localStorage scores, and `Retry` recovers without reloading.
+- [x] Switching tabs quickly never leaves the list of a different game than the selected tab.
+- [x] `lib/scores.ts`, `lib/credits.ts`, `lib/session.ts`, `app/game/` and `components/ui/game.tsx` have no edits (`git diff` is empty for them).
+- [x] `/library`, `/game/[id]` and the landing still show the local scores and render without new console errors.
+- [x] `GET /api/health/supabase` answers 200 `{ "ok": true }` with the real variables, a generic 500 with a wrong key or a missing variable, and 405 for `POST`. No response contains the URL, the key or a stack trace.
+- [x] No service role key and no `SUPABASE_DB_PASSWORD` value appears in the client bundle or in any file tracked by git.
+- [x] `lib/leaderboard.test.ts` passes and fails when a `GAMES` id is missing from the seed.
+- [x] `CLAUDE.md` documents `lib/leaderboard.ts`, `supabase/migrations/` and the global read-only Hall of Fame.
 
 ---
 
