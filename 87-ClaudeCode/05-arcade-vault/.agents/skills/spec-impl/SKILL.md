@@ -194,7 +194,12 @@ Once confirmed, follow these rules during the entire implementation:
 **Work rhythm:**
 
 - Implement one step of the plan.
-- Show a summary of which files you touched and what you did.
+- Run the manual test that the step describes, and any other check that proves what the step changed.
+- **Tick the acceptance criteria this step verified, in the spec file, before you report.** Change `- [ ]` to `- [x]` only for criteria you actually checked in this step (a test, a `curl`, a browser check, a `git diff`). Never tick a criterion that you only expect to pass, and never leave all the ticking for the end.
+  - If a criterion is only partly checked, leave it open and say what is missing.
+  - If a check fails, leave the criterion open and report the failure instead of ticking it.
+  - If the step revealed a criterion that is wrong or missing, say so and change the spec (the spec is the contract), then tick it only once it is true.
+- Show a summary of which files you touched and what you did, **plus which criteria you ticked in this step and which open ones this step touched**.
 - Say: `Step N completed. Could you review the diff and let me know if I continue with Step N+1?`
 - Wait for confirmation before continuing.
 
@@ -217,9 +222,11 @@ Once confirmed, follow these rules during the entire implementation:
 ```
 ✅ All steps of the plan are implemented.
 
-Next step: verify the spec's acceptance criteria one by one.
-If they all pass, update the spec's state to "Implemented" (or the equivalent
+Next step: verify the acceptance criteria that are still open (the ones ticked
+along the way are already verified). Tick each one as you verify it.
+If none is left open, update the spec's state to "Implemented" (or the equivalent
 in your repo's language) and make the final commit before merging this branch.
+Do not mark the spec as "Implemented" while any criterion is unticked.
 ```
 
 ---
