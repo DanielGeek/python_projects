@@ -11,6 +11,8 @@ const keys = {};
 const justPressed = {};
 
 window.addEventListener( 'keydown', e => {
+  // Inside the host iframe these keys would scroll the parent page.
+  if ( [ 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight' ].includes( e.code ) ) e.preventDefault();
   if ( !keys[ e.code ] ) justPressed[ e.code ] = true;
   keys[ e.code ] = true;
 } );
