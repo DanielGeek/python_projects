@@ -1177,6 +1177,8 @@ function init() {
 
 document.addEventListener('keydown', e => {
   if (e.target === nameInput) return; // typing a name must not trigger game keys
+  // Inside the host iframe the arrow keys would scroll the host page, also while paused or in a menu.
+  if (e.code.startsWith('Arrow')) e.preventDefault();
   ensureAudio(); // browsers only allow audio after a user gesture
   if (e.code === 'KeyM') { toggleMute(); return; }
   if (menu) {
@@ -1286,5 +1288,27 @@ muteText.textContent = muted ? 'unmute' : 'mute';
 skinSelect.innerHTML = Object.entries(SKINS).map(([id, k]) => `<option value="${id}">${k.name}</option>`).join('');
 applySkin(loadSkin());
 applyTheme(loadTheme());
+
+// ---- Fit to the host frame ----
+// The page has a natural size and does not adapt to the iframe it is embedded in, so inside a smaller
+// frame (the 4:3 CRT screen of the vault) the board gets cut. Scale it down with CSS zoom, which,
+// unlike transform, also shrinks the layout box: the page stays centered and does not overflow.
+// It never scales up, so a window larger than the game keeps the natural size.
+const fitWrapper = document.querySelector('.wrapper');
+
+function fitToFrame() {
+  if (!innerWidth || !innerHeight) return; // hidden iframe: nothing to measure
+  fitWrapper.style.zoom = '';
+  const scale = Math.min(1, innerWidth / fitWrapper.scrollWidth, innerHeight / fitWrapper.scrollHeight);
+  if (scale < 1) fitWrapper.style.zoom = String(scale);
+}
+
+window.addEventListener('resize', fitToFrame);
+// The start menu, the records and the name form change the size of the page. The overlay is not
+// touched while playing, so this does not run every frame.
+new MutationObserver(fitToFrame).observe(overlay, {
+  subtree: true, childList: true, attributes: true, attributeFilter: ['hidden', 'class'],
+});
+fitToFrame();
 
 showStartMenu();
