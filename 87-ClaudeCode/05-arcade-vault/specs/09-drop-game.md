@@ -28,6 +28,7 @@ Checking the game against the contract found one thing to fix and one to correct
 - Migration `supabase/migrations/<version>_add_drop_game.sql` that inserts the `drop` row in `public.games`, applied with the Supabase MCP `apply_migration`.
 - One change to `public/games/drop/game.js`: `preventDefault` on the arrow keys, so they do not scroll the host page.
 - Update the list of archived ids in `lib/games.test.ts` (seven ids instead of eight).
+- In `lib/scores.test.ts`, the tests of `purgeRemovedGameScores` use `drop` as their example of a game that is not in `GAMES`. Replace that key with an invented id, `retired-game`, so they keep testing the purge. Found in step 5; test data only, `lib/scores.ts` is not edited.
 - Update `CLAUDE.md`: the `games.ts` and `games-archive.ts` bullets, the `supabase/migrations/` bullet (four migrations) and the `public/games/<id>/` bullet.
 
 **Out of scope (for future specs):**
@@ -105,6 +106,7 @@ File layout:
 lib/games.ts                                            adds the drop entry after asteroids, updates the comment above GAMES
 lib/games-archive.ts                                    removes the drop entry, fixes the header comment
 lib/games.test.ts                                       archived ids list: seven instead of eight
+lib/scores.test.ts                                      purge tests use the invented id `retired-game` instead of drop
 public/games/drop/game.js                               preventDefault on the arrow keys
 supabase/migrations/<version>_add_drop_game.sql         inserts the games row (new)
 CLAUDE.md                                               documents the above
@@ -130,10 +132,10 @@ CLAUDE.md                                               documents the above
 
 - [ ] `npm run lint`, `npm test` and `npm run build` finish without errors, also with the Supabase variables unset.
 - [x] `supabase/migrations/` has one new migration for this spec, and `list_migrations` shows the same name as applied.
-- [ ] `public.games` has exactly two rows, `asteroids` and `drop`, and the `drop` row matches `GAMES` in `id`, `title`, `category` and `accent`.
+- [x] `public.games` has exactly two rows, `asteroids` and `drop`, and the `drop` row matches `GAMES` in `id`, `title`, `category` and `accent`.
 - [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
-- [ ] `GAMES` has exactly two entries, in the order `asteroids`, `drop`. The `drop` entry equals the archived one except for `tags`, which is `["1 PLAYER", "KEYBOARD", "RETRO 1985"]`.
-- [ ] `ARCHIVED_GAMES` has seven entries, none of them `drop`, and none of its ids is in `GAMES`.
+- [x] `GAMES` has exactly two entries, in the order `asteroids`, `drop`. The `drop` entry equals the archived one except for `tags`, which is `["1 PLAYER", "KEYBOARD", "RETRO 1985"]`.
+- [x] `ARCHIVED_GAMES` has seven entries, none of them `drop`, and none of its ids is in `GAMES`.
 - [ ] `/library` lists `Asteroids` and `Drop` with rendered covers, and the category filter offers `All`, `Shooter` and `Puzzle`.
 - [ ] `/game/drop` shows the title, description, controls `← → to move · ↑ or X to rotate · ↓ to soft drop · SPACE to hard drop · C to hold` and the `PUZZLE` category.
 - [ ] `/game/drop/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
@@ -144,7 +146,7 @@ CLAUDE.md                                               documents the above
 - [ ] A finished run shows `SCORE SAVED`, the score is stored in `public.scores` with `game_id = 'drop'`, and it appears in `/hall-of-fame` under `Drop` and not under `Asteroids`.
 - [ ] `/hall-of-fame` shows two tabs, `Asteroids` and `Drop`, and `Asteroids` is still the one selected on load.
 - [ ] A `POST` with the publishable key to `…/rest/v1/scores` with `game_id = 'drop'` and valid values answers 201, and the test row is deleted afterwards.
-- [ ] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `drop`, and the second one fails when the migration file is removed temporarily.
+- [x] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `drop`, and the second one fails when the migration file is removed temporarily.
 - [ ] The landing and `/library` render with two games, with no overlapping tiles and no new console errors.
 - [ ] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `public/games/bridge.js`, `app/globals.css` and `public/games/asteroids/` have no edits (`git diff` is empty for them).
 - [ ] `references/started-games/03-tetris/` and the earlier migrations are unchanged.
@@ -162,6 +164,7 @@ CLAUDE.md                                               documents the above
 - **Yes:** the entry goes after `asteroids`, so Asteroids keeps the big landing tile and the default Hall of Fame tab. **No:** putting `drop` first, which changes what the landing and the Hall of Fame show by default.
 - **Yes:** a migration that only inserts the row, with the same values as the SPEC 06 seed. The SPEC 08 policy and grants already accept any existing `game_id`, so nothing else changes. The earlier migrations are not edited.
 - **Yes:** leave the in-game TOP 5 and name form of `drop` as they are. They use the game's own `localStorage` keys, wrapped in `try/catch`, and are separate from the global leaderboard. **No:** hiding or wiring them in this spec.
+- **Yes:** use the invented id `retired-game` in the `purgeRemovedGameScores` tests (user decision, found in step 5). The purge only looks at keys of ids that are not in `GAMES`, so any id that never returns works. **No:** swapping `drop` for `rocks`, which breaks again the day `rocks` is restored. **No:** leaving the tests red for another spec.
 - **No:** a CSS change for the landing rail. If step 8 finds a broken layout with two games, it is reported and handled in its own spec, as the one-game case was in SPEC 08.
 
 ---

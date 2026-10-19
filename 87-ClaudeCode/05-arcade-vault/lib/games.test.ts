@@ -48,18 +48,9 @@ describe("GAMES catalog", () => {
 });
 
 describe("ARCHIVED_GAMES", () => {
-  it("keeps the games removed by SPEC 08", () => {
+  it("keeps the games removed by SPEC 08 that have not come back", () => {
     expect(ARCHIVED_GAMES.map((g) => g.id).sort()).toEqual(
-      [
-        "brick-buster",
-        "drop",
-        "froggy",
-        "invaders",
-        "muncher",
-        "pixel-duel",
-        "rocks",
-        "serpent",
-      ].sort(),
+      ["brick-buster", "froggy", "invaders", "muncher", "pixel-duel", "rocks", "serpent"].sort(),
     );
   });
 

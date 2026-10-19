@@ -24,9 +24,9 @@ export interface Game {
   tags: string[];
 }
 
-// Only Asteroids is in the catalog for now (SPEC 08): it is the one game whose scores are saved to
-// Supabase. It is a copy of the sibling project 02-asteroids living in public/games, with
-// public/games/bridge.js added to report its state. The other eight games were removed from the
+// Asteroids and Drop are in the catalog for now: SPEC 08 cut it down to Asteroids, the first game
+// whose scores are saved to Supabase, and SPEC 09 brought Drop back. Both live in public/games with
+// public/games/bridge.js added to report their state. The other seven games were removed from the
 // catalog and from the `games` table; their entries live in lib/games-archive.ts and their
 // folders in public/games stay on disk. A game that returns is moved from the archive to this
 // array, with a migration that inserts its `games` row.
@@ -44,6 +44,21 @@ export const GAMES: Game[] = [
     controls: "← → to rotate · ↑ to thrust · SPACE to fire",
     difficulty: 4,
     plays: "11.3K",
+    tags: ["1 PLAYER", "KEYBOARD", "RETRO 1985"],
+  },
+  {
+    id: "drop",
+    title: "Drop",
+    category: "Puzzle",
+    tagline: "Fit the pieces before the ceiling crushes you.",
+    description:
+      "Geometric pieces descend from the dark. Rotate them, lock them in and clear lines to survive. The speed ramps up mercilessly every 10 lines.",
+    accent: "magenta",
+    src: "/games/drop/index.html",
+    aspect: "4 / 3",
+    controls: "← → to move · ↑ or X to rotate · ↓ to soft drop · SPACE to hard drop · C to hold",
+    difficulty: 4,
+    plays: "31.8K",
     tags: ["1 PLAYER", "KEYBOARD", "RETRO 1985"],
   },
 ];
