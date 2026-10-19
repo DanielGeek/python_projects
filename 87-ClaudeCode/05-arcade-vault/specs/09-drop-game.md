@@ -3,7 +3,7 @@
 > **Status:** Approved
 > **Depends on:** SPEC 05, SPEC 06, SPEC 08
 > **Date:** 2026-10-19
-> **Objective:** Bring the archived `drop` (the Tetris game) back into the catalog as a playable game next to Asteroids, with its row in `public.games` so the scores it saves reach the global leaderboard.
+> **Objective:** Bring the archived `drop` (the Tetris game) back into the catalog as a playable game next to Asteroids, fitted to its CRT frame at any size and with its row in `public.games` so the scores it saves reach the global leaderboard.
 
 ---
 
@@ -15,7 +15,7 @@ By user decision this spec restores `drop`, not the reference. The reference sta
 
 Restoring needs little because SPEC 08 left everything in place on purpose: the folder `public/games/drop/` (its `index.html` already loads `../bridge.js` with `data-game="drop"`), the `readers.drop` entry in `public/games/bridge.js` and the `av-cover-drop` rule in `app/globals.css`. What is missing is the catalog entry and the `games` row, because `scores.game_id` has a foreign key to it (SPEC 06, SPEC 08). The player and the leaderboard need no change: `game-player.tsx` saves the score when the bridge reports `over`, and `/hall-of-fame` builds its tabs from `GAMES`.
 
-Checking the game against the contract found one thing to fix and one to correct. The keydown handler only calls `preventDefault` for `Space`, so the arrow keys can scroll the host page from inside the iframe. And the archived entry lists the tag `KEYBOARD / TOUCH`, but the game has no touch handlers.
+Checking the game against the contract found two things to fix and one to correct. The keydown handler only calls `preventDefault` for `Space`, so the arrow keys can scroll the host page from inside the iframe. The archived entry lists the tag `KEYBOARD / TOUCH`, but the game has no touch handlers. And the game does not fit its frame, which step 6 measured: the page has a natural height of 656 px (title, gap and a 602 px board) and never adapts to the iframe. At 1530 px wide the 4:3 frame is 840×630, so the bottom 26 px of the board, almost the last row, are cut and the iframe shows its own scrollbar. At 375 px the frame is 319×239 and only about a third of the game is visible. Nothing in this branch caused it, and `drop` was embedded the same way before SPEC 08. By user decision it is fixed here, by scaling the game inside its iframe, so the frame, `aspect` and Asteroids stay as they are.
 
 ---
 
@@ -26,7 +26,7 @@ Checking the game against the contract found one thing to fix and one to correct
 - Move the `drop` entry from `ARCHIVED_GAMES` (`lib/games-archive.ts`) to `GAMES` (`lib/games.ts`), right after `asteroids`, with the tags changed to `["1 PLAYER", "KEYBOARD", "RETRO 1985"]`. Everything else in the entry stays as archived.
 - Update `lib/games-archive.ts`: remove the `drop` entry, and fix the header comment that says `drop` still has its folder on disk.
 - Migration `supabase/migrations/<version>_add_drop_game.sql` that inserts the `drop` row in `public.games`, applied with the Supabase MCP `apply_migration`.
-- One change to `public/games/drop/game.js`: `preventDefault` on the arrow keys, so they do not scroll the host page.
+- Two changes to `public/games/drop/game.js`: `preventDefault` on the arrow keys, so they do not scroll the host page, and a `fitToFrame()` function that scales the game down to fit its iframe, so the whole board, both side panels and the start menu are always visible. Found in step 6.
 - Update the list of archived ids in `lib/games.test.ts` (seven ids instead of eight).
 - In `lib/scores.test.ts`, the tests of `purgeRemovedGameScores` use `drop` as their example of a game that is not in `GAMES`. Replace that key with an invented id, `retired-game`, so they keep testing the purge. Found in step 5; test data only, `lib/scores.ts` is not edited.
 - Update `CLAUDE.md`: the `games.ts` and `games-archive.ts` bullets, the `supabase/migrations/` bullet (four migrations) and the `public/games/<id>/` bullet.
@@ -38,6 +38,8 @@ Checking the game against the contract found one thing to fix and one to correct
 - Touch controls.
 - The in-game TOP 5 records and name form of `drop`. They keep saving to the game's own `localStorage` keys (`tetris-records`, `tetris-name`) and are not connected to the global leaderboard.
 - Changes to `game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, the bridge protocol or `public/games/bridge.js`.
+- Changes to the host frame (`CRTScreen` in `components/ui/game.tsx`, the CRT rules in `app/globals.css`) or to the `aspect` of `drop`, which stays `"4 / 3"`. Asteroids and every other game keep their frame.
+- Scaling the game up above its natural size, moving the fixed toolbar (skin picker and theme button), and a responsive or touch redesign of `drop` for phones.
 - Redesigning the landing rail or the library for two games. Only the check in the plan.
 - Restoring any other archived game (`brick-buster`, `rocks`, `serpent`, `muncher`, `invaders`, `froggy`, `pixel-duel`).
 - Auth, protection against forged scores and the static marketing copy of the landing.
@@ -137,12 +139,12 @@ CLAUDE.md                                               documents the above
 - [x] `GAMES` has exactly two entries, in the order `asteroids`, `drop`. The `drop` entry equals the archived one except for `tags`, which is `["1 PLAYER", "KEYBOARD", "RETRO 1985"]`.
 - [x] `ARCHIVED_GAMES` has seven entries, none of them `drop`, and none of its ids is in `GAMES`.
 - [ ] `/library` lists `Asteroids` and `Drop` with rendered covers, and the category filter offers `All`, `Shooter` and `Puzzle`.
-- [ ] `/game/drop` shows the title, description, controls `← → to move · ↑ or X to rotate · ↓ to soft drop · SPACE to hard drop · C to hold` and the `PUZZLE` category.
-- [ ] `/game/drop/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
-- [ ] While playing, the arrow keys and `Space` do not scroll the host page, and the game's keys work as before.
+- [x] `/game/drop` shows the title, description, controls `← → to move · ↑ or X to rotate · ↓ to soft drop · SPACE to hard drop · C to hold` and the `PUZZLE` category.
+- [x] `/game/drop/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
+- [x] While playing, the arrow keys and `Space` do not scroll the host page, and the game's keys work as before.
 - [x] Typing a name in the in-game name form still moves the caret with the arrow keys.
 - [ ] The host receives `state` messages with `game: "drop"` carrying `score`, `lives: null`, `level` and `over`, and `over` is `true` after a game over.
-- [ ] Pause and resume from the host freeze and resume the game through the bridge.
+- [x] Pause and resume from the host freeze and resume the game through the bridge.
 - [ ] A finished run shows `SCORE SAVED`, the score is stored in `public.scores` with `game_id = 'drop'`, and it appears in `/hall-of-fame` under `Drop` and not under `Asteroids`.
 - [ ] `/hall-of-fame` shows two tabs, `Asteroids` and `Drop`, and `Asteroids` is still the one selected on load.
 - [ ] A `POST` with the publishable key to `…/rest/v1/scores` with `game_id = 'drop'` and valid values answers 201, and the test row is deleted afterwards.
@@ -171,15 +173,15 @@ CLAUDE.md                                               documents the above
 
 ## Risks
 
-| Risk                                                                                                          | Mitigation                                                                                                                            |
-| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| The `games` row is missing, so the foreign key rejects every `drop` score.                                    | Step 3, and the seed-versus-`GAMES` test in `lib/leaderboard.test.ts`, which fails without it.                                        |
-| The 600 px board does not fit the 4:3 frame on small screens and the iframe scrolls or crops it.              | Step 6 checks it at desktop and 375 px. It is how `drop` was embedded before SPEC 08. A fix (aspect or CSS) would go in its own spec. |
-| The in-game name form and TOP 5 appear while the host asks for the player name, so the player sees two forms. | The host overlay covers the iframe at game over. Step 7 checks what the player sees. Wiring or hiding it is out of scope.             |
-| The back-to-back and combo multipliers produce a non-integer score and `submitScore` rejects it.              | All additions are integers and the bonus uses `Math.floor`; step 7 plays a run to the end and checks the row is stored.               |
-| `preventDefault` on the arrows breaks the caret in the name input or the digit shortcuts of the menus.        | It goes after the `nameInput` guard and only for the four arrow codes. Step 4 tests the name input and the menus.                     |
-| The landing rail looks odd with two games (the big tile spans two rows and only one small tile follows).      | Accepted. Step 8 checks it, and a broken layout is reported instead of fixed here.                                                    |
-| The archived `plays` value `31.8K` is mock data and now shows next to the real Asteroids number.              | Accepted: `plays` is mock data for every game (`BACKEND:` comment in `lib/games.ts`).                                                 |
+| Risk                                                                                                          | Mitigation                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The `games` row is missing, so the foreign key rejects every `drop` score.                                    | Step 3, and the seed-versus-`GAMES` test in `lib/leaderboard.test.ts`, which fails without it.                                                                                                                                                                                                                                                     |
+| The 600 px board does not fit the 4:3 frame on small screens and the iframe scrolls or crops it.              | Step 6 checked it and it happens: at 1530 px wide the frame is 840×630 and the board ends 26 px below it, and at 375 px the frame is 319×239 and shows about a third of the 656 px game. Nothing in this branch changes the frame or the game layout, so it is how `drop` was embedded before SPEC 08. A fix (aspect or CSS) goes in its own spec. |
+| The in-game name form and TOP 5 appear while the host asks for the player name, so the player sees two forms. | The host overlay covers the iframe at game over. Step 7 checks what the player sees. Wiring or hiding it is out of scope.                                                                                                                                                                                                                          |
+| The back-to-back and combo multipliers produce a non-integer score and `submitScore` rejects it.              | All additions are integers and the bonus uses `Math.floor`; step 7 plays a run to the end and checks the row is stored.                                                                                                                                                                                                                            |
+| `preventDefault` on the arrows breaks the caret in the name input or the digit shortcuts of the menus.        | It goes after the `nameInput` guard and only for the four arrow codes. Step 4 tests the name input and the menus.                                                                                                                                                                                                                                  |
+| The landing rail looks odd with two games (the big tile spans two rows and only one small tile follows).      | Accepted. Step 8 checks it, and a broken layout is reported instead of fixed here.                                                                                                                                                                                                                                                                 |
+| The archived `plays` value `31.8K` is mock data and now shows next to the real Asteroids number.              | Accepted: `plays` is mock data for every game (`BACKEND:` comment in `lib/games.ts`).                                                                                                                                                                                                                                                              |
 
 ---
 
