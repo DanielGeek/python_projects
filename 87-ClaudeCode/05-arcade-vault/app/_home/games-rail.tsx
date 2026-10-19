@@ -36,7 +36,11 @@ export function GamesRail() {
         <Link href="/library" className="av-home-all">
           <span className="av-home-all-n av-pixel">{GAMES.length}</span>
           <span className="av-home-all-t av-pixel">VIEW ALL GAMES</span>
-          <span className="av-home-all-more">+{GAMES.length - shown.length} more in the vault</span>
+          {GAMES.length > shown.length && (
+            <span className="av-home-all-more">
+              +{GAMES.length - shown.length} more in the vault
+            </span>
+          )}
           <span className="av-home-all-a" aria-hidden="true">
             →
           </span>
