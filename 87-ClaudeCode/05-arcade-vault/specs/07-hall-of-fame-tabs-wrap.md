@@ -1,6 +1,6 @@
 # SPEC 07 — Hall of Fame tabs wrap
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 06
 > **Date:** 2026-10-19
 > **Objective:** Make the nine game tabs of `/hall-of-fame` wrap onto several rows so all of them are visible without scrolling sideways.
@@ -71,15 +71,15 @@ app/globals.css    adds the .av-hof .av-tabs rule
 
 ## Acceptance criteria
 
-- [ ] On `/hall-of-fame` at 1280 px, the tabs `Brick Buster`, `Drop`, `Serpent`, `Muncher`, `Invaders`, `Rocks`, `Asteroids`, `Froggy` and `Pixel Duel` are all visible without scrolling the tab bar.
-- [ ] At 375 px and 768 px the nine tabs are also all visible, and the page has no horizontal scroll.
-- [ ] The tab bar has no horizontal scrollbar and its `overflow-x` is `visible` on `/hall-of-fame`.
-- [ ] The selected tab shows its cyan underline, whichever row it is on, and the underline is not clipped.
-- [ ] `ArrowRight` and `ArrowLeft` move the selection through the nine tabs and loop from the last to the first, as before.
-- [ ] Switching tabs still loads the right scores, and the page height does not change between loading, error, empty and data states (SPEC 06 behavior is kept).
-- [ ] `/login` still shows its tabs on one row, unchanged.
-- [ ] `components/ui/interactive.tsx` and `app/hall-of-fame/hall-of-fame.tsx` have no edits (`git diff` is empty for them).
-- [ ] `npm run lint`, `npm test` and `npm run build` finish without errors.
+- [x] On `/hall-of-fame` at 1280 px, the tabs `Brick Buster`, `Drop`, `Serpent`, `Muncher`, `Invaders`, `Rocks`, `Asteroids`, `Froggy` and `Pixel Duel` are all visible without scrolling the tab bar.
+- [x] At 375 px and 768 px the nine tabs are also all visible, and the page has no horizontal scroll.
+- [x] The tab bar has no horizontal scrollbar and its `overflow-x` is `visible` on `/hall-of-fame`.
+- [x] The selected tab shows its cyan underline, whichever row it is on, and the underline is not clipped.
+- [x] `ArrowRight` and `ArrowLeft` move the selection through the nine tabs and loop from the last to the first, as before.
+- [x] Switching tabs still loads the right scores, and the page height does not change between loading, error, empty and data states (SPEC 06 behavior is kept).
+- [x] `/login` still shows its tabs on one row, unchanged.
+- [x] `components/ui/interactive.tsx` and `app/hall-of-fame/hall-of-fame.tsx` have no edits (`git diff` is empty for them).
+- [x] `npm run lint`, `npm test` and `npm run build` finish without errors.
 
 ---
 
