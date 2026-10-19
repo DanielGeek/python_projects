@@ -154,10 +154,10 @@ CLAUDE.md                                               documents the above
 - [x] Typing a name in the in-game name form still moves the caret with the arrow keys.
 - [ ] The host receives `state` messages with `game: "drop"` carrying `score`, `lives: null`, `level` and `over`, and `over` is `true` after a game over.
 - [x] Pause and resume from the host freeze and resume the game through the bridge.
-- [ ] At a 1530×772 viewport, `/game/drop/play` shows the whole board (bottom row included), both side panels and the start menu inside the frame, and the game document has no overflow (`scrollHeight <= clientHeight` and `scrollWidth <= clientWidth`).
-- [ ] At a 375×812 viewport the whole game is visible inside the frame with no overflow in the game document, and the host page has no horizontal overflow.
-- [ ] Resizing the window re-fits the game without a reload, and `/games/drop/index.html` opened directly in a window larger than the game keeps its natural size (scale 1).
-- [ ] With the game scaled, the arrow keys, `Space`, the host pause and the `state` messages work the same as without it.
+- [x] At a 1530×772 viewport, `/game/drop/play` shows the whole board (bottom row included), both side panels and the start menu inside the frame, and the game document has no overflow (`scrollHeight <= clientHeight` and `scrollWidth <= clientWidth`).
+- [x] At a 375×812 viewport the whole game is visible inside the frame with no overflow in the game document, and the host page has no horizontal overflow.
+- [x] Resizing the window re-fits the game without a reload, and `/games/drop/index.html` opened directly in a window larger than the game keeps its natural size (scale 1).
+- [x] With the game scaled, the arrow keys, `Space`, the host pause and the `state` messages work the same as without it.
 - [ ] A finished run shows `SCORE SAVED`, the score is stored in `public.scores` with `game_id = 'drop'`, and it appears in `/hall-of-fame` under `Drop` and not under `Asteroids`.
 - [ ] `/hall-of-fame` shows two tabs, `Asteroids` and `Drop`, and `Asteroids` is still the one selected on load.
 - [ ] A `POST` with the publishable key to `…/rest/v1/scores` with `game_id = 'drop'` and valid values answers 201, and the test row is deleted afterwards.
