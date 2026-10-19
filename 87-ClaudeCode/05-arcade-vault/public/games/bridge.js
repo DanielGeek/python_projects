@@ -31,6 +31,7 @@
     asteroids: function () { return { score: score || 0, lives: lives, level: level, over: state === 'gameover' }; },
     drop: function () { return { score: score || 0, lives: null, level: level, over: !!gameOver }; },
     "brick-buster": function () { return { score: game.score, lives: game.lives, level: game.level + 1, over: game.status === 'lost' || game.status === 'won' }; },
+    snake: function () { return { score: score || 0, lives: null, level: level, over: state === 'gameover' }; },
   };
 
   var last = '';
