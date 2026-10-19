@@ -202,9 +202,9 @@ CLAUDE.md                                           documents the above
 ## Acceptance criteria
 
 - [ ] `npm run lint`, `npm test` and `npm run build` finish without errors.
-- [ ] `public/games/snake/` contains exactly `index.html`, `game.js`, `sprites.js` and `fruits.png`.
+- [x] `public/games/snake/` contains exactly `index.html`, `game.js`, `sprites.js` and `fruits.png`.
 - [x] `public/games/snake/index.html` has `lang="en"` and loads `../bridge.js` with `data-game="snake"` before `sprites.js` and `game.js`.
-- [ ] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls and no dependencies.
+- [x] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls and no dependencies.
 - [x] Each key of `SPRITE_ATLAS.fruits` in `public/games/snake/sprites.js` draws the fruit its name says, and `sources.fruits` is `'fruits.png'`.
 - [x] The snake starts with 3 cells, moving right, at 8 cells per second. Reversing into itself is ignored.
 - [x] Eating a fruit adds exactly `10 × level` points and one cell, and a new fruit never appears on the snake.

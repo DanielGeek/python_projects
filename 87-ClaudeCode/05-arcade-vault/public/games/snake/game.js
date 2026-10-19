@@ -200,5 +200,15 @@ window.addEventListener('keydown', (e) => {
   if (state === 'playing' && KEY_DIRS[e.code]) queueTurn(KEY_DIRS[e.code]);
 });
 
+// The host frame can be smaller than the 600x600 canvas: scale the page down to fit, never up.
+function fitToFrame() {
+  if (!innerWidth || !innerHeight) return; // hidden iframe: nothing to measure
+  const scale = Math.min(1, innerWidth / canvas.width, innerHeight / canvas.height);
+  document.getElementById('stage').style.zoom = scale < 1 ? String(scale) : '';
+}
+
+window.addEventListener('resize', fitToFrame);
+fitToFrame();
+
 resetGame();
 requestAnimationFrame(frame);
