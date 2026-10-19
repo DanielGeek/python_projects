@@ -207,11 +207,11 @@ CLAUDE.md                                           documents the above
 - [ ] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls and no dependencies.
 - [x] Each key of `SPRITE_ATLAS.fruits` in `public/games/snake/sprites.js` draws the fruit its name says, and `sources.fruits` is `'fruits.png'`.
 - [x] The snake starts with 3 cells, moving right, at 8 cells per second. Reversing into itself is ignored.
-- [ ] Eating a fruit adds exactly `10 × level` points and one cell, and a new fruit never appears on the snake.
-- [ ] After every 5 fruits the level rises by 1 and the tick rate is `min(20, 7 + level)` cells per second.
-- [ ] Hitting a wall or the body ends the run with `GAME OVER`. Filling the grid ends it with `YOU WIN`.
-- [ ] Space or Enter on the end screen starts a new run with score 0, level 1 and 3 cells.
-- [ ] P pauses and resumes in-game. The game does not pause on its own when the iframe loses focus.
+- [x] Eating a fruit adds exactly `10 × level` points and one cell, and a new fruit never appears on the snake.
+- [x] After every 5 fruits the level rises by 1 and the tick rate is `min(20, 7 + level)` cells per second.
+- [x] Hitting a wall or the body ends the run with `GAME OVER`. Filling the grid ends it with `YOU WIN`.
+- [x] Space or Enter on the end screen starts a new run with score 0, level 1 and 3 cells.
+- [x] P pauses and resumes in-game. The game does not pause on its own when the iframe loses focus.
 - [ ] `GAMES` has exactly one entry with `id: "snake"`, `src: "/games/snake/index.html"`, `aspect: "1 / 1"`, `accent: "green"`, `category: "Arcade"` and `difficulty: 2`, placed after `brick-buster`.
 - [ ] `/library` lists Snake with its rendered cover, and the other three games are unchanged.
 - [ ] `/game/snake` shows the title, description, controls `Arrows or WASD to steer · P to pause · SPACE to start` and `ARCADE`.
