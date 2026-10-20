@@ -215,13 +215,13 @@ CLAUDE.md                                           documents the above
 - [x] `GAMES` has exactly one entry with `id: "snake"`, `src: "/games/snake/index.html"`, `aspect: "1 / 1"`, `accent: "green"`, `category: "Arcade"` and `difficulty: 2`, placed after `brick-buster`.
 - [x] `/library` lists Snake with its rendered cover, and the other three games are unchanged.
 - [x] `/game/snake` shows the title, description, controls `Arrows or WASD to steer · P to pause · SPACE to start` and `ARCADE`.
-- [ ] `/game/snake/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
-- [ ] While playing, the arrow keys and Space do not scroll the host page.
-- [ ] At 1530×772 and at 375×812 the whole 600×600 canvas is visible inside the frame, and the game document does not overflow.
+- [x] `/game/snake/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
+- [x] While playing, the arrow keys and Space do not scroll the host page.
+- [x] At 1530×772 and at 375×812 the whole 600×600 canvas is visible inside the frame, and the game document does not overflow.
 - [ ] The host receives `state` messages with `game: "snake"` carrying `score`, `lives: null`, `level` and `over`, and `over` is `true` after a wall crash, a bite and a win.
-- [ ] Pause and resume from the host freeze and resume the game through the bridge.
+- [x] Pause and resume from the host freeze and resume the game through the bridge.
 - [x] `public.games` has the row `('snake', 'Snake', 'Arcade', 'green')`, and `list_migrations` shows the same name as the file in `supabase/migrations/`.
-- [ ] A finished run shows `SCORE SAVED`, is stored with `game_id = 'snake'` and appears in `/hall-of-fame` under `Snake` only.
+- [x] A finished run shows `SCORE SAVED`, is stored with `game_id = 'snake'` and appears in `/hall-of-fame` under `Snake` only.
 - [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
 - [x] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `snake`.
 - [ ] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `lib/games-archive.ts`, `components/ui/game.tsx`, `av-cover-serpent`, the other games' folders and `references/` have no edits (`git diff` is empty for them).
