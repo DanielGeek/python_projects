@@ -223,7 +223,7 @@ CLAUDE.md                                           documents the above
 - [x] `public.games` has the row `('snake', 'Snake', 'Arcade', 'green')`, and `list_migrations` shows the same name as the file in `supabase/migrations/`.
 - [ ] A finished run shows `SCORE SAVED`, is stored with `game_id = 'snake'` and appears in `/hall-of-fame` under `Snake` only.
 - [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
-- [ ] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `snake`.
+- [x] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `snake`.
 - [ ] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `lib/games-archive.ts`, `components/ui/game.tsx`, `av-cover-serpent`, the other games' folders and `references/` have no edits (`git diff` is empty for them).
 - [ ] `CLAUDE.md` documents Snake, the six migrations and the `public/games/snake/` folder.
 
