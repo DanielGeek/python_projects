@@ -12,7 +12,9 @@ Arcade Vault: a web platform for playing arcade games online and competing for t
 - `npm run build` / `npm start` — production build / serve
 - `npm run lint` — ESLint (flat config, `eslint.config.mjs`)
 - `npm run format` — Prettier over the whole repo (config `.prettierrc.json`, ignores `.prettierignore`).
-- `npm test` — Vitest, single run (`npm run test:watch` for watch mode). Tests sit next to the code as `*.test.ts` (e.g. `lib/contact.test.ts`); import `describe/it/expect` from `"vitest"`.
+- `npm test` — Vitest, single run (`npm run test:watch` for watch mode). Tests sit next to the code as `*.test.ts` (e.g. `lib/contact.test.ts`); import `describe/it/expect` from `"vitest"`. `lib/test-support.ts` has `installFakeWindow()`, a fake `window` with localStorage (`failReads` and `failWrites` simulate blocked storage) used by the `lib/*.test.ts` files. `lib/games.test.ts` checks `GAMES` against the `readers` in `public/games/bridge.js` and the `av-cover-<id>` rules in `app/globals.css`.
+- Dev launch: `.claude/launch.json` has the `arcade-vault` config (`npm run dev`, port 3000).
+- Notification hook: `.claude/settings.json` also plays `assets/claudecode-finished.mp3` with `afplay` (macOS) on `Notification`.
 - Format hook: `.claude/hooks/format.sh` runs as a `PostToolUse` hook (`Write|Edit`, in `.claude/settings.json`). It runs Prettier on the written file, then `eslint --fix` for `.ts/.tsx/.js/.jsx/.mjs/.cjs`. Remaining ESLint errors exit 2 so Claude sees them. Skips `public/games/`, `references/`, `.claude/` and build output.
 
 ## Next.js version warning
@@ -21,12 +23,12 @@ Next 16.4.1 / React 19.3 / Tailwind 4 (`@tailwindcss/turbopack`). APIs differ fr
 
 ## Architecture
 
-- `app/` — App Router. Routes: `/` (landing), `/library` (game library), `/game/[id]` (detail), `/game/[id]/play` (player), `/about` (About + contact form), `/login`, `/hall-of-fame`, plus the API route `POST /api/contact`. Anything that means "back to the library" links to `/library`; the logo links to `/`.
+- `app/` — App Router. Routes: `/` (landing), `/library` (game library), `/game/[id]` (detail), `/game/[id]/play` (player), `/about` (About + contact form), `/login`, `/hall-of-fame`, plus the API routes `POST /api/contact` and `GET /api/health/supabase`. Main files: `library/library.tsx`, `game/[id]/page.tsx` with `game-stats.tsx` and `game-scores.tsx`, `game/[id]/play/` (`game-player.tsx`), `hall-of-fame/hall-of-fame.tsx` (game tabs that wrap, SPEC 07) and `login/auth-card.tsx`. Anything that means "back to the library" links to `/library`; the logo links to `/`.
 - `app/_home/` — landing sections, one file each: `hero`, `features`, `games-rail`, `stats`, `activity`, `pricing`, `final-cta`, plus `silhouettes`, `section-head` and `reveal` (client wrapper that fades a section in once, using `IntersectionObserver`). `hero` and `pricing` read `useSession` to hide "Create account" and turn "Start free" into "Play now". `stats` and `pricing` are static marketing copy; `activity` shows real scores. The `_` prefix keeps the folder out of routing. Landing CSS is `av-home-*` in `app/globals.css`, ported from `references/templates/home-about/`. `games-rail` shows the first five games, hides the `+N more` line when there are none, and its big tile fills the row when it is the only game.
 - `app/about/` — About page: `highlights`, `divider` and `contact-form` (client; `ContactSection` validates with `validateContact`, posts JSON to `/api/contact`, shows the `[ERR]` line on failure and the `VAULT-OS // TERMINAL` screen on success). It reuses `Reveal` from `app/_home/`. CSS is `av-about-*` in `app/globals.css`, ported from `references/templates/home-about/`.
 - `app/api/contact/route.ts` — `POST` Route Handler that emails the contact form through Resend. Order: parse JSON (400), honeypot field `website` (200, no email), `validateContact` (400 with `fieldErrors`), env check (500), Resend send (502 on error). `from`, `to` and the key come only from env vars; `replyTo` is the visitor's email. Plain-text body. `GET` answers 405.
 - `app/api/health/supabase/route.ts` — `GET` Route Handler that checks the Supabase connection by running `select id from games limit 1` through the server client (5 s timeout), so it proves the URL, the key and the `games_and_scores` schema. Answers `200 { ok: true }`, or a generic `500` with no URL, key or stack (details go to `console.error`). It uses `await connection()` and exports neither `runtime` nor `dynamic`, because `cacheComponents` rejects both. Other methods answer 405.
-- `components/ui/` — shared UI primitives (`basics.tsx` has `cx` and base components; `interactive.tsx` has client components such as `Input` and `SearchBar`; `game.tsx` has `GameCard`, `CoverArt`, `HUD`, `CRTScreen`, `Podium`, `Leaderboard`). Per-game cover art is CSS only: `av-cover-<gameId>` in `app/globals.css`. They use `av-*` CSS class names defined in `app/globals.css`.
+- `components/ui/` — shared UI primitives (`basics.tsx` has `cx` and base components; `interactive.tsx` has client components such as `Input` and `SearchBar`; `game.tsx` has `GameCard`, `CoverArt`, `HUD`, `CRTScreen`, `Podium`, `Leaderboard`; `navbar.tsx` has the Nav with the credit balance and calls `purgeRemovedGameScores`). Per-game cover art is CSS only: `av-cover-<gameId>` in `app/globals.css`. They use `av-*` CSS class names defined in `app/globals.css`.
 - `lib/` — client-side data layer, all stand-ins for a future backend:
   - `games.ts` — static `GAMES` catalog (Asteroids, Drop, Brick Buster and Snake: SPEC 08 cut it to Asteroids, SPEC 09 brought Drop back, SPEC 10 brought Brick Buster back and SPEC 11 added Snake as a new game, not a restore of the archived `serpent`), `CATEGORIES` (built from `GAMES`, so it is `All`, `Shooter`, `Puzzle` and `Arcade`), `getGame`. Accents: cyan, magenta, yellow, green. `difficulty`, `plays` and `tags` feed the detail stat strip (`plays` is mock data). `src: null` means a game is listed but not playable yet; no entry has it now.
   - `games-archive.ts` — `ARCHIVED_GAMES`: the six games removed by SPEC 08 that have not come back (serpent, muncher, invaders, rocks, froggy, pixel-duel; `drop` returned with SPEC 09 and `brick-buster` with SPEC 10; `snake` of SPEC 11 is a separate game, so `serpent` stays here), kept as data and imported by nothing but its test. To bring one back, move its entry to `GAMES`, add a migration that inserts its `games` row and, for a playable one, check its folder in `public/games/`, its `readers` entry and its `av-cover-<id>` rule.
@@ -60,9 +62,18 @@ If either is missing or the URL is not `http(s)`, `getSupabaseEnv` throws and `G
 
 ## Skills
 
+Use **/spec** to write a spec and **/spec-impl** to implement it. Both live in `.agents/skills/` and are symlinked from `.claude/skills/`; `skills-lock.json` pins them to `Klerith/fernando-skills`. `specs/.spec-config.yml` sets `AutoCreateBranch: true`, so `/spec-impl` creates `feature/<slug>` (or `bugfix/`, `hotfix/`) without asking. Specs are `specs/NN-<slug>.md` (01 to 11 so far); a spec goes from Approved to Implemented and its acceptance criteria are ticked as each step is done.
+
 Use **/frontend-design** to scaffold and manage frontend components and architecture.
 
 Use **/add-game** to add a playable game with its global leaderboard. It takes a folder of `references/started-games/` or a new game idea, asks the game-specific questions and writes `specs/NN-<id>-game.md`; the implementation then goes through `/spec-impl`. The skill lives in `.agents/skills/add-game/` (`SKILL.md`, `contract.md`, `spec-template.md`), symlinked from `.claude/skills/`.
+
+## Tooling and references
+
+- `.mcp.json` configures the Supabase MCP (HTTP, scoped to this project). Apply migrations with `apply_migration` and check versions with `list_migrations`.
+- `references/` — `started-games/` (`02-asteroids`, `03-tetris`, `04-arkanoid`: sources for `/add-game`), `source-assets/snake-assets` and `templates/` (UI reference screens, `home-about/`). Not part of the build; the format hook skips it.
+- `references/implemented-games.md` — table of the implemented games (ID, title, category, short description, color), matching `public.games` and `GAMES`. Look here first when you need to find or list the implemented games. Update it when a game is added to or removed from the catalog.
+- `AGENTS.md` is written and restored by `next dev` (Next.js agent rules and feedback). Commit it with the work; do not edit it by hand.
 
 ### Host ↔ game bridge
 
