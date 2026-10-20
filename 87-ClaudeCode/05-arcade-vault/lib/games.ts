@@ -24,9 +24,10 @@ export interface Game {
   tags: string[];
 }
 
-// Asteroids, Drop and Brick Buster are in the catalog for now: SPEC 08 cut it down to Asteroids, the
-// first game whose scores are saved to Supabase, SPEC 09 brought Drop back and SPEC 10 brought Brick
-// Buster back. They live in public/games with public/games/bridge.js added to report their state.
+// Asteroids, Drop, Brick Buster and Snake are in the catalog for now: SPEC 08 cut it down to Asteroids,
+// the first game whose scores are saved to Supabase, SPEC 09 brought Drop back, SPEC 10 brought Brick
+// Buster back and SPEC 11 added Snake as a new game (not from the archive). They live in public/games
+// with public/games/bridge.js added to report their state.
 // The other six games were removed from the catalog and from the `games` table; their entries live
 // in lib/games-archive.ts and their folders in public/games stay on disk. A game that returns is
 // moved from the archive to this array, with a migration that inserts its `games` row.
@@ -75,6 +76,21 @@ export const GAMES: Game[] = [
     difficulty: 3,
     plays: "12.4K",
     tags: ["1 PLAYER", "KEYBOARD", "RETRO 1985"],
+  },
+  {
+    id: "snake",
+    title: "Snake",
+    category: "Arcade",
+    tagline: "Eat the fruit, grow longer, never bite yourself.",
+    description:
+      "Guide a pixel snake around a walled 20×20 grid and eat the fruit that pops up. Every five fruits the level rises, the snake speeds up and each bite is worth more. Hit a wall or your own tail and the run is over.",
+    accent: "green",
+    src: "/games/snake/index.html",
+    aspect: "1 / 1",
+    controls: "Arrows or WASD to steer · P to pause · SPACE to start",
+    difficulty: 2,
+    plays: "9.1K",
+    tags: ["1 PLAYER", "KEYBOARD", "RETRO 1976"],
   },
 ];
 

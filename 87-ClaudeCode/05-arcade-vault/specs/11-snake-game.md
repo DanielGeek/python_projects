@@ -212,9 +212,9 @@ CLAUDE.md                                           documents the above
 - [x] Hitting a wall or the body ends the run with `GAME OVER`. Filling the grid ends it with `YOU WIN`.
 - [x] Space or Enter on the end screen starts a new run with score 0, level 1 and 3 cells.
 - [x] P pauses and resumes in-game. The game does not pause on its own when the iframe loses focus.
-- [ ] `GAMES` has exactly one entry with `id: "snake"`, `src: "/games/snake/index.html"`, `aspect: "1 / 1"`, `accent: "green"`, `category: "Arcade"` and `difficulty: 2`, placed after `brick-buster`.
-- [ ] `/library` lists Snake with its rendered cover, and the other three games are unchanged.
-- [ ] `/game/snake` shows the title, description, controls `Arrows or WASD to steer · P to pause · SPACE to start` and `ARCADE`.
+- [x] `GAMES` has exactly one entry with `id: "snake"`, `src: "/games/snake/index.html"`, `aspect: "1 / 1"`, `accent: "green"`, `category: "Arcade"` and `difficulty: 2`, placed after `brick-buster`.
+- [x] `/library` lists Snake with its rendered cover, and the other three games are unchanged.
+- [x] `/game/snake` shows the title, description, controls `Arrows or WASD to steer · P to pause · SPACE to start` and `ARCADE`.
 - [ ] `/game/snake/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
 - [ ] While playing, the arrow keys and Space do not scroll the host page.
 - [ ] At 1530×772 and at 375×812 the whole 600×600 canvas is visible inside the frame, and the game document does not overflow.
