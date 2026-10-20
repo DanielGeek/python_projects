@@ -68,6 +68,8 @@ Use **/frontend-design** to scaffold and manage frontend components and architec
 
 Use **/add-game** to add a playable game with its global leaderboard. It takes a folder of `references/started-games/` or a new game idea, asks the game-specific questions and writes `specs/NN-<id>-game.md`; the implementation then goes through `/spec-impl`. The skill lives in `.agents/skills/add-game/` (`SKILL.md`, `contract.md`, `spec-template.md`), symlinked from `.claude/skills/`.
 
+Use the **game-planner** subagent (`.claude/agents/game-planner.md`) to decide which game to add next. It scores ideas against the platform (bridge, CRT frame, catalog balance), and records every suggestion, decision and reason in `references/game-suggestions-todo.md`, which is its only memory. It never writes code or specs; its last step points to `/add-game`.
+
 ## Tooling and references
 
 - `.mcp.json` configures the Supabase MCP (HTTP, scoped to this project). Apply migrations with `apply_migration` and check versions with `list_migrations`.
