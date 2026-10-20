@@ -70,6 +70,8 @@ Use **/add-game** to add a playable game with its global leaderboard. It takes a
 
 Use the **game-planner** subagent (`.claude/agents/game-planner.md`) to decide which game to add next. It scores ideas against the platform (bridge, CRT frame, catalog balance), and records every suggestion, decision and reason in `references/game-suggestions-todo.md`, which is its only memory. It never writes code or specs; its last step points to `/add-game`.
 
+Use the **game-jam** subagent (`.claude/agents/game-jam.md`) when you have a theme and want a game designed from it. It invents one game and writes at least two complete `Draft` specs (`01-<id>-game.md` for the base game, `02-…` for an extension) in `specs/game-jam/<id>/`, modeled on specs 05, 10 and 11. It decides on its own what `/add-game` would ask (id, category, accent, difficulty) and marks those choices as game-jam decisions to review. It writes nothing outside `specs/game-jam/<id>/`: to implement one, review it, set it to `Approved`, and move it to `specs/NN-<slug>.md` for `/spec-impl`.
+
 ## Tooling and references
 
 - `.mcp.json` configures the Supabase MCP (HTTP, scoped to this project). Apply migrations with `apply_migration` and check versions with `list_migrations`.
