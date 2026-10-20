@@ -1,6 +1,6 @@
 # SPEC 11 — Snake game
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 08, SPEC 09
 > **Date:** 2026-10-19
 > **Objective:** Add a new Snake game, written from scratch with the fruit sprites in `references/source-assets/snake-assets/`, to the vault as a playable catalog entry with id `snake`, ranked in the global leaderboard.
@@ -201,31 +201,31 @@ CLAUDE.md                                           documents the above
 
 ## Acceptance criteria
 
-- [ ] `npm run lint`, `npm test` and `npm run build` finish without errors.
-- [ ] `public/games/snake/` contains exactly `index.html`, `game.js`, `sprites.js` and `fruits.png`.
-- [ ] `public/games/snake/index.html` has `lang="en"` and loads `../bridge.js` with `data-game="snake"` before `sprites.js` and `game.js`.
-- [ ] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls and no dependencies.
-- [ ] Each key of `SPRITE_ATLAS.fruits` in `public/games/snake/sprites.js` draws the fruit its name says, and `sources.fruits` is `'fruits.png'`.
-- [ ] The snake starts with 3 cells, moving right, at 8 cells per second. Reversing into itself is ignored.
-- [ ] Eating a fruit adds exactly `10 × level` points and one cell, and a new fruit never appears on the snake.
-- [ ] After every 5 fruits the level rises by 1 and the tick rate is `min(20, 7 + level)` cells per second.
-- [ ] Hitting a wall or the body ends the run with `GAME OVER`. Filling the grid ends it with `YOU WIN`.
-- [ ] Space or Enter on the end screen starts a new run with score 0, level 1 and 3 cells.
-- [ ] P pauses and resumes in-game. The game does not pause on its own when the iframe loses focus.
-- [ ] `GAMES` has exactly one entry with `id: "snake"`, `src: "/games/snake/index.html"`, `aspect: "1 / 1"`, `accent: "green"`, `category: "Arcade"` and `difficulty: 2`, placed after `brick-buster`.
-- [ ] `/library` lists Snake with its rendered cover, and the other three games are unchanged.
-- [ ] `/game/snake` shows the title, description, controls `Arrows or WASD to steer · P to pause · SPACE to start` and `ARCADE`.
-- [ ] `/game/snake/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
-- [ ] While playing, the arrow keys and Space do not scroll the host page.
-- [ ] At 1530×772 and at 375×812 the whole 600×600 canvas is visible inside the frame, and the game document does not overflow.
-- [ ] The host receives `state` messages with `game: "snake"` carrying `score`, `lives: null`, `level` and `over`, and `over` is `true` after a wall crash, a bite and a win.
-- [ ] Pause and resume from the host freeze and resume the game through the bridge.
-- [ ] `public.games` has the row `('snake', 'Snake', 'Arcade', 'green')`, and `list_migrations` shows the same name as the file in `supabase/migrations/`.
-- [ ] A finished run shows `SCORE SAVED`, is stored with `game_id = 'snake'` and appears in `/hall-of-fame` under `Snake` only.
-- [ ] `get_advisors` (security) reports no new warning about `games` or `scores`.
-- [ ] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `snake`.
-- [ ] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `lib/games-archive.ts`, `components/ui/game.tsx`, `av-cover-serpent`, the other games' folders and `references/` have no edits (`git diff` is empty for them).
-- [ ] `CLAUDE.md` documents Snake, the six migrations and the `public/games/snake/` folder.
+- [x] `npm run lint`, `npm test` and `npm run build` finish without errors.
+- [x] `public/games/snake/` contains exactly `index.html`, `game.js`, `sprites.js` and `fruits.png`.
+- [x] `public/games/snake/index.html` has `lang="en"` and loads `../bridge.js` with `data-game="snake"` before `sprites.js` and `game.js`.
+- [x] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls and no dependencies.
+- [x] Each key of `SPRITE_ATLAS.fruits` in `public/games/snake/sprites.js` draws the fruit its name says, and `sources.fruits` is `'fruits.png'`.
+- [x] The snake starts with 3 cells, moving right, at 8 cells per second. Reversing into itself is ignored.
+- [x] Eating a fruit adds exactly `10 × level` points and one cell, and a new fruit never appears on the snake.
+- [x] After every 5 fruits the level rises by 1 and the tick rate is `min(20, 7 + level)` cells per second.
+- [x] Hitting a wall or the body ends the run with `GAME OVER`. Filling the grid ends it with `YOU WIN`.
+- [x] Space or Enter on the end screen starts a new run with score 0, level 1 and 3 cells.
+- [x] P pauses and resumes in-game. The game does not pause on its own when the iframe loses focus.
+- [x] `GAMES` has exactly one entry with `id: "snake"`, `src: "/games/snake/index.html"`, `aspect: "1 / 1"`, `accent: "green"`, `category: "Arcade"` and `difficulty: 2`, placed after `brick-buster`.
+- [x] `/library` lists Snake with its rendered cover, and the other three games are unchanged.
+- [x] `/game/snake` shows the title, description, controls `Arrows or WASD to steer · P to pause · SPACE to start` and `ARCADE`.
+- [x] `/game/snake/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
+- [x] While playing, the arrow keys and Space do not scroll the host page.
+- [x] At 1530×772 and at 375×812 the whole 600×600 canvas is visible inside the frame, and the game document does not overflow.
+- [x] The host receives `state` messages with `game: "snake"` carrying `score`, `lives: null`, `level` and `over`, and `over` is `true` after a wall crash, a bite and a win.
+- [x] Pause and resume from the host freeze and resume the game through the bridge.
+- [x] `public.games` has the row `('snake', 'Snake', 'Arcade', 'green')`, and `list_migrations` shows the same name as the file in `supabase/migrations/`.
+- [x] A finished run shows `SCORE SAVED`, is stored with `game_id = 'snake'` and appears in `/hall-of-fame` under `Snake` only.
+- [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
+- [x] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `snake`.
+- [x] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `lib/games-archive.ts`, `components/ui/game.tsx`, `av-cover-serpent`, the other games' folders and `references/` have no edits (`git diff` is empty for them).
+- [x] `CLAUDE.md` documents Snake, the six migrations and the `public/games/snake/` folder.
 
 ---
 

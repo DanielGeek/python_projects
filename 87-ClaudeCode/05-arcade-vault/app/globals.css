@@ -1937,6 +1937,34 @@ body {
   image-rendering: pixelated;
 }
 
+/* Snake: faint grid, an L-shaped snake of 18px blocks and a pixel apple one cell ahead of its head */
+.av-cover-snake {
+  background:
+    repeating-linear-gradient(0deg, #00ff8814 0 1px, transparent 1px 18px),
+    repeating-linear-gradient(90deg, #00ff8814 0 1px, transparent 1px 18px),
+    linear-gradient(135deg, #003a2a, var(--void));
+}
+.av-cover-snake::after {
+  inset: 0;
+  background:
+    /* A percentage position is relative to the image size, so each offset below is the distance of the
+       image centre from the centre of the cover. */
+    linear-gradient(#ffd0d0, #ffd0d0) calc(50% + 51.5px) calc(50% - 40.5px) / 5px 5px no-repeat,
+    linear-gradient(var(--green), var(--green)) calc(50% + 53.5px) calc(50% - 50.5px) / 5px 7px
+      no-repeat,
+    linear-gradient(#ff2e4d, #ff2e4d) calc(50% + 54px) calc(50% - 38px) / 18px 18px no-repeat,
+    linear-gradient(#a8ffd0, #a8ffd0) calc(50% + 18px) calc(50% - 38px) / 18px 18px no-repeat,
+    repeating-linear-gradient(180deg, transparent 0 16px, #0a0a0f99 16px 18px) calc(50% + 18px)
+      calc(50% - 2px) / 18px 54px no-repeat,
+    repeating-linear-gradient(90deg, transparent 0 16px, #0a0a0f99 16px 18px) calc(50% - 18px)
+      calc(50% + 34px) / 90px 18px no-repeat,
+    linear-gradient(var(--green), var(--green)) calc(50% + 18px) calc(50% - 2px) / 18px 54px
+      no-repeat,
+    linear-gradient(var(--green), var(--green)) calc(50% - 18px) calc(50% + 34px) / 90px 18px
+      no-repeat;
+  filter: drop-shadow(0 0 6px #00ff8899);
+}
+
 .av-cover-serpent {
   background: linear-gradient(135deg, #003a2a, #0a0a18);
 }
