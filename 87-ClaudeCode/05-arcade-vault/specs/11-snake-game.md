@@ -1,6 +1,6 @@
 # SPEC 11 — Snake game
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 08, SPEC 09
 > **Date:** 2026-10-19
 > **Objective:** Add a new Snake game, written from scratch with the fruit sprites in `references/source-assets/snake-assets/`, to the vault as a playable catalog entry with id `snake`, ranked in the global leaderboard.
