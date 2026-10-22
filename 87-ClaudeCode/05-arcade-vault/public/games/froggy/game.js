@@ -16,6 +16,8 @@ let timeLeft = TIME_LIMIT;                 // seconds
 let pads = [false, false, false, false, false]; // filled pads of the current set
 let lanes = [];                            // [{ row, kind, item, dir, speed, len, gap, n, period, items: [x] }]
 let pause = 0;                             // seconds left of the dead / cleared screen
+let laneByRow = {};                        // row -> lane, rebuilt with the lanes
+let deathCause = '';                       // 'vehicle' | 'drowned' | 'carried off' while state is 'dead'
 
 // ── Lanes ─────────────────────────────────────────────────────────────────────
 // Each lane is a row of identical items that wrap around the screen. len is in cells, gap is the
@@ -48,6 +50,50 @@ function buildLanes() {
     for (let i = 0; i < n; i++) items.push(-d.len * CELL + ((base + i * d.gap) % period));
     return { ...d, n, period, items };
   });
+  laneByRow = {};
+  for (const lane of lanes) laneByRow[lane.row] = lane;
+}
+
+// ── Hazards ───────────────────────────────────────────────────────────────────
+const FROG_HALF = 18;                       // the frog's box is 36 px wide, centred on frog.x
+
+function laneStep(lane, dt) {
+  return lane.speed * speedMul() * lane.dir * dt;
+}
+
+// The log under the frog's centre in a river lane, or null.
+function logUnder(lane, x) {
+  for (const lx of lane.items) {
+    if (x >= lx && x <= lx + lane.len * CELL) return lane;
+  }
+  return null;
+}
+
+// Why the frog dies where it stands, or '' when it is safe. Vehicles are as wide as they are drawn.
+function hazardCause() {
+  const lane = laneByRow[frog.row];
+  if (!lane) return '';                     // goal, median and start rows
+  if (lane.kind === 'road') {
+    for (const vx of lane.items) {
+      if (frog.x + FROG_HALF > vx + 3 && frog.x - FROG_HALF < vx + lane.len * CELL - 3) return 'vehicle';
+    }
+    return '';
+  }
+  if (frog.x < 0 || frog.x > W) return 'carried off';
+  return logUnder(lane, frog.x) ? '' : 'drowned';
+}
+
+// Each death costs one life at once and shows the frog's fate for 0.9 s.
+function killFrog(cause) {
+  state = 'dead';
+  deathCause = cause;
+  lives = Math.max(0, lives - 1);
+  pause = 0.9;
+}
+
+function checkHazards() {
+  const cause = hazardCause();
+  if (cause) killFrog(cause);
 }
 
 function updateLanes(dt) {
@@ -345,6 +391,7 @@ function hopFrog(dir) {
   frog.x = x;
   frog.row = row;
   frog.hop = 0;
+  checkHazards();                       // a landing in the water or on a vehicle is a death at once
 }
 
 function updateFrog(dt) {
@@ -379,8 +426,23 @@ function frame() {
   const now = performance.now();
   const dt = Math.min(0.05, (now - lastTime) / 1000);
   lastTime = now;
-  if (state === 'ready' || state === 'playing') updateLanes(dt);
-  if (state === 'playing') updateFrog(dt);
+  if (state === 'playing') {
+    // On a log the frog is carried at the log's speed: find the log before the lanes move.
+    const lane = laneByRow[frog.row];
+    const ridden = lane && lane.kind === 'river' && logUnder(lane, frog.x) ? lane : null;
+    updateLanes(dt);
+    if (ridden) frog.x += laneStep(ridden, dt);
+    updateFrog(dt);
+    checkHazards();
+  } else if (state === 'ready') {
+    updateLanes(dt);
+  } else if (state === 'dead') {
+    pause -= dt;
+    if (pause <= 0) {
+      if (lives > 0) { newAttempt(); state = 'playing'; }
+      else state = 'gameover';
+    }
+  }
   draw(now / 1000);
   requestAnimationFrame(frame);
 }
