@@ -1,6 +1,6 @@
 # SPEC 13 — Gamepad MK-II look for the touch controls
 
-> **Status:** Draft
+> **Status:** Approved
 > **Depends on:** SPEC 12
 > **Date:** 2026-10-22
 > **Objective:** Redraw the touch controls of `/game/[id]/play` so they look like the Gamepad MK-II of `references/gamepad-assets/` (shell, D-pad with hub gem, round A and B buttons), keeping the same bridge, the same key codes and the same press behavior as SPEC 12.
