@@ -72,45 +72,49 @@ Notes: canvas drawing is recorded by JavaScript and rasterized later by the brow
 
 ## Before
 
+Desktop rows: Chrome 155 on an Apple M1 Max (real GPU), 1280×860 window, 10 s of scripted random play per row after a 1.5 s warm-up (the user asked for a short run, the protocol says 60 s; a game close to its budget gets a 60 s repeat), CPU throttle through CDP. Script: a throwaway Playwright runner outside the repo that presses random keys and records rAF intervals with the snippet above. Heap here is the whole renderer (host + iframe), not a forced-GC reading. Phone rows and the soak columns are filled in steps 3 and 4.
+
 One row per game and place. `latency` is keydown to next paint in ms. Heap in MB after a forced GC.
 
 | Target       | Where      | CPU | avg FPS | p95 ms | frames > 33 ms | latency | heap 1 min | heap 10 min | p95 10 min | notes |
 | ------------ | ---------- | --- | ------- | ------ | -------------- | ------- | ---------- | ----------- | ---------- | ----- |
-| froggy       | standalone | 1x  |         |        |                |         |            |             |            |       |
-| froggy       | standalone | 4x  |         |        |                |         |            |             |            |       |
-| froggy       | host       | 1x  |         |        |                |         |            |             |            |       |
-| froggy       | host       | 4x  |         |        |                |         |            |             |            |       |
+| froggy       | standalone | 1x  | 60      | 17     | 0              |         |            |             |            | max 17.8 ms, renderer heap 2.2 MB |
+| froggy       | standalone | 4x  | 60      | 17.5   | 0              |         |            |             |            | max 17.7 ms, renderer heap 2.2 MB |
+| froggy       | host       | 1x  | 60      | 16.8   | 0              |         |            |             |            | max 17.7 ms, renderer heap 16.5 MB |
+| froggy       | host       | 4x  | 60      | 17.5   | 0              |         |            |             |            | max 17.8 ms, renderer heap 16.8 MB |
 | froggy       | phone      | -   |         |        |                |         |            |             |            |       |
-| asteroids    | standalone | 1x  |         |        |                |         |            |             |            |       |
-| asteroids    | standalone | 4x  |         |        |                |         |            |             |            |       |
-| asteroids    | host       | 1x  |         |        |                |         |            |             |            |       |
-| asteroids    | host       | 4x  |         |        |                |         |            |             |            |       |
+| asteroids    | standalone | 1x  | 60      | 17.6   | 0              |         |            |             |            | max 17.7 ms, renderer heap 2.2 MB |
+| asteroids    | standalone | 4x  | 60      | 17.5   | 0              |         |            |             |            | max 17.7 ms, renderer heap 2 MB |
+| asteroids    | host       | 1x  | 60      | 17.7   | 0              |         |            |             |            | max 17.7 ms, renderer heap 15.7 MB |
+| asteroids    | host       | 4x  | 60      | 17.5   | 0              |         |            |             |            | max 17.7 ms, renderer heap 15.8 MB |
 | asteroids    | phone      | -   |         |        |                |         |            |             |            |       |
-| drop         | standalone | 1x  |         |        |                |         |            |             |            |       |
-| drop         | standalone | 4x  |         |        |                |         |            |             |            |       |
-| drop         | host       | 1x  |         |        |                |         |            |             |            |       |
-| drop         | host       | 4x  |         |        |                |         |            |             |            |       |
+| drop         | standalone | 1x  | 60      | 17.5   | 0              |         |            |             |            | max 20.3 ms, renderer heap 1.6 MB |
+| drop         | standalone | 4x  | 60      | 17.4   | 0              |         |            |             |            | max 17.7 ms, renderer heap 2.2 MB |
+| drop         | host       | 1x  | 60      | 17.6   | 0              |         |            |             |            | max 17.8 ms, renderer heap 16.4 MB |
+| drop         | host       | 4x  | 60      | 17.4   | 0              |         |            |             |            | max 17.7 ms, renderer heap 15.4 MB |
 | drop         | phone      | -   |         |        |                |         |            |             |            |       |
-| brick-buster | standalone | 1x  |         |        |                |         |            |             |            |       |
-| brick-buster | standalone | 4x  |         |        |                |         |            |             |            |       |
-| brick-buster | host       | 1x  |         |        |                |         |            |             |            |       |
-| brick-buster | host       | 4x  |         |        |                |         |            |             |            |       |
+| brick-buster | standalone | 1x  | 60      | 17.4   | 0              |         |            |             |            | max 17.8 ms, renderer heap 1.7 MB |
+| brick-buster | standalone | 4x  | 60      | 17.4   | 0              |         |            |             |            | max 17.6 ms, renderer heap 2.2 MB |
+| brick-buster | host       | 1x  | 60      | 17.3   | 0              |         |            |             |            | max 17.7 ms, renderer heap 15.6 MB |
+| brick-buster | host       | 4x  | 60      | 17.5   | 0              |         |            |             |            | max 17.8 ms, renderer heap 16 MB |
 | brick-buster | phone      | -   |         |        |                |         |            |             |            |       |
-| snake        | standalone | 1x  |         |        |                |         |            |             |            |       |
-| snake        | standalone | 4x  |         |        |                |         |            |             |            |       |
-| snake        | host       | 1x  |         |        |                |         |            |             |            |       |
-| snake        | host       | 4x  |         |        |                |         |            |             |            |       |
+| snake        | standalone | 1x  | 60      | 17.3   | 0              |         |            |             |            | max 18.5 ms, renderer heap 1.5 MB |
+| snake        | standalone | 4x  | 60      | 17.5   | 0              |         |            |             |            | max 17.8 ms, renderer heap 1.6 MB |
+| snake        | host       | 1x  | 60      | 17.3   | 0              |         |            |             |            | max 17.7 ms, renderer heap 17.8 MB |
+| snake        | host       | 4x  | 60      | 17.4   | 0              |         |            |             |            | max 17.6 ms, renderer heap 15.5 MB |
 | snake        | phone      | -   |         |        |                |         |            |             |            |       |
 
 **HOST** (cost of the iframe, CRT overlay, zoom and touch pad) = host minus standalone, per game:
 
 | Game         | Δ avg FPS | Δ p95 ms | notes |
 | ------------ | --------- | -------- | ----- |
-| froggy       |           |          |       |
-| asteroids    |           |          |       |
-| drop         |           |          |       |
-| brick-buster |           |          |       |
-| snake        |           |          |       |
+| froggy       | 0         | about 0  | host and standalone both at 60 FPS on the M1 Max, no cost visible |
+| asteroids    | 0         | about 0  | host and standalone both at 60 FPS on the M1 Max, no cost visible |
+| drop         | 0         | about 0  | host and standalone both at 60 FPS on the M1 Max, no cost visible |
+| brick-buster | 0         | about 0  | host and standalone both at 60 FPS on the M1 Max, no cost visible |
+| snake        | 0         | about 0  | host and standalone both at 60 FPS on the M1 Max, no cost visible |
+
+Extra reading, same script and same froggy page on Chrome for Testing (software rasterization, no GPU), 8 s, CPU 1x: standalone 17 FPS (p95 67 ms), inside the host 8.8 FPS (p95 133 ms). With `shadowBlur` turned into a no-op by an init script: standalone 30 FPS, host 11 FPS. Reading: the glow is a large part of the raster cost, and the host adds a cost of its own. This is what a device without a strong GPU may look like; the real phone (step 3) decides.
 
 ## Causes found
 
