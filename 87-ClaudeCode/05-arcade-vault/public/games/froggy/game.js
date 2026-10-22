@@ -80,6 +80,10 @@ const COLORS = {
   logLight: '#1b7480',
   logRing: 'rgba(190, 255, 240, 0.35)',
   lotus: '#ff6ec7',
+  frog: '#ffd400',
+  frogBelly: '#fff3a8',
+  frogDark: '#1a1530',
+  text: '#e8e8ff',
 };
 
 function rr(x, y, w, h, r) {
@@ -213,6 +217,80 @@ function drawVehicle(x, lane) {
   ctx.fillRect(back - (lane.dir > 0 ? -1 : 5), y + h - 7, 4, 4);
 }
 
+// The frog is drawn facing up and rotated to the direction of its last hop. While a hop tweens
+// (frog.hop < 1) it lifts off the board and stretches its legs.
+function drawFrog() {
+  const cx = frog.fx;
+  const cy = frog.frow * CELL + CELL / 2;
+  const air = frog.hop < 1 ? Math.sin(frog.hop * Math.PI) : 0;
+  ctx.save();
+  ctx.translate(cx, cy - air * 6);
+  ctx.rotate(FACE_ANGLE[faceDir]);
+  const s = 1 + air * 0.15;
+  ctx.scale(s, s);
+  // Shadow on the board.
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+  ctx.beginPath();
+  ctx.ellipse(0, 4 + air * 6, 15, 12, 0, 0, Math.PI * 2);
+  ctx.fill();
+  // Back legs: folded when sitting, stretched back in the air.
+  ctx.fillStyle = COLORS.frogDark;
+  for (const side of [-1, 1]) {
+    ctx.beginPath();
+    ctx.ellipse(side * 14, 8 + air * 9, 5, 9 + air * 5, side * 0.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // Body and belly.
+  ctx.shadowColor = COLORS.yellow;
+  ctx.shadowBlur = 10;
+  const g = ctx.createRadialGradient(-3, -4, 3, 0, 0, 18);
+  g.addColorStop(0, '#fff68a');
+  g.addColorStop(1, COLORS.frog);
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 15, 16, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = COLORS.frogBelly;
+  ctx.beginPath();
+  ctx.ellipse(0, 4, 8, 9, 0, 0, Math.PI * 2);
+  ctx.fill();
+  // Eyes with a white glint.
+  for (const side of [-1, 1]) {
+    ctx.fillStyle = COLORS.frogDark;
+    ctx.beginPath();
+    ctx.arc(side * 8, -11, 5.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(side * 8 - 1.5, -12.5, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawCenterText(text, y, size, color) {
+  ctx.fillStyle = color;
+  ctx.font = 'bold ' + size + 'px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(text, W / 2, y);
+}
+
+function drawTitle() {
+  ctx.fillStyle = 'rgba(7, 7, 15, 0.78)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.save();
+  ctx.shadowColor = COLORS.yellow;
+  ctx.shadowBlur = 24;
+  drawCenterText('FROGGY', 250, 84, COLORS.yellow);
+  ctx.restore();
+  drawCenterText('Dodge the traffic, ride the logs, fill every pad.', 300, 18, COLORS.text);
+  drawCenterText('ARROWS or SWIPE to hop', 370, 20, COLORS.cyan);
+  if (Math.floor(performance.now() / 500) % 2 === 0) {
+    drawCenterText('PRESS SPACE TO START', 440, 24, COLORS.magenta);
+  }
+}
+
 function draw(t) {
   ctx.fillStyle = COLORS.void;
   ctx.fillRect(0, 0, W, H);
@@ -224,17 +302,85 @@ function draw(t) {
       else drawVehicle(x, lane);
     }
   }
+  if (state !== 'ready') drawFrog();
+  if (state === 'ready') drawTitle();
 }
 
+// ── Run, attempts and input ───────────────────────────────────────────────────
+const HOP_TIME = 0.09; // seconds the drawing takes to tween one hop
+const FACE_ANGLE = { up: 0, right: Math.PI / 2, down: Math.PI, left: -Math.PI / 2 };
+let faceDir = 'up';
+
+function newAttempt() {
+  frog = { x: 400, row: 11, fx: 400, frow: 11, hop: 1, fromX: 400, fromRow: 11 };
+  faceDir = 'up';
+  bestRow = 11;
+  timeLeft = TIME_LIMIT;
+}
+
+function startRun() {
+  score = 0;
+  lives = 3;
+  level = 1;
+  pads = [false, false, false, false, false];
+  pause = 0;
+  buildLanes();
+  newAttempt();
+  state = 'playing';
+}
+
+// The move is logical and instant; only the drawing tweens it.
+function hopFrog(dir) {
+  if (state !== 'playing') return;
+  let x = frog.x, row = frog.row;
+  if (dir === 'up') row -= 1;
+  else if (dir === 'down') row += 1;
+  else if (dir === 'left') x -= CELL;
+  else x += CELL;
+  if (row < 0 || row > 11) return;      // down in the start row, up past the goal row
+  if (x < 25 || x > 775) return;        // never leave the board sideways
+  faceDir = dir;
+  frog.fromX = frog.fx;
+  frog.fromRow = frog.frow;
+  frog.x = x;
+  frog.row = row;
+  frog.hop = 0;
+}
+
+function updateFrog(dt) {
+  if (frog.hop < 1) {
+    frog.hop = Math.min(1, frog.hop + dt / HOP_TIME);
+    frog.fx = frog.fromX + (frog.x - frog.fromX) * frog.hop;
+    frog.frow = frog.fromRow + (frog.row - frog.fromRow) * frog.hop;
+  } else {
+    frog.fx = frog.x;
+    frog.frow = frog.row;
+  }
+}
+
+const KEY_DIRS = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
+
+document.addEventListener('keydown', (e) => {
+  // The arrows and Space always scroll the host page inside the iframe, so they are always blocked.
+  if (e.code in KEY_DIRS || e.code === 'Space') e.preventDefault();
+  if (e.repeat) return;                 // one hop per press
+  if (e.code in KEY_DIRS) hopFrog(KEY_DIRS[e.code]);
+  else if (e.code === 'Space' || e.code === 'Enter') {
+    if (state === 'ready' || state === 'gameover') startRun();
+  }
+});
+
 // ── Loop ──────────────────────────────────────────────────────────────────────
-// Timed with performance.now() so the host pause (bridge) freezes it.
+// Timed with performance.now() so the host pause (bridge) freezes it. The lanes move on the title
+// screen and while playing, and hold still on the dead, cleared and game over screens.
 let lastTime = performance.now();
 
 function frame() {
   const now = performance.now();
   const dt = Math.min(0.05, (now - lastTime) / 1000);
   lastTime = now;
-  updateLanes(dt);
+  if (state === 'ready' || state === 'playing') updateLanes(dt);
+  if (state === 'playing') updateFrog(dt);
   draw(now / 1000);
   requestAnimationFrame(frame);
 }
