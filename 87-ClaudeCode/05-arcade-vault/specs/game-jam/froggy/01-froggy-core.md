@@ -256,8 +256,8 @@ CLAUDE.md                                           documents the above
 - [x] On a log, the frog moves with the log's speed.
 - [x] Landing on an empty pad adds exactly `100 + 10 × floor(timeLeft)` and fills that pad.
 - [x] Filling the fifth pad raises `level` by 1, empties the pads and makes the lanes faster, with no extra points.
-- [ ] The third death sets `state = 'gameover'`, and Space, Enter or a tap starts a new run with score 0, 3 lives and level 1.
-- [ ] A swipe of 30 px or more hops once in the dominant direction, a shorter tap hops up while playing, and a tap starts and restarts the run.
+- [x] The third death sets `state = 'gameover'`, and Space, Enter or a tap starts a new run with score 0, 3 lives and level 1.
+- [x] A swipe of 30 px or more hops once in the dominant direction, a shorter tap hops up while playing, and a tap starts and restarts the run.
 - [ ] `GAMES` has exactly one entry with `id: "froggy"`, `src: "/games/froggy/index.html"`, `aspect: "4 / 3"`, `accent: "yellow"`, `category: "Arcade"` and `difficulty: 3`, placed after `snake`, and `ARCHIVED_GAMES` has no `froggy`.
 - [ ] `/library` lists Froggy with its rendered yellow cover, and the other four games are unchanged.
 - [ ] `/game/froggy` shows the title, description, controls `Arrows or swipe to hop · SPACE to start`, `ARCADE` and the `KEYBOARD / TOUCH` tag.

@@ -549,6 +549,44 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// ── Swipe ─────────────────────────────────────────────────────────────────────
+// One hop per swipe: the first move of 30 px or more (client pixels, on the axis with the larger
+// movement) hops and ends the gesture. A touch that never reaches 30 px is a tap: it hops up while
+// playing and starts or restarts the run on the title and end screens. Mouse drags work the same.
+const SWIPE_MIN = 30;
+let gesture = null;                     // { id, x, y, hopped } while a pointer is down
+
+canvas.addEventListener('pointerdown', (e) => {
+  e.preventDefault();
+  try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* synthetic or lost pointer */ }
+  gesture = { id: e.pointerId, x: e.clientX, y: e.clientY, hopped: false };
+});
+
+canvas.addEventListener('pointermove', (e) => {
+  if (!gesture || gesture.id !== e.pointerId) return;
+  e.preventDefault();
+  if (gesture.hopped) return;
+  const dx = e.clientX - gesture.x, dy = e.clientY - gesture.y;
+  if (Math.hypot(dx, dy) < SWIPE_MIN) return;
+  gesture.hopped = true;
+  if (Math.abs(dx) > Math.abs(dy)) hopFrog(dx > 0 ? 'right' : 'left');
+  else hopFrog(dy > 0 ? 'down' : 'up');
+});
+
+function endGesture(e, cancelled) {
+  if (!gesture || gesture.id !== e.pointerId) return;
+  const tap = !gesture.hopped && !cancelled;
+  gesture = null;
+  if (!tap) return;
+  if (state === 'playing') hopFrog('up');
+  else if (state === 'ready' || state === 'gameover') startRun();
+}
+
+canvas.addEventListener('pointerup', (e) => endGesture(e, false));
+canvas.addEventListener('pointercancel', (e) => endGesture(e, true));
+// Keeps the host page from scrolling or zooming under the finger.
+canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+
 // ── Loop ──────────────────────────────────────────────────────────────────────
 // Timed with performance.now() so the host pause (bridge) freezes it. The lanes move on the title
 // screen and while playing, and hold still on the dead, cleared and game over screens.
