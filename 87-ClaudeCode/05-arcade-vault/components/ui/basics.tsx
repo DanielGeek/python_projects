@@ -5,40 +5,16 @@ export function cx(...parts: (string | false | null | undefined)[]) {
   return parts.filter(Boolean).join(" ");
 }
 
-export function NeonLogo({
-  size = "md",
-  flicker = true,
-  className,
-}: {
-  size?: "sm" | "md" | "lg";
-  flicker?: boolean;
-  className?: string;
-}) {
+export function NeonLogo({ size = "md", flicker = true, className }: { size?: "sm" | "md" | "lg"; flicker?: boolean; className?: string }) {
   return (
-    <div
-      className={cx("av-logo", `av-logo-${size}`, flicker && "av-flicker", className)}
-      role="img"
-      aria-label="Arcade Vault"
-    >
-      <span className="av-logo-a" aria-hidden>
-        ARCADE
-      </span>
-      <span className="av-logo-b" aria-hidden>
-        VAULT
-      </span>
+    <div className={cx("av-logo", `av-logo-${size}`, flicker && "av-flicker", className)} role="img" aria-label="Arcade Vault">
+      <span className="av-logo-a" aria-hidden>ARCADE</span>
+      <span className="av-logo-b" aria-hidden>VAULT</span>
     </div>
   );
 }
 
-export function ArcadeBackdrop({
-  children,
-  className,
-  style,
-}: {
-  children?: ReactNode;
-  className?: string;
-  style?: CSSProperties;
-}) {
+export function ArcadeBackdrop({ children, className, style }: { children?: ReactNode; className?: string; style?: CSSProperties }) {
   return (
     <div className={cx("av-backdrop", className)} style={style}>
       <div className="av-backdrop-floor" aria-hidden />
@@ -59,50 +35,16 @@ interface ButtonStyleProps {
   className?: string;
 }
 
-function buttonClass({
-  variant = "primary",
-  size = "md",
-  tone,
-  pulse,
-  block,
-  className,
-}: ButtonStyleProps) {
-  return cx(
-    "av-btn",
-    `av-btn-${variant}`,
-    size !== "md" && `av-btn-${size}`,
-    tone && `av-btn-tone-${tone}`,
-    pulse && "av-pulse",
-    block && "av-btn-block",
-    className,
-  );
+function buttonClass({ variant = "primary", size = "md", tone, pulse, block, className }: ButtonStyleProps) {
+  return cx("av-btn", `av-btn-${variant}`, size !== "md" && `av-btn-${size}`, tone && `av-btn-tone-${tone}`, pulse && "av-pulse", block && "av-btn-block", className);
 }
 
-export function Button({
-  variant,
-  size,
-  tone,
-  pulse,
-  block,
-  className,
-  type = "button",
-  ...rest
-}: ButtonStyleProps & ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button
-      type={type}
-      {...rest}
-      className={buttonClass({ variant, size, tone, pulse, block, className })}
-    />
-  );
+export function Button({ variant, size, tone, pulse, block, className, type = "button", ...rest }: ButtonStyleProps & ButtonHTMLAttributes<HTMLButtonElement>) {
+  return <button type={type} {...rest} className={buttonClass({ variant, size, tone, pulse, block, className })} />;
 }
 
 /** A Next.js Link styled as a Button. */
-export function ButtonLink({
-  href,
-  children,
-  ...style
-}: ButtonStyleProps & { href: string; children: ReactNode }) {
+export function ButtonLink({ href, children, ...style }: ButtonStyleProps & { href: string; children: ReactNode }) {
   return (
     <Link href={href} className={buttonClass(style)}>
       {children}
@@ -110,15 +52,7 @@ export function ButtonLink({
   );
 }
 
-export function ScoreBadge({
-  score,
-  label = "HIGH SCORE",
-  className,
-}: {
-  score: number | null | undefined;
-  label?: string;
-  className?: string;
-}) {
+export function ScoreBadge({ score, label = "HIGH SCORE", className }: { score: number | null | undefined; label?: string; className?: string }) {
   return (
     <div className={cx("av-badge", className)}>
       <span className="av-badge-label">{label}</span>
@@ -134,13 +68,7 @@ export function PixelSpinner({ label = "LOADING…" }: { label?: string | false 
       <div className="av-spinner-grid" aria-hidden>
         {Array.from({ length: 9 }, (_, i) => {
           const k = order.indexOf(i);
-          return (
-            <span
-              key={i}
-              className={cx("av-spinner-cell", i === 4 && "av-spinner-mid")}
-              style={k >= 0 ? { animationDelay: `${k * 0.12}s` } : undefined}
-            />
-          );
+          return <span key={i} className={cx("av-spinner-cell", i === 4 && "av-spinner-mid")} style={k >= 0 ? { animationDelay: `${k * 0.12}s` } : undefined} />;
         })}
       </div>
       {label !== false && <span className="av-spinner-label">{label}</span>}
