@@ -1368,6 +1368,12 @@ body {
       0 60px;
   }
 }
+/* SPEC 14: while a game is on screen the floor grid stands still. Animating it costs a full-layer
+   repaint per frame behind the game, which took a weak GPU from 60 to 13 FPS on the play route.
+   The rule is scoped with :has(.av-player), a class only the play route renders. */
+.av-app:has(.av-player) .av-backdrop-floor::before {
+  animation-play-state: paused;
+}
 .av-backdrop-scan {
   position: fixed;
   inset: 0;
