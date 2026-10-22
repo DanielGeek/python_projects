@@ -1,6 +1,6 @@
 # SPEC 13 — Gamepad MK-II look for the touch controls
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 12
 > **Date:** 2026-10-22
 > **Objective:** Redraw the touch controls of `/game/[id]/play` so they look like the Gamepad MK-II of `references/gamepad-assets/` (shell, D-pad with hub gem, round A and B buttons), keeping the same bridge, the same key codes and the same press behavior as SPEC 12.
@@ -137,7 +137,7 @@ CLAUDE.md                         documents the above
 
 ## Acceptance criteria
 
-- [ ] `npm run lint`, `npm test` and `npm run build` finish without errors.
+- [x] `npm run lint`, `npm test` and `npm run build` finish without errors.
 - [x] `TouchControls` in `lib/games.ts` has `move`, `a`, `b` and optional `extra`, with no `layout` or `actions`, and `GAMES` has the config of the table above for `asteroids`, `drop`, `brick-buster` and `snake`.
 - [x] Every key code of every `touch` config is the same as in SPEC 12 (no code is added or dropped), appears in that game's `game.js`, and is in the `KEYS` allowlist of `bridge.js`.
 - [x] `lib/games.test.ts` checks that `a` and `b` exist, that no code is repeated inside a config, that every `move` code is one of the four arrows and that `extra` has at most three buttons.
@@ -151,7 +151,7 @@ CLAUDE.md                         documents the above
 - [x] With `pointer: fine` no pad is rendered and the page looks as before.
 - [x] The pad does not render while loading, at `INSERT COIN`, while the final-score modal is open, or when the game has no `touch` config.
 - [x] `public/games/`, `components/ui/game.tsx`, `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts` and `lib/credits.ts` have no edits (`git diff` is empty for them).
-- [ ] `CLAUDE.md` describes the new `touch` shape and the pad.
+- [x] `CLAUDE.md` describes the new `touch` shape and the pad.
 
 ---
 
