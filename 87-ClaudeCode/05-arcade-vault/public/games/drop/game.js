@@ -787,6 +787,7 @@ const SKINS = {
   },
   neon: {
     name: 'Neon',
+    stamp: true, // glow is painted once per block look and copied (see blockSprite)
     colors: () => COLORS, // the board is black under this skin in both themes
     paint(context, px, py, size, color) {
       const a = context.globalAlpha;
@@ -846,11 +847,40 @@ function mixWithWhite(hex, t) {
   return `rgb(${mix(n >> 16)},${mix((n >> 8) & 255)},${mix(n & 255)})`;
 }
 
+// shadowBlur on every block each frame is slow on a GPU canvas, so a skin with `stamp: true` paints
+// each look (color, size, alpha) once into an offscreen canvas with room for the glow, and copies it.
+// Cleared in refreshAppearance().
+const blockSprites = new Map();
+
+function blockSprite(color, size, alpha) {
+  let byColor = blockSprites.get(color);
+  if (!byColor) blockSprites.set(color, (byColor = new Map()));
+  const key = size * 1000 + alpha;
+  let sprite = byColor.get(key);
+  if (!sprite) {
+    const pad = Math.ceil(size * 1.5);
+    sprite = document.createElement('canvas');
+    sprite.width = sprite.height = size + pad * 2;
+    sprite.pad = pad;
+    const spriteCtx = sprite.getContext('2d');
+    spriteCtx.globalAlpha = alpha;
+    skin.paint(spriteCtx, pad, pad, size, color);
+    byColor.set(key, sprite);
+  }
+  return sprite;
+}
+
 function drawBlock(context, x, y, colorIndex, size, alpha, power) {
   if (!colorIndex) return;
   const color = power ? powerColor : palette[colorIndex];
-  context.globalAlpha = alpha ?? 1;
-  skin.paint(context, x * size, y * size, size, color);
+  const a = alpha ?? 1;
+  if (skin.stamp) {
+    const sprite = blockSprite(color, size, a);
+    context.globalAlpha = 1;
+    context.drawImage(sprite, x * size - sprite.pad, y * size - sprite.pad);
+  }
+  context.globalAlpha = a;
+  if (!skin.stamp) skin.paint(context, x * size, y * size, size, color);
   if (power) {
     context.fillStyle = '#fff';
     context.font = `${Math.floor(size * 0.6)}px sans-serif`;
@@ -1261,6 +1291,7 @@ function applySkin(id) {
 function refreshAppearance() {
   if (!skin) return; // skin not applied yet during startup
   palette = skin.colors(document.documentElement.dataset.theme === 'light');
+  blockSprites.clear();
   // The canvas can't read CSS variables, so cache them here.
   const styles = getComputedStyle(document.documentElement);
   gridColor = styles.getPropertyValue('--grid').trim() || gridColor;

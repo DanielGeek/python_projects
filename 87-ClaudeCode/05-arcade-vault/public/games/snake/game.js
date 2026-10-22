@@ -269,13 +269,31 @@ function drawScanlines() {
   for (let y = 0; y < canvas.height; y += 3) ctx.fillRect(0, y, canvas.width, 1);
 }
 
+// The glowing frame never changes while a palette is active, and a full-canvas
+// shadowBlur every frame is costly without a GPU: paint it once, then copy its
+// four edge strips (the glow fades well inside FRAME_EDGE px). Cleared in refreshAppearance().
+const FRAME_EDGE = 40;
+let frameSprite = null;
+
 function drawFrame() {
+  const W = canvas.width, H = canvas.height, E = FRAME_EDGE;
+  if (!frameSprite) {
+    frameSprite = document.createElement('canvas');
+    frameSprite.width = W;
+    frameSprite.height = H;
+    const g = frameSprite.getContext('2d');
+    g.strokeStyle = palette.frame;
+    g.lineWidth = 2;
+    g.shadowColor = palette.frame;
+    g.shadowBlur = skin.glow;
+    g.strokeRect(1, 1, W - 2, H - 2);
+  }
   ctx.save();
-  ctx.strokeStyle = palette.frame;
-  ctx.lineWidth = 2;
-  ctx.shadowColor = palette.frame;
-  ctx.shadowBlur = skin.glow;
-  ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+  ctx.shadowBlur = 0;
+  ctx.drawImage(frameSprite, 0, 0, W, E, 0, 0, W, E);
+  ctx.drawImage(frameSprite, 0, H - E, W, E, 0, H - E, W, E);
+  ctx.drawImage(frameSprite, 0, E, E, H - 2 * E, 0, E, E, H - 2 * E);
+  ctx.drawImage(frameSprite, W - E, E, E, H - 2 * E, W - E, E, E, H - 2 * E);
   ctx.restore();
 }
 
@@ -398,6 +416,7 @@ function applyTheme(theme) {
 // The canvas cannot read CSS variables, so the palette is cached here.
 function refreshAppearance() {
   palette = skin.colors(document.documentElement.dataset.theme === 'light');
+  frameSprite = null;
   // The loop may be frozen (host pause), so repaint explicitly.
   if (snake.length) draw();
 }
