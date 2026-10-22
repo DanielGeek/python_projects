@@ -78,11 +78,14 @@ Use the **skin-designer** subagent (`.claude/agents/skin-designer.md`) to check 
 
 Use the **mobile-porter** subagent (`.claude/agents/mobile-porter.md`) to check that the routes you name look and work well on a phone browser (375×812, 412×915, landscape) without changing the desktop look, and to fix layout and CSS problems. It follows the rules of `specs/12-touch-controls.md`, works only on the routes you tell it, and keeps `references/mobile-porting.md`, its only memory, with one row per route. It edits only `app/globals.css`, layout markup in `app/` and `components/ui/`; it never touches `public/games/`, the bridge, `lib/` or behavior, and anything beyond CSS/layout goes to a `/spec`. There is no PWA, so "mobile app" means the mobile browser.
 
+Use the **game-performance-booster** subagent (`.claude/agents/game-performance-booster.md`) with the id of a game to check that it does not repeat the problems SPEC 14 found (`shadowBlur` on every frame, static scenery redrawn every frame, allocations in the loop, growth over time, a pause the bridge cannot freeze, input lag) and to fix what is over budget. It audits first, measures the game standalone and inside the host in the installed Chrome and in a no-GPU Chrome for Testing (a GPU hides the cost), and keeps a change only if it measurably helps and the pixel comparison shows no visible difference. It works only on the ids you name and edits only `public/games/<id>/` and `references/game-performance.md`, its only memory, with one row per game; it never touches the bridge, the readers or the host, and sends host causes to `/spec`. It is not part of `/spec-impl-game`: you call it by hand.
+
 ## Tooling and references
 
 - `.mcp.json` configures the Supabase MCP (HTTP, scoped to this project). Apply migrations with `apply_migration` and check versions with `list_migrations`.
 - `references/` — `started-games/` (`02-asteroids`, `03-tetris`, `04-arkanoid`: sources for `/add-game`), `source-assets/snake-assets` and `templates/` (UI reference screens, `home-about/`). Not part of the build; the format hook skips it.
 - `references/implemented-games.md` — table of the implemented games (ID, title, category, short description, color), matching `public.games` and `GAMES`. Look here first when you need to find or list the implemented games. Update it when a game is added to or removed from the catalog.
+- `references/performance-baseline.md` — SPEC 14: the measuring protocol, the frame counter snippet, the budgets and the before/after tables of the five games. `references/game-performance.md` — the memory of the `game-performance-booster` agent, one row per game it was asked to check.
 - `AGENTS.md` is written and restored by `next dev` (Next.js agent rules and feedback). Commit it with the work; do not edit it by hand.
 
 ### Host ↔ game bridge
