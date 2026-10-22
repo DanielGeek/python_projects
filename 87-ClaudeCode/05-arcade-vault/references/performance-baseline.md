@@ -82,27 +82,27 @@ One row per game and place. `latency` is keydown to next paint in ms. Heap in MB
 | froggy       | standalone | 4x  | 60      | 17.5   | 0              |         |            |             |            | max 17.7 ms, renderer heap 2.2 MB |
 | froggy       | host       | 1x  | 60      | 16.8   | 0              |         |            |             |            | max 17.7 ms, renderer heap 16.5 MB |
 | froggy       | host       | 4x  | 60      | 17.5   | 0              |         |            |             |            | max 17.8 ms, renderer heap 16.8 MB |
-| froggy       | phone      | -   |         |        |                |         |            |             |            |       |
+| froggy       | phone      | -   | n/m     | n/m    | n/m            | n/m     |            |             |            | not measured: the user tested on an Android phone over the LAN and reported it plays fine, with no numbers |
 | asteroids    | standalone | 1x  | 60      | 17.6   | 0              |         |            |             |            | max 17.7 ms, renderer heap 2.2 MB |
 | asteroids    | standalone | 4x  | 60      | 17.5   | 0              |         |            |             |            | max 17.7 ms, renderer heap 2 MB |
 | asteroids    | host       | 1x  | 60      | 17.7   | 0              |         |            |             |            | max 17.7 ms, renderer heap 15.7 MB |
 | asteroids    | host       | 4x  | 60      | 17.5   | 0              |         |            |             |            | max 17.7 ms, renderer heap 15.8 MB |
-| asteroids    | phone      | -   |         |        |                |         |            |             |            |       |
+| asteroids    | phone      | -   | n/m     | n/m    | n/m            | n/m     |            |             |            | not measured: the user tested on an Android phone over the LAN and reported it plays fine, with no numbers |
 | drop         | standalone | 1x  | 60      | 17.5   | 0              |         |            |             |            | max 20.3 ms, renderer heap 1.6 MB |
 | drop         | standalone | 4x  | 60      | 17.4   | 0              |         |            |             |            | max 17.7 ms, renderer heap 2.2 MB |
 | drop         | host       | 1x  | 60      | 17.6   | 0              |         |            |             |            | max 17.8 ms, renderer heap 16.4 MB |
 | drop         | host       | 4x  | 60      | 17.4   | 0              |         |            |             |            | max 17.7 ms, renderer heap 15.4 MB |
-| drop         | phone      | -   |         |        |                |         |            |             |            |       |
+| drop         | phone      | -   | n/m     | n/m    | n/m            | n/m     |            |             |            | not measured: the user tested on an Android phone over the LAN and reported it plays fine, with no numbers |
 | brick-buster | standalone | 1x  | 60      | 17.4   | 0              |         |            |             |            | max 17.8 ms, renderer heap 1.7 MB |
 | brick-buster | standalone | 4x  | 60      | 17.4   | 0              |         |            |             |            | max 17.6 ms, renderer heap 2.2 MB |
 | brick-buster | host       | 1x  | 60      | 17.3   | 0              |         |            |             |            | max 17.7 ms, renderer heap 15.6 MB |
 | brick-buster | host       | 4x  | 60      | 17.5   | 0              |         |            |             |            | max 17.8 ms, renderer heap 16 MB |
-| brick-buster | phone      | -   |         |        |                |         |            |             |            |       |
+| brick-buster | phone      | -   | n/m     | n/m    | n/m            | n/m     |            |             |            | not measured: the user tested on an Android phone over the LAN and reported it plays fine, with no numbers |
 | snake        | standalone | 1x  | 60      | 17.3   | 0              |         |            |             |            | max 18.5 ms, renderer heap 1.5 MB |
 | snake        | standalone | 4x  | 60      | 17.5   | 0              |         |            |             |            | max 17.8 ms, renderer heap 1.6 MB |
 | snake        | host       | 1x  | 60      | 17.3   | 0              |         |            |             |            | max 17.7 ms, renderer heap 17.8 MB |
 | snake        | host       | 4x  | 60      | 17.4   | 0              |         |            |             |            | max 17.6 ms, renderer heap 15.5 MB |
-| snake        | phone      | -   |         |        |                |         |            |             |            |       |
+| snake        | phone      | -   | n/m     | n/m    | n/m            | n/m     |            |             |            | not measured: the user tested on an Android phone over the LAN and reported it plays fine, with no numbers |
 
 **HOST** (cost of the iframe, CRT overlay, zoom and touch pad) = host minus standalone, per game:
 
@@ -115,6 +115,8 @@ One row per game and place. `latency` is keydown to next paint in ms. Heap in MB
 | snake        | 0         | about 0  | host and standalone both at 60 FPS on the M1 Max, no cost visible |
 
 Extra reading, same script and same froggy page on Chrome for Testing (software rasterization, no GPU), 8 s, CPU 1x: standalone 17 FPS (p95 67 ms), inside the host 8.8 FPS (p95 133 ms). With `shadowBlur` turned into a no-op by an init script: standalone 30 FPS, host 11 FPS. Reading: the glow is a large part of the raster cost, and the host adds a cost of its own. This is what a device without a strong GPU may look like; the real phone (step 3) decides.
+
+Phone (step 3): **skipped by the user decision, no measurements** (`n/m`). The phone loaded the host and the touch pad over the LAN (`allowedDevOrigins` from `NEXT_PUBLIC_LOCAL_URL`) and the user reported it ok by feel. The 50 FPS phone budget is therefore **unverified**, not met.
 
 ## Causes found
 

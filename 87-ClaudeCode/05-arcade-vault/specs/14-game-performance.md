@@ -141,6 +141,7 @@ CLAUDE.md                            how to measure, new rules
 - **Yes:** validate on the user's real phone (user decision). **No:** emulation only, which does not reproduce the GPU, heat or multi-touch.
 - **Yes:** the look may change only when nobody can see it (user decision): cache, batch, reuse, skip redundant work. **No:** removing or lowering the neon glow, and any change to the palettes.
 - **Yes (spec decision, review it):** the degradation and heap budgets (20 %) and the input budget (2 frames) are proposed by this spec, since the user gave only the FPS targets. Change them in review if they are too strict or too loose.
+- **Yes (user decision, step 3):** the real-phone measurement was skipped and the phone rows are marked `n/m`; the user reported by feel that the games run fine on their phone. **Consequence:** the criterion of 50 FPS on a real phone stays open and cannot be ticked without numbers.
 - **Yes:** fix only what the tables mark as over budget, and measure after each change. **No:** optimising by guess, or rewriting a game that is already inside its budget.
 - **Yes:** measure each game standalone and inside the host, to separate the cost of the game from the cost of the iframe, the CRT overlay, the zoom and the touch pad.
 - **Yes:** `public/games/bridge.js` may change only in its cost (rAF wrapper, polling), not in its contract. **No:** changing messages, readers or the allowlist.
