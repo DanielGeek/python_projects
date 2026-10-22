@@ -30,6 +30,67 @@ const dist = ( a, b ) => Math.hypot( a.x - b.x, a.y - b.y );
 const rand = ( min, max ) => min + Math.random() * ( max - min );
 const randInt = ( min, max ) => Math.floor( rand( min, max + 1 ) );
 
+// ── Skins ─────────────────────────────────────────────────────────────────────
+// A skin changes only colors, strokes, glow, fonts and the backdrop; never gameplay.
+// colors(light) returns the palette for the active theme. The play area of `neon`
+// stays dark in both themes.
+const SKINS = {
+  classic: {
+    name: 'Classic',
+    font: 'monospace',
+    glow: 0,
+    lineWidth: 1.5,
+    lineJoin: 'round',
+    squareBullets: false,
+    scanlines: false,
+    colors: light => light ? {
+      bg: '#f4f4ee', ship: '#111111', rock: '#111111', bullet: '#111111', power: '#006a8e',
+      flame: '#b34700', hud: '#111111', sub: 'rgba(17,17,17,0.75)', spark: '17,17,17',
+    } : {
+      bg: '#000000', ship: '#ffffff', rock: '#ffffff', bullet: '#ffffff', power: '#00ffff',
+      flame: 'rgba(255, 130, 0, 0.85)', hud: '#ffffff', sub: 'rgba(255,255,255,0.65)', spark: '255,255,255',
+    },
+  },
+  retro: {
+    name: 'Retro',
+    font: '"Courier New", Courier, monospace',
+    glow: 0,
+    lineWidth: 2.5,
+    lineJoin: 'miter',
+    squareBullets: true,
+    scanlines: true,
+    colors: light => light ? {
+      bg: '#cfe0b4', ship: '#1d3511', rock: '#1d3511', bullet: '#1d3511', power: '#0b4a2a',
+      flame: '#7a3300', hud: '#1d3511', sub: '#2c4a1c', spark: '29,53,17',
+    } : {
+      bg: '#150d00', ship: '#ffb000', rock: '#ffb000', bullet: '#ffd34d', power: '#ffe58a',
+      flame: '#ff6a00', hud: '#ffb000', sub: '#e09a00', spark: '255,176,0',
+    },
+  },
+  neon: {
+    name: 'Neon',
+    font: 'monospace',
+    glow: 12,
+    lineWidth: 1.8,
+    lineJoin: 'round',
+    squareBullets: false,
+    scanlines: false,
+    colors: () => ( {
+      bg: '#04040a', ship: '#39ff14', rock: '#00f0ff', bullet: '#ffee00', power: '#ff2bd6',
+      flame: '#ff7a00', hud: '#e8ffff', sub: '#b8f4ff', spark: '0,240,255',
+    } ),
+  },
+};
+
+let skin = SKINS.classic;
+let palette = skin.colors( false );
+
+// Stroke/fill color plus the skin's glow. Call inside save()/restore().
+function glow( color ) {
+  ctx.shadowColor = color;
+  ctx.shadowBlur = skin.glow;
+}
+
 // ── Constants ─────────────────────────────────────────────────────────────────
 const POWERUP_DROP_CHANCE = 0.15;
 const POWERUP_DURATION = 5;
@@ -57,10 +118,17 @@ class Bullet {
   }
 
   draw() {
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    ctx.arc( this.x, this.y, this.radius, 0, Math.PI * 2 );
-    ctx.fill();
+    ctx.save();
+    ctx.fillStyle = palette.bullet;
+    glow( palette.bullet );
+    if ( skin.squareBullets ) {
+      ctx.fillRect( Math.round( this.x ) - 2, Math.round( this.y ) - 2, 4, 4 );
+    } else {
+      ctx.beginPath();
+      ctx.arc( this.x, this.y, this.radius, 0, Math.PI * 2 );
+      ctx.fill();
+    }
+    ctx.restore();
   }
 }
 
@@ -112,9 +180,10 @@ class Asteroid {
     ctx.save();
     ctx.translate( this.x, this.y );
     ctx.rotate( this.rot );
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 1.5;
-    ctx.lineJoin = 'round';
+    ctx.strokeStyle = palette.rock;
+    ctx.lineWidth = skin.lineWidth;
+    ctx.lineJoin = skin.lineJoin;
+    glow( palette.rock );
     ctx.beginPath();
     ctx.moveTo( this.verts[ 0 ][ 0 ], this.verts[ 0 ][ 1 ] );
     for ( let i = 1; i < this.verts.length; i++ )
@@ -152,16 +221,20 @@ class PowerUp {
     ctx.save();
     ctx.translate( this.x, this.y );
     ctx.rotate( Math.PI / 4 );
-    ctx.strokeStyle = '#0ff';
+    ctx.strokeStyle = palette.power;
     ctx.lineWidth = 2;
+    glow( palette.power );
     const r = this.radius * pulse;
     ctx.strokeRect( -r, -r, r * 2, r * 2 );
     ctx.restore();
-    ctx.fillStyle = '#0ff';
-    ctx.font = 'bold 12px monospace';
+    ctx.save();
+    ctx.fillStyle = palette.power;
+    glow( palette.power );
+    ctx.font = `bold 12px ${ skin.font }`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText( '3x', this.x, this.y );
+    ctx.restore();
   }
 }
 
@@ -234,9 +307,10 @@ class Ship {
     ctx.save();
     ctx.translate( this.x, this.y );
     ctx.rotate( this.angle );
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 1.5;
-    ctx.lineJoin = 'round';
+    ctx.strokeStyle = palette.ship;
+    ctx.lineWidth = skin.lineWidth;
+    ctx.lineJoin = skin.lineJoin;
+    glow( palette.ship );
 
     // Classic silhouette: triangle with a rear notch
     ctx.beginPath();
@@ -253,7 +327,8 @@ class Ship {
       ctx.moveTo( -8, -4 );
       ctx.lineTo( -8 - rand( 6, 14 ), 0 );
       ctx.lineTo( -8, 4 );
-      ctx.strokeStyle = 'rgba(255, 130, 0, 0.85)';
+      ctx.strokeStyle = palette.flame;
+      glow( palette.flame );
       ctx.stroke();
     }
 
@@ -284,7 +359,7 @@ class Particle {
 
   draw() {
     const alpha = this.ttl / this.life;
-    ctx.strokeStyle = `rgba(255,255,255,${ alpha.toFixed( 2 ) })`;
+    ctx.strokeStyle = `rgba(${ palette.spark },${ alpha.toFixed( 2 ) })`;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo( this.x, this.y );
@@ -438,9 +513,10 @@ function drawLifeIcon( x, y ) {
   ctx.save();
   ctx.translate( x, y );
   ctx.rotate( -Math.PI / 2 );
-  ctx.strokeStyle = '#fff';
+  ctx.strokeStyle = palette.ship;
   ctx.lineWidth = 1.2;
-  ctx.lineJoin = 'round';
+  ctx.lineJoin = skin.lineJoin;
+  glow( palette.ship );
   ctx.beginPath();
   ctx.moveTo( 9, 0 );
   ctx.lineTo( -6, -5 );
@@ -452,8 +528,10 @@ function drawLifeIcon( x, y ) {
 }
 
 function drawHUD() {
-  ctx.fillStyle = '#fff';
-  ctx.font = '15px monospace';
+  ctx.save();
+  ctx.fillStyle = palette.hud;
+  ctx.font = `15px ${ skin.font }`;
+  glow( palette.hud );
 
   ctx.textAlign = 'left';
   ctx.fillText( `SCORE  ${ score }`, 14, 26 );
@@ -466,23 +544,28 @@ function drawHUD() {
 
   if ( ship.tripleShot > 0 ) {
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#0ff';
+    ctx.fillStyle = palette.power;
+    glow( palette.power );
     ctx.fillText( `3x  ${ ship.tripleShot.toFixed( 1 ) }s`, 14, 46 );
   }
+  ctx.restore();
 }
 
 function drawOverlay( title, sub ) {
+  ctx.save();
   ctx.textAlign = 'center';
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 46px monospace';
+  ctx.fillStyle = palette.hud;
+  glow( palette.hud );
+  ctx.font = `bold 46px ${ skin.font }`;
   ctx.fillText( title, W / 2, H / 2 - 18 );
-  ctx.font = '18px monospace';
-  ctx.fillStyle = 'rgba(255,255,255,0.65)';
+  ctx.font = `18px ${ skin.font }`;
+  ctx.fillStyle = palette.sub;
   ctx.fillText( sub, W / 2, H / 2 + 22 );
+  ctx.restore();
 }
 
 function draw() {
-  ctx.fillStyle = '#000';
+  ctx.fillStyle = palette.bg;
   ctx.fillRect( 0, 0, W, H );
 
   particles.forEach( p => p.draw() );
@@ -495,6 +578,11 @@ function draw() {
 
   if ( state === 'gameover' )
     drawOverlay( 'GAME OVER', `SCORE: ${ score }   —   PRESS SPACE TO RESTART` );
+
+  if ( skin.scanlines ) {
+    ctx.fillStyle = 'rgba(0,0,0,0.14)';
+    for ( let y = 0; y < H; y += 4 ) ctx.fillRect( 0, y, W, 1 );
+  }
 }
 
 // ── Loop principal ────────────────────────────────────────────────────────────
@@ -508,5 +596,49 @@ function loop( ts ) {
   requestAnimationFrame( loop );
 }
 
+// ── Appearance (skin + theme) ─────────────────────────────────────────────────
+// Always starts with skin `classic` and theme `dark`; nothing is stored.
+const skinSelect = document.getElementById( 'skin-select' );
+const themeToggle = document.getElementById( 'theme-toggle' );
+const themeToggleIcon = document.getElementById( 'theme-toggle-icon' );
+const themeToggleText = document.getElementById( 'theme-toggle-text' );
+
+function applySkin( id ) {
+  skin = SKINS[ id ];
+  document.documentElement.dataset.skin = id;
+  skinSelect.value = id;
+  refreshAppearance();
+}
+
+function applyTheme( theme ) {
+  const isLight = theme === 'light';
+  document.documentElement.dataset.theme = theme;
+  themeToggle.setAttribute( 'aria-pressed', String( isLight ) );
+  themeToggleIcon.textContent = isLight ? '\u263E' : '\u2600';
+  themeToggleText.textContent = isLight ? 'Dark' : 'Light';
+  refreshAppearance();
+}
+
+// The canvas cannot read CSS variables, so the palette is cached here.
+function refreshAppearance() {
+  palette = skin.colors( document.documentElement.dataset.theme === 'light' );
+  // The loop may be frozen (host pause), so repaint explicitly.
+  if ( ship ) draw();
+}
+
+skinSelect.addEventListener( 'change', () => {
+  applySkin( skinSelect.value );
+  skinSelect.blur(); // keep arrows/Space from changing the skin mid-game
+} );
+
+themeToggle.addEventListener( 'click', () => {
+  applyTheme( document.documentElement.dataset.theme === 'light' ? 'dark' : 'light' );
+  themeToggle.blur(); // keep Space/Enter from re-triggering the toggle
+} );
+
+skinSelect.innerHTML = Object.entries( SKINS ).map( ( [ id, k ] ) => `<option value="${ id }">${ k.name }</option>` ).join( '' );
+
 initGame();
+applySkin( 'classic' );
+applyTheme( 'dark' );
 requestAnimationFrame( loop );
