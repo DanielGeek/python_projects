@@ -165,7 +165,7 @@ CLAUDE.md                                 documents the above
 - [ ] Buttons are at least 56×56 CSS px, have an `aria-label`, and the clusters stay inside the safe area at 375×812 and at 412×915.
 - [ ] While a finger is on the game screen or a control, the page does not scroll, zoom or select text, and there is no pull-to-refresh.
 - [x] The game's own canvas and toolbar (skin and theme) can still be tapped where no button covers them.
-- [ ] One credit is spent per start, and a score saved by touch reaches `public.scores` with the right `game_id` and shows in `/hall-of-fame`.
+- [x] One credit is spent per start, and a score saved by touch reaches `public.scores` with the right `game_id` and shows in `/hall-of-fame`.
 - [ ] `public/games/*/game.js`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts` and `components/ui/game.tsx` have no edits (`git diff` is empty for them).
 - [ ] `CLAUDE.md` documents the touch controls, the `key` bridge message and the `touch` field.
 
