@@ -141,13 +141,13 @@ CLAUDE.md                         documents the above
 - [x] `TouchControls` in `lib/games.ts` has `move`, `a`, `b` and optional `extra`, with no `layout` or `actions`, and `GAMES` has the config of the table above for `asteroids`, `drop`, `brick-buster` and `snake`.
 - [x] Every key code of every `touch` config is the same as in SPEC 12 (no code is added or dropped), appears in that game's `game.js`, and is in the `KEYS` allowlist of `bridge.js`.
 - [ ] `lib/games.test.ts` checks that `a` and `b` exist, that no code is repeated inside a config, that every `move` code is one of the four arrows and that `extra` has at most three buttons.
-- [ ] With `pointer: coarse` and a playing game, the pad is drawn below the CRT bezel with the reference's shell, a four-key D-pad with hub and pulsing gem, B (cyan) and A (game accent), side by side, on 375×812 and on 412×915.
-- [ ] Directions the game does not use are drawn disabled and send nothing; the four keys are always drawn.
-- [ ] Pressing a key or a round button gives the reference's pressed look (3D travel and glow, and the dashed ring on A and B) while it is held, and it goes back when released.
-- [ ] `drop` and `brick-buster` show their small pills, `asteroids` and `snake` show none, and no pill is cut or overlapped at 375 px wide.
+- [x] With `pointer: coarse` and a playing game, the pad is drawn below the CRT bezel with the reference's shell, a four-key D-pad with hub and pulsing gem, B (cyan) and A (game accent), side by side, on 375×812 and on 412×915.
+- [x] Directions the game does not use are drawn disabled and send nothing; the four keys are always drawn.
+- [x] Pressing a key or a round button gives the reference's pressed look (3D travel and glow, and the dashed ring on A and B) while it is held, and it goes back when released.
+- [x] `drop` and `brick-buster` show their small pills, `asteroids` and `snake` show none, and no pill is cut or overlapped at 375 px wide.
 - [ ] Press behavior is unchanged: two buttons held at once, `drop` repeat on left, right and soft drop, a tap moves one cell, release on `pointerup`, `pointercancel`, `lostpointercapture`, page hidden, host pause and unmount, and nothing is sent while paused.
 - [ ] The pad is not cut at the right edge nor under the notch or the home bar, and its buttons keep `touch-action: none` and `user-select: none`.
-- [ ] D-pad keys and pills are at least 44 px, and A and B at least 64 px, on a phone.
+- [x] D-pad keys and pills are at least 44 px, and A and B at least 64 px, on a phone.
 - [ ] With `pointer: fine` no pad is rendered and the page looks as before.
 - [ ] The pad does not render while loading, at `INSERT COIN`, while the final-score modal is open, or when the game has no `touch` config.
 - [ ] `public/games/`, `components/ui/game.tsx`, `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts` and `lib/credits.ts` have no edits (`git diff` is empty for them).
