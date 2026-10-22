@@ -3,7 +3,7 @@
 > **Status:** Approved
 > **Depends on:** SPEC 05, SPEC 09, SPEC 10, SPEC 11
 > **Date:** 2026-10-21
-> **Objective:** Make the four catalog games playable on a touch phone with on-screen buttons drawn over the CRT screen, sent to the game as synthetic key events through the bridge, and hide the host HUD on touch devices to give the screen more room.
+> **Objective:** Make the four catalog games playable on a touch phone with on-screen buttons drawn below the CRT screen, sent to the game as synthetic key events through the bridge, and hide the host HUD on touch devices to give the screen more room.
 
 ---
 
@@ -14,7 +14,7 @@ Every game is keyboard-only. `asteroids`, `drop` and `snake` read `keydown`/`key
 A real-device capture (Asteroids at `/game/asteroids/play`, portrait) fixed the design:
 
 - The host HUD (player, score, lives, level and its buttons) is crossed out: on touch it is hidden, so the CRT screen takes the height.
-- The controls are drawn **over the CRT screen**: movement buttons on the left and action buttons on the right, like a console pad.
+- The controls are drawn **below the CRT screen** (first drawn over it, and moved after the first real-phone run, see Decisions): movement buttons on the left and action buttons on the right, like a console pad.
 
 The games are static HTML in `public/games/<id>/` and are not part of the React build, and the same-origin iframe already has a host ↔ game bridge (`public/games/bridge.js`). So the controls live in the host and reach the game as key events. The games keep their logic and every key they already handle.
 
@@ -34,10 +34,11 @@ Findings that shape the plan:
 
 - `public/games/bridge.js`: a new host message `{ source: 'arcade-vault-host', type: 'key', code, down }`. The bridge dispatches a `KeyboardEvent` (`keydown` or `keyup`) with that `code` and a matching `key` on `document`, with `bubbles` and `cancelable` set. It ignores codes outside an allowlist. The existing `pause`/`resume` and the readers do not change.
 - `lib/games.ts`: an optional `touch` field on `Game` that describes the buttons of each game, and a `touch` entry for `asteroids`, `drop`, `brick-buster` and `snake`.
-- A new client component `components/ui/touch-controls.tsx` that draws the two clusters over the CRT screen. It sends the key messages with pointer events and releases every held key on `pointerup`, `pointercancel`, `lostpointercapture`, when the page is hidden, when the host is paused and when the component unmounts.
+- A new client component `components/ui/touch-controls.tsx` that draws the two clusters in a row right below the CRT screen. It sends the key messages with pointer events and releases every held key on `pointerup`, `pointercancel`, `lostpointercapture`, when the page is hidden, when the host is paused and when the component unmounts.
 - A hook `useCoarsePointer` (in `components/ui/touch-controls.tsx` or `lib/`) built on `matchMedia("(pointer: coarse)")` with `useSyncExternalStore`, `false` on the server.
-- `app/game/[id]/play/game-player.tsx`: render `TouchControls` inside the CRT screen when the pointer is coarse and the game has a `touch` config, only while the status is `playing`, the game has loaded and the final-score modal is closed. When the pointer is coarse, hide the HUD and show a small Pause and a small Exit button at the top of the screen instead.
-- `app/globals.css`: `av-touch-*` rules (clusters, round buttons, pressed state, semi-transparent), plus `@media (pointer: coarse)` rules that hide `.av-hud`, set `touch-action: none` and `user-select: none` on the CRT screen and on the buttons, and stop the callout and double-tap zoom.
+- `app/game/[id]/play/game-player.tsx`: render `TouchControls` right below the CRT screen when the pointer is coarse and the game has a `touch` config, only while the status is `playing`, the game has loaded and the final-score modal is closed. When the pointer is coarse, hide the HUD and show a small Pause and a small Exit button in a thin row above the CRT bezel instead.
+- `app/globals.css`: `av-touch-*` rules (clusters laid out below the screen, round buttons, pressed state), plus `@media (pointer: coarse)` rules that hide `.av-hud`, set `touch-action: none` and `user-select: none` on the CRT screen and on the buttons, and stop the callout and double-tap zoom.
+- `public/games/asteroids/index.html`: a `fitToFrame()` script that scales the 800×600 canvas down with CSS `zoom` to fit the iframe and never up, as `drop`, `brick-buster` and `snake` already do. It lives in `index.html` and not in `game.js`, so `game.js` stays untouched. Added after a real-phone capture showed the canvas cut at the right edge.
 - `lib/games.test.ts`: every game has a valid `touch` config, and each key code of it appears in that game's `game.js`.
 - Update `CLAUDE.md`: the `games.ts`, `components/ui/`, `game-player.tsx` and **Host ↔ game bridge** bullets, and the Next.js/testing notes if a command changes.
 
@@ -45,7 +46,7 @@ Findings that shape the plan:
 
 - A `TOUCH` tag in `tags`, and changes to the `controls` copy of the catalog.
 - Swipe gestures, a virtual analog stick, dragging the paddle or the ship, and haptic feedback.
-- Landscape-specific layouts. In landscape the same overlay is used and nothing breaks, but it is not tuned.
+- Landscape-specific layouts. In landscape the same layout is used and nothing breaks, but it is not tuned.
 - Configuring `allowedDevOrigins` or any LAN workflow for `npm run dev`.
 - Changes to the game logic, the readers, the skins or themes, the leaderboard, scores and credits.
 - Re-designing the navbar, the header or the game detail page on mobile.
@@ -111,7 +112,7 @@ Behavior of `TouchControls`:
 - `pointerup`, `pointercancel` and `lostpointercapture` send `down: false`. A `visibilitychange` to hidden, the host pause and the unmount release every held key.
 - While `paused` is true the buttons are disabled and nothing is sent.
 - Buttons are at least 56×56 CSS px, semi-transparent (about 35% when idle, brighter when pressed), use the game's accent, have `aria-label` from `name`, and use `touch-action: none`. The clusters are placed with `env(safe-area-inset-*)` so they do not sit under the notch or the home bar.
-- The container has `pointer-events: none`, and only the buttons have `pointer-events: auto`, so the game's own toolbar and canvas stay reachable.
+- The controls sit in normal flow right below the CRT screen, so they never cover the canvas or the game's own toolbar.
 
 File layout:
 
@@ -133,7 +134,7 @@ CLAUDE.md                                 documents the above
 2. **Bridge `key` message.** Add the allowlist, the `key` table and the dispatch to `public/games/bridge.js`. Manual test: open `/game/snake/play`, and in the console run `frames[0].postMessage({source:'arcade-vault-host',type:'key',code:'Space',down:true},'*')`. Snake starts. An allowlisted `ArrowLeft` down/up pair turns it, and a code like `KeyZ` does nothing.
 3. **Catalog data.** Add `TouchButton`, `TouchControls`, `Game.touch` and the four configs to `lib/games.ts`. Manual test: `npm run lint` and the type check pass, and no entry other than the four has `touch`.
 4. **`TouchControls` and the hook.** Create `components/ui/touch-controls.tsx` with `useCoarsePointer`, the two clusters (`cross` and `row` layouts), pointer capture, the held-key release rules and the `repeat` timer. Manual test, in Chrome device emulation with touch: pressing a button sends a `down: true`, releasing sends `down: false`, two buttons can be held together, a `pointercancel` releases the key, and a `repeat` button keeps sending until it is released.
-5. **Wire the player.** Render `TouchControls` in `game-player.tsx` under the conditions of the scope, hide the HUD on coarse pointers, and add the compact Pause and Exit buttons. Manual test, at 375×812 and at 412×915 with touch emulation: the HUD is gone, the CRT screen is taller, the controls show over it only while playing, Pause freezes the game and disables the buttons, and Exit goes to `/game/<id>`. With a mouse (`pointer: fine`) nothing changes: HUD visible, no controls.
+5. **Wire the player.** Render `TouchControls` in `game-player.tsx` under the conditions of the scope, hide the HUD on coarse pointers, and add the compact Pause and Exit buttons. Manual test, at 375×812 and at 412×915 with touch emulation: the HUD is gone, the CRT screen is taller, the controls show below it only while playing, Pause freezes the game and disables the buttons, and Exit goes to `/game/<id>`. With a mouse (`pointer: fine`) nothing changes: HUD visible, no controls.
 6. **Styles.** Add the `av-touch-*` rules and the `@media (pointer: coarse)` rules to `app/globals.css`. Manual test: no page scroll or pull-to-refresh while a finger is on the screen or on a button, no text selection or callout on long press, no double-tap zoom, and the clusters respect the safe area.
 7. **Play each game on touch.** In emulation first, then on a real phone on the same network, play a full run of every game with touch only. Manual test per game:
    - `asteroids`: starts with FIRE, rotates, thrusts and fires at once, restarts after game over.
@@ -148,32 +149,32 @@ CLAUDE.md                                 documents the above
 
 ## Acceptance criteria
 
-- [ ] `npm run lint`, `npm test` and `npm run build` finish without errors.
-- [ ] `bridge.js` handles `{ type: 'key', code, down }` from the parent only, dispatches a `keydown` or `keyup` on `document` with `bubbles: true`, and ignores any code outside the allowlist.
-- [ ] `bridge.js` still handles `pause` and `resume` and still reports the state of every reader as before.
-- [ ] `GAMES` has a valid `touch` config for `asteroids`, `drop`, `brick-buster` and `snake`, and the button codes match the table in the data model.
-- [ ] `lib/games.test.ts` checks that every `touch` button code appears in the `game.js` of its game, and that every code is in the bridge allowlist.
-- [ ] With `pointer: coarse`, `/game/<id>/play` hides the host HUD, shows a compact Pause and Exit, and shows the touch controls over the CRT screen while the game is playing.
-- [ ] With `pointer: fine`, the HUD and the page look exactly as before and no touch control is rendered.
-- [ ] The touch controls do not render while loading, at `INSERT COIN`, while the final-score modal is open, or when the game has no `touch` config.
-- [ ] Holding a movement button and an action button at once works (for example, rotate and fire in Asteroids).
-- [ ] Releasing a finger, a `pointercancel`, hiding the page, pausing and leaving the page release every held key, so no key stays stuck.
-- [ ] While the host is paused, the touch buttons send nothing.
-- [ ] Each of the four games can be started, played, paused and restarted with touch only, as in step 7.
-- [ ] `drop` moves continuously while its left, right or soft-drop button is held, and a short tap moves exactly one cell.
-- [ ] Buttons are at least 56×56 CSS px, have an `aria-label`, and the clusters stay inside the safe area at 375×812 and at 412×915.
-- [ ] While a finger is on the game screen or a control, the page does not scroll, zoom or select text, and there is no pull-to-refresh.
-- [ ] The game's own canvas and toolbar (skin and theme) can still be tapped where no button covers them.
-- [ ] One credit is spent per start, and a score saved by touch reaches `public.scores` with the right `game_id` and shows in `/hall-of-fame`.
-- [ ] `public/games/*/game.js`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts` and `components/ui/game.tsx` have no edits (`git diff` is empty for them).
-- [ ] `CLAUDE.md` documents the touch controls, the `key` bridge message and the `touch` field.
+- [x] `npm run lint`, `npm test` and `npm run build` finish without errors.
+- [x] `bridge.js` handles `{ type: 'key', code, down }` from the parent only, dispatches a `keydown` or `keyup` on `document` with `bubbles: true`, and ignores any code outside the allowlist.
+- [x] `bridge.js` still handles `pause` and `resume` and still reports the state of every reader as before.
+- [x] `GAMES` has a valid `touch` config for `asteroids`, `drop`, `brick-buster` and `snake`, and the button codes match the table in the data model.
+- [x] `lib/games.test.ts` checks that every `touch` button code appears in the `game.js` of its game, and that every code is in the bridge allowlist.
+- [x] With `pointer: coarse`, `/game/<id>/play` hides the host HUD, shows a compact Pause and Exit, and shows the touch controls below the CRT screen while the game is playing.
+- [x] With `pointer: fine`, the HUD and the page look exactly as before and no touch control is rendered.
+- [x] The touch controls do not render while loading, at `INSERT COIN`, while the final-score modal is open, or when the game has no `touch` config.
+- [x] Holding a movement button and an action button at once works (for example, rotate and fire in Asteroids).
+- [x] Releasing a finger, a `pointercancel`, hiding the page, pausing and leaving the page release every held key, so no key stays stuck.
+- [x] While the host is paused, the touch buttons send nothing.
+- [x] Each of the four games can be started, played, paused and restarted with touch only, as in step 7.
+- [x] `drop` moves continuously while its left, right or soft-drop button is held, and a short tap moves exactly one cell.
+- [x] Buttons are at least 56×56 CSS px, have an `aria-label`, and the clusters stay inside the safe area at 375×812 and at 412×915.
+- [x] While a finger is on the game screen or a control, the page does not scroll, zoom or select text, and there is no pull-to-refresh.
+- [x] The touch controls do not cover the game's canvas or its own toolbar (skin and theme), which stay fully tappable.
+- [x] One credit is spent per start, and a score saved by touch reaches `public.scores` with the right `game_id` and shows in `/hall-of-fame`.
+- [x] `public/games/*/game.js`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts` and `components/ui/game.tsx` have no edits (`git diff` is empty for them).
+- [x] `CLAUDE.md` documents the touch controls, the `key` bridge message and the `touch` field.
 
 ---
 
 ## Decisions
 
 - **Yes:** the controls live in the host and send key events through the bridge (user decision). **No:** touch handlers inside each game, which means four implementations to maintain. The games keep their logic.
-- **Yes:** buttons drawn over the CRT screen, movement on the left and actions on the right (user decision, from the reference capture). **No:** a virtual analog stick, which helps two games and needs per-game tuning.
+- **Yes:** buttons drawn below the CRT screen, movement on the left and actions on the right (user decision, after the first real-phone run: over the screen they covered the board and the game's toolbar). **No:** drawing them over the screen, as in the reference capture, and a virtual analog stick, which helps two games and needs per-game tuning.
 - **Yes:** hide the host HUD on touch devices (user decision, from the capture) and keep a compact Pause and Exit. **No:** compacting it into one row, since each game already draws its score. Step 5 checks that nothing the player needs is lost.
 - **Yes:** all four catalog games (user decision). **No:** only the infrastructure plus Snake.
 - **Yes:** activate on `(pointer: coarse)`, not on viewport width, so a narrow desktop window does not get buttons. **No:** `max-width: 640px`.
@@ -182,24 +183,25 @@ CLAUDE.md                                 documents the above
 - **Yes:** the difficulty keys `1`–`3` are small buttons for Brick Buster because its menu is drawn on the canvas. Step 1 checks whether tapping the menu already works; if it does, those buttons are dropped.
 - **No:** a `TOUCH` tag or changes to `controls` copy. The extras question was left unanswered in the definition, so it stays out. It is a one-line change for its own spec.
 - **No:** `allowedDevOrigins` or a LAN workflow. The reference capture shows the dev server already reachable from a phone.
-- **No:** landscape-specific layouts. The same overlay is used and it is not tuned.
+- **No:** landscape-specific layouts. The same layout is used and it is not tuned.
+- **Yes:** Pause and Exit in a thin row above the CRT bezel, not inside the screen, because inside they covered the game's own skin and theme toolbar. **No:** floating them over the screen.
+- **Yes:** the Asteroids canvas scales to the frame from `index.html` (user decision, from a phone capture). **No:** editing `game.js`, which this spec keeps untouched.
 - **Yes:** `touch-action: none` and `user-select: none` only on the CRT screen and the buttons, so the rest of the site keeps normal scroll and zoom.
 
 ---
 
 ## Risks
 
-| Risk                                                                                                                                                    | Mitigation                                                                                                                                                                            |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| On a 319 px wide frame (Snake is square) the clusters cover a large part of the board.                                                                  | Semi-transparent buttons, `pointer-events` only on the buttons, and a check at 375×812 in step 7. If it is unplayable, report it for a spec that moves the controls below the screen. |
-| A key stays pressed when a finger slides off a button or the page loses focus, and the ship thrusts forever.                                            | Pointer capture, release on `pointercancel`, `lostpointercapture`, `visibilitychange`, pause and unmount. Checked in the acceptance criteria.                                         |
-| The game ignores a synthetic key (for example it checks `isTrusted`, or a handler is on an element and not on `document`).                              | Step 1 reads the handlers and step 2 tests the bridge by hand on one game before building the UI.                                                                                     |
-| `justPressed` in Asteroids needs a `keydown` while the key is not held, so a missed `keyup` breaks the next shot.                                       | The release rules above, and the held-key table is released as a whole.                                                                                                               |
-| The HUD in the capture shows a `SKIN` selector and extra buttons that this repo's HUD does not have, so the host may differ from what was photographed. | Step 5 is written against `.av-hud` in this repo. If the dev server on the phone was running other code, the capture is only a layout reference.                                      |
-| The in-game toolbar (skin and theme) of the games sits under a cluster.                                                                                 | Containers do not catch pointers, and step 7 taps the toolbar on a real phone. Moving the toolbar is out of scope.                                                                    |
-| Space on a game's end screen restarts inside the game without the host "Play again", so no credit is spent.                                             | Same behavior as with a keyboard (SPEC 10, SPEC 11). Any credit change is a separate spec.                                                                                            |
-| `zoom` in `fitToFrame()` is not supported by Firefox before 126.                                                                                        | Accepted, as in SPEC 09, SPEC 10 and SPEC 11.                                                                                                                                         |
-| Emulation in desktop Chrome does not reproduce every real-device behavior (pull-to-refresh, safe areas, multi-touch).                                   | Step 7 requires a run on a real phone. Emulation is only the first pass.                                                                                                              |
+| Risk                                                                                                                                                    | Mitigation                                                                                                                                                                           |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Below the screen the controls push the page down: on a short phone the pad may go under the fold.                                                       | The cross is 3 rows of 56 px (184 px) and the CRT is about 240 px tall at 375 px wide, so both fit in 812 px. Check at 375×812 and at 412×915, and keep the Pause and Exit row thin. |
+| A key stays pressed when a finger slides off a button or the page loses focus, and the ship thrusts forever.                                            | Pointer capture, release on `pointercancel`, `lostpointercapture`, `visibilitychange`, pause and unmount. Checked in the acceptance criteria.                                        |
+| The game ignores a synthetic key (for example it checks `isTrusted`, or a handler is on an element and not on `document`).                              | Step 1 reads the handlers and step 2 tests the bridge by hand on one game before building the UI.                                                                                    |
+| `justPressed` in Asteroids needs a `keydown` while the key is not held, so a missed `keyup` breaks the next shot.                                       | The release rules above, and the held-key table is released as a whole.                                                                                                              |
+| The HUD in the capture shows a `SKIN` selector and extra buttons that this repo's HUD does not have, so the host may differ from what was photographed. | Step 5 is written against `.av-hud` in this repo. If the dev server on the phone was running other code, the capture is only a layout reference.                                     |
+| Space on a game's end screen restarts inside the game without the host "Play again", so no credit is spent.                                             | Same behavior as with a keyboard (SPEC 10, SPEC 11). Any credit change is a separate spec.                                                                                           |
+| `zoom` in `fitToFrame()` is not supported by Firefox before 126.                                                                                        | Accepted, as in SPEC 09, SPEC 10 and SPEC 11.                                                                                                                                        |
+| Emulation in desktop Chrome does not reproduce every real-device behavior (pull-to-refresh, safe areas, multi-touch).                                   | Step 7 requires a run on a real phone. Emulation is only the first pass.                                                                                                             |
 
 ---
 
@@ -207,7 +209,7 @@ CLAUDE.md                                 documents the above
 
 - A `TOUCH` tag or new `controls` copy.
 - Swipes, an analog stick, dragging the paddle or the ship, and haptics.
-- Landscape tuning, or a layout that puts the controls below the screen.
+- Landscape tuning, or controls floating over the screen.
 - Gamepad support or key remapping.
 - `allowedDevOrigins` or any LAN setup for the dev server.
 - Changes to the game logic, the skins, the leaderboard, scores or credits.

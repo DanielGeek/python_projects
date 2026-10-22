@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { GAMES } from "./games";
 import { ARCHIVED_GAMES } from "./games-archive";
@@ -10,6 +10,11 @@ const read = (path: string) => readFileSync(join(ROOT, path), "utf8");
 const bridge = read("public/games/bridge.js");
 const css = read("app/globals.css");
 const playable = GAMES.filter((g) => g.src !== null);
+// The codes the bridge lets the host send as keys: the KEYS table of public/games/bridge.js.
+const bridgeKeys = Array.from(
+  (/var KEYS = \{([\s\S]*?)\};/.exec(bridge)?.[1] ?? "").matchAll(/(\w+):\s*'/g),
+  (m) => m[1],
+);
 
 describe("GAMES catalog", () => {
   it("has unique ids", () => {
@@ -44,6 +49,63 @@ describe("GAMES catalog", () => {
     it("has an av-cover rule in globals.css", () => {
       expect(css, `${id}: no .av-cover-${id} rule in app/globals.css`).toContain(`.av-cover-${id}`);
     });
+  });
+
+  describe.each(playable.map((g) => [g.id, g.src as string] as const))(
+    "%s touch controls",
+    (id, src) => {
+      const touch = GAMES.find((g) => g.id === id)?.touch;
+      const buttons = touch ? [...touch.move.buttons, ...touch.actions] : [];
+      const source = read(join("public", dirname(src), "game.js"));
+
+      it("has a touch config", () => {
+        expect(touch, `${id}: no touch config in lib/games.ts`).toBeDefined();
+      });
+
+      it("has a valid layout and labelled buttons", () => {
+        if (!touch) return;
+        const max = touch.move.layout === "cross" ? 4 : 3;
+        expect(touch.move.buttons.length).toBeGreaterThan(0);
+        expect(
+          touch.move.buttons.length,
+          `${id}: too many ${touch.move.layout} buttons`,
+        ).toBeLessThanOrEqual(max);
+        expect(touch.actions.length).toBeGreaterThan(0);
+        for (const b of buttons) {
+          expect(b.label.trim(), `${id}: ${b.code} has no label`).not.toBe("");
+          expect(b.name.trim(), `${id}: ${b.code} has no accessible name`).not.toBe("");
+        }
+      });
+
+      it("has no repeated key code", () => {
+        const codes = buttons.map((b) => b.code);
+        expect(new Set(codes).size, `${id}: repeated code in ${codes.join(", ")}`).toBe(
+          codes.length,
+        );
+      });
+
+      it.each(buttons.map((b) => b.code))("%s is handled by game.js", (code) => {
+        expect(source, `${id}: game.js never mentions ${code}`).toMatch(
+          new RegExp(`\\b${code}\\b`),
+        );
+      });
+
+      it.each(buttons.map((b) => b.code))("%s is in the bridge allowlist", (code) => {
+        expect(bridgeKeys, `${id}: ${code} is not in the allowlist of bridge.js`).toContain(code);
+      });
+    },
+  );
+});
+
+describe("bridge.js key message", () => {
+  it("handles the key type from the host", () => {
+    expect(bridge).toMatch(/e\.data\.type === 'key'/);
+  });
+
+  it("only allows the keys the touch controls need", () => {
+    expect(bridgeKeys.length).toBeGreaterThan(0);
+    for (const code of bridgeKeys)
+      expect(code).toMatch(/^(Arrow\w+|Space|Enter|Key[A-Z]|Digit\d)$/);
   });
 });
 

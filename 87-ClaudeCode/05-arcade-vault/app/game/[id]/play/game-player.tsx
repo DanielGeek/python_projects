@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button, ButtonLink, PixelSpinner, formatScore } from "@/components/ui/basics";
 import { CRTScreen, HUD } from "@/components/ui/game";
 import { Input, Modal, Typewriter } from "@/components/ui/interactive";
+import { TouchControls, useCoarsePointer } from "@/components/ui/touch-controls";
 import type { Game } from "@/lib/games";
 import { insertCoin, spendCredit } from "@/lib/credits";
 import { submitScore } from "@/lib/leaderboard";
@@ -43,6 +44,9 @@ export function GamePlayer({ game }: { game: Game }) {
   // The run that is on screen now, so a late answer for a previous run is ignored.
   const currentRun = useRef(run);
 
+  // A finger is the main pointer: the HUD gives way to touch buttons over the screen.
+  const coarse = useCoarsePointer();
+
   const signedIn = !!session && !session.guest;
   const player = session?.name ?? "GUEST";
 
@@ -74,6 +78,13 @@ export function GamePlayer({ game }: { game: Game }) {
 
   function send(type: "pause" | "resume") {
     frame.current?.contentWindow?.postMessage({ source: "arcade-vault-host", type }, "*");
+  }
+
+  function sendKey(code: string, down: boolean) {
+    frame.current?.contentWindow?.postMessage(
+      { source: "arcade-vault-host", type: "key", code, down },
+      "*",
+    );
   }
 
   function togglePause() {
@@ -122,15 +133,34 @@ export function GamePlayer({ game }: { game: Game }) {
 
   return (
     <div className="av-player">
-      <HUD
-        score={state.score}
-        lives={state.lives}
-        level={state.level}
-        player={player}
-        paused={paused}
-        onPause={togglePause}
-        onExit={() => router.push(`/game/${game.id}`)}
-      />
+      {!coarse && (
+        <HUD
+          score={state.score}
+          lives={state.lives}
+          level={state.level}
+          player={player}
+          paused={paused}
+          onPause={togglePause}
+          onExit={() => router.push(`/game/${game.id}`)}
+        />
+      )}
+      {coarse && (
+        // Pause and Exit above the bezel: inside the screen they would cover the game's own toolbar.
+        <div className="av-touch-bar">
+          {status === "playing" && !loading && (
+            <button type="button" className="av-touch-mini" onClick={togglePause}>
+              {paused ? "Resume" : "Pause"}
+            </button>
+          )}
+          <button
+            type="button"
+            className="av-touch-mini"
+            onClick={() => router.push(`/game/${game.id}`)}
+          >
+            Exit
+          </button>
+        </div>
+      )}
       <CRTScreen
         aspect={game.aspect}
         label={game.title}
@@ -173,6 +203,9 @@ export function GamePlayer({ game }: { game: Game }) {
           />
         )}
       </CRTScreen>
+      {coarse && game.touch && status === "playing" && !loading && finalScore == null && (
+        <TouchControls controls={game.touch} accent={game.accent} paused={paused} onKey={sendKey} />
+      )}
       <p className="av-player-controls">{game.controls}</p>
 
       <Modal
