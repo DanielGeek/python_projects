@@ -8,7 +8,6 @@ import {
   type PointerEvent,
 } from "react";
 import type { Accent, TouchButton, TouchControls as TouchConfig } from "@/lib/games";
-import { cx } from "./basics";
 
 const COARSE = "(pointer: coarse)";
 
@@ -146,10 +145,10 @@ export function TouchControls({
 
   return (
     <div className="av-touch" style={{ "--av-touch-rgb": RGB[accent] } as CSSProperties}>
-      <div className={cx("av-touch-move", `av-touch-${controls.move.layout}`)}>
-        {controls.move.buttons.map(renderButton)}
+      <div className="av-touch-move av-touch-row">{controls.move.map(renderButton)}</div>
+      <div className="av-touch-actions">
+        {[controls.b, controls.a, ...(controls.extra ?? [])].map(renderButton)}
       </div>
-      <div className="av-touch-actions">{controls.actions.map(renderButton)}</div>
     </div>
   );
 }

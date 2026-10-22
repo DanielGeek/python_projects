@@ -138,8 +138,8 @@ CLAUDE.md                         documents the above
 ## Acceptance criteria
 
 - [ ] `npm run lint`, `npm test` and `npm run build` finish without errors.
-- [ ] `TouchControls` in `lib/games.ts` has `move`, `a`, `b` and optional `extra`, with no `layout` or `actions`, and `GAMES` has the config of the table above for `asteroids`, `drop`, `brick-buster` and `snake`.
-- [ ] Every key code of every `touch` config is the same as in SPEC 12 (no code is added or dropped), appears in that game's `game.js`, and is in the `KEYS` allowlist of `bridge.js`.
+- [x] `TouchControls` in `lib/games.ts` has `move`, `a`, `b` and optional `extra`, with no `layout` or `actions`, and `GAMES` has the config of the table above for `asteroids`, `drop`, `brick-buster` and `snake`.
+- [x] Every key code of every `touch` config is the same as in SPEC 12 (no code is added or dropped), appears in that game's `game.js`, and is in the `KEYS` allowlist of `bridge.js`.
 - [ ] `lib/games.test.ts` checks that `a` and `b` exist, that no code is repeated inside a config, that every `move` code is one of the four arrows and that `extra` has at most three buttons.
 - [ ] With `pointer: coarse` and a playing game, the pad is drawn below the CRT bezel with the reference's shell, a four-key D-pad with hub and pulsing gem, B (cyan) and A (game accent), side by side, on 375×812 and on 412×915.
 - [ ] Directions the game does not use are drawn disabled and send nothing; the four keys are always drawn.

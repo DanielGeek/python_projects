@@ -55,22 +55,18 @@ describe("GAMES catalog", () => {
     "%s touch controls",
     (id, src) => {
       const touch = GAMES.find((g) => g.id === id)?.touch;
-      const buttons = touch ? [...touch.move.buttons, ...touch.actions] : [];
+      const buttons = touch ? [...touch.move, touch.a, touch.b, ...(touch.extra ?? [])] : [];
       const source = read(join("public", dirname(src), "game.js"));
 
       it("has a touch config", () => {
         expect(touch, `${id}: no touch config in lib/games.ts`).toBeDefined();
       });
 
-      it("has a valid layout and labelled buttons", () => {
+      it("has A, B and labelled buttons", () => {
         if (!touch) return;
-        const max = touch.move.layout === "cross" ? 4 : 3;
-        expect(touch.move.buttons.length).toBeGreaterThan(0);
-        expect(
-          touch.move.buttons.length,
-          `${id}: too many ${touch.move.layout} buttons`,
-        ).toBeLessThanOrEqual(max);
-        expect(touch.actions.length).toBeGreaterThan(0);
+        expect(touch.a, `${id}: no A button`).toBeDefined();
+        expect(touch.b, `${id}: no B button`).toBeDefined();
+        expect(touch.move.length).toBeGreaterThan(0);
         for (const b of buttons) {
           expect(b.label.trim(), `${id}: ${b.code} has no label`).not.toBe("");
           expect(b.name.trim(), `${id}: ${b.code} has no accessible name`).not.toBe("");
