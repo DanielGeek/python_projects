@@ -149,7 +149,7 @@ CLAUDE.md                                 documents the above
 ## Acceptance criteria
 
 - [ ] `npm run lint`, `npm test` and `npm run build` finish without errors.
-- [ ] `bridge.js` handles `{ type: 'key', code, down }` from the parent only, dispatches a `keydown` or `keyup` on `document` with `bubbles: true`, and ignores any code outside the allowlist.
+- [x] `bridge.js` handles `{ type: 'key', code, down }` from the parent only, dispatches a `keydown` or `keyup` on `document` with `bubbles: true`, and ignores any code outside the allowlist.
 - [ ] `bridge.js` still handles `pause` and `resume` and still reports the state of every reader as before.
 - [ ] `GAMES` has a valid `touch` config for `asteroids`, `drop`, `brick-buster` and `snake`, and the button codes match the table in the data model.
 - [ ] `lib/games.test.ts` checks that every `touch` button code appears in the `game.js` of its game, and that every code is in the bridge allowlist.
