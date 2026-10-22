@@ -587,6 +587,19 @@ canvas.addEventListener('pointercancel', (e) => endGesture(e, true));
 // Keeps the host page from scrolling or zooming under the finger.
 canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
 
+// ── Fit to the frame ──────────────────────────────────────────────────────────
+// The canvas is 800x600. When the iframe is smaller, CSS zoom scales the page down so the whole
+// canvas is visible; it never scales up. Swipe distances are read in client pixels, so zoom does
+// not change the 30 px threshold.
+function fitToFrame() {
+  if (!innerWidth || !innerHeight) return; // hidden iframe: nothing to measure
+  const scale = Math.min(1, innerWidth / canvas.width, innerHeight / canvas.height);
+  document.getElementById('stage').style.zoom = scale < 1 ? String(scale) : '';
+}
+
+window.addEventListener('resize', fitToFrame);
+fitToFrame();
+
 // ── Loop ──────────────────────────────────────────────────────────────────────
 // Timed with performance.now() so the host pause (bridge) freezes it. The lanes move on the title
 // screen and while playing, and hold still on the dead, cleared and game over screens.
