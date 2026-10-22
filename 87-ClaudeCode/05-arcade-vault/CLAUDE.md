@@ -74,6 +74,8 @@ Use the **game-jam** subagent (`.claude/agents/game-jam.md`) when you have a gam
 
 Use the **skin-designer** subagent (`.claude/agents/skin-designer.md`) to check that the games you name have the skins `classic` (default), `retro` and `neon` and a light/dark toggle, and to add what is missing. It works only on the games you tell it, never on the rest of the catalog. Each skin must look good in both themes, dark first (contrast check plus screenshots). It edits only `public/games/<id>/` and keeps `references/game-with-themes.md`, its only memory, with one row per game you asked for; it never changes gameplay, the bridge, the readers or the host.
 
+Use the **mobile-porter** subagent (`.claude/agents/mobile-porter.md`) to check that the routes you name look and work well on a phone browser (375×812, 412×915, landscape) without changing the desktop look, and to fix layout and CSS problems. It follows the rules of `specs/12-touch-controls.md`, works only on the routes you tell it, and keeps `references/mobile-porting.md`, its only memory, with one row per route. It edits only `app/globals.css`, layout markup in `app/` and `components/ui/`; it never touches `public/games/`, the bridge, `lib/` or behavior, and anything beyond CSS/layout goes to a `/spec`. There is no PWA, so "mobile app" means the mobile browser.
+
 ## Tooling and references
 
 - `.mcp.json` configures the Supabase MCP (HTTP, scoped to this project). Apply migrations with `apply_migration` and check versions with `list_migrations`.
