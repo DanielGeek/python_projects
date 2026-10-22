@@ -6,10 +6,57 @@
   <title>Snake</title>
   <link rel="icon" href="data:,">
   <style>
+    /* Dark is the default theme; light overrides apply under [data-theme="light"],
+       skin overrides come after the theme rules. */
+    :root {
+      color-scheme: dark;
+      --page-bg: #000000;
+      --frame-glow: none;
+      --bar-bg: #14142a;
+      --bar-text: #e8e8ff;
+      --bar-border: #4a4a7a;
+      --focus: #00ff88;
+    }
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --page-bg: #e4e4dc;
+      --bar-bg: #ffffff;
+      --bar-text: #14142a;
+      --bar-border: #6b6b60;
+      --focus: #00733a;
+    }
+    :root[data-skin="retro"] {
+      --page-bg: #0a0600;
+      --bar-bg: #241600;
+      --bar-text: #ffb000;
+      --bar-border: #b37b00;
+      --focus: #fff0b3;
+    }
+    :root[data-skin="retro"][data-theme="light"] {
+      --page-bg: #b9cc9a;
+      --bar-bg: #e3efd0;
+      --bar-text: #0f380f;
+      --bar-border: #306230;
+      --focus: #0f380f;
+    }
+    :root[data-skin="neon"] {
+      --page-bg: #020206;
+      --frame-glow: 0 0 14px rgba(0, 240, 255, 0.7), 0 0 34px rgba(57, 255, 20, 0.3);
+      --bar-bg: #0a0a14;
+      --bar-text: #e8ffff;
+      --bar-border: #00b8c4;
+      --focus: #ff2bd6;
+    }
+    /* The neon play area stays dark in both themes; only the page changes. */
+    :root[data-skin="neon"][data-theme="light"] {
+      --page-bg: #cfd3e6;
+      --focus: #c4009e; /* mid luminance: 3:1 on both the light page and the dark bar */
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
-      background: #000;
+      background: var(--page-bg);
     }
     body {
       display: flex;
@@ -22,12 +69,54 @@
     }
     canvas {
       display: block;
+      box-shadow: var(--frame-glow);
+    }
+    /* Fixed, outside #stage, so the canvas keeps its size and fitToFrame() is untouched.
+       Centered on the top row, between the SCORE and LEVEL labels. */
+    .toolbar {
+      position: fixed;
+      top: 12px; /* clear of the host CRT bezel */
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font: 12px monospace;
+      color: var(--bar-text);
+    }
+    .toolbar select,
+    .toolbar button {
+      font: inherit;
+      color: var(--bar-text);
+      background: var(--bar-bg);
+      border: 1px solid var(--bar-border);
+      border-radius: 3px;
+      padding: 2px 6px;
+      cursor: pointer;
+    }
+    /* Small frame (the stage is zoomed down): keep the bar on the top row only. */
+    @media (max-height: 599px), (max-width: 599px) {
+      .toolbar { top: 2px; font-size: 10px; gap: 4px; }
+      .toolbar select,
+      .toolbar button { padding: 0 4px; }
+    }
+    .toolbar select:focus-visible,
+    .toolbar button:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 1px;
     }
   </style>
 </head>
 <body>
   <div id="stage">
     <canvas id="canvas" width="600" height="600"></canvas>
+  </div>
+  <div class="toolbar">
+    <select id="skin-select" aria-label="Visual skin"></select>
+    <button id="theme-toggle" type="button" aria-pressed="false" aria-label="Light theme">
+      <span id="theme-toggle-icon" aria-hidden="true">&#9728;</span>
+      <span id="theme-toggle-text" aria-hidden="true">Light</span>
+    </button>
   </div>
   <script src="../bridge.js" data-game="snake"></script>
   <script src="sprites.js"></script>

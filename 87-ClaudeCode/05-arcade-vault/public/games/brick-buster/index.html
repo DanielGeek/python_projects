@@ -6,10 +6,78 @@
   <title>Arkanoid</title>
   <link rel="icon" href="data:,">
   <style>
+    /* Dark is the default theme; light overrides apply under [data-theme="light"],
+       skin overrides come after the theme rules. --side-text colors the guide beside the
+       canvas (over the page); --over-text colors it when it sits over the canvas (narrow). */
+    :root {
+      color-scheme: dark;
+      --page-bg: #2b2b2b;
+      --play-bg: #000000;
+      --side-text: #c8c8c8;
+      --over-text: #c8c8c8;
+      --frame: none;
+      --bar-bg: #1b1b1b;
+      --bar-text: #e6e6e6;
+      --bar-border: #5a5a5a;
+      --focus: #00ffff;
+    }
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --page-bg: #e4e4dc;
+      --play-bg: #f0f0ea;
+      --side-text: #333333;
+      --over-text: #333333;
+      --frame: 0 0 0 1px #8a8a80;
+      --bar-bg: #ffffff;
+      --bar-text: #1a1a1a;
+      --bar-border: #6b6b60;
+      --focus: #005f80;
+    }
+    :root[data-skin="retro"] {
+      --page-bg: #0a0600;
+      --play-bg: #150d00;
+      --side-text: #ffb000;
+      --over-text: #ffb000;
+      --frame: 0 0 0 2px #7a5200;
+      --bar-bg: #241600;
+      --bar-text: #ffb000;
+      --bar-border: #b37b00;
+      --focus: #ffe58a;
+    }
+    :root[data-skin="retro"][data-theme="light"] {
+      --page-bg: #b9cc9a;
+      --play-bg: #cfe0b4;
+      --side-text: #1d3511;
+      --over-text: #1d3511;
+      --frame: 0 0 0 2px #4a6a34;
+      --bar-bg: #e3efd0;
+      --bar-text: #1d3511;
+      --bar-border: #3d5a2a;
+      --focus: #0b4a2a;
+    }
+    :root[data-skin="neon"] {
+      --page-bg: #020206;
+      --play-bg: #04040a;
+      --side-text: #b8f4ff;
+      --over-text: #b8f4ff;
+      --frame: 0 0 0 1px #00f0ff, 0 0 14px rgba(0, 240, 255, 0.7), 0 0 34px rgba(255, 43, 214, 0.35);
+      --bar-bg: #0a0a14;
+      --bar-text: #e8ffff;
+      --bar-border: #00b8c4;
+      --focus: #ff2bd6;
+    }
+    /* The neon play area stays dark in both themes; the page and the side guide change. */
+    :root[data-skin="neon"][data-theme="light"] {
+      --page-bg: #cfd3e6;
+      --side-text: #1a1a2e;
+      --over-text: #b8f4ff;
+      --frame: 0 0 0 1px #00a3ad, 0 0 14px rgba(0, 240, 255, 0.7), 0 0 34px rgba(255, 43, 214, 0.35);
+    }
+
     html, body {
       margin: 0;
       height: 100%;
-      background: #2b2b2b;
+      background: var(--page-bg);
     }
     body {
       display: flex;
@@ -21,7 +89,8 @@
     }
     canvas {
       display: block;
-      background: #000;
+      background: var(--play-bg);
+      box-shadow: var(--frame);
     }
     #mute-indicator {
       position: absolute;
@@ -30,7 +99,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      color: #c8c8c8;
+      color: var(--side-text);
       font: bold 14px monospace;
       pointer-events: none;
       user-select: none;
@@ -65,7 +134,7 @@
       top: 40px;
       left: calc(100% + 12px);
       max-width: 100px;
-      color: #c8c8c8;
+      color: var(--side-text);
       font: 12px monospace;
       pointer-events: none;
       user-select: none;
@@ -88,19 +157,61 @@
       margin-right: 2px;
       font: bold 14px monospace;
     }
-    /* No free space beside the canvas (800 px + 2 * 84 px): fall back to the page corner. */
+    /* Skin picker and theme toggle: beside the canvas, under the controls guide.
+       Their own background keeps them readable over the page or the canvas. */
+    #appearance {
+      position: absolute;
+      bottom: 0;
+      left: calc(100% + 12px);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      font: 12px monospace;
+    }
+    #appearance select,
+    #appearance button {
+      font: inherit;
+      line-height: 14px;
+      color: var(--bar-text);
+      background: var(--bar-bg);
+      border: 1px solid var(--bar-border);
+      border-radius: 3px;
+      padding: 1px 5px;
+      cursor: pointer;
+    }
+    #appearance select:focus-visible,
+    #appearance button:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 1px;
+    }
+    /* No free space beside the canvas (800 px + 2 * 84 px): move inside the canvas and scale
+       with the stage. The indicator and the guide sit at the right edge, under the brick rows
+       (the lowest brick ends at y = 204), so they cover neither the bricks nor the HUD. */
     @media (max-width: 968px) {
       #mute-indicator {
-        position: fixed;
-        top: 16px;
-        right: 16px;
+        top: 222px;
+        right: 8px;
         left: auto;
+        color: var(--over-text);
       }
       #controls-guide {
-        position: fixed;
-        top: 56px;
-        right: 16px;
+        top: 262px;
+        right: 8px;
         left: auto;
+        color: var(--over-text);
+      }
+      /* In the 24 px strip under the paddle, clear of the host's rounded screen corner. */
+      #appearance {
+        bottom: 2px;
+        left: 24px;
+        flex-direction: row;
+        font-size: 13px;
+      }
+      #appearance select,
+      #appearance button {
+        line-height: 16px;
+        padding: 0 6px;
       }
     }
   </style>
@@ -134,6 +245,13 @@
         <span class="control-label">Pause</span>
         <span class="control-keys"><kbd>P</kbd> <kbd>Esc</kbd></span>
       </div>
+    </div>
+    <div id="appearance">
+      <select id="skin-select" aria-label="Visual skin"></select>
+      <button id="theme-toggle" type="button" aria-pressed="false" aria-label="Light theme">
+        <span id="theme-toggle-icon" aria-hidden="true">&#9728;</span>
+        <span id="theme-toggle-text" aria-hidden="true">Light</span>
+      </button>
     </div>
   </div>
   <script src="../bridge.js" data-game="brick-buster"></script>
