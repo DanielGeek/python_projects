@@ -120,7 +120,7 @@ CLAUDE.md                            how to measure, new rules
 - [ ] The list of causes exists before the first fix, and each row over budget has at least one cause with evidence.
 - [ ] In the **after** table, every game has a p95 frame time under 20 ms at CPU throttle 4x on desktop, inside the host.
 - [ ] In the **after** table, every game has an average of 50 FPS or more over 60 s on the user's real phone, inside the host with the touch pad.
-- [ ] After 10 minutes of play, no game has a p95 frame time more than 20 % above its minute-1 p95, and its heap after a forced GC is no more than 20 % above its minute-1 heap.
+- [x] After the soak (4 minutes instead of 10, by user decision), no game has a p95 frame time more than 20 % above its minute-1 p95, and its heap after a forced GC is no more than 20 % above its minute-1 heap. Measured: p95 17.5 ms in every window, heap +0.8 to +1.9 %.
 - [ ] Keydown to next paint is within 2 frames at CPU 4x for every game, on the keyboard and on the touch pad.
 - [ ] A game that cannot meet a budget has a written reason in the reference file and a follow-up item; no budget is silently dropped.
 - [ ] Screenshots before and after, taken in every skin of each game in the dark theme and one in the light theme, show no visible difference.
@@ -142,6 +142,7 @@ CLAUDE.md                            how to measure, new rules
 - **Yes:** the look may change only when nobody can see it (user decision): cache, batch, reuse, skip redundant work. **No:** removing or lowering the neon glow, and any change to the palettes.
 - **Yes (spec decision, review it):** the degradation and heap budgets (20 %) and the input budget (2 frames) are proposed by this spec, since the user gave only the FPS targets. Change them in review if they are too strict or too loose.
 - **Yes (user decision, step 3):** the real-phone measurement was skipped and the phone rows are marked `n/m`; the user reported by feel that the games run fine on their phone. **Consequence:** the criterion of 50 FPS on a real phone stays open and cannot be ticked without numbers.
+- **Yes (user decision, step 4):** the soak runs 4 minutes with the 5 games in parallel, not 10 minutes per game, because the user capped every task at 5 minutes. **Consequence:** a leak slower than about 2 % per 3 minutes would not show; the degradation criterion is worded for 4 minutes.
 - **Yes:** fix only what the tables mark as over budget, and measure after each change. **No:** optimising by guess, or rewriting a game that is already inside its budget.
 - **Yes:** measure each game standalone and inside the host, to separate the cost of the game from the cost of the iframe, the CRT overlay, the zoom and the touch pad.
 - **Yes:** `public/games/bridge.js` may change only in its cost (rAF wrapper, polling), not in its contract. **No:** changing messages, readers or the allowlist.
