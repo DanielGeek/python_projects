@@ -145,7 +145,7 @@ CLAUDE.md                         documents the above
 - [x] Directions the game does not use are drawn disabled and send nothing; the four keys are always drawn.
 - [x] Pressing a key or a round button gives the reference's pressed look (3D travel and glow, and the dashed ring on A and B) while it is held, and it goes back when released.
 - [x] `drop` and `brick-buster` show their small pills, `asteroids` and `snake` show none, and no pill is cut or overlapped at 375 px wide.
-- [ ] Press behavior is unchanged: two buttons held at once, `drop` repeat on left, right and soft drop, a tap moves one cell, release on `pointerup`, `pointercancel`, `lostpointercapture`, page hidden, host pause and unmount, and nothing is sent while paused.
+- [x] Press behavior is unchanged: two buttons held at once, `drop` repeat on left, right and soft drop, a tap moves one cell, release on `pointerup`, `pointercancel`, `lostpointercapture`, page hidden, host pause and unmount, and nothing is sent while paused.
 - [ ] The pad is not cut at the right edge nor under the notch or the home bar, and its buttons keep `touch-action: none` and `user-select: none`.
 - [x] D-pad keys and pills are at least 44 px, and A and B at least 64 px, on a phone.
 - [ ] With `pointer: fine` no pad is rendered and the page looks as before.
