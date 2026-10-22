@@ -5,10 +5,10 @@ import {
   useRef,
   useSyncExternalStore,
   type CSSProperties,
+  type MouseEvent,
   type PointerEvent,
 } from "react";
 import type { Accent, TouchButton, TouchControls as TouchConfig } from "@/lib/games";
-import { cx } from "./basics";
 
 const COARSE = "(pointer: coarse)";
 
@@ -23,6 +23,20 @@ const RGB: Record<Accent, string> = {
   yellow: "245, 255, 0",
   green: "0, 255, 136",
 };
+
+interface Direction {
+  code: string;
+  name: "up" | "right" | "down" | "left";
+  /** Triangle path of the arrow, on a 24×24 box. */
+  path: string;
+}
+
+const DIRECTIONS: Direction[] = [
+  { code: "ArrowUp", name: "up", path: "M12 4 L20 16 L4 16 Z" },
+  { code: "ArrowRight", name: "right", path: "M8 4 L20 12 L8 20 Z" },
+  { code: "ArrowDown", name: "down", path: "M4 8 L20 8 L12 20 Z" },
+  { code: "ArrowLeft", name: "left", path: "M16 4 L16 20 L4 12 Z" },
+];
 
 function subscribe(onChange: () => void) {
   const query = window.matchMedia(COARSE);
@@ -122,23 +136,73 @@ export function TouchControls({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- release only uses refs
   }, []);
 
-  function renderButton(button: TouchButton) {
+  function handlers(button: TouchButton) {
+    return {
+      "data-key": button.code,
+      "aria-label": button.name,
+      disabled: paused,
+      onPointerDown: (e: PointerEvent<HTMLButtonElement>) => press(button, e),
+      onPointerUp: (e: PointerEvent<HTMLButtonElement>) => end(button, e),
+      onPointerCancel: (e: PointerEvent<HTMLButtonElement>) => end(button, e),
+      onLostPointerCapture: (e: PointerEvent<HTMLButtonElement>) => end(button, e),
+      onMouseDown: (e: MouseEvent<HTMLButtonElement>) => e.preventDefault(),
+      onContextMenu: (e: MouseEvent<HTMLButtonElement>) => e.preventDefault(),
+    };
+  }
+
+  function renderDirection(dir: Direction) {
+    const button = controls.move.find((b) => b.code === dir.code);
+    const arrow = (
+      <svg className="av-touch-arrow" viewBox="0 0 24 24" aria-hidden>
+        <path d={dir.path} fill="currentColor" />
+      </svg>
+    );
+    // A direction the game does not use stays on the cross, dimmed and without handlers.
+    if (!button) {
+      return (
+        <button
+          key={dir.code}
+          type="button"
+          className={`av-touch-dp av-touch-dp-${dir.name}`}
+          disabled
+          aria-hidden
+          tabIndex={-1}
+        >
+          {arrow}
+        </button>
+      );
+    }
+    return (
+      <button
+        key={dir.code}
+        type="button"
+        className={`av-touch-dp av-touch-dp-${dir.name}`}
+        {...handlers(button)}
+      >
+        {arrow}
+      </button>
+    );
+  }
+
+  function renderRound(button: TouchButton, kind: "a" | "b") {
     return (
       <button
         key={button.code}
         type="button"
-        className="av-touch-btn"
-        data-key={button.code}
-        data-glyph={/^[◀▶▲▼]$/.test(button.label) || undefined}
-        aria-label={button.name}
-        disabled={paused}
-        onPointerDown={(e) => press(button, e)}
-        onPointerUp={(e) => end(button, e)}
-        onPointerCancel={(e) => end(button, e)}
-        onLostPointerCapture={(e) => end(button, e)}
-        onMouseDown={(e) => e.preventDefault()}
-        onContextMenu={(e) => e.preventDefault()}
+        className={`av-touch-btn av-touch-${kind}`}
+        {...handlers(button)}
       >
+        <span className="av-touch-ring" aria-hidden />
+        <span className="av-touch-letter" aria-hidden>
+          {kind.toUpperCase()}
+        </span>
+      </button>
+    );
+  }
+
+  function renderPill(button: TouchButton) {
+    return (
+      <button key={button.code} type="button" className="av-touch-pill" {...handlers(button)}>
         <span aria-hidden>{button.label}</span>
       </button>
     );
@@ -146,10 +210,21 @@ export function TouchControls({
 
   return (
     <div className="av-touch" style={{ "--av-touch-rgb": RGB[accent] } as CSSProperties}>
-      <div className={cx("av-touch-move", `av-touch-${controls.move.layout}`)}>
-        {controls.move.buttons.map(renderButton)}
+      <div className="av-touch-body">
+        <div className="av-touch-dpad">
+          {DIRECTIONS.map(renderDirection)}
+          <div className="av-touch-hub" aria-hidden>
+            <span className="av-touch-gem" />
+          </div>
+        </div>
+        {controls.extra && controls.extra.length > 0 && (
+          <div className="av-touch-extra">{controls.extra.map(renderPill)}</div>
+        )}
+        <div className="av-touch-ab">
+          {renderRound(controls.b, "b")}
+          {renderRound(controls.a, "a")}
+        </div>
       </div>
-      <div className="av-touch-actions">{controls.actions.map(renderButton)}</div>
     </div>
   );
 }

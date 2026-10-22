@@ -5,7 +5,7 @@ export type Category = "Arcade" | "Puzzle" | "Shooter" | "Versus";
 export interface TouchButton {
   /** KeyboardEvent.code that the bridge dispatches, e.g. "ArrowLeft", "Space", "KeyP". */
   code: string;
-  /** Short visible text or symbol, e.g. "◀", "FIRE". */
+  /** Visible text for `extra` buttons, e.g. "HOLD", "1". A and B show their letter. */
   label: string;
   /** Accessible name, e.g. "Rotate left". */
   name: string;
@@ -14,10 +14,14 @@ export interface TouchButton {
 }
 
 export interface TouchControls {
-  /** Left cluster: movement. `cross` lays four buttons as a D-pad, `row` lays up to three side by side. */
-  move: { layout: "cross" | "row"; buttons: TouchButton[] };
-  /** Right cluster: actions, laid in a 2-column grid from the bottom right. */
-  actions: TouchButton[];
+  /** D-pad directions the game uses. Codes are ArrowUp, ArrowDown, ArrowLeft, ArrowRight. The others are drawn disabled. */
+  move: TouchButton[];
+  /** Big button on the right, in the game's accent. The main action. */
+  a: TouchButton;
+  /** Big cyan button on the left of A. The second action. */
+  b: TouchButton;
+  /** Small pills for the rest, at most three. Optional. */
+  extra?: TouchButton[];
 }
 
 export interface Game {
@@ -64,17 +68,12 @@ export const GAMES: Game[] = [
     aspect: "4 / 3",
     controls: "← → to rotate · ↑ to thrust · SPACE to fire",
     touch: {
-      move: {
-        layout: "row",
-        buttons: [
-          { code: "ArrowLeft", label: "◀", name: "Rotate left" },
-          { code: "ArrowRight", label: "▶", name: "Rotate right" },
-        ],
-      },
-      actions: [
-        { code: "ArrowUp", label: "▲", name: "Thrust" },
-        { code: "Space", label: "FIRE", name: "Fire, start or restart" },
+      move: [
+        { code: "ArrowLeft", label: "◀", name: "Rotate left" },
+        { code: "ArrowRight", label: "▶", name: "Rotate right" },
       ],
+      a: { code: "Space", label: "A", name: "Fire, start or restart" },
+      b: { code: "ArrowUp", label: "B", name: "Thrust" },
     },
     difficulty: 4,
     plays: "11.3K",
@@ -92,17 +91,14 @@ export const GAMES: Game[] = [
     aspect: "4 / 3",
     controls: "← → to move · ↑ or X to rotate · ↓ to soft drop · SPACE to hard drop · C to hold",
     touch: {
-      move: {
-        layout: "cross",
-        buttons: [
-          { code: "ArrowLeft", label: "◀", name: "Move left", repeat: true },
-          { code: "ArrowRight", label: "▶", name: "Move right", repeat: true },
-          { code: "ArrowDown", label: "▼", name: "Soft drop", repeat: true },
-        ],
-      },
-      actions: [
-        { code: "ArrowUp", label: "ROT", name: "Rotate" },
-        { code: "Space", label: "DROP", name: "Hard drop" },
+      move: [
+        { code: "ArrowLeft", label: "◀", name: "Move left", repeat: true },
+        { code: "ArrowRight", label: "▶", name: "Move right", repeat: true },
+        { code: "ArrowDown", label: "▼", name: "Soft drop", repeat: true },
+      ],
+      a: { code: "Space", label: "A", name: "Hard drop" },
+      b: { code: "ArrowUp", label: "B", name: "Rotate" },
+      extra: [
         { code: "KeyC", label: "HOLD", name: "Hold piece" },
         { code: "KeyE", label: "SKILL", name: "Skills" },
       ],
@@ -123,16 +119,13 @@ export const GAMES: Game[] = [
     aspect: "4 / 3",
     controls: "← → or A/D to move · SPACE to launch · 1-3 to pick difficulty",
     touch: {
-      move: {
-        layout: "row",
-        buttons: [
-          { code: "ArrowLeft", label: "◀", name: "Move left" },
-          { code: "ArrowRight", label: "▶", name: "Move right" },
-        ],
-      },
-      actions: [
-        { code: "Space", label: "GO", name: "Launch or confirm" },
-        { code: "KeyP", label: "P", name: "Pause" },
+      move: [
+        { code: "ArrowLeft", label: "◀", name: "Move left" },
+        { code: "ArrowRight", label: "▶", name: "Move right" },
+      ],
+      a: { code: "Space", label: "A", name: "Launch or confirm" },
+      b: { code: "KeyP", label: "B", name: "Pause" },
+      extra: [
         { code: "Digit1", label: "1", name: "Easy difficulty" },
         { code: "Digit2", label: "2", name: "Normal difficulty" },
         { code: "Digit3", label: "3", name: "Hard difficulty" },
@@ -154,19 +147,14 @@ export const GAMES: Game[] = [
     aspect: "1 / 1",
     controls: "Arrows or WASD to steer · P to pause · SPACE to start",
     touch: {
-      move: {
-        layout: "cross",
-        buttons: [
-          { code: "ArrowUp", label: "▲", name: "Up" },
-          { code: "ArrowLeft", label: "◀", name: "Left" },
-          { code: "ArrowRight", label: "▶", name: "Right" },
-          { code: "ArrowDown", label: "▼", name: "Down" },
-        ],
-      },
-      actions: [
-        { code: "Space", label: "START", name: "Start or restart" },
-        { code: "KeyP", label: "P", name: "Pause" },
+      move: [
+        { code: "ArrowUp", label: "▲", name: "Up" },
+        { code: "ArrowLeft", label: "◀", name: "Left" },
+        { code: "ArrowRight", label: "▶", name: "Right" },
+        { code: "ArrowDown", label: "▼", name: "Down" },
       ],
+      a: { code: "Space", label: "A", name: "Start or restart" },
+      b: { code: "KeyP", label: "B", name: "Pause" },
     },
     difficulty: 2,
     plays: "9.1K",

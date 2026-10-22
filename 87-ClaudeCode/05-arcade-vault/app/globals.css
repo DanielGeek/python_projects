@@ -4469,77 +4469,323 @@ body:has(.av-home) .av-footer {
   text-shadow: 0 0 6px rgba(255, 0, 110, 0.5);
 }
 
-/* ---------- Touch controls (SPEC 12) ---------- */
+/* ---------- Touch controls (SPEC 12, look of SPEC 13) ---------- */
 /* A pad in normal flow right below the CRT screen, so it never covers the canvas. */
+/* Look ported from references/gamepad-assets/gamepad.html (Gamepad MK-II). */
 .av-touch {
-  --av-touch-size: 56px;
-  --av-touch-gap: 8px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  position: relative;
+  width: 100%;
   box-sizing: border-box;
+  padding: 16px 22px 14px;
+  background: linear-gradient(180deg, #1c1c28 0%, #0c0c14 100%);
+  border: 1px solid rgba(0, 245, 255, 0.18);
+  border-radius: 22px;
+  box-shadow:
+    0 30px 80px -30px rgba(0, 245, 255, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.02),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.6);
+  margin-bottom: env(safe-area-inset-bottom);
 }
-.av-touch-move,
-.av-touch-actions {
-  display: flex;
-  gap: var(--av-touch-gap);
+.av-touch::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(0, 245, 255, 0.14);
+  border-radius: 18px;
+  pointer-events: none;
 }
-.av-touch-cross {
+.av-touch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 8px 8px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.6;
+}
+.av-touch-body {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: repeat(3, var(--av-touch-size));
-  grid-template-rows: repeat(3, var(--av-touch-size));
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: "dpad extra ab";
+  align-items: center;
+  gap: 18px;
+  padding: 24px 12px;
 }
-.av-touch-cross [data-key="ArrowUp"] {
-  grid-area: 1 / 2;
+.av-touch-dpad {
+  grid-area: dpad;
+  justify-self: start;
+  position: relative;
+  width: 156px;
+  height: 156px;
 }
-.av-touch-cross [data-key="ArrowLeft"] {
-  grid-area: 2 / 1;
+.av-touch-dp {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #1a1a25, #0a0a12);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  color: var(--ink-dim);
+  cursor: pointer;
+  box-shadow:
+    0 4px 0 #050507,
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.6);
+  transition:
+    transform 80ms,
+    box-shadow 140ms,
+    color 140ms,
+    border-color 140ms,
+    background 140ms;
 }
-.av-touch-cross [data-key="ArrowRight"] {
-  grid-area: 2 / 3;
+.av-touch-arrow {
+  width: 22px;
+  height: 22px;
+  transition: filter 140ms;
 }
-.av-touch-cross [data-key="ArrowDown"] {
-  grid-area: 3 / 2;
+.av-touch-dp[data-pressed] {
+  transform: translateY(3px);
+  color: rgb(var(--av-touch-rgb));
+  background: linear-gradient(180deg, #08161e, #030a0e);
+  border-color: rgb(var(--av-touch-rgb));
+  box-shadow:
+    0 1px 0 #050507,
+    inset 0 0 16px rgba(var(--av-touch-rgb), 0.45),
+    0 0 16px rgba(var(--av-touch-rgb), 0.5);
 }
-/* Two columns, filled from the bottom right. */
-.av-touch-actions {
-  flex-flow: row-reverse wrap-reverse;
-  justify-content: flex-start;
-  width: calc(var(--av-touch-size) * 2 + var(--av-touch-gap));
+.av-touch-dp[data-pressed] .av-touch-arrow {
+  filter: drop-shadow(0 0 6px rgb(var(--av-touch-rgb)))
+    drop-shadow(0 0 12px rgb(var(--av-touch-rgb)));
+}
+.av-touch-dp-up {
+  top: 0;
+  left: 53px;
+}
+.av-touch-dp-down {
+  bottom: 0;
+  left: 53px;
+}
+.av-touch-dp-left {
+  left: 0;
+  top: 53px;
+}
+.av-touch-dp-right {
+  right: 0;
+  top: 53px;
+}
+.av-touch-hub {
+  position: absolute;
+  top: 53px;
+  left: 53px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 50%, #181822 0%, #08080d 80%);
+  border: 1px solid rgba(0, 245, 255, 0.15);
+  border-radius: 6px;
+  box-shadow:
+    inset 0 0 12px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+}
+.av-touch-gem {
+  width: 12px;
+  height: 12px;
+  background: rgb(var(--av-touch-rgb));
+  box-shadow:
+    0 0 10px rgb(var(--av-touch-rgb)),
+    inset 0 0 4px rgba(0, 0, 0, 0.5);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  animation: av-touch-pulse 2s ease-in-out infinite;
+}
+@keyframes av-touch-pulse {
+  50% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .av-touch-gem {
+    animation: none;
+  }
+}
+/* B then A. B is always cyan, A uses the game accent. */
+.av-touch-ab {
+  grid-area: ab;
+  justify-self: end;
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 22px;
+  justify-items: center;
+  align-items: center;
 }
 .av-touch-btn {
-  width: var(--av-touch-size);
-  height: var(--av-touch-size);
-  min-width: 56px;
-  min-height: 56px;
+  position: relative;
+  width: 74px;
+  height: 74px;
   padding: 0;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
-  border: 2px solid rgba(var(--av-touch-rgb), 0.7);
-  background: rgba(var(--av-touch-rgb), 0.35);
+  border: 2px solid rgb(var(--ab-rgb));
+  color: rgb(var(--ab-rgb));
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.25), transparent 50%),
+    radial-gradient(circle at 50% 55%, rgba(var(--ab-rgb), 0.7), rgba(var(--ab-rgb), 0.22) 75%),
+    #0c0c14;
+  cursor: pointer;
+  box-shadow:
+    0 6px 0 #050507,
+    0 0 22px rgba(var(--ab-rgb), 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 80ms,
+    box-shadow 140ms;
+}
+.av-touch-a {
+  --ab-rgb: var(--av-touch-rgb);
+}
+.av-touch-b {
+  --ab-rgb: 0, 245, 255;
+}
+.av-touch-letter {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 0.02em;
   color: #fff;
+  text-shadow:
+    0 0 8px rgb(var(--ab-rgb)),
+    0 0 18px rgb(var(--ab-rgb)),
+    0 1px 0 rgba(0, 0, 0, 0.6);
+}
+.av-touch-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px dashed currentColor;
+  opacity: 0;
+  transition:
+    opacity 140ms,
+    transform 200ms;
+  pointer-events: none;
+}
+.av-touch-btn[data-pressed] {
+  transform: translateY(4px) scale(0.97);
+  box-shadow:
+    0 1px 0 #050507,
+    0 0 36px rgba(var(--ab-rgb), 0.4),
+    inset 0 0 18px rgba(0, 0, 0, 0.5);
+}
+.av-touch-btn[data-pressed] .av-touch-ring {
+  opacity: 1;
+  transform: scale(1.08);
+}
+/* Small buttons: the centre of the grid, or a full row under the pad on a narrow shell. */
+.av-touch-extra {
+  grid-area: extra;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.av-touch-pill {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #1a1a25, #0a0a12);
+  border: 1px solid rgba(0, 245, 255, 0.25);
+  border-radius: 10px;
+  color: var(--ink-dim);
   font-family: var(--font-display);
   font-size: 10px;
   line-height: 1;
   white-space: nowrap;
-  text-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
-  pointer-events: auto;
   cursor: pointer;
+  box-shadow:
+    0 3px 0 #050507,
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.6);
+  transition:
+    transform 80ms,
+    box-shadow 140ms,
+    color 140ms,
+    border-color 140ms;
 }
-.av-touch-btn[data-glyph] {
-  font-family: system-ui, sans-serif;
-  font-size: 22px;
+.av-touch-pill[data-pressed] {
+  transform: translateY(2px);
+  color: rgb(var(--av-touch-rgb));
+  border-color: rgb(var(--av-touch-rgb));
+  box-shadow:
+    0 1px 0 #050507,
+    inset 0 0 12px rgba(var(--av-touch-rgb), 0.45),
+    0 0 12px rgba(var(--av-touch-rgb), 0.5);
 }
-.av-touch-btn[data-pressed],
-.av-touch-btn:active {
-  background: rgba(var(--av-touch-rgb), 0.8);
-  box-shadow: 0 0 14px rgba(var(--av-touch-rgb), 0.9);
+/* Paused (every button is disabled) and unused directions. */
+.av-touch-dp:disabled,
+.av-touch-btn:disabled,
+.av-touch-pill:disabled {
+  opacity: 0.3;
 }
-.av-touch-btn:disabled {
-  opacity: 0.25;
+@media (max-width: 620px) {
+  .av-touch {
+    padding: 12px 14px 10px;
+    border-radius: 16px;
+  }
+  .av-touch-body {
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      "dpad ab"
+      "extra extra";
+    justify-content: space-between;
+    gap: 14px;
+    padding: 18px 6px;
+  }
+  .av-touch-dpad {
+    width: 144px;
+    height: 144px;
+  }
+  .av-touch-dp {
+    width: 46px;
+    height: 46px;
+    border-radius: 8px;
+  }
+  .av-touch-dp-up,
+  .av-touch-dp-down {
+    left: 49px;
+  }
+  .av-touch-dp-left,
+  .av-touch-dp-right {
+    top: 49px;
+  }
+  .av-touch-hub {
+    top: 49px;
+    left: 49px;
+    width: 46px;
+    height: 46px;
+  }
+  .av-touch-btn {
+    width: 64px;
+    height: 64px;
+  }
+  .av-touch-ab {
+    gap: 16px;
+  }
 }
 /* Pause and Exit in a thin row above the bezel, in place of the HUD. */
 .av-touch-bar {
@@ -4558,7 +4804,9 @@ body:has(.av-home) .av-footer {
   font-size: 10px;
   cursor: pointer;
 }
+.av-touch-dp,
 .av-touch-btn,
+.av-touch-pill,
 .av-touch-mini {
   touch-action: none;
   user-select: none;
