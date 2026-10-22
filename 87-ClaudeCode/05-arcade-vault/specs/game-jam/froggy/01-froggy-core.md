@@ -277,7 +277,7 @@ CLAUDE.md                                           documents the above
 - [x] The host receives `state` messages with `game: "froggy"` carrying `score`, `lives`, `level` and `over`, and `over` is `true` only at game over.
 - [x] Pause and resume from the host freeze and resume the game and its timer through the bridge.
 - [x] `public.games` has the row `('froggy', 'Froggy', 'Arcade', 'yellow')`, and `list_migrations` shows the same name as the file in `supabase/migrations/`.
-- [ ] A finished run shows `SCORE SAVED`, is stored with `game_id = 'froggy'` and appears in `/hall-of-fame` under `Froggy` only.
+- [x] A finished run shows `SCORE SAVED`, is stored with `game_id = 'froggy'` and appears in `/hall-of-fame` under `Froggy` only.
 - [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
 - [x] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `froggy`.
 - [ ] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `components/ui/game.tsx`, the other games' folders and the other covers have no edits (`git diff` is empty for them).
