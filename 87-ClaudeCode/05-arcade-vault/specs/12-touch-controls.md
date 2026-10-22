@@ -38,6 +38,7 @@ Findings that shape the plan:
 - A hook `useCoarsePointer` (in `components/ui/touch-controls.tsx` or `lib/`) built on `matchMedia("(pointer: coarse)")` with `useSyncExternalStore`, `false` on the server.
 - `app/game/[id]/play/game-player.tsx`: render `TouchControls` inside the CRT screen when the pointer is coarse and the game has a `touch` config, only while the status is `playing`, the game has loaded and the final-score modal is closed. When the pointer is coarse, hide the HUD and show a small Pause and a small Exit button at the top of the screen instead.
 - `app/globals.css`: `av-touch-*` rules (clusters, round buttons, pressed state, semi-transparent), plus `@media (pointer: coarse)` rules that hide `.av-hud`, set `touch-action: none` and `user-select: none` on the CRT screen and on the buttons, and stop the callout and double-tap zoom.
+- `public/games/asteroids/index.html`: a `fitToFrame()` script that scales the 800×600 canvas down with CSS `zoom` to fit the iframe and never up, as `drop`, `brick-buster` and `snake` already do. It lives in `index.html` and not in `game.js`, so `game.js` stays untouched. Added after a real-phone capture showed the canvas cut at the right edge.
 - `lib/games.test.ts`: every game has a valid `touch` config, and each key code of it appears in that game's `game.js`.
 - Update `CLAUDE.md`: the `games.ts`, `components/ui/`, `game-player.tsx` and **Host ↔ game bridge** bullets, and the Next.js/testing notes if a command changes.
 
@@ -183,6 +184,8 @@ CLAUDE.md                                 documents the above
 - **No:** a `TOUCH` tag or changes to `controls` copy. The extras question was left unanswered in the definition, so it stays out. It is a one-line change for its own spec.
 - **No:** `allowedDevOrigins` or a LAN workflow. The reference capture shows the dev server already reachable from a phone.
 - **No:** landscape-specific layouts. The same overlay is used and it is not tuned.
+- **Yes:** Pause and Exit in a thin row above the CRT bezel, not inside the screen, because inside they covered the game's own skin and theme toolbar. **No:** floating them over the screen.
+- **Yes:** the Asteroids canvas scales to the frame from `index.html` (user decision, from a phone capture). **No:** editing `game.js`, which this spec keeps untouched.
 - **Yes:** `touch-action: none` and `user-select: none` only on the CRT screen and the buttons, so the rest of the site keeps normal scroll and zoom.
 
 ---
