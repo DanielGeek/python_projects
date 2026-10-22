@@ -129,6 +129,7 @@ export function TouchControls({
         type="button"
         className="av-touch-btn"
         data-key={button.code}
+        data-glyph={/^[◀▶▲▼]$/.test(button.label) || undefined}
         aria-label={button.name}
         disabled={paused}
         onPointerDown={(e) => press(button, e)}

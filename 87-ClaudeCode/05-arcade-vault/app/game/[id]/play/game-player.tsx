@@ -144,6 +144,23 @@ export function GamePlayer({ game }: { game: Game }) {
           onExit={() => router.push(`/game/${game.id}`)}
         />
       )}
+      {coarse && (
+        // Pause and Exit above the bezel: inside the screen they would cover the game's own toolbar.
+        <div className="av-touch-bar">
+          {status === "playing" && !loading && (
+            <button type="button" className="av-touch-mini" onClick={togglePause}>
+              {paused ? "Resume" : "Pause"}
+            </button>
+          )}
+          <button
+            type="button"
+            className="av-touch-mini"
+            onClick={() => router.push(`/game/${game.id}`)}
+          >
+            Exit
+          </button>
+        </div>
+      )}
       <CRTScreen
         aspect={game.aspect}
         label={game.title}
@@ -166,22 +183,6 @@ export function GamePlayer({ game }: { game: Game }) {
                 <span className="av-paused-title">PAUSED</span>
                 <span className="av-paused-hint">Click to resume</span>
               </button>
-            )}
-            {coarse && (
-              <div className="av-touch-top">
-                {status === "playing" && !loading && (
-                  <button type="button" className="av-touch-mini" onClick={togglePause}>
-                    {paused ? "Resume" : "Pause"}
-                  </button>
-                )}
-                <button
-                  type="button"
-                  className="av-touch-mini"
-                  onClick={() => router.push(`/game/${game.id}`)}
-                >
-                  Exit
-                </button>
-              </div>
             )}
             {coarse && game.touch && status === "playing" && !loading && finalScore == null && (
               <TouchControls
