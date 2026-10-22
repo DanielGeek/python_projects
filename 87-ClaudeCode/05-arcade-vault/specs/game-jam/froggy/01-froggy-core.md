@@ -272,7 +272,7 @@ CLAUDE.md                                           documents the above
 - [x] `/library` lists Froggy with its rendered yellow cover, and the other four games are unchanged.
 - [x] `/game/froggy` shows the title, description, controls `Arrows or swipe to hop · SPACE to start`, `ARCADE` and the `KEYBOARD / TOUCH` tag.
 - [x] `/game/froggy/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
-- [ ] While playing, the arrow keys and Space do not scroll the host page, and a swipe on the canvas does not scroll it either.
+- [x] While playing, the arrow keys and Space do not scroll the host page, and a swipe on the canvas does not scroll it either.
 - [x] At 1530×772 and at 375×812 the whole 800×600 canvas is visible inside the frame, and the game document does not overflow.
 - [x] The host receives `state` messages with `game: "froggy"` carrying `score`, `lives`, `level` and `over`, and `over` is `true` only at game over.
 - [x] Pause and resume from the host freeze and resume the game and its timer through the bridge.
