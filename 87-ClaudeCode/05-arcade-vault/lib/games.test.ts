@@ -120,7 +120,7 @@ describe("bridge.js key message", () => {
 describe("ARCHIVED_GAMES", () => {
   it("keeps the games removed by SPEC 08 that have not come back", () => {
     expect(ARCHIVED_GAMES.map((g) => g.id).sort()).toEqual(
-      ["froggy", "invaders", "muncher", "pixel-duel", "rocks", "serpent"].sort(),
+      ["invaders", "muncher", "pixel-duel", "rocks", "serpent"].sort(),
     );
   });
 

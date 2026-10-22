@@ -48,11 +48,12 @@ export interface Game {
   tags: string[];
 }
 
-// Asteroids, Drop, Brick Buster and Snake are in the catalog for now: SPEC 08 cut it down to Asteroids,
-// the first game whose scores are saved to Supabase, SPEC 09 brought Drop back, SPEC 10 brought Brick
-// Buster back and SPEC 11 added Snake as a new game (not from the archive). They live in public/games
-// with public/games/bridge.js added to report their state.
-// The other six games were removed from the catalog and from the `games` table; their entries live
+// Asteroids, Drop, Brick Buster, Snake and Froggy are in the catalog for now: SPEC 08 cut it down to
+// Asteroids, the first game whose scores are saved to Supabase, SPEC 09 brought Drop back, SPEC 10
+// brought Brick Buster back, SPEC 11 added Snake as a new game (not from the archive) and SPEC GJ
+// froggy-01 brought Froggy back, written from scratch. They live in public/games with
+// public/games/bridge.js added to report their state.
+// The other five games were removed from the catalog and from the `games` table; their entries live
 // in lib/games-archive.ts and their folders in public/games stay on disk. A game that returns is
 // moved from the archive to this array, with a migration that inserts its `games` row.
 export const GAMES: Game[] = [
@@ -159,6 +160,31 @@ export const GAMES: Game[] = [
     difficulty: 2,
     plays: "9.1K",
     tags: ["1 PLAYER", "KEYBOARD", "RETRO 1976"],
+  },
+  {
+    id: "froggy",
+    title: "Froggy",
+    category: "Arcade",
+    tagline: "Dodge the traffic, ride the logs, fill every pad.",
+    description:
+      "Hop a five-lane highway and ride drifting logs across the river to fill all five pads before the clock runs out. Every forward hop, every pad and every second left on the timer scores. Three lives, and each cleared set of pads speeds everything up.",
+    accent: "yellow",
+    src: "/games/froggy/index.html",
+    aspect: "4 / 3",
+    controls: "Arrows or swipe to hop · SPACE to start",
+    touch: {
+      move: [
+        { code: "ArrowUp", label: "▲", name: "Up" },
+        { code: "ArrowLeft", label: "◀", name: "Left" },
+        { code: "ArrowRight", label: "▶", name: "Right" },
+        { code: "ArrowDown", label: "▼", name: "Down" },
+      ],
+      a: { code: "Space", label: "A", name: "Start or restart" },
+      b: { code: "Enter", label: "B", name: "Start or restart" },
+    },
+    difficulty: 3,
+    plays: "6.4K",
+    tags: ["1 PLAYER", "KEYBOARD / TOUCH", "RETRO 1985"],
   },
 ];
 
