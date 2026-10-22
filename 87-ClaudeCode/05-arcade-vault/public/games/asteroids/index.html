@@ -114,5 +114,19 @@
   </div>
   <script src="../bridge.js" data-game="asteroids"></script>
   <script src="game.js"></script>
+  <script>
+    // The host frame can be smaller than the 800x600 canvas: scale it down to fit, never up.
+    (function () {
+      var canvas = document.getElementById('canvas');
+      function fitToFrame() {
+        if (!innerWidth || !innerHeight) return; // hidden iframe: nothing to measure
+        // +2 is the canvas border.
+        var scale = Math.min(1, innerWidth / (canvas.width + 2), innerHeight / (canvas.height + 2));
+        canvas.style.zoom = scale < 1 ? String(scale) : '';
+      }
+      window.addEventListener('resize', fitToFrame);
+      fitToFrame();
+    })();
+  </script>
 </body>
 </html>
