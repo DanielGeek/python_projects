@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Froggy</title>
+  <link rel="icon" href="data:,">
+  <style>
+    /* Dark is the default theme; light overrides apply under [data-theme="light"],
+       skin overrides come after the theme rules. */
+    :root {
+      color-scheme: dark;
+      --page-bg: #000000;
+      --frame-glow: none;
+      --bar-bg: #121a2e;
+      --bar-text: #e8e8ff;
+      --bar-border: #4a5a80;
+      --bar-font: 12px monospace;
+      --focus: #00f0ff;
+    }
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --page-bg: #e4e6ee;
+      --bar-bg: #ffffff;
+      --bar-text: #1a1530;
+      --bar-border: #6b6b80;
+      --focus: #006570;
+    }
+    :root[data-skin="retro"] {
+      --page-bg: #0a0600;
+      --bar-bg: #241600;
+      --bar-text: #ffb000;
+      --bar-border: #b37b00;
+      --bar-font: bold 12px "Courier New", Courier, monospace;
+      --focus: #fff0b3;
+    }
+    :root[data-skin="retro"][data-theme="light"] {
+      --page-bg: #b9cc9a;
+      --bar-bg: #e3efd0;
+      --bar-text: #0f380f;
+      --bar-border: #306230;
+      --focus: #0f380f;
+    }
+    :root[data-skin="neon"] {
+      --page-bg: #020206;
+      --frame-glow: 0 0 14px rgba(0, 240, 255, 0.7), 0 0 34px rgba(255, 43, 214, 0.3);
+      --bar-bg: #0a0a16;
+      --bar-text: #e8ffff;
+      --bar-border: #00b8c4;
+      --focus: #ff2bd6;
+    }
+    /* The neon play area stays dark in both themes; only the page changes. */
+    :root[data-skin="neon"][data-theme="light"] {
+      --page-bg: #cfd3e6;
+      --focus: #c4009e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      background: var(--page-bg);
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #stage {
+      position: relative; /* anchors the toolbar; the size and fitToFrame() are unchanged */
+      width: 800px;
+      height: 600px;
+    }
+    canvas {
+      display: block;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      box-shadow: var(--frame-glow);
+    }
+    /* Inside #stage so it scales with the stage zoom. By default it sits in the start row, between
+       the SCORE label and the frog's start cell; when the frame has room, it moves above the canvas. */
+    .toolbar {
+      position: absolute;
+      left: 172px;
+      top: 561px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font: var(--bar-font);
+      color: var(--bar-text);
+    }
+    @media (min-height: 668px) and (min-width: 800px) {
+      .toolbar { left: 50%; top: -32px; transform: translateX(-50%); }
+    }
+    .toolbar select,
+    .toolbar button {
+      font: inherit;
+      color: var(--bar-text);
+      background: var(--bar-bg);
+      border: 1px solid var(--bar-border);
+      border-radius: 3px;
+      padding: 2px 6px;
+      height: 22px;
+      cursor: pointer;
+    }
+    .toolbar select:focus-visible,
+    .toolbar button:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <div class="toolbar">
+      <select id="skin-select" aria-label="Visual skin"></select>
+      <button id="theme-toggle" type="button" aria-pressed="false" aria-label="Light theme">
+        <span id="theme-toggle-icon" aria-hidden="true">&#9728;</span>
+        <span id="theme-toggle-text" aria-hidden="true">Light</span>
+      </button>
+    </div>
+  </div>
+  <script src="../bridge.js" data-game="froggy"></script>
+  <script src="game.js"></script>
+</body>
+</html>

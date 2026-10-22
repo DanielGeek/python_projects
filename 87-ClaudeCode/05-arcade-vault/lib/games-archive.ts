@@ -4,15 +4,15 @@ const TAGS = ["1 PLAYER", "KEYBOARD / TOUCH", "RETRO 1985"];
 
 // Games removed from the catalog by SPEC 08, kept here as data so they can come back. Nothing
 // imports this file on purpose: these entries are not in GAMES, so they are not listed, not
-// playable and not part of the Supabase `games` table. Drop came back with SPEC 09 and Brick Buster
-// with SPEC 10, so they are no longer here.
+// playable and not part of the Supabase `games` table. Drop came back with SPEC 09, Brick Buster
+// with SPEC 10 and Froggy with SPEC GJ froggy-01, so they are no longer here.
 //
 // To bring a game back:
 //   1. Move its entry from this array to GAMES in lib/games.ts.
 //   2. Add a migration that inserts its row in `public.games` (same id, title, category and accent).
 //   3. Playable games (src set) still need their folder in public/games/<id>/, a `readers` entry in
 //      public/games/bridge.js and an `av-cover-<id>` rule in app/globals.css. The folder of rocks is
-//      still on disk; the other five never had one.
+//      still on disk; the other four never had one.
 export const ARCHIVED_GAMES: Game[] = [
   {
     id: "serpent",
@@ -72,21 +72,6 @@ export const ARCHIVED_GAMES: Game[] = [
     controls: "← → to rotate · ↑ to thrust · SPACE to fire",
     difficulty: 4,
     plays: "15.6K",
-    tags: TAGS,
-  },
-  {
-    id: "froggy",
-    title: "Froggy",
-    category: "Arcade",
-    tagline: "Cross the pixel highway.",
-    description:
-      "Hop between lanes of speeding cars and drifting logs on the river. Reach the lily pads before time runs out.",
-    accent: "green",
-    src: null,
-    aspect: "4 / 3",
-    controls: "Arrow keys to hop",
-    difficulty: 2,
-    plays: "6.4K",
     tags: TAGS,
   },
   {

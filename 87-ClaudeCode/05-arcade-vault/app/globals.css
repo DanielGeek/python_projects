@@ -1192,6 +1192,15 @@ body {
   text-align: center;
   animation: av-pop 200ms ease-out;
 }
+/* Phone landscape: the final-score modal is taller than the screen, so it starts at the top and
+   the scrim scrolls; centered, its title and its buttons were cut off and unreachable. */
+@media (max-height: 520px) {
+  .av-modal-scrim {
+    place-items: start center;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
 .av-modal-cyan {
   border-color: var(--cyan);
   box-shadow: var(--glow-cyan);
@@ -2077,15 +2086,37 @@ body {
   z-index: 1;
 }
 
+/* Froggy: river on top, a median strip, then a road with neon traffic. A yellow frog sits on the
+   median. A percentage position is relative to the free space (container minus layer), so each
+   offset is left / (100% - width) and top / (100% - height). */
 .av-cover-froggy {
-  background: linear-gradient(180deg, #001f2a, #0a0a18);
+  background: linear-gradient(
+    180deg,
+    #0a2a5c 0 45%,
+    #121a2e 45% 54%,
+    #10101c 54% 90%,
+    #121a2e 90% 100%
+  );
 }
 .av-cover-froggy::after {
   inset: 0;
   background:
-    repeating-linear-gradient(0deg, #00f5ff2e 0 20px, transparent 20px 40px),
-    radial-gradient(circle at 50% 55%, var(--green) 0 14px, transparent 15px);
-  filter: drop-shadow(0 0 8px #00ff8880);
+    /* the frog: eyes over body */
+    radial-gradient(circle at calc(50% - 5px) calc(49% - 6px), #1a1530 0 2px, transparent 3px),
+    radial-gradient(circle at calc(50% + 5px) calc(49% - 6px), #1a1530 0 2px, transparent 3px),
+    radial-gradient(circle at 50% 50%, var(--yellow) 0 11px, transparent 12px),
+    /* traffic: three lanes */ linear-gradient(var(--cyan), var(--cyan)) 13.2% 59.8% / 24% 8%,
+    linear-gradient(var(--cyan), var(--cyan)) 81.6% 59.8% / 24% 8%,
+    linear-gradient(var(--magenta), var(--magenta)) 32.6% 73.9% / 14% 8%,
+    linear-gradient(var(--magenta), var(--magenta)) 86% 73.9% / 14% 8%,
+    linear-gradient(var(--cyan), var(--cyan)) 7.3% 88% / 18% 8%,
+    linear-gradient(var(--cyan), var(--cyan)) 61% 88% / 18% 8%,
+    /* logs: two lanes */ linear-gradient(#1b7480, #1b7480) 6.1% 11.1% / 34% 10%,
+    linear-gradient(#1b7480, #1b7480) 87.9% 11.1% / 34% 10%,
+    linear-gradient(#1b7480, #1b7480) 27% 28.9% / 26% 10%,
+    linear-gradient(#1b7480, #1b7480) 91.7% 28.9% / 28% 10%;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 0 8px #f5ff0088);
 }
 
 .av-cover-pixel-duel {
@@ -4825,5 +4856,16 @@ body:has(.av-home) .av-footer {
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
+  }
+  /* The Pause and Exit row stays 32px thin, but each tap target reaches 44px: the hit area grows
+     into the player's top padding and the gap above the bezel, never over the CRT. */
+  .av-touch-mini {
+    position: relative;
+    min-width: 44px;
+  }
+  .av-touch-mini::after {
+    content: "";
+    position: absolute;
+    inset: -6px 0;
   }
 }

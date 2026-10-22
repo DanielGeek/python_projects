@@ -1,6 +1,6 @@
 # SPEC GJ froggy-01 — Froggy core game
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 08, SPEC 09, SPEC 10, SPEC 11
 > **Date:** 2026-10-20
 > **Objective:** Bring `froggy` back from `lib/games-archive.ts` as a new lane-crossing game, written from scratch with original art, and add it to the vault as a playable catalog entry with id `froggy`, ranked in the global leaderboard.
@@ -22,7 +22,7 @@ The existing `av-cover-froggy` rule is green and cyan. It is rewritten in yellow
 
 Adding a game follows the checklist in `CLAUDE.md` (**Host ↔ game bridge**) plus the `games` row that saved scores need (SPEC 08). The player and the leaderboard need no changes: `game-player.tsx` saves the score when the bridge reports `over`, and `/hall-of-fame` builds its tabs from `GAMES`. The fit to the frame reuses the `fitToFrame()` pattern of SPEC 09 (`drop`), SPEC 10 and SPEC 11.
 
-The game has touch controls (swipe), so it carries the `TOUCH` tag. Swipe is new for the vault: no other game has it. The arrows still call `preventDefault`, so the host page does not scroll.
+The game has touch controls (swipe), so it carries the `TOUCH` tag. Swipe is new for the vault: no other game has it. The arrows still call `preventDefault`, so the host page does not scroll. Since SPEC 12, every playable catalog entry also needs a `touch` config (the on-screen pad under the CRT frame, which `lib/games.test.ts` checks), so the entry carries one next to the swipe: the pad and the swipe both work on a phone.
 
 ---
 
@@ -35,7 +35,7 @@ The game has touch controls (swipe), so it carries the `TOUCH` tag. Swipe is new
 - `game.js` is a classic script with top-level globals, a `requestAnimationFrame` loop timed with `performance.now()`, `preventDefault` on the arrow keys and Space, and swipe handling with pointer events.
 - A `fitToFrame()` that scales the page down with CSS `zoom` and never up, as in `snake`.
 - A `readers["froggy"]` entry in `public/games/bridge.js`.
-- Move the `froggy` entry from `ARCHIVED_GAMES` to `GAMES` in `lib/games.ts` (after `snake`), with the new accent, text and `src`. Remove it from `lib/games-archive.ts` and update its header comment.
+- Move the `froggy` entry from `ARCHIVED_GAMES` to `GAMES` in `lib/games.ts` (after `snake`), with the new accent, text, `src` and a `touch` config. Remove it from `lib/games-archive.ts` and update its header comment.
 - Update the id list in `lib/games.test.ts` (`ARCHIVED_GAMES` keeps the games removed by SPEC 08 that have not come back).
 - Rewrite `av-cover-froggy` in `app/globals.css` with the yellow accent, CSS only.
 - Migration `supabase/migrations/<version>_add_froggy_game.sql` that inserts the row in `public.games`, applied with the Supabase MCP.
@@ -70,6 +70,16 @@ Catalog entry (`lib/games.ts`, moved from `lib/games-archive.ts`):
   src: "/games/froggy/index.html",
   aspect: "4 / 3",
   controls: "Arrows or swipe to hop · SPACE to start",
+  touch: {
+    move: [
+      { code: "ArrowUp", label: "▲", name: "Up" },
+      { code: "ArrowLeft", label: "◀", name: "Left" },
+      { code: "ArrowRight", label: "▶", name: "Right" },
+      { code: "ArrowDown", label: "▼", name: "Down" },
+    ],
+    a: { code: "Space", label: "A", name: "Start or restart" },
+    b: { code: "Enter", label: "B", name: "Start or restart" },
+  },
   difficulty: 3,
   plays: "6.4K",
   tags: ["1 PLAYER", "KEYBOARD / TOUCH", "RETRO 1985"],
@@ -78,7 +88,7 @@ Catalog entry (`lib/games.ts`, moved from `lib/games-archive.ts`):
 
 `plays` is mock data, kept from the archived entry. The tags are the archived ones: `KEYBOARD / TOUCH` is the `TOUCH` tag for the swipe controls.
 
-The entry has no `touch` field. SPEC 12 gives the on-screen pad to games that use it; Froggy has its own swipe control, and adding a pad would be its own spec.
+The `touch` config is the SPEC 12 pad: the four arrows hop, and `A` and `B` both start or restart the run, because Froggy has only one action and `lib/games.test.ts` requires an `A` and a `B` with different codes that `game.js` handles (`Space` and `Enter`). There is no `repeat`, so one press on a pad button is one hop, as with a key. The swipe stays as the second touch control.
 
 ### Board
 
@@ -245,33 +255,33 @@ CLAUDE.md                                           documents the above
 
 ## Acceptance criteria
 
-- [ ] `npm run lint`, `npm test` and `npm run build` finish without errors.
-- [ ] `public/games/froggy/` contains exactly `index.html` and `game.js`.
-- [ ] `public/games/froggy/index.html` has `lang="en"` and loads `../bridge.js` with `data-game="froggy"` before `game.js`.
-- [ ] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls, no dependencies and no image or audio file.
-- [ ] The frog starts each attempt at x = 400 in row 11 with 30 s on the timer, and the timer does not run in `dead`, `cleared` or `ready`.
-- [ ] Each arrow press moves the frog exactly one cell, and left and right never take it outside 25 to 775.
-- [ ] A forward hop to a row above `bestRow` adds exactly 10, and a hop to a row already reached adds nothing.
-- [ ] Touching a vehicle, landing on water, riding a log off the screen, a landing outside an empty pad and the timer reaching 0 each cost exactly one life.
-- [ ] On a log, the frog moves with the log's speed.
-- [ ] Landing on an empty pad adds exactly `100 + 10 × floor(timeLeft)` and fills that pad.
-- [ ] Filling the fifth pad raises `level` by 1, empties the pads and makes the lanes faster, with no extra points.
-- [ ] The third death sets `state = 'gameover'`, and Space, Enter or a tap starts a new run with score 0, 3 lives and level 1.
-- [ ] A swipe of 30 px or more hops once in the dominant direction, a shorter tap hops up while playing, and a tap starts and restarts the run.
-- [ ] `GAMES` has exactly one entry with `id: "froggy"`, `src: "/games/froggy/index.html"`, `aspect: "4 / 3"`, `accent: "yellow"`, `category: "Arcade"` and `difficulty: 3`, placed after `snake`, and `ARCHIVED_GAMES` has no `froggy`.
-- [ ] `/library` lists Froggy with its rendered yellow cover, and the other four games are unchanged.
-- [ ] `/game/froggy` shows the title, description, controls `Arrows or swipe to hop · SPACE to start`, `ARCADE` and the `KEYBOARD / TOUCH` tag.
-- [ ] `/game/froggy/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
+- [x] `npm run lint`, `npm test` and `npm run build` finish without errors.
+- [x] `public/games/froggy/` contains exactly `index.html` and `game.js`.
+- [x] `public/games/froggy/index.html` has `lang="en"` and loads `../bridge.js` with `data-game="froggy"` before `game.js`.
+- [x] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls, no dependencies and no image or audio file.
+- [x] The frog starts each attempt at x = 400 in row 11 with 30 s on the timer, and the timer does not run in `dead`, `cleared` or `ready`.
+- [x] Each arrow press moves the frog exactly one cell, and left and right never take it outside 25 to 775.
+- [x] A forward hop to a row above `bestRow` adds exactly 10, and a hop to a row already reached adds nothing.
+- [x] Touching a vehicle, landing on water, riding a log off the screen, a landing outside an empty pad and the timer reaching 0 each cost exactly one life.
+- [x] On a log, the frog moves with the log's speed.
+- [x] Landing on an empty pad adds exactly `100 + 10 × floor(timeLeft)` and fills that pad.
+- [x] Filling the fifth pad raises `level` by 1, empties the pads and makes the lanes faster, with no extra points.
+- [x] The third death sets `state = 'gameover'`, and Space, Enter or a tap starts a new run with score 0, 3 lives and level 1.
+- [x] A swipe of 30 px or more hops once in the dominant direction, a shorter tap hops up while playing, and a tap starts and restarts the run.
+- [x] `GAMES` has exactly one entry with `id: "froggy"`, `src: "/games/froggy/index.html"`, `aspect: "4 / 3"`, `accent: "yellow"`, `category: "Arcade"`, `difficulty: 3` and a `touch` config, placed after `snake`, and `ARCHIVED_GAMES` has no `froggy`.
+- [x] `/library` lists Froggy with its rendered yellow cover, and the other four games are unchanged.
+- [x] `/game/froggy` shows the title, description, controls `Arrows or swipe to hop · SPACE to start`, `ARCADE` and the `KEYBOARD / TOUCH` tag.
+- [x] `/game/froggy/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
 - [ ] While playing, the arrow keys and Space do not scroll the host page, and a swipe on the canvas does not scroll it either.
-- [ ] At 1530×772 and at 375×812 the whole 800×600 canvas is visible inside the frame, and the game document does not overflow.
-- [ ] The host receives `state` messages with `game: "froggy"` carrying `score`, `lives`, `level` and `over`, and `over` is `true` only at game over.
-- [ ] Pause and resume from the host freeze and resume the game and its timer through the bridge.
-- [ ] `public.games` has the row `('froggy', 'Froggy', 'Arcade', 'yellow')`, and `list_migrations` shows the same name as the file in `supabase/migrations/`.
-- [ ] A finished run shows `SCORE SAVED`, is stored with `game_id = 'froggy'` and appears in `/hall-of-fame` under `Froggy` only.
-- [ ] `get_advisors` (security) reports no new warning about `games` or `scores`.
-- [ ] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `froggy`.
-- [ ] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `components/ui/game.tsx`, the other games' folders and the other covers have no edits (`git diff` is empty for them).
-- [ ] `references/implemented-games.md` and `CLAUDE.md` document Froggy, the seven migrations and the `public/games/froggy/` folder.
+- [x] At 1530×772 and at 375×812 the whole 800×600 canvas is visible inside the frame, and the game document does not overflow.
+- [x] The host receives `state` messages with `game: "froggy"` carrying `score`, `lives`, `level` and `over`, and `over` is `true` only at game over.
+- [x] Pause and resume from the host freeze and resume the game and its timer through the bridge.
+- [x] `public.games` has the row `('froggy', 'Froggy', 'Arcade', 'yellow')`, and `list_migrations` shows the same name as the file in `supabase/migrations/`.
+- [x] A finished run shows `SCORE SAVED`, is stored with `game_id = 'froggy'` and appears in `/hall-of-fame` under `Froggy` only.
+- [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
+- [x] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `froggy`.
+- [x] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `components/ui/game.tsx`, the other games' folders and the other covers have no edits (`git diff` is empty for them).
+- [x] `references/implemented-games.md` and `CLAUDE.md` document Froggy, the seven migrations and the `public/games/froggy/` folder.
 
 ---
 
@@ -291,6 +301,7 @@ CLAUDE.md                                           documents the above
 - **Yes:** 800×600 canvas, `aspect: "4 / 3"`, a 16×12 grid of 50 px cells (user decision for 4:3; the grid is a game-jam decision).
 - **Yes:** arrows plus swipe (user decision), Space or Enter to start and restart, a tap too. **No:** WASD and a pause key, because the user did not ask for them. The host pause is the only pause.
 - **Yes:** `tags` with `TOUCH` (`KEYBOARD / TOUCH`) because swipe is a real control (game-jam decision, from the user's swipe). The other two tags are kept from the archive.
+- **Yes:** a `touch` config with the four arrows, `A` = `Space` and `B` = `Enter`, both "Start or restart" (user decision, taken while implementing, because `lib/games.test.ts` requires a `touch` config for every playable game). The swipe stays. **No:** `repeat` on the arrows, a pause button, or extra pills.
 - **Yes:** difficulty 3, category `Arcade`, the tagline, the catalog copy and `plays: "6.4K"` kept from the archive (game-jam decisions).
 - **Yes:** one hop per swipe, a 30 px threshold and a tap that hops up (game-jam decisions).
 - **Yes:** `fitToFrame()` with CSS `zoom`, never above 1, as SPEC 09, SPEC 10 and SPEC 11. **No:** changing `CRTScreen`.

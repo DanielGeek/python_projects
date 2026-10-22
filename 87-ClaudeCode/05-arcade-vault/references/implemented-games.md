@@ -6,3 +6,4 @@
 | `drop`         | Drop         | Puzzle   | Fit the pieces before the ceiling crushes you.    | magenta |
 | `brick-buster` | Brick Buster | Arcade   | Bounce the ball and smash neon walls.             | cyan    |
 | `snake`        | Snake        | Arcade   | Eat the fruit, grow longer, never bite yourself.  | green   |
+| `froggy`       | Froggy       | Arcade   | Dodge the traffic, ride the logs, fill every pad. | yellow  |
