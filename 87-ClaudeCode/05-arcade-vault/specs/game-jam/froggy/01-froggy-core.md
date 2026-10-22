@@ -264,8 +264,8 @@ CLAUDE.md                                           documents the above
 - [ ] `/game/froggy/play` runs the game inside the CRT frame, spends one credit on start and shows `INSERT COIN` at 0 credits.
 - [ ] While playing, the arrow keys and Space do not scroll the host page, and a swipe on the canvas does not scroll it either.
 - [ ] At 1530×772 and at 375×812 the whole 800×600 canvas is visible inside the frame, and the game document does not overflow.
-- [ ] The host receives `state` messages with `game: "froggy"` carrying `score`, `lives`, `level` and `over`, and `over` is `true` only at game over.
-- [ ] Pause and resume from the host freeze and resume the game and its timer through the bridge.
+- [x] The host receives `state` messages with `game: "froggy"` carrying `score`, `lives`, `level` and `over`, and `over` is `true` only at game over.
+- [x] Pause and resume from the host freeze and resume the game and its timer through the bridge.
 - [ ] `public.games` has the row `('froggy', 'Froggy', 'Arcade', 'yellow')`, and `list_migrations` shows the same name as the file in `supabase/migrations/`.
 - [ ] A finished run shows `SCORE SAVED`, is stored with `game_id = 'froggy'` and appears in `/hall-of-fame` under `Froggy` only.
 - [ ] `get_advisors` (security) reports no new warning about `games` or `scores`.
