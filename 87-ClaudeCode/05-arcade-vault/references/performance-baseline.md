@@ -146,8 +146,25 @@ Rejected after measuring, with no change needed: the CRT scanline overlay (`.av-
 
 ## After
 
-Same table as **Before**, filled in step 9.
+Step 9, `froggy` and the host only (user decision of step 8: the other four games are handed to the `game-performance-booster` agent and have no row here; their **before** numbers above stay as measured). Same setup as **Before**: Chrome 155 on an Apple M1 Max, 1280×860, 10 s of scripted random play per row after a 1.5 s warm-up, CPU throttle through CDP. Soak: `froggy` alone in the host, CPU 4x, **200 s instead of 240 s** (a 5 minute cap on the whole task), a window every 20 s with a forced GC; `heap 1 min` is the reading at 60 s and `heap 10 min` / `p95 10 min` are the readings at **200 s**.
+
+| Target | Where      | CPU | avg FPS | p95 ms | frames > 33 ms | latency       | heap 1 min | heap 10 min | p95 10 min | notes |
+| ------ | ---------- | --- | ------- | ------ | -------------- | ------------- | ---------- | ----------- | ---------- | ----- |
+| froggy | standalone | 1x  | 60      | 17.4   | 0              |               |            |             |            | max 18.6 ms, renderer heap 2.3 MB |
+| froggy | standalone | 4x  | 60      | 17.5   | 0              | key 9.0       |            |             |            | max 17.8 ms, renderer heap 1.8 MB |
+| froggy | host       | 1x  | 60      | 17.4   | 0              |               |            |             |            | max 17.7 ms, renderer heap 16.8 MB |
+| froggy | host       | 4x  | 60      | 17.5   | 0              | key 9.6 / touch 8.5 | 9.49 | 9.84        | 17.5       | max 17.8 ms; soak: heap +3.7 % between 60 s and 200 s, p95 17.5 → 17.5 ms, DOM nodes 400 flat |
+| froggy | phone      | -   | n/m     | n/m    | n/m            | n/m           |            |             |            | not measured, user decision of step 3; the 50 FPS phone budget is unverified |
+| asteroids, drop, brick-buster, snake | - | - | handed to game-performance-booster | | | | | | | see `references/game-performance.md` |
+
+HOST (iframe, CRT overlay, zoom and touch pad) = host minus standalone for `froggy`: 0 FPS and 0.0 ms p95 at 1x, 0 FPS and 0.0 ms at 4x, on a GPU. The visible gains of this spec only show without a GPU, where the host and the glow dominate (see **Causes found**): `froggy` standalone 10.9–17.4 → 37.5–41.3 FPS in `classic`, 8.3–9.9 → 28.3–32.5 in `neon`, and the host 9.2 → 11.8 FPS. On the GPU Mac the **after** numbers equal the **before** ones, because the **before** numbers were already at the 60 Hz cap.
+
+Soak note: the heap grew 0.35 MB in 140 s in this run (+3.7 %), against 0.18 MB in 180 s in the 4 minute run of step 4. The sprite cache is finite (one entry per lane shape, pad state, life icon and frame) and DOM nodes are flat, so no leak is suspected; a longer run is listed in the follow-ups.
 
 ## Follow-ups
 
-_Budgets that could not be met, with the reason._
+- **Phone budget unverified (`froggy`):** the 50 FPS budget on a real phone and the heat after 5 minutes were never measured (user decision of step 3). The user reported by feel that it plays fine. To close it, run the protocol of this file on a phone over the LAN (`NEXT_PUBLIC_LOCAL_URL`, `chrome://inspect`) and fill the `phone` rows.
+- **Touch pad effects unmeasured:** the `drop-shadow` filters and the pulsing gem of `av-touch-*` need a phone number first.
+- **Longer soak:** the 200 s soak of step 9 shows the heap growing about 0.0025 MB/s. If that rate held it would reach about +16 % at 10 minutes, close to the 20 % budget. A real 10 minute run of `froggy` would settle it.
+- **`asteroids` in the host (cause 3):** about 30 FPS in the host against 60 standalone, not attributed. It goes to `game-performance-booster`, with the other three games.
+- **Not cached in `froggy`:** the frog glow, the title text glow and the board ripples. Only worth doing if the phone shows a need.
