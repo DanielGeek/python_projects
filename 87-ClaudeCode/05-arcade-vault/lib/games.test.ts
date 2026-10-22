@@ -73,6 +73,18 @@ describe("GAMES catalog", () => {
         }
       });
 
+      it("has only arrow codes in move and at most three extra buttons", () => {
+        if (!touch) return;
+        const arrows = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+        for (const b of touch.move) {
+          expect(arrows, `${id}: move code ${b.code} is not an arrow`).toContain(b.code);
+        }
+        expect(
+          touch.extra?.length ?? 0,
+          `${id}: more than three extra buttons`,
+        ).toBeLessThanOrEqual(3);
+      });
+
       it("has no repeated key code", () => {
         const codes = buttons.map((b) => b.code);
         expect(new Set(codes).size, `${id}: repeated code in ${codes.join(", ")}`).toBe(
