@@ -1192,6 +1192,15 @@ body {
   text-align: center;
   animation: av-pop 200ms ease-out;
 }
+/* Phone landscape: the final-score modal is taller than the screen, so it starts at the top and
+   the scrim scrolls; centered, its title and its buttons were cut off and unreachable. */
+@media (max-height: 520px) {
+  .av-modal-scrim {
+    place-items: start center;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
 .av-modal-cyan {
   border-color: var(--cyan);
   box-shadow: var(--glow-cyan);
@@ -4847,5 +4856,16 @@ body:has(.av-home) .av-footer {
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
+  }
+  /* The Pause and Exit row stays 32px thin, but each tap target reaches 44px: the hit area grows
+     into the player's top padding and the gap above the bezel, never over the CRT. */
+  .av-touch-mini {
+    position: relative;
+    min-width: 44px;
+  }
+  .av-touch-mini::after {
+    content: "";
+    position: absolute;
+    inset: -6px 0;
   }
 }
