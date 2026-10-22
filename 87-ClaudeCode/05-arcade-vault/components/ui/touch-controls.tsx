@@ -82,9 +82,13 @@ export function TouchControls({
   function press(button: TouchButton, e: PointerEvent<HTMLButtonElement>) {
     // No focus change, so the game keeps the focus: Brick Buster pauses when its window blurs.
     e.preventDefault();
-    if (held.current.has(button.code)) return;
+    if (paused || held.current.has(button.code)) return;
     const el = e.currentTarget;
-    el.setPointerCapture(e.pointerId);
+    try {
+      el.setPointerCapture(e.pointerId);
+    } catch {
+      // Capture only keeps a sliding finger on the button, so the key goes down without it.
+    }
     el.dataset.pressed = "true";
     const entry: Held = { pointerId: e.pointerId, el };
     held.current.set(button.code, entry);

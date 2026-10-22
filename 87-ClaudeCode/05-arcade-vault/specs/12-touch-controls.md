@@ -154,13 +154,13 @@ CLAUDE.md                                 documents the above
 - [ ] `GAMES` has a valid `touch` config for `asteroids`, `drop`, `brick-buster` and `snake`, and the button codes match the table in the data model.
 - [ ] `lib/games.test.ts` checks that every `touch` button code appears in the `game.js` of its game, and that every code is in the bridge allowlist.
 - [ ] With `pointer: coarse`, `/game/<id>/play` hides the host HUD, shows a compact Pause and Exit, and shows the touch controls over the CRT screen while the game is playing.
-- [ ] With `pointer: fine`, the HUD and the page look exactly as before and no touch control is rendered.
+- [x] With `pointer: fine`, the HUD and the page look exactly as before and no touch control is rendered.
 - [ ] The touch controls do not render while loading, at `INSERT COIN`, while the final-score modal is open, or when the game has no `touch` config.
-- [ ] Holding a movement button and an action button at once works (for example, rotate and fire in Asteroids).
+- [x] Holding a movement button and an action button at once works (for example, rotate and fire in Asteroids).
 - [ ] Releasing a finger, a `pointercancel`, hiding the page, pausing and leaving the page release every held key, so no key stays stuck.
-- [ ] While the host is paused, the touch buttons send nothing.
+- [x] While the host is paused, the touch buttons send nothing.
 - [ ] Each of the four games can be started, played, paused and restarted with touch only, as in step 7.
-- [ ] `drop` moves continuously while its left, right or soft-drop button is held, and a short tap moves exactly one cell.
+- [x] `drop` moves continuously while its left, right or soft-drop button is held, and a short tap moves exactly one cell.
 - [ ] Buttons are at least 56×56 CSS px, have an `aria-label`, and the clusters stay inside the safe area at 375×812 and at 412×915.
 - [ ] While a finger is on the game screen or a control, the page does not scroll, zoom or select text, and there is no pull-to-refresh.
 - [ ] The game's own canvas and toolbar (skin and theme) can still be tapped where no button covers them.
