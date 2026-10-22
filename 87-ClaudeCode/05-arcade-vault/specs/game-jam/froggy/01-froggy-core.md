@@ -1,6 +1,6 @@
 # SPEC GJ froggy-01 — Froggy core game
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 08, SPEC 09, SPEC 10, SPEC 11
 > **Date:** 2026-10-20
 > **Objective:** Bring `froggy` back from `lib/games-archive.ts` as a new lane-crossing game, written from scratch with original art, and add it to the vault as a playable catalog entry with id `froggy`, ranked in the global leaderboard.
