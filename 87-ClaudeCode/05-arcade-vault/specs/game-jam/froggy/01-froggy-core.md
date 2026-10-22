@@ -1,4 +1,4 @@
-# SPEC GJ froggy-01 — Froggy game
+# SPEC GJ froggy-01 — Froggy core game
 
 > **Status:** Draft
 > **Depends on:** SPEC 05, SPEC 08, SPEC 09, SPEC 10, SPEC 11
@@ -78,17 +78,19 @@ Catalog entry (`lib/games.ts`, moved from `lib/games-archive.ts`):
 
 `plays` is mock data, kept from the archived entry. The tags are the archived ones: `KEYBOARD / TOUCH` is the `TOUCH` tag for the swipe controls.
 
+The entry has no `touch` field. SPEC 12 gives the on-screen pad to games that use it; Froggy has its own swipe control, and adding a pad would be its own spec.
+
 ### Board
 
 The canvas is 800×600 (`aspect: "4 / 3"`), a grid of 16 columns by 12 rows of 50 px cells. Rows from the top:
 
-| Row   | Zone               | What it holds                                           |
-| ----- | ------------------ | ------------------------------------------------------- |
-| 0     | Goal               | Hedge with 5 pads. Pad centres at x = 100, 250, 400, 550, 700. |
-| 1 - 4 | River              | One lane of logs per row. Water is deadly.              |
-| 5     | Median             | Safe strip.                                             |
-| 6 - 10 | Road              | One lane of vehicles per row. Vehicles are deadly.      |
-| 11    | Start              | Safe strip. The frog starts at x = 400. The HUD is drawn here. |
+| Row    | Zone   | What it holds                                                  |
+| ------ | ------ | -------------------------------------------------------------- |
+| 0      | Goal   | Hedge with 5 pads. Pad centres at x = 100, 250, 400, 550, 700. |
+| 1 - 4  | River  | One lane of logs per row. Water is deadly.                     |
+| 5      | Median | Safe strip.                                                    |
+| 6 - 10 | Road   | One lane of vehicles per row. Vehicles are deadly.             |
+| 11     | Start  | Safe strip. The frog starts at x = 400. The HUD is drawn here. |
 
 ### Globals (`public/games/froggy/game.js`, top-level `let`/`const` of a classic script)
 
@@ -115,17 +117,17 @@ let pause = 0; // seconds left of the dead / cleared screen
 
 Each lane is a row of identical items that wrap around the screen. `len` is the item length in cells, `gap` the distance in px between the starts of two items, and `speed` is in px per second at level 1. `dir` is `1` (right) or `-1` (left). Item positions are the left edge `x`; an item that leaves one side re-enters on the other. The numbers are the game-jam starting values and can be tuned in step 2.
 
-| Row | Kind  | Item        | `dir` | `speed` | `len` | `gap` |
-| --- | ----- | ----------- | ----- | ------- | ----- | ----- |
-| 1   | river | log         | -1    | 110     | 3     | 330   |
-| 2   | river | log         | 1     | 75      | 2     | 220   |
-| 3   | river | log         | -1    | 90      | 4     | 380   |
-| 4   | river | log         | 1     | 60      | 3     | 300   |
-| 6   | road  | van         | 1     | 100     | 2     | 330   |
-| 7   | road  | scooter     | -1    | 150     | 1     | 280   |
-| 8   | road  | truck       | 1     | 70      | 3     | 400   |
-| 9   | road  | van         | -1    | 120     | 2     | 300   |
-| 10  | road  | scooter     | 1     | 90      | 1     | 250   |
+| Row | Kind  | Item    | `dir` | `speed` | `len` | `gap` |
+| --- | ----- | ------- | ----- | ------- | ----- | ----- |
+| 1   | river | log     | -1    | 110     | 3     | 330   |
+| 2   | river | log     | 1     | 75      | 2     | 220   |
+| 3   | river | log     | -1    | 90      | 4     | 380   |
+| 4   | river | log     | 1     | 60      | 3     | 300   |
+| 6   | road  | van     | 1     | 100     | 2     | 330   |
+| 7   | road  | scooter | -1    | 150     | 1     | 280   |
+| 8   | road  | truck   | 1     | 70      | 3     | 400   |
+| 9   | road  | van     | -1    | 120     | 2     | 300   |
+| 10  | road  | scooter | 1     | 90      | 1     | 250   |
 
 The speed at level `L` is `speed × min(2.2, 1 + 0.12 × (L - 1))`: 1.00 at level 1 and the cap at level 11.
 
@@ -277,6 +279,7 @@ CLAUDE.md                                           documents the above
 
 - **Yes:** `froggy` comes back from the archive with the same id (user decision: "archived comeback"). The game is written from scratch, because the archived entry never had a folder. **No:** a new id.
 - **Yes:** the name stays `Froggy` and the art is original: a yellow frog, neon capsule vehicles, teal logs and lotus pads, all drawn on the canvas (user decision). **No:** sprites, third-party assets, or a green frog on grey cars in the style of the classic it resembles.
+- **Yes:** the game is a static canvas page in `public/games/froggy/`, wired with the bridge, as every other playable game. **No:** a React component in `components/games/`, a play page of its own, or a score insert written in the game page: the player and `lib/leaderboard.ts` already do all of that.
 - **Yes:** the game is new and follows `contract.md`, with the standard globals `score`, `lives`, `level` and `state` (user decision for lives and levels).
 - **Yes:** hop across roads and river logs to fill 5 pads (user decision). **No:** other lane types, such as diving turtles or crocodiles (SPEC GJ froggy-02 has a sinking log instead).
 - **Yes:** score from each forward hop, each pad and the time left (user decision). The numbers are 10 per new best row, 100 per pad and 10 per full second left (game-jam decision). **No:** a bonus for clearing a set, because the user listed none.
@@ -298,22 +301,22 @@ CLAUDE.md                                           documents the above
 
 ## Risks
 
-| Risk                                                                                                              | Mitigation                                                                                                                                                        |
-| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| The reader names a global that does not exist or is out of scope, and the bridge reports nothing.                 | The globals follow the contract names. `report()` swallows the error, so step 9 checks the messages by hand; `lib/games.test.ts` checks the reader exists.        |
-| `over` is not true for every way the run ends, so the score is never saved.                                       | The only ending is `gameover`, reached from the last death. Step 14 plays a full run to the end.                                                                  |
-| The score is not an integer or is above 9,999,999, so `submitScore` rejects it.                                   | The time bonus uses `floor`, and the score stays far below the bound (see the score bound above).                                                                 |
-| The game has its own pause and conflicts with the host pause.                                                     | It has none. The timer and the lanes advance from loop deltas of `performance.now()`, so the bridge freezes them. Step 9 and the criteria check it.               |
-| The `games` row is missing, so the foreign key rejects every score.                                               | Step 12, and the seed-vs-`GAMES` test in `lib/leaderboard.test.ts`.                                                                                               |
-| Swipe is new in the vault, and the iframe or the host page scrolls with the gesture.                              | `touch-action: none` on the canvas plus `preventDefault` on the move. Step 7 checks it with touch emulation. A real phone test is left to the user.               |
-| A held key or a fast swipe produces several hops per intent.                                                      | Key repeats are ignored and a swipe ends its gesture after one hop.                                                                                               |
-| The frog is carried by a log into a wrap seam and dies unfairly.                                                  | A log is one item with one `x`; the wrap moves it only after it is fully off-screen. Step 4 rides a log across the whole screen.                                  |
-| The lane numbers make the game impossible or trivial.                                                             | They are starting values (game-jam decisions). Step 2 and step 5 tune them by play; the table is the only place to change.                                        |
-| The art looks like the arcade classic it resembles.                                                               | Own palette (yellow frog, neon capsules, teal logs, lotus pads), own lane mix and no sprites. The user reviews the look in step 14.                               |
-| An archived `froggy` entry is left in `lib/games-archive.ts`, so the id is in two lists.                          | Step 11 removes it, and `lib/games.test.ts` checks that archived ids are not in `GAMES`.                                                                          |
-| The cover keeps the old green look because `av-cover-froggy` is edited, not added.                                | Step 10 rewrites the rule, and the criterion checks the rendered yellow cover in `/library`.                                                                      |
-| Space on the end screen restarts inside the game without the host "Play again", so it does not spend a credit.    | Same behavior as Asteroids and Snake. Any credit change is a separate spec.                                                                                       |
-| `zoom` is not supported by Firefox before 126, and the game stays cut at 375 px.                                  | Accepted, as in SPEC 09, SPEC 10 and SPEC 11.                                                                                                                     |
+| Risk                                                                                                           | Mitigation                                                                                                                                                 |
+| -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The reader names a global that does not exist or is out of scope, and the bridge reports nothing.              | The globals follow the contract names. `report()` swallows the error, so step 9 checks the messages by hand; `lib/games.test.ts` checks the reader exists. |
+| `over` is not true for every way the run ends, so the score is never saved.                                    | The only ending is `gameover`, reached from the last death. Step 14 plays a full run to the end.                                                           |
+| The score is not an integer or is above 9,999,999, so `submitScore` rejects it.                                | The time bonus uses `floor`, and the score stays far below the bound (see the score bound above).                                                          |
+| The game has its own pause and conflicts with the host pause.                                                  | It has none. The timer and the lanes advance from loop deltas of `performance.now()`, so the bridge freezes them. Step 9 and the criteria check it.        |
+| The `games` row is missing, so the foreign key rejects every score.                                            | Step 12, and the seed-vs-`GAMES` test in `lib/leaderboard.test.ts`.                                                                                        |
+| Swipe is new in the vault, and the iframe or the host page scrolls with the gesture.                           | `touch-action: none` on the canvas plus `preventDefault` on the move. Step 7 checks it with touch emulation. A real phone test is left to the user.        |
+| A held key or a fast swipe produces several hops per intent.                                                   | Key repeats are ignored and a swipe ends its gesture after one hop.                                                                                        |
+| The frog is carried by a log into a wrap seam and dies unfairly.                                               | A log is one item with one `x`; the wrap moves it only after it is fully off-screen. Step 4 rides a log across the whole screen.                           |
+| The lane numbers make the game impossible or trivial.                                                          | They are starting values (game-jam decisions). Step 2 and step 5 tune them by play; the table is the only place to change.                                 |
+| The art looks like the arcade classic it resembles.                                                            | Own palette (yellow frog, neon capsules, teal logs, lotus pads), own lane mix and no sprites. The user reviews the look in step 14.                        |
+| An archived `froggy` entry is left in `lib/games-archive.ts`, so the id is in two lists.                       | Step 11 removes it, and `lib/games.test.ts` checks that archived ids are not in `GAMES`.                                                                   |
+| The cover keeps the old green look because `av-cover-froggy` is edited, not added.                             | Step 10 rewrites the rule, and the criterion checks the rendered yellow cover in `/library`.                                                               |
+| Space on the end screen restarts inside the game without the host "Play again", so it does not spend a credit. | Same behavior as Asteroids and Snake. Any credit change is a separate spec.                                                                                |
+| `zoom` is not supported by Firefox before 126, and the game stays cut at 375 px.                               | Accepted, as in SPEC 09, SPEC 10 and SPEC 11.                                                                                                              |
 
 ---
 
