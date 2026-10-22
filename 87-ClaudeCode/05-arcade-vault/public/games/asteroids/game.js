@@ -75,7 +75,7 @@ const SKINS = {
     lineJoin: 'round',
     squareBullets: false,
     scanlines: false,
-    batchRocks: true, // one stroke (one shadow pass) for all rocks, see drawAsteroids()
+    haloRocks: true, // rock glow painted once per rock, see Asteroid.draw()
     colors: () => ( {
       bg: '#04040a', ship: '#39ff14', rock: '#00f0ff', bullet: '#ffee00', power: '#ff2bd6',
       flame: '#ff7a00', hud: '#e8ffff', sub: '#b8f4ff', spark: '0,240,255',
@@ -85,6 +85,7 @@ const SKINS = {
 
 let skin = SKINS.classic;
 let palette = skin.colors( false );
+let appearanceGen = 0; // bumped on every skin or theme change
 
 // Stroke/fill color plus the skin's glow. Call inside save()/restore().
 function glow( color ) {
@@ -177,6 +178,39 @@ class Asteroid {
     ];
   }
 
+  outline( c ) {
+    c.beginPath();
+    c.moveTo( this.verts[ 0 ][ 0 ], this.verts[ 0 ][ 1 ] );
+    for ( let i = 1; i < this.verts.length; i++ )
+      c.lineTo( this.verts[ i ][ 0 ], this.verts[ i ][ 1 ] );
+    c.closePath();
+  }
+
+  // The glow (shadow) of the outline alone, painted once per rock and appearance.
+  // A blur does not depend on the rotation, so the image is copied rotated.
+  halo() {
+    if ( this.haloImg && this.haloGen === appearanceGen ) return this.haloImg;
+    const pad = skin.glow * 2 + 4;
+    const size = Math.ceil( ( this.radius + pad ) * 2 );
+    const img = this.haloImg && this.haloImg.width === size ? this.haloImg : document.createElement( 'canvas' );
+    img.width = img.height = size;
+    const c = img.getContext( '2d' );
+    // The outline is drawn far to the left and only its shadow lands on the image.
+    const OFF = 10000;
+    c.translate( size / 2 - OFF, size / 2 );
+    c.strokeStyle = palette.rock;
+    c.lineWidth = skin.lineWidth;
+    c.lineJoin = skin.lineJoin;
+    c.shadowColor = palette.rock;
+    c.shadowBlur = skin.glow;
+    c.shadowOffsetX = OFF;
+    this.outline( c );
+    c.stroke();
+    this.haloImg = img;
+    this.haloGen = appearanceGen;
+    return img;
+  }
+
   draw() {
     ctx.save();
     ctx.translate( this.x, this.y );
@@ -184,12 +218,13 @@ class Asteroid {
     ctx.strokeStyle = palette.rock;
     ctx.lineWidth = skin.lineWidth;
     ctx.lineJoin = skin.lineJoin;
-    glow( palette.rock );
-    ctx.beginPath();
-    ctx.moveTo( this.verts[ 0 ][ 0 ], this.verts[ 0 ][ 1 ] );
-    for ( let i = 1; i < this.verts.length; i++ )
-      ctx.lineTo( this.verts[ i ][ 0 ], this.verts[ i ][ 1 ] );
-    ctx.closePath();
+    if ( skin.haloRocks ) {
+      const img = this.halo();
+      ctx.drawImage( img, -img.width / 2, -img.height / 2 );
+    } else {
+      glow( palette.rock );
+    }
+    this.outline( ctx );
     ctx.stroke();
     ctx.restore();
   }
@@ -565,39 +600,12 @@ function drawOverlay( title, sub ) {
   ctx.restore();
 }
 
-// A glowing skin pays one shadow blur per stroke, so its rocks go into a single
-// path and a single stroke. The rotation is applied by hand, so the outlines are
-// the same as Asteroid.draw(); only overlapping glows blend once instead of twice.
-function drawAsteroids() {
-  if ( !skin.batchRocks ) {
-    asteroids.forEach( a => a.draw() );
-    return;
-  }
-  ctx.save();
-  ctx.strokeStyle = palette.rock;
-  ctx.lineWidth = skin.lineWidth;
-  ctx.lineJoin = skin.lineJoin;
-  glow( palette.rock );
-  ctx.beginPath();
-  for ( const a of asteroids ) {
-    const c = Math.cos( a.rot );
-    const s = Math.sin( a.rot );
-    const v = a.verts;
-    ctx.moveTo( a.x + v[ 0 ][ 0 ] * c - v[ 0 ][ 1 ] * s, a.y + v[ 0 ][ 0 ] * s + v[ 0 ][ 1 ] * c );
-    for ( let i = 1; i < v.length; i++ )
-      ctx.lineTo( a.x + v[ i ][ 0 ] * c - v[ i ][ 1 ] * s, a.y + v[ i ][ 0 ] * s + v[ i ][ 1 ] * c );
-    ctx.closePath();
-  }
-  ctx.stroke();
-  ctx.restore();
-}
-
 function draw() {
   ctx.fillStyle = palette.bg;
   ctx.fillRect( 0, 0, W, H );
 
   particles.forEach( p => p.draw() );
-  drawAsteroids();
+  asteroids.forEach( a => a.draw() );
   powerUps.forEach( p => p.draw() );
   bullets.forEach( b => b.draw() );
   ship.draw();
@@ -650,6 +658,7 @@ function applyTheme( theme ) {
 // The canvas cannot read CSS variables, so the palette is cached here.
 function refreshAppearance() {
   palette = skin.colors( document.documentElement.dataset.theme === 'light' );
+  appearanceGen++; // the rock halos are painted again with the new skin and palette
   // The loop may be frozen (host pause), so repaint explicitly.
   if ( ship ) draw();
 }
