@@ -1,6 +1,6 @@
 # SPEC 12 — Touch controls for the games
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 05, SPEC 09, SPEC 10, SPEC 11
 > **Date:** 2026-10-21
 > **Objective:** Make the four catalog games playable on a touch phone with on-screen buttons drawn below the CRT screen, sent to the game as synthetic key events through the bridge, and hide the host HUD on touch devices to give the screen more room.
