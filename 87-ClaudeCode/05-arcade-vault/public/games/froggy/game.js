@@ -1,7 +1,7 @@
 // Froggy: lane crosser on an 800x600 board (16x12 cells of 50 px). Classic script: the bridge reads
 // score, lives, level and state. All art is drawn on the canvas; there are no image or audio files.
 const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+let ctx = canvas.getContext('2d'); // `let`: stamp() swaps it for an offscreen context while it paints a sprite
 
 const W = 800, H = 600, CELL = 50;
 const PAD_X = [100, 250, 400, 550, 700];   // pad centres in the goal row
@@ -163,6 +163,7 @@ const SKINS = {
     sittingFrog: drawSittingFrogClassic,
     lifeIcon: drawLifeClassic,
     post: null,
+    stamp: true,
   },
   retro: {
     name: 'Retro',
@@ -232,6 +233,7 @@ const SKINS = {
     sittingFrog: drawSittingFrogNeon,
     lifeIcon: drawLifeNeon,
     post: drawNeonFrame,
+    stamp: true,
   },
 };
 
@@ -340,7 +342,7 @@ function drawBoardSmooth(t) {
   }
 
   // Pads, drawn over the river edge of the hedge.
-  for (let i = 0; i < PAD_X.length; i++) skin.pad(PAD_X[i], pads[i]);
+  for (let i = 0; i < PAD_X.length; i++) drawPad(i);
 
   // Median (row 5) and start (row 11).
   for (const row of [5, 11]) {
@@ -386,7 +388,7 @@ function drawBoardRetro(t) {
       ctx.fillRect(Math.floor(x / 4) * 4, Math.floor(y / 4) * 4, 24, 4);
     }
   }
-  for (let i = 0; i < PAD_X.length; i++) skin.pad(PAD_X[i], pads[i]);
+  for (let i = 0; i < PAD_X.length; i++) drawPad(i);
   for (const row of [5, 11]) {
     ctx.fillStyle = pal.strip;
     ctx.fillRect(0, row * CELL, W, CELL);
@@ -802,7 +804,7 @@ function drawHud() {
   ctx.textAlign = 'right';
   ctx.fillStyle = pal.hud;
   ctx.fillText('LEVEL ' + level, W - 150, y + 22);
-  for (let i = 0; i < lives; i++) skin.lifeIcon(W - 124 + i * 36, y + 22);
+  for (let i = 0; i < lives; i++) drawLife(W - 124 + i * 36, y + 22);
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = pal.timerTrack;
   ctx.fillRect(0, H - 8, W, 8);
@@ -861,6 +863,70 @@ function drawGameOver() {
   }
 }
 
+// A glow costs a shadow blur every time it is drawn, and most glowing parts never change their art:
+// logs, vehicles, pads, life icons and the neon frame. For the skins with `stamp` each one is painted
+// once per palette into an offscreen canvas and then copied with drawImage. The skin's own draw
+// function paints the sprite, so the look is the same. The frog turns and tweens, so it is not
+// cached. The cache is emptied when the skin or theme changes (refreshAppearance).
+const SPRITE_MARGIN = 32; // room around the art for its glow
+const sprites = new Map();
+
+function sprite(key, w, h, paint) {
+  let s = sprites.get(key);
+  if (!s) {
+    s = document.createElement('canvas');
+    s.width = w;
+    s.height = h;
+    const board = ctx;
+    ctx = s.getContext('2d');
+    paint();
+    ctx = board;
+    sprites.set(key, s);
+  }
+  return s;
+}
+
+function stamp(x, lane) {
+  const parity = lane.kind === 'river' ? 0 : lane.row % 2; // vehicles pick their colour by row parity
+  const key = lane.kind + '|' + lane.item + '|' + lane.len + '|' + parity + '|' + lane.dir;
+  const s = sprite(key, lane.len * CELL + 2 * SPRITE_MARGIN, CELL + 2 * SPRITE_MARGIN, () => {
+    // The skin paints at lane.row * CELL, so a row of that parity is moved back to the top of the sprite.
+    ctx.translate(SPRITE_MARGIN, SPRITE_MARGIN - parity * CELL);
+    if (lane.kind === 'river') skin.log(0, 0, lane.len);
+    else skin.vehicle(0, { ...lane, row: parity });
+  });
+  ctx.drawImage(s, x - SPRITE_MARGIN, lane.row * CELL - SPRITE_MARGIN);
+}
+
+function drawPad(i) {
+  if (!skin.stamp) {
+    skin.pad(PAD_X[i], pads[i]);
+    return;
+  }
+  const s = sprite('pad|' + pads[i], 80 + 2 * SPRITE_MARGIN, CELL + 2 * SPRITE_MARGIN, () => {
+    ctx.translate(SPRITE_MARGIN, SPRITE_MARGIN);
+    skin.pad(40, pads[i]);
+  });
+  ctx.drawImage(s, PAD_X[i] - 40 - SPRITE_MARGIN, -SPRITE_MARGIN);
+}
+
+function drawLife(cx, cy) {
+  if (!skin.stamp) {
+    skin.lifeIcon(cx, cy);
+    return;
+  }
+  const s = sprite('life', 2 * SPRITE_MARGIN, 2 * SPRITE_MARGIN, () => skin.lifeIcon(SPRITE_MARGIN, SPRITE_MARGIN));
+  ctx.drawImage(s, cx - SPRITE_MARGIN, cy - SPRITE_MARGIN);
+}
+
+function drawPost() {
+  if (!skin.stamp) {
+    skin.post();
+    return;
+  }
+  ctx.drawImage(sprite('post', W, H, skin.post), 0, 0);
+}
+
 function draw(t) {
   ctx.fillStyle = pal.void;
   ctx.fillRect(0, 0, W, H);
@@ -868,7 +934,8 @@ function draw(t) {
   for (const lane of lanes) {
     for (const x of lane.items) {
       if (x > W || x + lane.len * CELL < 0) continue;
-      if (lane.kind === 'river') skin.log(x, lane.row, lane.len);
+      if (skin.stamp) stamp(x, lane);
+      else if (lane.kind === 'river') skin.log(x, lane.row, lane.len);
       else skin.vehicle(x, lane);
     }
   }
@@ -880,7 +947,7 @@ function draw(t) {
   if (state === 'cleared') drawCleared();
   if (state === 'dead') drawDead();
   if (state === 'gameover') drawGameOver();
-  if (skin.post) skin.post();
+  if (skin.post) drawPost();
 }
 
 // ── Run, attempts and input ───────────────────────────────────────────────────
@@ -1086,6 +1153,7 @@ function applyTheme(theme) {
 // the host pause, so the frame is repainted at once.
 function refreshAppearance() {
   pal = skin.colors(document.documentElement.dataset.theme === 'light');
+  sprites.clear();
   draw(performance.now() / 1000);
 }
 
