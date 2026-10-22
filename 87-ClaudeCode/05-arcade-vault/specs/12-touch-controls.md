@@ -149,11 +149,11 @@ CLAUDE.md                                 documents the above
 
 ## Acceptance criteria
 
-- [ ] `npm run lint`, `npm test` and `npm run build` finish without errors.
+- [x] `npm run lint`, `npm test` and `npm run build` finish without errors.
 - [x] `bridge.js` handles `{ type: 'key', code, down }` from the parent only, dispatches a `keydown` or `keyup` on `document` with `bubbles: true`, and ignores any code outside the allowlist.
 - [ ] `bridge.js` still handles `pause` and `resume` and still reports the state of every reader as before.
-- [ ] `GAMES` has a valid `touch` config for `asteroids`, `drop`, `brick-buster` and `snake`, and the button codes match the table in the data model.
-- [ ] `lib/games.test.ts` checks that every `touch` button code appears in the `game.js` of its game, and that every code is in the bridge allowlist.
+- [x] `GAMES` has a valid `touch` config for `asteroids`, `drop`, `brick-buster` and `snake`, and the button codes match the table in the data model.
+- [x] `lib/games.test.ts` checks that every `touch` button code appears in the `game.js` of its game, and that every code is in the bridge allowlist.
 - [x] With `pointer: coarse`, `/game/<id>/play` hides the host HUD, shows a compact Pause and Exit, and shows the touch controls over the CRT screen while the game is playing.
 - [x] With `pointer: fine`, the HUD and the page look exactly as before and no touch control is rendered.
 - [ ] The touch controls do not render while loading, at `INSERT COIN`, while the final-score modal is open, or when the game has no `touch` config.
