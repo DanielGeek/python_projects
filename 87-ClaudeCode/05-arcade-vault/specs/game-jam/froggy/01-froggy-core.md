@@ -249,7 +249,7 @@ CLAUDE.md                                           documents the above
 - [ ] `public/games/froggy/` contains exactly `index.html` and `game.js`.
 - [ ] `public/games/froggy/index.html` has `lang="en"` and loads `../bridge.js` with `data-game="froggy"` before `game.js`.
 - [ ] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls, no dependencies and no image or audio file.
-- [ ] The frog starts each attempt at x = 400 in row 11 with 30 s on the timer, and the timer does not run in `dead`, `cleared` or `ready`.
+- [x] The frog starts each attempt at x = 400 in row 11 with 30 s on the timer, and the timer does not run in `dead`, `cleared` or `ready`.
 - [ ] Each arrow press moves the frog exactly one cell, and left and right never take it outside 25 to 775.
 - [x] A forward hop to a row above `bestRow` adds exactly 10, and a hop to a row already reached adds nothing.
 - [x] Touching a vehicle, landing on water, riding a log off the screen, a landing outside an empty pad and the timer reaching 0 each cost exactly one life.

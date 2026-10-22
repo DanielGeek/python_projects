@@ -396,6 +396,50 @@ function drawCleared() {
   ctx.restore();
 }
 
+const DEATH_TEXT = {
+  vehicle: 'HIT BY TRAFFIC',
+  drowned: 'DROWNED',
+  'carried off': 'CARRIED AWAY',
+  'missed pad': 'MISSED THE PAD',
+  time: "TIME'S UP",
+};
+
+// The frog's fate stays on screen for the 0.9 s of the dead state: a red cross over the frog and
+// the cause on a band across the board.
+function drawDead() {
+  const cx = frog.fx, cy = frog.frow * CELL + CELL / 2;
+  ctx.save();
+  ctx.strokeStyle = '#ff3860';
+  ctx.lineWidth = 5;
+  ctx.shadowColor = '#ff3860';
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.moveTo(cx - 16, cy - 16);
+  ctx.lineTo(cx + 16, cy + 16);
+  ctx.moveTo(cx + 16, cy - 16);
+  ctx.lineTo(cx - 16, cy + 16);
+  ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle = 'rgba(7, 7, 15, 0.7)';
+  ctx.fillRect(0, H / 2 - 40, W, 80);
+  drawCenterText(DEATH_TEXT[deathCause] || 'OUCH', H / 2 + 14, 48, '#ff3860');
+}
+
+function drawGameOver() {
+  ctx.fillStyle = 'rgba(7, 7, 15, 0.8)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.save();
+  ctx.shadowColor = COLORS.magenta;
+  ctx.shadowBlur = 24;
+  drawCenterText('GAME OVER', 270, 76, COLORS.magenta);
+  ctx.restore();
+  drawCenterText('SCORE ' + String(score).padStart(6, '0'), 340, 28, COLORS.text);
+  drawCenterText('LEVEL ' + level, 380, 20, COLORS.cyan);
+  if (Math.floor(performance.now() / 500) % 2 === 0) {
+    drawCenterText('SPACE to play again', 450, 24, COLORS.yellow);
+  }
+}
+
 function draw(t) {
   ctx.fillStyle = COLORS.void;
   ctx.fillRect(0, 0, W, H);
@@ -409,10 +453,12 @@ function draw(t) {
   }
   if (state !== 'ready') {
     drawHud();
-    if (state !== 'cleared') drawFrog();
+    if (state === 'playing' || state === 'dead') drawFrog();
   }
   if (state === 'ready') drawTitle();
   if (state === 'cleared') drawCleared();
+  if (state === 'dead') drawDead();
+  if (state === 'gameover') drawGameOver();
 }
 
 // ── Run, attempts and input ───────────────────────────────────────────────────
