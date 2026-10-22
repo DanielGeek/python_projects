@@ -75,6 +75,7 @@ const SKINS = {
     lineJoin: 'round',
     squareBullets: false,
     scanlines: false,
+    batchRocks: true, // one stroke (one shadow pass) for all rocks, see drawAsteroids()
     colors: () => ( {
       bg: '#04040a', ship: '#39ff14', rock: '#00f0ff', bullet: '#ffee00', power: '#ff2bd6',
       flame: '#ff7a00', hud: '#e8ffff', sub: '#b8f4ff', spark: '0,240,255',
@@ -564,12 +565,39 @@ function drawOverlay( title, sub ) {
   ctx.restore();
 }
 
+// A glowing skin pays one shadow blur per stroke, so its rocks go into a single
+// path and a single stroke. The rotation is applied by hand, so the outlines are
+// the same as Asteroid.draw(); only overlapping glows blend once instead of twice.
+function drawAsteroids() {
+  if ( !skin.batchRocks ) {
+    asteroids.forEach( a => a.draw() );
+    return;
+  }
+  ctx.save();
+  ctx.strokeStyle = palette.rock;
+  ctx.lineWidth = skin.lineWidth;
+  ctx.lineJoin = skin.lineJoin;
+  glow( palette.rock );
+  ctx.beginPath();
+  for ( const a of asteroids ) {
+    const c = Math.cos( a.rot );
+    const s = Math.sin( a.rot );
+    const v = a.verts;
+    ctx.moveTo( a.x + v[ 0 ][ 0 ] * c - v[ 0 ][ 1 ] * s, a.y + v[ 0 ][ 0 ] * s + v[ 0 ][ 1 ] * c );
+    for ( let i = 1; i < v.length; i++ )
+      ctx.lineTo( a.x + v[ i ][ 0 ] * c - v[ i ][ 1 ] * s, a.y + v[ i ][ 0 ] * s + v[ i ][ 1 ] * c );
+    ctx.closePath();
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
 function draw() {
   ctx.fillStyle = palette.bg;
   ctx.fillRect( 0, 0, W, H );
 
   particles.forEach( p => p.draw() );
-  asteroids.forEach( a => a.draw() );
+  drawAsteroids();
   powerUps.forEach( p => p.draw() );
   bullets.forEach( b => b.draw() );
   ship.draw();
