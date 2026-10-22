@@ -255,7 +255,7 @@ CLAUDE.md                                           documents the above
 
 ## Acceptance criteria
 
-- [ ] `npm run lint`, `npm test` and `npm run build` finish without errors.
+- [x] `npm run lint`, `npm test` and `npm run build` finish without errors.
 - [ ] `public/games/froggy/` contains exactly `index.html` and `game.js`.
 - [ ] `public/games/froggy/index.html` has `lang="en"` and loads `../bridge.js` with `data-game="froggy"` before `game.js`.
 - [ ] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls, no dependencies and no image or audio file.
