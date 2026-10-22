@@ -184,14 +184,6 @@ export function GamePlayer({ game }: { game: Game }) {
                 <span className="av-paused-hint">Click to resume</span>
               </button>
             )}
-            {coarse && game.touch && status === "playing" && !loading && finalScore == null && (
-              <TouchControls
-                controls={game.touch}
-                accent={game.accent}
-                paused={paused}
-                onKey={sendKey}
-              />
-            )}
           </>
         }
       >
@@ -211,6 +203,9 @@ export function GamePlayer({ game }: { game: Game }) {
           />
         )}
       </CRTScreen>
+      {coarse && game.touch && status === "playing" && !loading && finalScore == null && (
+        <TouchControls controls={game.touch} accent={game.accent} paused={paused} onKey={sendKey} />
+      )}
       <p className="av-player-controls">{game.controls}</p>
 
       <Modal
