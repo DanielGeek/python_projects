@@ -137,6 +137,24 @@ function rr(x, y, w, h, r) {
   ctx.roundRect(x, y, w, h, r);
 }
 
+// The small frog that sits on a filled pad.
+function drawSittingFrog(cx, cy) {
+  ctx.save();
+  ctx.shadowColor = COLORS.yellow;
+  ctx.shadowBlur = 8;
+  ctx.fillStyle = COLORS.frog;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + 2, 11, 10, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = COLORS.frogDark;
+  for (const side of [-1, 1]) {
+    ctx.beginPath();
+    ctx.arc(cx + side * 6, cy - 6, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
 function drawBoard(t) {
   // Goal row: a hedge with five pad notches.
   ctx.fillStyle = COLORS.hedge;
@@ -181,6 +199,7 @@ function drawBoard(t) {
     ctx.beginPath();
     ctx.ellipse(cx, 28, 15, 8, 0, 0, Math.PI * 2);
     ctx.fill();
+    if (pads[i]) drawSittingFrog(cx, 28);
   }
 
   // Median (row 5) and start (row 11).
@@ -337,6 +356,46 @@ function drawTitle() {
   }
 }
 
+// Drawn in the start row: score on the left, level and lives on the right, and the timer as a bar
+// across the bottom that turns magenta under 8 s.
+function drawHud() {
+  const y = 11 * CELL;
+  ctx.textBaseline = 'middle';
+  ctx.font = 'bold 20px monospace';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = COLORS.text;
+  ctx.fillText('SCORE ' + String(score).padStart(6, '0'), 14, y + 22);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = COLORS.cyan;
+  ctx.fillText('LEVEL ' + level, W - 150, y + 22);
+  for (let i = 0; i < lives; i++) {
+    ctx.fillStyle = COLORS.frog;
+    ctx.beginPath();
+    ctx.arc(W - 124 + i * 36, y + 22, 11, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = COLORS.frogDark;
+    ctx.beginPath();
+    ctx.arc(W - 124 + i * 36 - 4, y + 18, 2.2, 0, Math.PI * 2);
+    ctx.arc(W - 124 + i * 36 + 4, y + 18, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = 'rgba(232, 232, 255, 0.12)';
+  ctx.fillRect(0, H - 8, W, 8);
+  ctx.fillStyle = timeLeft < 8 ? COLORS.magenta : COLORS.cyan;
+  ctx.fillRect(0, H - 8, W * (timeLeft / TIME_LIMIT), 8);
+}
+
+function drawCleared() {
+  ctx.fillStyle = 'rgba(7, 7, 15, 0.55)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.save();
+  ctx.shadowColor = COLORS.yellow;
+  ctx.shadowBlur = 20;
+  drawCenterText('SET CLEARED', H / 2 + 14, 64, COLORS.yellow);
+  ctx.restore();
+}
+
 function draw(t) {
   ctx.fillStyle = COLORS.void;
   ctx.fillRect(0, 0, W, H);
@@ -348,8 +407,12 @@ function draw(t) {
       else drawVehicle(x, lane);
     }
   }
-  if (state !== 'ready') drawFrog();
+  if (state !== 'ready') {
+    drawHud();
+    if (state !== 'cleared') drawFrog();
+  }
   if (state === 'ready') drawTitle();
+  if (state === 'cleared') drawCleared();
 }
 
 // ── Run, attempts and input ───────────────────────────────────────────────────
@@ -391,7 +454,30 @@ function hopFrog(dir) {
   frog.x = x;
   frog.row = row;
   frog.hop = 0;
-  checkHazards();                       // a landing in the water or on a vehicle is a death at once
+  if (row === 0) landOnPad();
+  else {
+    // Only a hop up to a row above the best one of this attempt scores.
+    if (dir === 'up' && row < bestRow) { score += 10; bestRow = row; }
+    checkHazards();                     // a landing in the water or on a vehicle is a death at once
+  }
+}
+
+// Row 0 scores as a pad, not as a hop. Landing beside a pad or on a filled one is a death.
+function landOnPad() {
+  const i = PAD_X.findIndex((px, k) => !pads[k] && Math.abs(frog.x - px) <= PAD_HALF);
+  if (i < 0) { killFrog('missed pad'); return; }
+  pads[i] = true;
+  score += 100 + 10 * Math.floor(timeLeft);
+  if (pads.every(Boolean)) { state = 'cleared'; pause = 1.4; }
+  else newAttempt();
+}
+
+// A cleared set raises the level (the lanes speed up with it) and gives no extra points.
+function nextSet() {
+  level += 1;
+  pads = [false, false, false, false, false];
+  newAttempt();
+  state = 'playing';
 }
 
 function updateFrog(dt) {
@@ -434,8 +520,15 @@ function frame() {
     if (ridden) frog.x += laneStep(ridden, dt);
     updateFrog(dt);
     checkHazards();
+    if (state === 'playing') {
+      timeLeft = Math.max(0, timeLeft - dt);
+      if (timeLeft === 0) killFrog('time');
+    }
   } else if (state === 'ready') {
     updateLanes(dt);
+  } else if (state === 'cleared') {
+    pause -= dt;
+    if (pause <= 0) nextSet();
   } else if (state === 'dead') {
     pause -= dt;
     if (pause <= 0) {

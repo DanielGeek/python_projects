@@ -251,11 +251,11 @@ CLAUDE.md                                           documents the above
 - [ ] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls, no dependencies and no image or audio file.
 - [ ] The frog starts each attempt at x = 400 in row 11 with 30 s on the timer, and the timer does not run in `dead`, `cleared` or `ready`.
 - [ ] Each arrow press moves the frog exactly one cell, and left and right never take it outside 25 to 775.
-- [ ] A forward hop to a row above `bestRow` adds exactly 10, and a hop to a row already reached adds nothing.
-- [ ] Touching a vehicle, landing on water, riding a log off the screen, a landing outside an empty pad and the timer reaching 0 each cost exactly one life.
+- [x] A forward hop to a row above `bestRow` adds exactly 10, and a hop to a row already reached adds nothing.
+- [x] Touching a vehicle, landing on water, riding a log off the screen, a landing outside an empty pad and the timer reaching 0 each cost exactly one life.
 - [x] On a log, the frog moves with the log's speed.
-- [ ] Landing on an empty pad adds exactly `100 + 10 × floor(timeLeft)` and fills that pad.
-- [ ] Filling the fifth pad raises `level` by 1, empties the pads and makes the lanes faster, with no extra points.
+- [x] Landing on an empty pad adds exactly `100 + 10 × floor(timeLeft)` and fills that pad.
+- [x] Filling the fifth pad raises `level` by 1, empties the pads and makes the lanes faster, with no extra points.
 - [ ] The third death sets `state = 'gameover'`, and Space, Enter or a tap starts a new run with score 0, 3 lives and level 1.
 - [ ] A swipe of 30 px or more hops once in the dominant direction, a shorter tap hops up while playing, and a tap starts and restarts the run.
 - [ ] `GAMES` has exactly one entry with `id: "froggy"`, `src: "/games/froggy/index.html"`, `aspect: "4 / 3"`, `accent: "yellow"`, `category: "Arcade"` and `difficulty: 3`, placed after `snake`, and `ARCHIVED_GAMES` has no `froggy`.
