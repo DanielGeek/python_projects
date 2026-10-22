@@ -117,7 +117,7 @@ CLAUDE.md                            how to measure, new rules
 
 - [ ] `references/performance-baseline.md` exists with the protocol, the console snippet, a **before** table and an **after** table that have one row for each of `froggy`, `asteroids`, `drop`, `brick-buster` and `snake` plus one for the host.
 - [ ] The **before** table has desktop numbers (CPU 1x and 4x, standalone and embedded) and phone numbers for every game, and the soak numbers (minute 1 and minute 10) for every game.
-- [ ] The list of causes exists before the first fix, and each row over budget has at least one cause with evidence.
+- [x] The list of causes exists before the first fix, and each row over budget has at least one cause with evidence. (No row is over budget on a GPU desktop. The causes come from a no-GPU stress run, and the one unexplained gap, `asteroids` in the host, is listed as not attributed.)
 - [ ] In the **after** table, every game has a p95 frame time under 20 ms at CPU throttle 4x on desktop, inside the host.
 - [ ] In the **after** table, every game has an average of 50 FPS or more over 60 s on the user's real phone, inside the host with the touch pad.
 - [x] After the soak (4 minutes instead of 10, by user decision), no game has a p95 frame time more than 20 % above its minute-1 p95, and its heap after a forced GC is no more than 20 % above its minute-1 heap. Measured: p95 17.5 ms in every window, heap +0.8 to +1.9 %.

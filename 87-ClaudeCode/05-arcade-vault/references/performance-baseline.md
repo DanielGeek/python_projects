@@ -122,7 +122,19 @@ Phone (step 3): **skipped by the user decision, no measurements** (`n/m`). The p
 
 ## Causes found
 
-_Filled in step 5, before the first fix. One line per cause: target, evidence (number or trace), expected gain, the line or file._
+Status against the budgets, measured on Chrome 155 with a real GPU: **all five games and the host are within budget** (60 FPS, p95 about 17.5 ms at CPU 4x, no degradation in 4 minutes). The phone is not measured (`n/m`), so the 50 FPS budget is unverified.
+
+The causes below come from a **stress run**: Chrome for Testing without a GPU (software rasterization, 1x CPU, 5 s per case, scripted play), which stands in for a device with a weak GPU. Numbers are avg FPS in that run. They rank what to fix if the phone is slow; none of them breaks a desktop budget today.
+
+| # | Where | Cause | Evidence (stress run) | Expected gain | Fix that keeps the look |
+| - | ----- | ----- | --------------------- | ------------- | ----------------------- |
+| 1 | Host, `app/globals.css` `.av-backdrop-floor::before` (used by `Backdrop` in `components/ui/basics.tsx`, behind every page) | A fixed, full-viewport perspective grid with `mask-image` animates `background-position` (`av-floor`, 8 s, infinite). That property is not compositor-only, so the layer is repainted every frame behind the game. | Stopping only this animation in the host: `drop` 12.9 → 60 FPS, `asteroids` 16.5 → 33, `froggy` 9.2 → 12.7. Stopping every CSS animation gave the same for `drop` (60) and `asteroids` (33), so this one is the cost. Hiding the layer instead of stopping it: same numbers. On a GPU desktop it is not visible. | Large on weak GPUs, hits all five games | Move the scroll to a `transform: translateY()` on a tall tile (compositor only) or give the layer `will-change: transform` and animate a transform, same speed and pattern |
+| 2 | `froggy`, `public/games/froggy/game.js` | `shadowBlur` on every glowing shape each frame (20 `glow`/`shadowBlur` sites) plus the full board redrawn every frame. | Standalone with `shadowBlur` turned into a no-op: 17 → 30 FPS. The other four games run at 60 FPS standalone with their glow on, so glow is only a problem in Froggy. | About 2x on weak GPUs, Froggy only | Draw the static scenery (lanes, water, road, pads) once into an offscreen canvas and rebuild it on skin, theme and zoom change; set the glow only for the shapes that need it |
+| 3 | `asteroids` (and probably the others) in the host, **not attributed** | With cause 1 removed the host still runs at 33 FPS against 60 standalone. Removing `.av-backdrop-scan` (35 FPS) and the CRT box-shadows (32 FPS) changes nothing. The remaining suspects are the iframe itself and the CSS `zoom` of `fitToFrame()` (the 800×600 canvas is scaled down inside the smaller frame). | Not measured yet; listed so it is not forgotten | Unknown | Measure `fitToFrame()` off, and standalone at the iframe size, before touching anything |
+
+Not measured, because the desktop run has no touch pointer and the phone is `n/m`: the `drop-shadow` filters and the pulsing gem of the touch pad (`av-touch-*`). They stay open until there is a phone number.
+
+Rejected after measuring, with no change needed: the CRT scanline overlay (`.av-crt-screen::after`, removing it: no change in all five games), the bridge `report()` polling and rAF wrapper (the host run with them in place is the one that is fast once cause 1 is gone), and per-frame growth in any game (4-minute soak flat).
 
 ## After
 
