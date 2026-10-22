@@ -256,11 +256,11 @@ CLAUDE.md                                           documents the above
 ## Acceptance criteria
 
 - [x] `npm run lint`, `npm test` and `npm run build` finish without errors.
-- [ ] `public/games/froggy/` contains exactly `index.html` and `game.js`.
-- [ ] `public/games/froggy/index.html` has `lang="en"` and loads `../bridge.js` with `data-game="froggy"` before `game.js`.
-- [ ] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls, no dependencies and no image or audio file.
+- [x] `public/games/froggy/` contains exactly `index.html` and `game.js`.
+- [x] `public/games/froggy/index.html` has `lang="en"` and loads `../bridge.js` with `data-game="froggy"` before `game.js`.
+- [x] `game.js` uses no `localStorage`, no `setInterval` for the game loop, no network calls, no dependencies and no image or audio file.
 - [x] The frog starts each attempt at x = 400 in row 11 with 30 s on the timer, and the timer does not run in `dead`, `cleared` or `ready`.
-- [ ] Each arrow press moves the frog exactly one cell, and left and right never take it outside 25 to 775.
+- [x] Each arrow press moves the frog exactly one cell, and left and right never take it outside 25 to 775.
 - [x] A forward hop to a row above `bestRow` adds exactly 10, and a hop to a row already reached adds nothing.
 - [x] Touching a vehicle, landing on water, riding a log off the screen, a landing outside an empty pad and the timer reaching 0 each cost exactly one life.
 - [x] On a log, the frog moves with the log's speed.
@@ -280,8 +280,8 @@ CLAUDE.md                                           documents the above
 - [x] A finished run shows `SCORE SAVED`, is stored with `game_id = 'froggy'` and appears in `/hall-of-fame` under `Froggy` only.
 - [x] `get_advisors` (security) reports no new warning about `games` or `scores`.
 - [x] `lib/games.test.ts` and `lib/leaderboard.test.ts` pass with `froggy`.
-- [ ] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `components/ui/game.tsx`, the other games' folders and the other covers have no edits (`git diff` is empty for them).
-- [ ] `references/implemented-games.md` and `CLAUDE.md` document Froggy, the seven migrations and the `public/games/froggy/` folder.
+- [x] `app/game/[id]/play/game-player.tsx`, `lib/leaderboard.ts`, `lib/scores.ts`, `lib/credits.ts`, `components/ui/game.tsx`, the other games' folders and the other covers have no edits (`git diff` is empty for them).
+- [x] `references/implemented-games.md` and `CLAUDE.md` document Froggy, the seven migrations and the `public/games/froggy/` folder.
 
 ---
 
