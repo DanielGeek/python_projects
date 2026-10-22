@@ -72,6 +72,8 @@ Use the **game-planner** subagent (`.claude/agents/game-planner.md`) to decide w
 
 Use the **game-jam** subagent (`.claude/agents/game-jam.md`) when you have a game in mind and describe it. It writes at least two complete `Draft` specs (`01-<id>-game.md` for the base game, `02-…` for an extension, an optional `03-…`) in `specs/game-jam/<id>/`, modeled on specs 05, 10 and 11. Your description is the source of truth: it flags platform clashes without redesigning the game, and when something essential is missing it writes nothing and returns questions. It fills the small details `/add-game` would ask (id, accent, difficulty) and marks those as game-jam decisions to review. It writes nothing outside `specs/game-jam/<id>/`: to implement one, review it, set it to `Approved`, and move it to `specs/NN-<slug>.md` for `/spec-impl`.
 
+Use the **skin-designer** subagent (`.claude/agents/skin-designer.md`) to check that the games you name have the skins `classic` (default), `retro` and `neon` and a light/dark toggle, and to add what is missing. It works only on the games you tell it, never on the rest of the catalog. Each skin must look good in both themes, dark first (contrast check plus screenshots). It edits only `public/games/<id>/` and keeps `references/game-with-themes.md`, its only memory, with one row per game you asked for; it never changes gameplay, the bridge, the readers or the host.
+
 ## Tooling and references
 
 - `.mcp.json` configures the Supabase MCP (HTTP, scoped to this project). Apply migrations with `apply_migration` and check versions with `list_migrations`.

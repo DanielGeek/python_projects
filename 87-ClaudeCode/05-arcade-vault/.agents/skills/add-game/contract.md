@@ -32,6 +32,15 @@ What a game must satisfy to run inside Arcade Vault and feed the global leaderbo
 - All text, comments and `lang` are in English. The canvas size is fixed, and it gives the catalog `aspect` (for example 800×600 is `"4 / 3"`).
 - Do not copy `README.md`, `CLAUDE.md`, `.gitignore`, `specs/` or lock files into the vault.
 
+## Skins and theme
+
+Skins are optional. They apply only to the games the user asks to skin with the `skin-designer` agent (`.claude/agents/skin-designer.md`); a game without them is fine. When a game does get them:
+
+- It ships three skins, `classic` (default), `retro` and `neon`, and a light/dark toggle, with a `<select id="skin-select">` and the toggle outside the canvas. Skins change only colors, strokes, glow, fonts and backgrounds, never gameplay.
+- On load the game starts with skin `classic` and theme `dark`, and nothing is stored (no `localStorage`).
+- Each skin must look good in both themes, dark first: text and HUD at least 4.5:1, pieces at least 3:1 against the play area.
+- The agent records the result in `references/game-with-themes.md`, one row per game it was asked to skin.
+
 ## Worked examples
 
 | Game         | Reference      | Reader                                                                                                                     | Notes                                                                                                                             |
