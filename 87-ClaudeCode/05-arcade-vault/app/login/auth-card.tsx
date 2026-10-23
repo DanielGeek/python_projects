@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, NeonLogo } from "@/components/ui/basics";
 import { Input, Tabs } from "@/components/ui/interactive";
-import { playAsGuest, signIn } from "@/lib/session";
+import { playAsGuest } from "@/lib/session";
 
 type Mode = "login" | "register";
 
@@ -21,14 +21,15 @@ export function AuthCard() {
     const pass = String(data.get("password") ?? "");
     const mail = String(data.get("email") ?? "").trim();
     const next: Record<string, string> = {};
-    if (!/^[A-Za-z0-9_]{3,12}$/.test(user)) next.username = "Use 3 to 12 letters, numbers or underscores.";
+    if (!/^[A-Za-z0-9_]{3,12}$/.test(user))
+      next.username = "Use 3 to 12 letters, numbers or underscores.";
     if (pass.length < 8) next.password = "Password must be at least 8 characters.";
-    if (mode === "register" && !/^\S+@\S+\.\S+$/.test(mail)) next.email = "Enter a valid email address.";
+    if (mode === "register" && !/^\S+@\S+\.\S+$/.test(mail))
+      next.email = "Enter a valid email address.";
     setErrors(next);
     if (Object.keys(next).length) return;
-    // BACKEND: send the credentials to the real auth provider here; the password is never stored locally.
-    signIn(user);
-    router.push("/library");
+    // SPEC 15 step 7 replaces this form with Supabase Auth.
+    setNotice("Accounts are being connected to the server. Play as a guest for now.");
   }
 
   function social(provider: string) {
@@ -54,9 +55,22 @@ export function AuthCard() {
         ]}
       />
       <form className="av-auth-form" onSubmit={submit} noValidate>
-        <Input name="username" label="Username" placeholder="your_username" autoComplete="username" error={errors.username} />
+        <Input
+          name="username"
+          label="Username"
+          placeholder="your_username"
+          autoComplete="username"
+          error={errors.username}
+        />
         {mode === "register" && (
-          <Input name="email" type="email" label="Email" placeholder="player@example.com" autoComplete="email" error={errors.email} />
+          <Input
+            name="email"
+            type="email"
+            label="Email"
+            placeholder="player@example.com"
+            autoComplete="email"
+            error={errors.email}
+          />
         )}
         <Input
           name="password"
@@ -88,14 +102,16 @@ export function AuthCard() {
       <Button
         variant="ghost"
         block
-        onClick={() => {
-          playAsGuest();
+        onClick={async () => {
+          await playAsGuest();
           router.push("/library");
         }}
       >
         Play as guest
       </Button>
-      <p className="av-auth-caption">Without an account, your scores are saved on this device only.</p>
+      <p className="av-auth-caption">
+        Without an account, your scores are saved on this device only.
+      </p>
       <p className="av-auth-terms">BY ENTERING YOU ACCEPT THE ARCADE TERMS</p>
     </div>
   );
