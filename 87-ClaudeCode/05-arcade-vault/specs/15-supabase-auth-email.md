@@ -136,7 +136,7 @@ Conventions:
 - [ ] Old `scores` rows are unchanged and still show in `/hall-of-fame`.
 - [ ] No password or token is written to localStorage by the app code.
 - [ ] `npm test`, `npm run lint` and `npm run build` pass.
-- [ ] `get_advisors` (security) shows no new warning compared with before the migration.
+- [ ] `get_advisors` (security) shows no new warning compared with before the migration, except the two for `username_available` (lints 0028 and 0029), which are intended: the sign-up form needs `anon` to call it.
 
 ---
 
