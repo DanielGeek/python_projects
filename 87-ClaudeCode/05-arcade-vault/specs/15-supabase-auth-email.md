@@ -114,8 +114,8 @@ Conventions:
 
 ## Acceptance criteria
 
-- [ ] `public.profiles` exists with RLS on and the unique index on `username`.
-- [ ] `anon` and `authenticated` have no `insert`, `update` or `delete` on `profiles`.
+- [x] `public.profiles` exists with RLS on and the unique index on `username`.
+- [x] `anon` and `authenticated` have no `insert`, `update` or `delete` on `profiles`.
 - [ ] Creating an account with an unused username creates exactly one `profiles` row with the username in upper-case.
 - [ ] Sign-up with a username that is taken shows "Username taken" and does not call `signUp`.
 - [ ] Sign-up with the username `guest` in any case is rejected by the form.
