@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { LIMITS, validateSignIn, validateSignUp, type SignUpInput } from "./auth";
+import { LIMITS, toAuthFailure, validateSignIn, validateSignUp, type SignUpInput } from "./auth";
 
 const valid: SignUpInput = { username: "ada_99", email: "ada@example.com", password: "12345678" };
 
@@ -76,5 +76,24 @@ describe("validateSignIn", () => {
       email: "Enter a valid email address.",
       password: "Password is required.",
     });
+  });
+});
+
+describe("toAuthFailure", () => {
+  it("maps the Supabase codes the forms handle", () => {
+    expect(toAuthFailure({ code: "invalid_credentials" })).toBe("invalid_credentials");
+    expect(toAuthFailure({ code: "email_not_confirmed" })).toBe("email_not_confirmed");
+  });
+
+  it("maps fetch failures to network", () => {
+    expect(toAuthFailure({ name: "AuthRetryableFetchError" })).toBe("network");
+    expect(toAuthFailure({ message: "Failed to fetch" })).toBe("network");
+  });
+
+  it("falls back to unknown", () => {
+    expect(
+      toAuthFailure({ code: "unexpected_failure", message: "Database error saving new user" }),
+    ).toBe("unknown");
+    expect(toAuthFailure({})).toBe("unknown");
   });
 });

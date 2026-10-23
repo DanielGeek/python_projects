@@ -85,8 +85,9 @@ export interface Session {
   userId?: string; // set only for an account
 }
 
+// "unknown" is any other failure (for example the profile trigger failing); the UI shows a generic error.
 export type AuthFailure =
-  "username_taken" | "invalid_credentials" | "email_not_confirmed" | "network";
+  "username_taken" | "invalid_credentials" | "email_not_confirmed" | "network" | "unknown";
 export type AuthResult = { ok: true } | { ok: false; code: AuthFailure };
 ```
 
@@ -101,7 +102,7 @@ Conventions:
 
 1. Write the migration, apply it with `apply_migration`, and check the version with `list_migrations`. Save the file with that version in its name. Manual test: `list_tables` shows `profiles`; `get_advisors` shows no new warning.
 2. Do the manual dashboard setup: SMTP through Resend, Site URL and redirect URLs (`http://localhost:3000` and the `NEXT_PUBLIC_LOCAL_URL` host), and the "Confirm signup" email template with the link `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`. Manual test: a test sign-up sends the email.
-3. Create `lib/auth.ts` with `validateSignUp` and `validateSignIn` only, plus `lib/auth.test.ts`. Rules: username `^[A-Za-z0-9_]{3,12}$` and not `GUEST` (any case); email `^\S+@\S+\.\S+$`; password at least 8 characters.
+3. Create `lib/auth.ts` with `validateSignUp` and `validateSignIn` only, plus `lib/auth.test.ts`. Rules: username `^[A-Za-z0-9_]{3,12}$` and not `GUEST` (any case); email `^\S+@\S+\.\S+$`; password 8 to 72 characters (72 is the bcrypt limit; Supabase ignores anything beyond it).
 4. Add the wrappers to `lib/auth.ts`. `signUpWithEmail` calls `username_available` first, then `signUp` with the username in `options.data` and `emailRedirectTo`. Map Supabase errors to `AuthFailure`. Manual test: sign up from a scratch script or the console.
 5. Make `lib/session.ts` real: read `getSession` and listen to `onAuthStateChange`, load the own `profiles` row, keep the guest in localStorage under the same key and event. Remove `signIn(name)`. `playAsGuest` signs out of Supabase first. `signOut` clears both. Keep `useSession` working for every consumer (`hero`, `pricing`, `navbar`, `game-scores`, `hall-of-fame`, `game-player`).
 6. Create `app/auth/confirm/route.ts`: read `token_hash` and `type`, call `verifyOtp` through `lib/supabase/server.ts`, redirect to `/library` on success or `/login?error=confirm` on failure. Use `await connection()`; export neither `runtime` nor `dynamic`.
