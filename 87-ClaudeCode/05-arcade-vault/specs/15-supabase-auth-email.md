@@ -119,16 +119,16 @@ Conventions:
 - [x] `anon` and `authenticated` have no `insert`, `update` or `delete` on `profiles`.
 - [ ] Creating an account with an unused username creates exactly one `profiles` row with the username in upper-case.
 - [ ] Sign-up with a username that is taken shows "Username taken" and does not call `signUp`.
-- [ ] Sign-up with the username `guest` in any case is rejected by the form.
+- [x] Sign-up with the username `guest` in any case is rejected by the form.
 - [ ] After sign-up the screen shows "Check your email" and the user is not signed in yet.
 - [ ] The confirmation link opens `/auth/confirm`, signs the user in and lands on `/library`.
-- [ ] A bad or used confirmation link lands on `/login?error=confirm` and shows an error.
-- [ ] Sign-in with a wrong password shows one generic `[ERR]` line that does not say which field is wrong.
+- [x] A bad or used confirmation link lands on `/login?error=confirm` and shows an error.
+- [x] Sign-in with a wrong password shows one generic `[ERR]` line that does not say which field is wrong.
 - [ ] Sign-in before confirming shows "Resend confirmation", and the action sends a new email.
 - [ ] After sign-in the navbar shows the username, and `useSession` returns `{ name, guest: false, userId }`.
 - [ ] Reloading the page keeps the user signed in.
 - [ ] Sign-out clears the Supabase session and the navbar shows the sign-in button.
-- [ ] "Play as guest" still works with no account and `useSession` returns `GUEST`.
+- [x] "Play as guest" still works with no account and `useSession` returns `GUEST`.
 - [ ] A signed-in player's saved score has `user_id = auth.uid()` and `player` equal to their username.
 - [ ] A REST insert as a signed-in user with a different `player` is rejected.
 - [ ] A REST insert as a signed-in user with another `user_id` is rejected.
