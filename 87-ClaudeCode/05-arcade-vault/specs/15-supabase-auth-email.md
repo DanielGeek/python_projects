@@ -1,6 +1,6 @@
 # SPEC 15 — Supabase Auth with email and password
 
-> **Status:** Approved.
+> **Status:** Implemented.
 > **Depends on:** SPEC 04, SPEC 06, SPEC 08
 > **Date:** 2026-10-23
 > **Objective:** Replace the local fake sign-in with Supabase Auth (email and password, sign-up with a username and email confirmation, sign-in, sign-out) and tie each saved score to the signed-in user.
@@ -118,26 +118,26 @@ Conventions:
 - [x] `public.profiles` exists with RLS on and the unique index on `username`.
 - [x] `anon` and `authenticated` have no `insert`, `update` or `delete` on `profiles`.
 - [x] Creating an account with an unused username creates exactly one `profiles` row with the username in upper-case.
-- [ ] Sign-up with a username that is taken shows "Username taken" and does not call `signUp`.
+- [x] Sign-up with a username that is taken shows "Username taken" and does not call `signUp`.
 - [x] Sign-up with the username `guest` in any case is rejected by the form.
-- [ ] After sign-up the screen shows "Check your email" and the user is not signed in yet.
-- [ ] The confirmation link opens `/auth/confirm`, signs the user in and lands on `/library`.
+- [x] After sign-up the screen shows "Check your email" and the user is not signed in yet.
+- [x] The confirmation link opens `/auth/confirm`, signs the user in and lands on `/library`.
 - [x] A bad or used confirmation link lands on `/login?error=confirm` and shows an error.
 - [x] Sign-in with a wrong password shows one generic `[ERR]` line that does not say which field is wrong.
-- [ ] Sign-in before confirming shows "Resend confirmation", and the action sends a new email.
-- [ ] After sign-in the navbar shows the username, and `useSession` returns `{ name, guest: false, userId }`.
-- [ ] Reloading the page keeps the user signed in.
-- [ ] Sign-out clears the Supabase session and the navbar shows the sign-in button.
+- [x] Sign-in before confirming shows "Resend confirmation", and the action sends a new email.
+- [x] After sign-in the navbar shows the username, and `useSession` returns `{ name, guest: false, userId }`.
+- [x] Reloading the page keeps the user signed in.
+- [x] Sign-out clears the Supabase session and the navbar shows the sign-in button.
 - [x] "Play as guest" still works with no account and `useSession` returns `GUEST`.
 - [x] A signed-in player's saved score has `user_id = auth.uid()` and `player` equal to their username.
 - [x] A REST insert as a signed-in user with a different `player` is rejected.
 - [x] A REST insert as a signed-in user with another `user_id` is rejected.
 - [x] A REST insert as `anon` with `player` other than `GUEST`, or with a `user_id`, is rejected.
-- [ ] The final-score modal has no name field for a guest, and the guest score is saved as `GUEST`.
-- [ ] Old `scores` rows are unchanged and still show in `/hall-of-fame`.
-- [ ] No password or token is written to localStorage by the app code.
-- [ ] `npm test`, `npm run lint` and `npm run build` pass.
-- [ ] `get_advisors` (security) shows no new warning compared with before the migration, except the two for `username_available` (lints 0028 and 0029), which are intended: the sign-up form needs `anon` to call it.
+- [x] The final-score modal has no name field for a guest, and the guest score is saved as `GUEST`.
+- [x] Old `scores` rows are unchanged and still show in `/hall-of-fame`.
+- [x] No password or token is written to localStorage by the app code.
+- [x] `npm test`, `npm run lint` and `npm run build` pass.
+- [x] `get_advisors` (security) shows no new warning compared with before the migration, except the two for `username_available` (lints 0028 and 0029), which are intended (the sign-up form needs `anon` to call it), and `auth_leaked_password_protection`, which needs a paid Supabase plan (the project is on Free).
 
 ---
 
