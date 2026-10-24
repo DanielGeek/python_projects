@@ -1,39 +1,134 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button, NeonLogo } from "@/components/ui/basics";
 import { Input, Tabs } from "@/components/ui/interactive";
-import { playAsGuest, signIn } from "@/lib/session";
+import {
+  resendConfirmation,
+  signInWithEmail,
+  signUpWithEmail,
+  validateSignIn,
+  validateSignUp,
+  type AuthFailure,
+  type AuthField,
+} from "@/lib/auth";
+import { playAsGuest } from "@/lib/session";
 
 type Mode = "login" | "register";
 
+const FAILURE_MESSAGES: Record<Exclude<AuthFailure, "username_taken">, string> = {
+  invalid_credentials: "Wrong email or password.",
+  email_not_confirmed: "Confirm your email first. Check your inbox for the link.",
+  network: "Could not reach the server. Try again.",
+  unknown: "Something went wrong. Try again.",
+};
+
+const CONFIRM_LINK_MESSAGE =
+  "That confirmation link is invalid or expired. Sign in to get a new one.";
+
 export function AuthCard() {
   const router = useRouter();
+  const params = useSearchParams();
   const [mode, setMode] = useState<Mode>("login");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Partial<Record<AuthField, string>>>({});
+  const [formError, setFormError] = useState(
+    params.get("error") === "confirm" ? CONFIRM_LINK_MESSAGE : "",
+  );
+  const [needsConfirm, setNeedsConfirm] = useState(false);
+  const [sentTo, setSentTo] = useState("");
+  const [resent, setResent] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
+  const [email, setEmail] = useState("");
 
-  function submit(e: React.FormEvent<HTMLFormElement>) {
+  function reset(next: Mode) {
+    setMode(next);
+    setErrors({});
+    setFormError("");
+    setNeedsConfirm(false);
+  }
+
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (busy) return;
     const data = new FormData(e.currentTarget);
-    const user = String(data.get("username") ?? "").trim();
-    const pass = String(data.get("password") ?? "");
-    const mail = String(data.get("email") ?? "").trim();
-    const next: Record<string, string> = {};
-    if (!/^[A-Za-z0-9_]{3,12}$/.test(user)) next.username = "Use 3 to 12 letters, numbers or underscores.";
-    if (pass.length < 8) next.password = "Password must be at least 8 characters.";
-    if (mode === "register" && !/^\S+@\S+\.\S+$/.test(mail)) next.email = "Enter a valid email address.";
-    setErrors(next);
-    if (Object.keys(next).length) return;
-    // BACKEND: send the credentials to the real auth provider here; the password is never stored locally.
-    signIn(user);
-    router.push("/library");
+    const input = {
+      username: String(data.get("username") ?? ""),
+      email: String(data.get("email") ?? ""),
+      password: String(data.get("password") ?? ""),
+    };
+    const found = mode === "login" ? validateSignIn(input) : validateSignUp(input);
+    setErrors(found);
+    setFormError("");
+    setNeedsConfirm(false);
+    if (Object.keys(found).length) return;
+
+    setBusy(true);
+    const result = mode === "login" ? await signInWithEmail(input) : await signUpWithEmail(input);
+    setBusy(false);
+    if (result.ok) {
+      if (mode === "login") router.push("/library");
+      else setSentTo(input.email.trim());
+      return;
+    }
+    if (result.code === "username_taken") setErrors({ username: "Username taken." });
+    else {
+      setFormError(FAILURE_MESSAGES[result.code]);
+      setNeedsConfirm(result.code === "email_not_confirmed");
+    }
+  }
+
+  async function resend(address: string) {
+    if (busy) return;
+    setBusy(true);
+    const result = await resendConfirmation(address);
+    setBusy(false);
+    if (result.ok) {
+      setResent(true);
+      setFormError("");
+    } else if (result.code !== "username_taken") setFormError(FAILURE_MESSAGES[result.code]);
   }
 
   function social(provider: string) {
     // BACKEND: start the OAuth flow (e.g. Supabase signInWithOAuth) for this provider.
     setNotice(`Sign-in with ${provider} will be available once the server is connected.`);
+  }
+
+  if (sentTo) {
+    return (
+      <div className="av-auth-card">
+        <NeonLogo size="md" className="av-auth-logo" />
+        <p className="av-auth-sub">CHECK YOUR EMAIL</p>
+        <p className="av-modal-note" role="status">
+          We sent a confirmation link to {sentTo}. Open it to finish creating your account.
+        </p>
+        {resent && (
+          <p className="av-modal-note" role="status">
+            Sent again.
+          </p>
+        )}
+        {formError && (
+          <div className="av-about-error" role="alert">
+            <span className="av-about-error-tag">[ERR]</span> {formError}
+          </div>
+        )}
+        <Button variant="outline" block disabled={busy} onClick={() => resend(sentTo)}>
+          Resend confirmation
+        </Button>
+        <Button
+          variant="ghost"
+          block
+          onClick={() => {
+            setSentTo("");
+            setResent(false);
+            reset("login");
+          }}
+        >
+          Back to sign in
+        </Button>
+      </div>
+    );
   }
 
   return (
@@ -44,20 +139,31 @@ export function AuthCard() {
         fill
         label="Account"
         value={mode}
-        onChange={(id) => {
-          setMode(id as Mode);
-          setErrors({});
-        }}
+        onChange={(id) => reset(id as Mode)}
         tabs={[
           { id: "login", label: "Sign in" },
           { id: "register", label: "Create account" },
         ]}
       />
       <form className="av-auth-form" onSubmit={submit} noValidate>
-        <Input name="username" label="Username" placeholder="your_username" autoComplete="username" error={errors.username} />
         {mode === "register" && (
-          <Input name="email" type="email" label="Email" placeholder="player@example.com" autoComplete="email" error={errors.email} />
+          <Input
+            name="username"
+            label="Username"
+            placeholder="your_username"
+            autoComplete="username"
+            error={errors.username}
+          />
         )}
+        <Input
+          name="email"
+          type="email"
+          label="Email"
+          placeholder="player@example.com"
+          autoComplete="email"
+          error={errors.email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
         <Input
           name="password"
           type="password"
@@ -65,8 +171,29 @@ export function AuthCard() {
           autoComplete={mode === "login" ? "current-password" : "new-password"}
           error={errors.password}
         />
-        <Button type="submit" block>
-          {mode === "login" ? "Sign in" : "Create account"}
+        {formError && (
+          <div className="av-about-error" role="alert">
+            <span className="av-about-error-tag">[ERR]</span> {formError}
+          </div>
+        )}
+        {resent && (
+          <p className="av-modal-note" role="status">
+            Confirmation sent again. Check your inbox.
+          </p>
+        )}
+        {needsConfirm && (
+          <Button
+            type="button"
+            variant="outline"
+            block
+            disabled={busy}
+            onClick={() => resend(email.trim())}
+          >
+            Resend confirmation
+          </Button>
+        )}
+        <Button type="submit" block disabled={busy}>
+          {busy ? "Please wait…" : mode === "login" ? "Sign in" : "Create account"}
         </Button>
       </form>
       <div className="av-auth-divider">
@@ -88,14 +215,16 @@ export function AuthCard() {
       <Button
         variant="ghost"
         block
-        onClick={() => {
-          playAsGuest();
+        onClick={async () => {
+          await playAsGuest();
           router.push("/library");
         }}
       >
         Play as guest
       </Button>
-      <p className="av-auth-caption">Without an account, your scores are saved on this device only.</p>
+      <p className="av-auth-caption">
+        Without an account, your scores are saved on this device only.
+      </p>
       <p className="av-auth-terms">BY ENTERING YOU ACCEPT THE ARCADE TERMS</p>
     </div>
   );

@@ -1,22 +1,29 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { createClient } from "./supabase/client";
 
 export interface Session {
   name: string;
   guest: boolean;
+  /** Set only for a Supabase account; a guest has no user id. */
+  userId?: string;
 }
 
-// Local stand-in for authentication so the screens work end to end.
-// BACKEND: replace signIn/signUp/signOut with the real provider (REST auth endpoints,
-// Supabase Auth with email + Google/GitHub OAuth, etc.). Never store passwords here.
+// An account comes from Supabase Auth (the session lives in its own cookies, the username in
+// `profiles`). A guest is a local stand-in kept in localStorage; it never touches Supabase.
+// Only one of them exists at a time: signing in clears the guest, and playing as a guest signs out.
 const KEY = "arcade-vault:session";
 const EVENT = "arcade-vault:session";
 let cached: { raw: string | null; session: Session | null } = { raw: null, session: null };
 
-// Answers when localStorage is blocked: the session then lasts only for this page view.
+// Answers when localStorage is blocked: the guest then lasts only for this page view.
 let memory: Session | null = null;
 let degraded = false;
+
+// The signed-in account. Replaced as a whole, so useSyncExternalStore sees a stable snapshot.
+let account: Session | null = null;
+let watching = false;
 
 function isSession(value: unknown): value is Session {
   if (typeof value !== "object" || value === null) return false;
@@ -24,7 +31,7 @@ function isSession(value: unknown): value is Session {
   return typeof name === "string" && name.length > 0 && typeof guest === "boolean";
 }
 
-export function readSession(): Session | null {
+function readGuest(): Session | null {
   if (degraded) return memory;
   let raw: string | null = null;
   try {
@@ -46,8 +53,12 @@ export function readSession(): Session | null {
   return session;
 }
 
-/** Returns false when the session could not be persisted; it is then kept in memory only. */
-function write(session: Session | null): boolean {
+export function readSession(): Session | null {
+  return account ?? readGuest();
+}
+
+/** Returns false when the guest could not be persisted; it is then kept in memory only. */
+function writeGuest(session: Session | null): boolean {
   memory = session;
   let saved = true;
   try {
@@ -62,11 +73,73 @@ function write(session: Session | null): boolean {
   return saved;
 }
 
-export const signIn = (name: string) => write({ name: name.trim().toUpperCase(), guest: false });
-export const playAsGuest = () => write({ name: "GUEST", guest: true });
-export const signOut = () => write(null);
+function setAccount(next: Session | null) {
+  if (next) writeGuest(null);
+  account = next;
+  window.dispatchEvent(new Event(EVENT));
+}
 
-function subscribe(cb: () => void) {
+/** Loads the username of a signed-in user. Without a profile there is no usable account. */
+async function loadAccount(userId: string): Promise<Session | null> {
+  try {
+    const { data, error } = await createClient()
+      .from("profiles")
+      .select("username")
+      .eq("id", userId)
+      .maybeSingle();
+    if (error || !data) {
+      console.error("[session] could not load the profile", error);
+      return null;
+    }
+    return { name: data.username, guest: false, userId };
+  } catch (error) {
+    console.error("[session] could not load the profile", error);
+    return null;
+  }
+}
+
+// Starts once, on the first subscriber. Supabase fires INITIAL_SESSION right away, so a reload
+// restores the account.
+function watchAccount() {
+  if (watching) return;
+  watching = true;
+  try {
+    createClient().auth.onAuthStateChange((_event, authSession) => {
+      const userId = authSession?.user.id;
+      // Do not call Supabase inside this callback: it can deadlock the auth client.
+      setTimeout(async () => {
+        if (!userId) return setAccount(null);
+        if (account?.userId === userId) return;
+        setAccount(await loadAccount(userId));
+      }, 0);
+    });
+  } catch (error) {
+    // Missing public variables: the app keeps working with guests only.
+    console.error("[session] auth is not available", error);
+  }
+}
+
+async function endAccount(): Promise<void> {
+  try {
+    await createClient().auth.signOut();
+  } catch (error) {
+    console.error("[session] could not sign out of Supabase", error);
+  }
+  setAccount(null);
+}
+
+export async function playAsGuest(): Promise<boolean> {
+  if (account) await endAccount();
+  return writeGuest({ name: "GUEST", guest: true });
+}
+
+export async function signOut(): Promise<void> {
+  writeGuest(null);
+  if (account) await endAccount();
+}
+
+export function subscribe(cb: () => void) {
+  watchAccount();
   window.addEventListener(EVENT, cb);
   window.addEventListener("storage", cb);
   return () => {

@@ -19,16 +19,24 @@ export interface ScoreInput {
   gameId: string;
   player: string;
   score: number;
+  /** The signed-in account that owns the score. Without it the score is a guest's. */
+  userId?: string | null;
 }
 
-/** What goes into the insert, or null when the input cannot be a valid score. */
+const GUEST = "GUEST";
+
+/**
+ * What goes into the insert, or null when the input cannot be a valid score. A guest (no `userId`)
+ * is always saved as GUEST, whatever name came in: the insert policy for `anon` requires it.
+ */
 export function toScoreRow(
   input: ScoreInput,
-): { game_id: string; player: string; score: number } | null {
-  const player = input.player.trim().slice(0, PLAYER_MAX);
+): { game_id: string; player: string; score: number; user_id: string | null } | null {
+  const userId = input.userId || null;
+  const player = userId ? input.player.trim().slice(0, PLAYER_MAX) : GUEST;
   if (!player) return null;
   if (!Number.isInteger(input.score) || input.score < 0 || input.score > SCORE_MAX) return null;
-  return { game_id: input.gameId, player, score: input.score };
+  return { game_id: input.gameId, player, score: input.score, user_id: userId };
 }
 
 /** Maps a `scores` row to the shape the Leaderboard and Podium already use. */

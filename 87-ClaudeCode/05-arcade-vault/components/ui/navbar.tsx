@@ -37,6 +37,17 @@ export function Navbar() {
   const pathname = usePathname();
   const session = useSession();
   const [open, setOpen] = useState(false);
+  // Signing out waits for Supabase; the button stays disabled meanwhile so a double click sends one request.
+  const [signingOut, setSigningOut] = useState(false);
+
+  async function handleSignOut() {
+    setSigningOut(true);
+    try {
+      await signOut();
+    } finally {
+      setSigningOut(false);
+    }
+  }
 
   // Once per page load: drop the local scores of games that left the catalog (SPEC 08).
   useEffect(() => {
@@ -75,7 +86,7 @@ export function Navbar() {
           {session.name.slice(0, 2)}
         </span>
         <span className="av-avatar-name">{session.name}</span>
-        <Button variant="ghost" size="sm" onClick={signOut}>
+        <Button variant="ghost" size="sm" disabled={signingOut} onClick={handleSignOut}>
           Sign out
         </Button>
       </>
