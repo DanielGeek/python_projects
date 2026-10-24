@@ -16,10 +16,24 @@ describe("rowToEntry", () => {
 });
 
 describe("toScoreRow", () => {
-  const input = { gameId: "asteroids", player: "ANA", score: 1200 };
+  const input = { gameId: "asteroids", player: "ANA", score: 1200, userId: "user-1" };
 
-  it("maps a valid input to the insert row", () => {
-    expect(toScoreRow(input)).toEqual({ game_id: "asteroids", player: "ANA", score: 1200 });
+  it("maps an account's input to the insert row with its user id", () => {
+    expect(toScoreRow(input)).toEqual({
+      game_id: "asteroids",
+      player: "ANA",
+      score: 1200,
+      user_id: "user-1",
+    });
+  });
+
+  it.each([undefined, null, ""])("saves a score without an account (%j) as GUEST", (userId) => {
+    expect(toScoreRow({ ...input, userId, player: "ANA" })).toEqual({
+      game_id: "asteroids",
+      player: "GUEST",
+      score: 1200,
+      user_id: null,
+    });
   });
 
   it("trims the name and cuts it to 20 characters", () => {
@@ -33,8 +47,8 @@ describe("toScoreRow", () => {
   });
 
   it.each([
-    ["an empty name", { player: "" }],
-    ["a name of only spaces", { player: "     " }],
+    ["an account with an empty name", { player: "" }],
+    ["an account with a name of only spaces", { player: "     " }],
     ["a negative score", { score: -1 }],
     ["a score above the maximum", { score: 10_000_000 }],
     ["a decimal score", { score: 1.5 }],
@@ -46,7 +60,7 @@ describe("toScoreRow", () => {
 });
 
 describe("submitScore", () => {
-  const input = { gameId: "asteroids", player: "ANA", score: 1200 };
+  const input = { gameId: "asteroids", player: "ANA", score: 1200, userId: "user-1" };
   const insert = vi.fn();
   const from = vi.fn(() => ({ insert }));
 
@@ -62,7 +76,12 @@ describe("submitScore", () => {
     insert.mockResolvedValue({ error: null });
     await expect(submitScore(input)).resolves.toBe(true);
     expect(from).toHaveBeenCalledWith("scores");
-    expect(insert).toHaveBeenCalledWith({ game_id: "asteroids", player: "ANA", score: 1200 });
+    expect(insert).toHaveBeenCalledWith({
+      game_id: "asteroids",
+      player: "ANA",
+      score: 1200,
+      user_id: "user-1",
+    });
   });
 
   it("resolves false when Supabase answers with an error", async () => {
@@ -80,6 +99,17 @@ describe("submitScore", () => {
       throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL");
     });
     await expect(submitScore(input)).resolves.toBe(false);
+  });
+
+  it("sends a guest score as GUEST with no user id", async () => {
+    insert.mockResolvedValue({ error: null });
+    await expect(submitScore({ ...input, userId: undefined, player: "ANA" })).resolves.toBe(true);
+    expect(insert).toHaveBeenCalledWith({
+      game_id: "asteroids",
+      player: "GUEST",
+      score: 1200,
+      user_id: null,
+    });
   });
 
   it("does not send anything for an invalid score", async () => {

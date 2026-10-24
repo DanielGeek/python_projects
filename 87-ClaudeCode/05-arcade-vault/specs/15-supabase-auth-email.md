@@ -117,7 +117,7 @@ Conventions:
 
 - [x] `public.profiles` exists with RLS on and the unique index on `username`.
 - [x] `anon` and `authenticated` have no `insert`, `update` or `delete` on `profiles`.
-- [ ] Creating an account with an unused username creates exactly one `profiles` row with the username in upper-case.
+- [x] Creating an account with an unused username creates exactly one `profiles` row with the username in upper-case.
 - [ ] Sign-up with a username that is taken shows "Username taken" and does not call `signUp`.
 - [x] Sign-up with the username `guest` in any case is rejected by the form.
 - [ ] After sign-up the screen shows "Check your email" and the user is not signed in yet.
@@ -129,10 +129,10 @@ Conventions:
 - [ ] Reloading the page keeps the user signed in.
 - [ ] Sign-out clears the Supabase session and the navbar shows the sign-in button.
 - [x] "Play as guest" still works with no account and `useSession` returns `GUEST`.
-- [ ] A signed-in player's saved score has `user_id = auth.uid()` and `player` equal to their username.
-- [ ] A REST insert as a signed-in user with a different `player` is rejected.
-- [ ] A REST insert as a signed-in user with another `user_id` is rejected.
-- [ ] A REST insert as `anon` with `player` other than `GUEST`, or with a `user_id`, is rejected.
+- [x] A signed-in player's saved score has `user_id = auth.uid()` and `player` equal to their username.
+- [x] A REST insert as a signed-in user with a different `player` is rejected.
+- [x] A REST insert as a signed-in user with another `user_id` is rejected.
+- [x] A REST insert as `anon` with `player` other than `GUEST`, or with a `user_id`, is rejected.
 - [ ] The final-score modal has no name field for a guest, and the guest score is saved as `GUEST`.
 - [ ] Old `scores` rows are unchanged and still show in `/hall-of-fame`.
 - [ ] No password or token is written to localStorage by the app code.

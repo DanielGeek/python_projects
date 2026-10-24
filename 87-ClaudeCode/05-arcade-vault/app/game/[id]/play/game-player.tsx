@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, ButtonLink, PixelSpinner, formatScore } from "@/components/ui/basics";
 import { CRTScreen, HUD } from "@/components/ui/game";
-import { Input, Modal, Typewriter } from "@/components/ui/interactive";
+import { Modal, Typewriter } from "@/components/ui/interactive";
 import { TouchControls, useCoarsePointer } from "@/components/ui/touch-controls";
 import type { Game } from "@/lib/games";
 import { insertCoin, spendCredit } from "@/lib/credits";
@@ -34,7 +34,6 @@ export function GamePlayer({ game }: { game: Game }) {
   const [state, setState] = useState<GameState>(INITIAL);
   const [paused, setPaused] = useState(false);
   const [finalScore, setFinalScore] = useState<number | null>(null);
-  const [name, setName] = useState("");
   const [saved, setSaved] = useState(false);
   // True when storage refused the score: it is only kept until the tab closes.
   const [volatile, setVolatile] = useState(false);
@@ -114,7 +113,8 @@ export function GamePlayer({ game }: { game: Game }) {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (finalScore == null || sending) return;
-    const playerName = signedIn ? player : (name.trim() || "GUEST").toUpperCase().slice(0, 12);
+    // A guest is always saved as GUEST; only an account owns a name (the insert policy enforces both).
+    const playerName = signedIn ? player : "GUEST";
     // The local copy goes first, so the score is never lost if the request fails.
     const persisted = saveScore(game.id, {
       player: playerName,
@@ -124,7 +124,12 @@ export function GamePlayer({ game }: { game: Game }) {
     setVolatile(!persisted);
     setSending(true);
     const startedRun = currentRun.current;
-    const global = await submitScore({ gameId: game.id, player: playerName, score: finalScore });
+    const global = await submitScore({
+      gameId: game.id,
+      player: playerName,
+      score: finalScore,
+      userId: session?.userId,
+    });
     if (startedRun !== currentRun.current) return;
     setSending(false);
     setShared(global);
@@ -249,18 +254,10 @@ export function GamePlayer({ game }: { game: Game }) {
             {signedIn ? (
               <p className="av-modal-note">It will be saved as {player}.</p>
             ) : (
-              <>
-                <Input
-                  label="Your name"
-                  placeholder="GUEST"
-                  maxLength={12}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <p className="av-modal-note">
-                  Playing as a guest: your score goes to the global leaderboard under this name.
-                </p>
-              </>
+              <p className="av-modal-note">
+                Playing as a guest: your score is saved as GUEST. Sign in to save it under your
+                name.
+              </p>
             )}
             <Button type="submit" variant="outline" block disabled={sending}>
               {sending ? "SAVING…" : "Save score"}
