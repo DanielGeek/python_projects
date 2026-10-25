@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { securityHeaders } from "./lib/security-headers";
 
 // Dev only: lets a phone on the same network open `npm run dev` at http://<NEXT_PUBLIC_LOCAL_URL>:<port>.
 // Next matches the hostname only, so the scheme and the port of the variable are dropped. An unset or
@@ -21,6 +22,7 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   partialPrefetching: true,
+  headers: async () => [{ source: "/(.*)", headers: securityHeaders }],
   turbopack: {
     rules: {
       "*.css": {

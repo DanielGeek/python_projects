@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Sign in · Arcade Vault" };
 export default function AccessPage() {
   return (
     <div className="av-container av-auth">
-      {/* AuthCard reads ?error=confirm through useSearchParams, which needs a Suspense boundary. */}
+      {/* AuthCard reads ?error=confirm and ?next= through useSearchParams, which needs a Suspense boundary. */}
       <Suspense fallback={null}>
         <AuthCard />
       </Suspense>

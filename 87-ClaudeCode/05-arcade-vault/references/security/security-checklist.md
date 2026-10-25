@@ -1,10 +1,10 @@
 ## Basic security checklist
 
-  - [ ] RLS: Row Level Security enabled on both tables: `games` and `scores`
-  - [ ] Minimum password length — at least 8 characters
-  - [ ] Leaked password protection — (warning 4)
-  - [ ] Max signup rate — limit signups per IP (anti-bot)
-  - [ ] Security headers in Next.js
+  - [x] RLS: Row Level Security enabled on every table in `public` (`games`, `scores`, `profiles`). SPEC 17 adds a test that fails when a migration creates a table without it.
+  - [x] Minimum password length — at least 8 characters. Set in the dashboard, plus the requirement "Lowercase, uppercase letters, digits and symbols" (SPEC 17); `validateSignUp` mirrors it.
+  - [ ] Leaked password protection — (warning 4). **Open on purpose**: it needs the Supabase Pro plan. When the project upgrades it is one switch in Authentication > Sign In / Providers > Email.
+  - [x] Max signup rate — limit signups per IP (anti-bot). Kept at the Supabase default, 30 requests per 5 minutes per IP (the field has no per-hour unit); sign-ups get `429` after that. Measured in SPEC 17: password sign-ins are **not** limited by that field (85 attempts from one IP, no `429`), a gap for a future spec (captcha or MFA). Supabase's docs (auth/rate-limits, deployment/going-into-prod) agree: `/auth/v1/token` is listed only for token refreshes, and they recommend CAPTCHA on the sign-up, sign-in and password-reset endpoints (auth/auth-captcha).
+  - [x] Security headers in Next.js (`lib/security-headers.ts`, sent by `next.config.ts`). `X-Frame-Options` is `SAMEORIGIN`, not `DENY` as in the example below, because the player embeds the games in a same-origin iframe.
   
   E.g.:
 
@@ -30,3 +30,9 @@ headers: async () => [
 | authenticated_security_definer_function_executable | Signed-In Users Can Execute SECURITY DEFINER Function | WARN  | EXTERNAL | ["SECURITY"] | Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it. | Function `public.rls_auto_enable()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/rls_auto_enable`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.                | https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable | {"schema":"public","name":"rls_auto_enable","language":"plpgsql","arguments":"","security_definer":true}         | authenticated_security_definer_function_executable_public_rls_auto_enable_             | 2026-10-25T20:15:59.375Z |
 | authenticated_security_definer_function_executable | Signed-In Users Can Execute SECURITY DEFINER Function | WARN  | EXTERNAL | ["SECURITY"] | Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it. | Function `public.username_available(name text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/username_available`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional. | https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable | {"schema":"public","name":"username_available","language":"sql","arguments":"name text","security_definer":true} | authenticated_security_definer_function_executable_public_username_available_name text | 2026-10-25T20:15:59.375Z |
 | auth_leaked_password_protection                    | Leaked Password Protection Disabled                   | WARN  | EXTERNAL | ["SECURITY"] | Leaked password protection is currently disabled.                                                                                                                                                                        | Supabase Auth prevents the use of compromised passwords by checking against HaveIBeenPwned.org. Enable this feature to enhance security.                                                                                                            | https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection               | {"entity":"Auth","type":"auth"}                                                                                  | auth_leaked_password_protection                                                        |                          |
+
+## Status after SPEC 17
+
+- `rls_auto_enable()`: `execute` revoked from `public`, `anon` and `authenticated` by `20261025220847_lock_rls_auto_enable.sql`. The `ensure_rls` event trigger keeps working. Its two rows above are closed.
+- `username_available(name text)`: stays executable by `anon` and `authenticated` on purpose, the sign-up form needs it. Its two warnings are accepted.
+- Leaked password protection: open, see above.

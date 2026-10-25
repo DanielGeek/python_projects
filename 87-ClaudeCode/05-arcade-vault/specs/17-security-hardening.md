@@ -1,6 +1,6 @@
 # SPEC 17 — Security hardening
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 06, SPEC 08, SPEC 15
 > **Date:** 2026-10-25
 > **Objective:** Apply the basic security checklist of `references/security/security-checklist.md` (security headers, Supabase Auth limits, a locked-down `rls_auto_enable()`, an RLS guard) and add a `proxy.ts` that protects the player and a new `/profile` page.
@@ -26,7 +26,7 @@ The spec also adds route protection with `proxy.ts` (Next 16 name for `middlewar
 - Migration `supabase/migrations/<version>_lock_rls_auto_enable.sql`, applied with `apply_migration`, that revokes `execute` on `public.rls_auto_enable()` from `public`, `anon` and `authenticated`.
 - A test that rebuilds the schema from `supabase/migrations/` and fails when a table in `public` has no `enable row level security` (in `lib/leaderboard.test.ts` or a new `lib/rls.test.ts`).
 - A one-time RLS check with `execute_sql` on `pg_tables` and `pg_policies`.
-- Manual Supabase dashboard steps: minimum password length 8, password requirements "Lowercase, uppercase letters, digits and symbols (recommended)", sign-up and sign-in rate limit per IP.
+- Manual Supabase dashboard steps: minimum password length 8, password requirements "Lowercase, uppercase letters, digits and symbols (recommended)". The sign-up and sign-in rate limit per IP stays at the Supabase default (see Decisions).
 - `lib/auth.ts`: `validateSignUp` also requires at least one lowercase letter, one uppercase letter, one digit and one symbol, so the form shows the error before Supabase rejects the password as weak. `app/login/auth-card.tsx` shows the rule as a hint under the sign-up password field. `lib/auth.test.ts` covers the new rule. `validateSignIn` does not change, so old accounts can still sign in.
 - `proxy.ts` (new, project root): exports `proxy` and a `config.matcher` of `["/game/:id/play", "/profile"]`. It refreshes and validates the Supabase session and applies the access rules below.
 - `lib/supabase/proxy.ts` (new): `updateSession(request)` builds a server client over the request cookies, calls `getClaims()` and returns the response (with refreshed cookies) and whether an account is signed in.
@@ -98,7 +98,7 @@ Dashboard values:
 ```text
 Authentication > Sign In / Providers > Email   minimum password length = 8
                                                password requirements = Lowercase, uppercase letters, digits and symbols (recommended)
-Authentication > Rate Limits                   sign-ups and sign-ins per IP, target 5 per hour
+Authentication > Rate Limits                   sign-ups and sign-ins per IP, kept at the default: 30 requests per 5 minutes (360 per hour)
 ```
 
 ---
@@ -112,8 +112,8 @@ Authentication > Rate Limits                   sign-ups and sign-ins per IP, tar
 5. Add the RLS guard test: read `supabase/migrations/*.sql`, collect every `create table public.<name>`, and fail when one has no matching `alter table public.<name> enable row level security`. Manual test: `npm test`.
 6. Run the one-time RLS check with `execute_sql`: every table in schema `public` has `rowsecurity = true`, and `games`, `scores` and `profiles` each have at least one policy.
 7. Update `validateSignUp` in `lib/auth.ts` with the composition rule (lowercase, uppercase, digit, symbol) and add the hint under the sign-up password field of `app/login/auth-card.tsx`. Add cases to `lib/auth.test.ts`. Manual test: `npm test`, then try a sign-up with `password1` and see the error.
-8. Do the dashboard steps: set the minimum password length to 8, the password requirements to "Lowercase, uppercase letters, digits and symbols (recommended)" and the sign-up and sign-in rate limit per IP. Check the unit of the rate limit field first. If it only accepts a value per 5 minutes, use 5 per 5 minutes and note it in the Decisions section.
-9. Manual test of the limits: send a sign-up with a 7-character password, and another with 8 lowercase letters only, straight to the Supabase Auth API with the publishable key and see both rejected; repeat sign-ups from one IP until the API answers `429`.
+8. Do the dashboard steps: set the minimum password length to 8, the password requirements to "Lowercase, uppercase letters, digits and symbols (recommended)" and leave the sign-up and sign-in rate limit per IP at the Supabase default (30 requests per 5 minutes; the field only accepts a value per 5 minutes, see Decisions).
+9. Manual test of the limits: send a sign-up with a 7-character password, and another with 8 lowercase letters only, straight to the Supabase Auth API with the publishable key and see both rejected; repeat failed sign-ins (wrong password, so no email is sent) from one IP until the API answers `429` at the default limit of 30 per 5 minutes.
 10. Read `node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/proxy.md` and the proxy guide, then create `lib/safe-next.ts` with `safeNextPath` and its test: reject `//evil.example`, `https://evil.example`, `/\evil` and an empty value; accept `/login/reset` and `/game/asteroids/play`; default `/library`. Manual test: `npm test`.
 11. Create `lib/route-guard.ts` (`GUEST_COOKIE`, `decideAccess`) and `lib/route-guard.test.ts`: cover the four cases (visitor, guest, account, public path) for `/game/<id>/play` and `/profile`. Manual test: `npm test`.
 12. Create `lib/supabase/proxy.ts` (`updateSession`) and `proxy.ts` with the matcher `["/game/:id/play", "/profile"]`. Call `getClaims()`, never `getSession()`, to decide `account`. Read the guest flag from `request.cookies`, call `decideAccess`, and redirect with `NextResponse.redirect` carrying the refreshed cookies. Manual test: with no session and no cookie, `curl -I http://localhost:3000/game/asteroids/play` answers a redirect to `/login?next=%2Fgame%2Fasteroids%2Fplay`.
@@ -126,36 +126,38 @@ Authentication > Rate Limits                   sign-ups and sign-ins per IP, tar
 
 ## Acceptance criteria
 
-- [ ] `GET /` answers with `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Content-Security-Policy: frame-ancestors 'self'`, `Referrer-Policy: strict-origin-when-cross-origin`, `Strict-Transport-Security` and `Permissions-Policy`.
-- [ ] The same headers arrive on `/api/health/supabase` and on `/games/asteroids/index.html`.
-- [ ] `/game/asteroids/play` still loads the game inside the iframe, with no console error about framing.
-- [ ] A page from another origin cannot embed `http://localhost:3000/` in an iframe.
-- [ ] No response uses `X-Frame-Options: DENY`.
-- [ ] `get_advisors` (security) no longer lists `rls_auto_enable` for `anon` or for `authenticated`.
-- [ ] A call to `/rest/v1/rpc/rls_auto_enable` with the publishable key is rejected.
-- [ ] `username_available` still works: the sign-up form still tells a taken username from a free one.
-- [ ] `get_advisors` (security) lists only the two `username_available` warnings and leaked password protection.
-- [ ] Every table in schema `public` has `rowsecurity = true`.
-- [ ] The RLS guard test fails when a migration creates a public table without RLS, and passes on the current migrations.
-- [ ] A sign-up with a 7-character password sent straight to the Supabase Auth API is rejected by the server.
-- [ ] A sign-up with 8 lowercase letters only, sent straight to the Supabase Auth API, is rejected by the server as weak.
-- [ ] `validateSignUp` rejects a password that lacks a lowercase letter, an uppercase letter, a digit or a symbol, and accepts `Abcdef1!`.
-- [ ] The sign-up form shows the password rule before the user submits.
-- [ ] `validateSignIn` still accepts any non-empty password, and an account made before this spec can sign in.
-- [ ] The sign-up and sign-in rate limit per IP is set, and the API answers `429` when it is exceeded.
-- [ ] A visitor with no session and no guest cookie who opens `/game/asteroids/play` is redirected to `/login?next=%2Fgame%2Fasteroids%2Fplay`.
-- [ ] After signing in from that redirect, the user lands on `/game/asteroids/play`.
-- [ ] After "Play as guest" from that redirect, the user lands on `/game/asteroids/play`.
-- [ ] A guest with the cookie reaches `/game/asteroids/play` and still saves scores as `GUEST`.
-- [ ] A guest created before this spec (localStorage only) gets the cookie on the next page load and can open the player.
-- [ ] A visitor or a guest who opens `/profile` is redirected to `/login?next=/profile`; an account sees its username and email.
-- [ ] After sign-out the guest cookie is gone and `/game/asteroids/play` redirects to `/login`.
-- [ ] `/`, `/library`, `/game/asteroids`, `/hall-of-fame`, `/about`, `/login`, `/api/*` and `/games/*` are never redirected by the proxy.
-- [ ] A forged cookie `arcade-vault-guest=1` opens the player, and this is documented as accepted in `CLAUDE.md`.
-- [ ] `/login?next=//evil.example` and `/login?next=https://evil.example` navigate to `/library` after sign-in.
-- [ ] The proxy uses `getClaims()` and never `getSession()`; a tampered `sb-*` cookie does not count as an account.
-- [ ] `references/security/security-checklist.md` shows RLS, minimum password length, signup rate and security headers as done, and leaked password protection as open.
-- [ ] `npm test`, `npm run lint` and `npm run build` pass.
+- [x] `GET /` answers with `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Content-Security-Policy: frame-ancestors 'self'`, `Referrer-Policy: strict-origin-when-cross-origin`, `Strict-Transport-Security` and `Permissions-Policy`.
+- [x] The same headers arrive on `/api/health/supabase` and on `/games/asteroids/index.html`.
+- [x] `/game/asteroids/play` still loads the game inside the iframe, with no console error about framing.
+- [x] A page from another origin cannot embed `http://localhost:3000/` in an iframe.
+- [x] No response uses `X-Frame-Options: DENY`.
+- [x] `get_advisors` (security) no longer lists `rls_auto_enable` for `anon` or for `authenticated`.
+- [x] A call to `/rest/v1/rpc/rls_auto_enable` with the publishable key is rejected.
+- [x] `username_available` still works: the sign-up form still tells a taken username from a free one.
+- [x] `get_advisors` (security) lists only the two `username_available` warnings and leaked password protection.
+- [x] Every table in schema `public` has `rowsecurity = true`.
+- [x] The RLS guard test fails when a migration creates a public table without RLS, and passes on the current migrations.
+- [x] A sign-up with a 7-character password sent straight to the Supabase Auth API is rejected by the server.
+- [x] A sign-up with 8 lowercase letters only, sent straight to the Supabase Auth API, is rejected by the server as weak.
+- [x] `validateSignUp` rejects a password that lacks a lowercase letter, an uppercase letter, a digit or a symbol, and accepts `Abcdef1!`.
+- [x] The sign-up form shows the password rule before the user submits.
+- [x] `validateSignIn` still accepts any non-empty password, and an account made before this spec can sign in.
+- [x] The sign-up and sign-in rate limit per IP is the Supabase default (30 requests per 5 minutes), and the API answers `429` when it is exceeded.
+- [x] A visitor with no session and no guest cookie who opens `/game/asteroids/play` is redirected to `/login?next=%2Fgame%2Fasteroids%2Fplay`.
+- [x] After signing in from that redirect, the user lands on `/game/asteroids/play`.
+- [x] After "Play as guest" from that redirect, the user lands on `/game/asteroids/play`.
+- [x] A guest with the cookie reaches `/game/asteroids/play` and still saves scores as `GUEST`.
+- [x] A guest created before this spec (localStorage only) gets the cookie on the next page load and can open the player.
+- [x] A visitor or a guest who opens `/profile` is redirected to `/login?next=/profile`; an account sees its username and email.
+- [x] After sign-out the guest cookie is gone and `/game/asteroids/play` redirects to `/login`.
+- [x] `/`, `/library`, `/game/asteroids`, `/hall-of-fame`, `/about`, `/login`, `/api/*` and `/games/*` are never redirected by the proxy.
+- [x] A forged cookie `arcade-vault-guest=1` opens the player, and this is documented as accepted in `CLAUDE.md`.
+- [x] `/login?next=//evil.example` and `/login?next=https://evil.example` navigate to `/library` after sign-in.
+- [x] Signing in or "Play as guest" from the login reached by a soft navigation (a visitor who clicks "Play" on `/game/asteroids`) lands on `/game/asteroids/play`, not back on the login.
+- [x] An account that is already signed in and opens `/login` is sent to `next` (or `/library`) instead of seeing the form; a guest still sees it.
+- [x] The proxy uses `getClaims()` and never `getSession()`; a tampered `sb-*` cookie does not count as an account.
+- [x] `references/security/security-checklist.md` shows RLS, minimum password length, signup rate and security headers as done, and leaked password protection as open.
+- [x] `npm test`, `npm run lint` and `npm run build` pass.
 
 ---
 
@@ -173,7 +175,7 @@ Authentication > Rate Limits                   sign-ups and sign-ins per IP, tar
 - **Yes:** mirror the composition rule in `validateSignUp`, so the form rejects a weak password with a clear message before the server does. Supabase stays the authority.
 - **No:** touch `validateSignIn` or force a reset on old accounts. Sign-in must not lock out a player whose password predates the rule.
 - **Yes:** a test that keeps RLS on for every table created in `supabase/migrations/`, plus a one-time check on the live database. The test stops the next table from shipping open; the check proves today's state.
-- **Yes:** set the sign-up rate limit in the dashboard, target 5 per hour per IP. Rate limits belong to Supabase Auth, not to our code.
+- **Yes:** keep the sign-up and sign-in rate limit per IP at the Supabase default, 30 requests per 5 minutes (360 per hour). The dashboard field only accepts a value per 5 minutes, so the first target of 5 per hour cannot be expressed, and the fallback of 5 per 5 minutes was dropped by the user: it would count wrong passwords too and share one small quota among players behind the same network. Rate limits belong to Supabase Auth, not to our code.
 - **Yes:** add `proxy.ts` now. SPEC 15 left it out because nothing needed a server-side session. A protected route does. Next 16 names the file `proxy.ts`; `middleware.ts` is deprecated.
 - **Yes:** protect only `/game/[id]/play` (account or guest) and `/profile` (account). Landing, library, detail, hall of fame and About stay public for visitors and search engines.
 - **Yes:** the proxy accepts a session or the guest cookie. Guests must keep playing (SPEC 08, SPEC 15), and they exist only in the browser.
@@ -183,6 +185,8 @@ Authentication > Rate Limits                   sign-ups and sign-ins per IP, tar
 - **Yes:** `getClaims()` in the proxy, which verifies the JWT, and the refresh of the token cookie on the protected paths. `getSession()` reads the cookie without verifying it and must not decide access. The browser client still refreshes tokens on every other page.
 - **Yes:** the proxy is not the only guard. `/profile` also checks the session on the page, because Next docs say the proxy is for optimistic checks, not full authorization.
 - **Yes:** `?next=` with `safeNextPath` and the same-origin rule. An open redirect on a login page is a phishing risk. `lib/safe-next.ts` lives in this spec so SPEC 16 reuses it.
+- **Yes:** leave the login page with a full page load (`window.location.assign`), not `router.push`. Found after step 14: a visitor who reaches the login by a soft navigation leaves the proxy's redirect for the protected path in the router cache, and a soft push after signing in reused it and landed on the login again. A full load asks the proxy with the new cookies. A 5 s `sessionStorage` guard avoids a loop if the proxy and the client ever disagree about the session.
+- **Yes:** an account that opens `/login` is redirected on the client (`AuthCard`), not by the proxy, so `/login` stays outside the proxy matcher. A guest is not redirected: they may want to sign in.
 - **Yes:** a minimal `/profile` (username, email, sign-out). A protected route needs a real target. Editing features go in their own spec.
 - **No:** protect `/api/*`. `POST /api/contact` is public on purpose and `/api/health/supabase` carries no data.
 
@@ -195,7 +199,7 @@ Authentication > Rate Limits                   sign-ups and sign-ins per IP, tar
 | A header breaks a page or the game iframe                                        | Steps 2 and 3 test the player and a game file by hand; `SAMEORIGIN` is chosen for this reason.                    |
 | HSTS with `includeSubDomains` is cached by browsers for two years                | Only HTTPS hosts are affected; `localhost` ignores it. Remove the flag if a subdomain without HTTPS appears.      |
 | `rls_auto_enable()` is used by an event trigger and revoking `execute` breaks it | Step 4 reads its definition and what uses it before the migration.                                                |
-| The dashboard rate limit field cannot express "per hour"                         | Step 7 checks the unit and falls back to 5 per 5 minutes, recorded in Decisions.                                  |
+| The dashboard rate limit field cannot express "per hour"                         | Confirmed: it only takes a value per 5 minutes. The default of 30 per 5 minutes stays, recorded in Decisions.     |
 | The rate limit blocks several players behind one IP (school, event)              | The value is a dashboard setting and can be raised without a deploy.                                              |
 | The RLS guard test misses a table written with a different SQL spelling          | It matches `create table` with and without `if not exists` and quotes; fix the pattern if a migration is skipped. |
 | A guest from before this spec has no cookie and is sent to `/login`              | Step 13 sets the cookie when the guest is read from localStorage, on the next page load.                          |

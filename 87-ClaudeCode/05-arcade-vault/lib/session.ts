@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { GUEST_COOKIE } from "./route-guard";
 import { createClient } from "./supabase/client";
 
 export interface Session {
@@ -24,6 +25,18 @@ let degraded = false;
 // The signed-in account. Replaced as a whole, so useSyncExternalStore sees a stable snapshot.
 let account: Session | null = null;
 let watching = false;
+
+// SPEC 17: lets proxy.ts see a guest. A plain flag that the browser writes, so it is a UX gate and not
+// security: what protects data is RLS. It follows the guest in localStorage.
+function setGuestCookie(on: boolean) {
+  if (typeof document === "undefined") return;
+  const secure = window.location?.protocol === "https:" ? "; Secure" : "";
+  try {
+    document.cookie = `${GUEST_COOKIE}=${on ? "1" : ""}; Path=/; SameSite=Lax; Max-Age=${on ? 31536000 : 0}${secure}`;
+  } catch {
+    // Cookies blocked: the guest then has to use the pages that the proxy does not guard.
+  }
+}
 
 function isSession(value: unknown): value is Session {
   if (typeof value !== "object" || value === null) return false;
@@ -50,6 +63,8 @@ function readGuest(): Session | null {
   }
   if (raw && !session) console.warn("[session] ignored an invalid stored session");
   cached = { raw, session };
+  // A guest made before SPEC 17 has no cookie yet: write it when the stored guest is first read.
+  if (session) setGuestCookie(true);
   return session;
 }
 
@@ -60,6 +75,7 @@ export function readSession(): Session | null {
 /** Returns false when the guest could not be persisted; it is then kept in memory only. */
 function writeGuest(session: Session | null): boolean {
   memory = session;
+  setGuestCookie(session !== null);
   let saved = true;
   try {
     if (session) window.localStorage.setItem(KEY, JSON.stringify(session));
