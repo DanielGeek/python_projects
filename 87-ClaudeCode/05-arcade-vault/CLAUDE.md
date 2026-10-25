@@ -54,7 +54,7 @@ Performance (SPEC 14, `references/performance-baseline.md`): the protocol, the f
 - Headers: `lib/security-headers.ts` through `headers()` in `next.config.ts`, on every route including `/games/*` and `/api/*`. A page from another origin cannot frame the app.
 - Route protection: `proxy.ts` (see Architecture) and the guest cookie. The cookie is a plain flag, so a forged `arcade-vault-guest=1` opens the player: accepted and documented, nothing it opens is protected by it. A signed cookie would need a server secret to guard no data.
 - Open redirect: `?next=` goes through `safeNextPath` and defaults to `/library`.
-- Known gap, for a future spec: password sign-ins have no effective rate limit (see Environment variables). Captcha or MFA would close it; a weak password on an old account is the real risk.
+- Known gap, for a future spec: password sign-ins have no effective rate limit (see Environment variables). Supabase's docs list `/auth/v1/token` only for token refreshes, not for password sign-ins, and recommend CAPTCHA on sign-up, sign-in and password reset (Auth CAPTCHA guide). Captcha or MFA would close it; a weak password on an old account is the real risk.
 - `references/security/security-checklist.md` is ticked except leaked password protection.
 
 ## Environment variables

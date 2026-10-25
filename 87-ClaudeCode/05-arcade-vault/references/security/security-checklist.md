@@ -3,7 +3,7 @@
   - [x] RLS: Row Level Security enabled on every table in `public` (`games`, `scores`, `profiles`). SPEC 17 adds a test that fails when a migration creates a table without it.
   - [x] Minimum password length — at least 8 characters. Set in the dashboard, plus the requirement "Lowercase, uppercase letters, digits and symbols" (SPEC 17); `validateSignUp` mirrors it.
   - [ ] Leaked password protection — (warning 4). **Open on purpose**: it needs the Supabase Pro plan. When the project upgrades it is one switch in Authentication > Sign In / Providers > Email.
-  - [x] Max signup rate — limit signups per IP (anti-bot). Kept at the Supabase default, 30 requests per 5 minutes per IP (the field has no per-hour unit); sign-ups get `429` after that. Measured in SPEC 17: password sign-ins are **not** limited by that field (85 attempts from one IP, no `429`), a gap for a future spec (captcha or MFA).
+  - [x] Max signup rate — limit signups per IP (anti-bot). Kept at the Supabase default, 30 requests per 5 minutes per IP (the field has no per-hour unit); sign-ups get `429` after that. Measured in SPEC 17: password sign-ins are **not** limited by that field (85 attempts from one IP, no `429`), a gap for a future spec (captcha or MFA). Supabase's docs (auth/rate-limits, deployment/going-into-prod) agree: `/auth/v1/token` is listed only for token refreshes, and they recommend CAPTCHA on the sign-up, sign-in and password-reset endpoints (auth/auth-captcha).
   - [x] Security headers in Next.js (`lib/security-headers.ts`, sent by `next.config.ts`). `X-Frame-Options` is `SAMEORIGIN`, not `DENY` as in the example below, because the player embeds the games in a same-origin iframe.
   
   E.g.:
