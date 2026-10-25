@@ -136,7 +136,7 @@ Authentication > Rate Limits                   sign-ups and sign-ins per IP, tar
 - [x] `username_available` still works: the sign-up form still tells a taken username from a free one.
 - [x] `get_advisors` (security) lists only the two `username_available` warnings and leaked password protection.
 - [ ] Every table in schema `public` has `rowsecurity = true`.
-- [ ] The RLS guard test fails when a migration creates a public table without RLS, and passes on the current migrations.
+- [x] The RLS guard test fails when a migration creates a public table without RLS, and passes on the current migrations.
 - [ ] A sign-up with a 7-character password sent straight to the Supabase Auth API is rejected by the server.
 - [ ] A sign-up with 8 lowercase letters only, sent straight to the Supabase Auth API, is rejected by the server as weak.
 - [ ] `validateSignUp` rejects a password that lacks a lowercase letter, an uppercase letter, a digit or a symbol, and accepts `Abcdef1!`.
