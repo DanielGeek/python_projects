@@ -144,15 +144,15 @@ Authentication > Rate Limits                   sign-ups and sign-ins per IP, kep
 - [x] `validateSignIn` still accepts any non-empty password, and an account made before this spec can sign in.
 - [x] The sign-up and sign-in rate limit per IP is the Supabase default (30 requests per 5 minutes), and the API answers `429` when it is exceeded.
 - [x] A visitor with no session and no guest cookie who opens `/game/asteroids/play` is redirected to `/login?next=%2Fgame%2Fasteroids%2Fplay`.
-- [ ] After signing in from that redirect, the user lands on `/game/asteroids/play`.
-- [ ] After "Play as guest" from that redirect, the user lands on `/game/asteroids/play`.
+- [x] After signing in from that redirect, the user lands on `/game/asteroids/play`.
+- [x] After "Play as guest" from that redirect, the user lands on `/game/asteroids/play`.
 - [ ] A guest with the cookie reaches `/game/asteroids/play` and still saves scores as `GUEST`.
 - [x] A guest created before this spec (localStorage only) gets the cookie on the next page load and can open the player.
 - [ ] A visitor or a guest who opens `/profile` is redirected to `/login?next=/profile`; an account sees its username and email.
 - [x] After sign-out the guest cookie is gone and `/game/asteroids/play` redirects to `/login`.
 - [ ] `/`, `/library`, `/game/asteroids`, `/hall-of-fame`, `/about`, `/login`, `/api/*` and `/games/*` are never redirected by the proxy.
 - [ ] A forged cookie `arcade-vault-guest=1` opens the player, and this is documented as accepted in `CLAUDE.md`.
-- [ ] `/login?next=//evil.example` and `/login?next=https://evil.example` navigate to `/library` after sign-in.
+- [x] `/login?next=//evil.example` and `/login?next=https://evil.example` navigate to `/library` after sign-in.
 - [x] The proxy uses `getClaims()` and never `getSession()`; a tampered `sb-*` cookie does not count as an account.
 - [ ] `references/security/security-checklist.md` shows RLS, minimum password length, signup rate and security headers as done, and leaked password protection as open.
 - [ ] `npm test`, `npm run lint` and `npm run build` pass.

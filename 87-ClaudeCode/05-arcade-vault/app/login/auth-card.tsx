@@ -15,6 +15,7 @@ import {
   type AuthFailure,
   type AuthField,
 } from "@/lib/auth";
+import { safeNextPath } from "@/lib/safe-next";
 import { playAsGuest } from "@/lib/session";
 
 type Mode = "login" | "register";
@@ -32,6 +33,8 @@ const CONFIRM_LINK_MESSAGE =
 export function AuthCard() {
   const router = useRouter();
   const params = useSearchParams();
+  // Where to go after signing in or playing as a guest. Only a same-origin path passes (SPEC 17).
+  const next = safeNextPath(params.get("next"));
   const [mode, setMode] = useState<Mode>("login");
   const [errors, setErrors] = useState<Partial<Record<AuthField, string>>>({});
   const [formError, setFormError] = useState(
@@ -70,7 +73,7 @@ export function AuthCard() {
     const result = mode === "login" ? await signInWithEmail(input) : await signUpWithEmail(input);
     setBusy(false);
     if (result.ok) {
-      if (mode === "login") router.push("/library");
+      if (mode === "login") router.push(next);
       else setSentTo(input.email.trim());
       return;
     }
@@ -224,7 +227,7 @@ export function AuthCard() {
         block
         onClick={async () => {
           await playAsGuest();
-          router.push("/library");
+          router.push(next);
         }}
       >
         Play as guest
