@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button, NeonLogo } from "@/components/ui/basics";
 import { Input, Tabs } from "@/components/ui/interactive";
 import {
+  LIMITS,
+  PASSWORD_RULE,
   resendConfirmation,
   signInWithEmail,
   signUpWithEmail,
@@ -169,6 +171,11 @@ export function AuthCard() {
           type="password"
           label="Password"
           autoComplete={mode === "login" ? "current-password" : "new-password"}
+          hint={
+            mode === "register"
+              ? `${LIMITS.passwordMin} to ${LIMITS.passwordMax} characters. ${PASSWORD_RULE}`
+              : undefined
+          }
           error={errors.password}
         />
         {formError && (

@@ -139,8 +139,8 @@ Authentication > Rate Limits                   sign-ups and sign-ins per IP, tar
 - [x] The RLS guard test fails when a migration creates a public table without RLS, and passes on the current migrations.
 - [ ] A sign-up with a 7-character password sent straight to the Supabase Auth API is rejected by the server.
 - [ ] A sign-up with 8 lowercase letters only, sent straight to the Supabase Auth API, is rejected by the server as weak.
-- [ ] `validateSignUp` rejects a password that lacks a lowercase letter, an uppercase letter, a digit or a symbol, and accepts `Abcdef1!`.
-- [ ] The sign-up form shows the password rule before the user submits.
+- [x] `validateSignUp` rejects a password that lacks a lowercase letter, an uppercase letter, a digit or a symbol, and accepts `Abcdef1!`.
+- [x] The sign-up form shows the password rule before the user submits.
 - [ ] `validateSignIn` still accepts any non-empty password, and an account made before this spec can sign in.
 - [ ] The sign-up and sign-in rate limit per IP is set, and the API answers `429` when it is exceeded.
 - [ ] A visitor with no session and no guest cookie who opens `/game/asteroids/play` is redirected to `/login?next=%2Fgame%2Fasteroids%2Fplay`.

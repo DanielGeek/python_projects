@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { LIMITS, toAuthFailure, validateSignIn, validateSignUp, type SignUpInput } from "./auth";
+import {
+  LIMITS,
+  PASSWORD_RULE,
+  toAuthFailure,
+  validateSignIn,
+  validateSignUp,
+  type SignUpInput,
+} from "./auth";
 
-const valid: SignUpInput = { username: "ada_99", email: "ada@example.com", password: "12345678" };
+const valid: SignUpInput = { username: "ada_99", email: "ada@example.com", password: "Abcdef1!" };
 
 describe("validateSignUp", () => {
   it("returns no errors for valid input", () => {
@@ -42,13 +49,33 @@ describe("validateSignUp", () => {
 
   it("enforces the password length bounds", () => {
     expect(validateSignUp({ ...valid, password: "1234567" }).password).toMatch(/at least 8/);
-    expect(validateSignUp({ ...valid, password: "x".repeat(8) }).password).toBeUndefined();
+    expect(validateSignUp({ ...valid, password: "Abcdef1!" }).password).toBeUndefined();
     expect(
-      validateSignUp({ ...valid, password: "x".repeat(LIMITS.passwordMax) }).password,
+      validateSignUp({ ...valid, password: "Aa1!" + "x".repeat(LIMITS.passwordMax - 4) }).password,
     ).toBeUndefined();
     expect(
-      validateSignUp({ ...valid, password: "x".repeat(LIMITS.passwordMax + 1) }).password,
+      validateSignUp({ ...valid, password: "Aa1!" + "x".repeat(LIMITS.passwordMax - 3) }).password,
     ).toMatch(/Max 72/);
+  });
+
+  it.each([
+    ["no lowercase letter", "ABCDEF1!"],
+    ["no uppercase letter", "abcdef1!"],
+    ["no digit", "Abcdefg!"],
+    ["no symbol", "Abcdefg1"],
+    ["only lowercase letters", "abcdefgh"],
+    ["a common password", "password1"],
+  ])("rejects a password with %s", (_label, password) => {
+    expect(validateSignUp({ ...valid, password }).password).toBe(PASSWORD_RULE);
+  });
+
+  it("accepts a password with all four kinds of characters", () => {
+    expect(validateSignUp({ ...valid, password: "Abcdef1!" }).password).toBeUndefined();
+    expect(validateSignUp({ ...valid, password: "ñandú-Z9" }).password).toBeUndefined();
+  });
+
+  it("checks the length before the composition", () => {
+    expect(validateSignUp({ ...valid, password: "Aa1!" }).password).toMatch(/at least 8/);
   });
 
   it("reports every invalid field at once", () => {

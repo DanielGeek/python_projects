@@ -30,6 +30,23 @@ function checkEmail(raw: string): string | undefined {
   if (!EMAIL_RE.test(email)) return "Enter a valid email address.";
 }
 
+// Mirrors the Supabase rule "Lowercase, uppercase letters, digits and symbols" (SPEC 17), so the form
+// shows the error before the server rejects the password as weak. Supabase stays the authority.
+export const PASSWORD_RULE = "Use upper and lower case letters, a digit and a symbol.";
+
+function checkPassword(password: string): string | undefined {
+  if (password.length < LIMITS.passwordMin)
+    return `Password must be at least ${LIMITS.passwordMin} characters.`;
+  if (password.length > LIMITS.passwordMax) return `Max ${LIMITS.passwordMax} characters.`;
+  if (
+    !/[a-z]/.test(password) ||
+    !/[A-Z]/.test(password) ||
+    !/[0-9]/.test(password) ||
+    !/[^A-Za-z0-9]/.test(password)
+  )
+    return PASSWORD_RULE;
+}
+
 /** Trims username and email; returns per-field errors, an empty object means valid. */
 export function validateSignUp(input: SignUpInput): Errors {
   const errors: Errors = {};
@@ -40,10 +57,8 @@ export function validateSignUp(input: SignUpInput): Errors {
   const email = checkEmail(input.email);
   if (email) errors.email = email;
 
-  if (input.password.length < LIMITS.passwordMin)
-    errors.password = `Password must be at least ${LIMITS.passwordMin} characters.`;
-  else if (input.password.length > LIMITS.passwordMax)
-    errors.password = `Max ${LIMITS.passwordMax} characters.`;
+  const password = checkPassword(input.password);
+  if (password) errors.password = password;
   return errors;
 }
 
