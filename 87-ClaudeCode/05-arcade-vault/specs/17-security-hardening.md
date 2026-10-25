@@ -131,10 +131,10 @@ Authentication > Rate Limits                   sign-ups and sign-ins per IP, tar
 - [x] `/game/asteroids/play` still loads the game inside the iframe, with no console error about framing.
 - [x] A page from another origin cannot embed `http://localhost:3000/` in an iframe.
 - [x] No response uses `X-Frame-Options: DENY`.
-- [ ] `get_advisors` (security) no longer lists `rls_auto_enable` for `anon` or for `authenticated`.
-- [ ] A call to `/rest/v1/rpc/rls_auto_enable` with the publishable key is rejected.
-- [ ] `username_available` still works: the sign-up form still tells a taken username from a free one.
-- [ ] `get_advisors` (security) lists only the two `username_available` warnings and leaked password protection.
+- [x] `get_advisors` (security) no longer lists `rls_auto_enable` for `anon` or for `authenticated`.
+- [x] A call to `/rest/v1/rpc/rls_auto_enable` with the publishable key is rejected.
+- [x] `username_available` still works: the sign-up form still tells a taken username from a free one.
+- [x] `get_advisors` (security) lists only the two `username_available` warnings and leaked password protection.
 - [ ] Every table in schema `public` has `rowsecurity = true`.
 - [ ] The RLS guard test fails when a migration creates a public table without RLS, and passes on the current migrations.
 - [ ] A sign-up with a 7-character password sent straight to the Supabase Auth API is rejected by the server.
