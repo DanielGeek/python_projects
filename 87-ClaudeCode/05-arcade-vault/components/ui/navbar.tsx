@@ -86,6 +86,13 @@ export function Navbar() {
           {session.name.slice(0, 2)}
         </span>
         <span className="av-avatar-name">{session.name}</span>
+        <Link
+          href="/profile"
+          className="av-nav-link"
+          aria-current={pathname.startsWith("/profile") ? "page" : undefined}
+        >
+          Profile
+        </Link>
         <Button variant="ghost" size="sm" disabled={signingOut} onClick={handleSignOut}>
           Sign out
         </Button>

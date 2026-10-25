@@ -1828,6 +1828,25 @@ body {
   letter-spacing: 2px;
   color: var(--ink-muted);
 }
+.av-profile-list {
+  margin: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+.av-profile-row {
+  display: grid;
+  gap: var(--space-1);
+}
+.av-profile-row dt {
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 2px;
+  color: var(--ink-muted);
+}
+.av-profile-row dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
 .av-auth-terms {
   margin: 0;
   text-align: center;
