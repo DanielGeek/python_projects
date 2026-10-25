@@ -93,13 +93,14 @@ Skills live in `.agents/skills/<name>/SKILL.md` and are symlinked from `.claude/
 
 Agents live in `.claude/agents/<name>.md` (scope, limits and procedure are there). They work only on the games or routes you name, and each keeps a single memory file.
 
-| Agent                      | What it does                                                                                            | Memory                                |
-| -------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| `game-planner`             | Decides which game to add next; never writes code or specs.                                             | `references/game-suggestions-todo.md` |
-| `game-jam`                 | Turns a game description into at least two Draft specs in `specs/game-jam/<id>/`.                       | —                                     |
-| `skin-designer`            | Adds the skins classic, retro and neon plus light/dark to named games; edits only `public/games/<id>/`. | `references/game-with-themes.md`      |
-| `mobile-porter`            | Fixes the phone layout of named routes without changing desktop; CSS and layout only.                   | `references/mobile-porting.md`        |
-| `game-performance-booster` | Audits, measures and fixes SPEC 14 performance problems of named games; called by hand.                 | `references/game-performance.md`      |
+| Agent                      | What it does                                                                                                                              | Memory                                  |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `game-planner`             | Decides which game to add next; never writes code or specs.                                                                               | `references/game-suggestions-todo.md`   |
+| `game-jam`                 | Turns a game description into at least two Draft specs in `specs/game-jam/<id>/`.                                                         | —                                       |
+| `skin-designer`            | Adds the skins classic, retro and neon plus light/dark to named games; edits only `public/games/<id>/`.                                   | `references/game-with-themes.md`        |
+| `mobile-porter`            | Fixes the phone layout of named routes without changing desktop; CSS and layout only.                                                     | `references/mobile-porting.md`          |
+| `game-performance-booster` | Audits, measures and fixes SPEC 14 performance problems of named games; called by hand.                                                   | `references/game-performance.md`        |
+| `security-auditor`         | Read-only audit of database (RLS, grants, functions, advisors, REST probes) and app security; reports, never fixes (fixes go to `/spec`). | `references/security/security-audit.md` |
 
 ## Tooling and references
 
@@ -108,6 +109,7 @@ Agents live in `.claude/agents/<name>.md` (scope, limits and procedure are there
 - `references/` — `started-games/` (`02-asteroids`, `03-tetris`, `04-arkanoid`: sources for `/add-game`), `source-assets/snake-assets`, `templates/` (UI reference screens, `home-about/`) and `gamepad-assets/` (SPEC 13). Not part of the build; the format hook skips it.
 - `references/implemented-games.md` — table of the implemented games (ID, title, category, short description, color), matching `public.games` and `GAMES`. Look here first when you need to find or list the implemented games. Update it when a game is added to or removed from the catalog.
 - `references/performance-baseline.md` — SPEC 14: the measuring protocol, the frame counter snippet, the budgets and the before/after tables of the five games. `references/game-performance.md` — the memory of the `game-performance-booster` agent, one row per game it was asked to check. The other agent memories (`game-suggestions-todo.md`, `game-with-themes.md`, `mobile-porting.md`) are listed in Skills and agents.
+- `references/security/security-audit.md` — the memory of the `security-auditor` agent: status of each database and app check, accepted risks, open gaps and the findings log. `security-checklist.md` in the same folder is the static checklist of SPEC 17.
 - `AGENTS.md` is written and restored by `next dev` (Next.js agent rules and feedback). Commit it with the work; do not edit it by hand.
 
 ### Host ↔ game bridge
