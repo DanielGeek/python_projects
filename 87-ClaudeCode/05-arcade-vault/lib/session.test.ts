@@ -145,3 +145,86 @@ describe("account session", () => {
     await vi.waitFor(() => expect(readSession()).toBeNull());
   });
 });
+
+// SPEC 17: proxy.ts reads this cookie to let a guest open the player. It follows the guest in localStorage.
+describe("guest cookie", () => {
+  const COOKIE = "arcade-vault-guest";
+  let jar: Map<string, string>;
+  let writes: string[];
+  let blocked: boolean;
+
+  beforeEach(() => {
+    jar = new Map();
+    writes = [];
+    blocked = false;
+    vi.stubGlobal("document", {
+      get cookie() {
+        return [...jar].map(([k, v]) => `${k}=${v}`).join("; ");
+      },
+      set cookie(value: string) {
+        if (blocked) throw new Error("cookies blocked");
+        writes.push(value);
+        const [pair, ...attrs] = value.split("; ");
+        const [name, val] = pair.split("=");
+        if (val === "" || attrs.includes("Max-Age=0")) jar.delete(name);
+        else jar.set(name, val);
+      },
+    });
+  });
+
+  it("is set when a guest starts, for a year, on every path", async () => {
+    const { playAsGuest } = await load();
+    await playAsGuest();
+    expect(jar.get(COOKIE)).toBe("1");
+    expect(writes[0]).toBe(`${COOKIE}=1; Path=/; SameSite=Lax; Max-Age=31536000`);
+  });
+
+  it("is removed on sign-out", async () => {
+    const { playAsGuest, signOut } = await load();
+    await playAsGuest();
+    await signOut();
+    expect(jar.has(COOKIE)).toBe(false);
+  });
+
+  it("is set when a guest made before SPEC 17 is read from localStorage", async () => {
+    storage.data.set(KEY, JSON.stringify({ name: "GUEST", guest: true }));
+    const { readSession } = await load();
+    expect(jar.has(COOKIE)).toBe(false);
+    expect(readSession()).toEqual({ name: "GUEST", guest: true });
+    expect(jar.get(COOKIE)).toBe("1");
+  });
+
+  it("is not set when there is no guest", async () => {
+    const { readSession } = await load();
+    expect(readSession()).toBeNull();
+    expect(jar.has(COOKIE)).toBe(false);
+  });
+
+  it("is removed when an account signs in", async () => {
+    const { readSession, playAsGuest, subscribe } = await load();
+    await playAsGuest();
+    expect(jar.get(COOKIE)).toBe("1");
+    subscribe(() => {});
+    authListener?.("SIGNED_IN", { user: { id: "u1" } });
+    await vi.waitFor(() => expect(readSession()?.guest).toBe(false));
+    expect(jar.has(COOKIE)).toBe(false);
+  });
+
+  it("is removed when playing as a guest ends the account and signing out later", async () => {
+    const { readSession, playAsGuest, signOut, subscribe } = await load();
+    subscribe(() => {});
+    authListener?.("SIGNED_IN", { user: { id: "u1" } });
+    await vi.waitFor(() => expect(readSession()?.guest).toBe(false));
+    await playAsGuest();
+    expect(jar.get(COOKIE)).toBe("1");
+    await signOut();
+    expect(jar.has(COOKIE)).toBe(false);
+  });
+
+  it("does not fail when the browser blocks cookies", async () => {
+    blocked = true;
+    const { playAsGuest, readSession } = await load();
+    await expect(playAsGuest()).resolves.toBe(true);
+    expect(readSession()).toEqual({ name: "GUEST", guest: true });
+  });
+});

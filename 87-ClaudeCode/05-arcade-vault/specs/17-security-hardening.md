@@ -141,15 +141,15 @@ Authentication > Rate Limits                   sign-ups and sign-ins per IP, kep
 - [x] A sign-up with 8 lowercase letters only, sent straight to the Supabase Auth API, is rejected by the server as weak.
 - [x] `validateSignUp` rejects a password that lacks a lowercase letter, an uppercase letter, a digit or a symbol, and accepts `Abcdef1!`.
 - [x] The sign-up form shows the password rule before the user submits.
-- [ ] `validateSignIn` still accepts any non-empty password, and an account made before this spec can sign in.
+- [x] `validateSignIn` still accepts any non-empty password, and an account made before this spec can sign in.
 - [x] The sign-up and sign-in rate limit per IP is the Supabase default (30 requests per 5 minutes), and the API answers `429` when it is exceeded.
 - [x] A visitor with no session and no guest cookie who opens `/game/asteroids/play` is redirected to `/login?next=%2Fgame%2Fasteroids%2Fplay`.
 - [ ] After signing in from that redirect, the user lands on `/game/asteroids/play`.
 - [ ] After "Play as guest" from that redirect, the user lands on `/game/asteroids/play`.
 - [ ] A guest with the cookie reaches `/game/asteroids/play` and still saves scores as `GUEST`.
-- [ ] A guest created before this spec (localStorage only) gets the cookie on the next page load and can open the player.
+- [x] A guest created before this spec (localStorage only) gets the cookie on the next page load and can open the player.
 - [ ] A visitor or a guest who opens `/profile` is redirected to `/login?next=/profile`; an account sees its username and email.
-- [ ] After sign-out the guest cookie is gone and `/game/asteroids/play` redirects to `/login`.
+- [x] After sign-out the guest cookie is gone and `/game/asteroids/play` redirects to `/login`.
 - [ ] `/`, `/library`, `/game/asteroids`, `/hall-of-fame`, `/about`, `/login`, `/api/*` and `/games/*` are never redirected by the proxy.
 - [ ] A forged cookie `arcade-vault-guest=1` opens the player, and this is documented as accepted in `CLAUDE.md`.
 - [ ] `/login?next=//evil.example` and `/login?next=https://evil.example` navigate to `/library` after sign-in.
