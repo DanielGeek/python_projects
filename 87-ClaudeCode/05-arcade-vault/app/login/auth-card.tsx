@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button, NeonLogo } from "@/components/ui/basics";
 import { Input, Tabs } from "@/components/ui/interactive";
 import {
@@ -16,9 +16,31 @@ import {
   type AuthField,
 } from "@/lib/auth";
 import { safeNextPath } from "@/lib/safe-next";
-import { playAsGuest } from "@/lib/session";
+import { playAsGuest, useSession } from "@/lib/session";
 
 type Mode = "login" | "register";
+
+// Leaving the login page is a full page load, not router.push. When a visitor reaches this page through a
+// soft navigation, the router caches the proxy's redirect for the protected path, and a soft push after
+// signing in would reuse it and land on the login again. A full load asks the proxy again, with the new cookies.
+const LEFT_KEY = "arcade-vault:left-login";
+function leave(path: string) {
+  try {
+    sessionStorage.setItem(LEFT_KEY, String(Date.now()));
+  } catch {
+    // Storage blocked: the loop guard below is then off, and the proxy answers the same either way.
+  }
+  window.location.assign(path);
+}
+
+/** True when the page was left a moment ago: the proxy sent the user back, so do not leave again. */
+function leftJustNow(): boolean {
+  try {
+    return Date.now() - Number(sessionStorage.getItem(LEFT_KEY) ?? 0) < 5000;
+  } catch {
+    return false;
+  }
+}
 
 const FAILURE_MESSAGES: Record<Exclude<AuthFailure, "username_taken">, string> = {
   invalid_credentials: "Wrong email or password.",
@@ -31,10 +53,16 @@ const CONFIRM_LINK_MESSAGE =
   "That confirmation link is invalid or expired. Sign in to get a new one.";
 
 export function AuthCard() {
-  const router = useRouter();
   const params = useSearchParams();
   // Where to go after signing in or playing as a guest. Only a same-origin path passes (SPEC 17).
   const next = safeNextPath(params.get("next"));
+  // An account that is already signed in has nothing to do here. A guest may still want to sign in.
+  const session = useSession();
+  const account = session && !session.guest ? session : null;
+  const signedIn = account !== null;
+  useEffect(() => {
+    if (signedIn && !leftJustNow()) leave(next);
+  }, [signedIn, next]);
   const [mode, setMode] = useState<Mode>("login");
   const [errors, setErrors] = useState<Partial<Record<AuthField, string>>>({});
   const [formError, setFormError] = useState(
@@ -73,7 +101,7 @@ export function AuthCard() {
     const result = mode === "login" ? await signInWithEmail(input) : await signUpWithEmail(input);
     setBusy(false);
     if (result.ok) {
-      if (mode === "login") router.push(next);
+      if (mode === "login") leave(next);
       else setSentTo(input.email.trim());
       return;
     }
@@ -98,6 +126,21 @@ export function AuthCard() {
   function social(provider: string) {
     // BACKEND: start the OAuth flow (e.g. Supabase signInWithOAuth) for this provider.
     setNotice(`Sign-in with ${provider} will be available once the server is connected.`);
+  }
+
+  if (account) {
+    return (
+      <div className="av-auth-card">
+        <NeonLogo size="md" className="av-auth-logo" />
+        <p className="av-auth-sub">SIGNED IN</p>
+        <p className="av-modal-note" role="status">
+          You are signed in as {account.name}.
+        </p>
+        <Button variant="outline" block onClick={() => leave(next)}>
+          Continue
+        </Button>
+      </div>
+    );
   }
 
   if (sentTo) {
@@ -227,7 +270,7 @@ export function AuthCard() {
         block
         onClick={async () => {
           await playAsGuest();
-          router.push(next);
+          leave(next);
         }}
       >
         Play as guest

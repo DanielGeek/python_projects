@@ -153,6 +153,8 @@ Authentication > Rate Limits                   sign-ups and sign-ins per IP, kep
 - [x] `/`, `/library`, `/game/asteroids`, `/hall-of-fame`, `/about`, `/login`, `/api/*` and `/games/*` are never redirected by the proxy.
 - [x] A forged cookie `arcade-vault-guest=1` opens the player, and this is documented as accepted in `CLAUDE.md`.
 - [x] `/login?next=//evil.example` and `/login?next=https://evil.example` navigate to `/library` after sign-in.
+- [x] Signing in or "Play as guest" from the login reached by a soft navigation (a visitor who clicks "Play" on `/game/asteroids`) lands on `/game/asteroids/play`, not back on the login.
+- [x] An account that is already signed in and opens `/login` is sent to `next` (or `/library`) instead of seeing the form; a guest still sees it.
 - [x] The proxy uses `getClaims()` and never `getSession()`; a tampered `sb-*` cookie does not count as an account.
 - [x] `references/security/security-checklist.md` shows RLS, minimum password length, signup rate and security headers as done, and leaked password protection as open.
 - [x] `npm test`, `npm run lint` and `npm run build` pass.
@@ -183,6 +185,8 @@ Authentication > Rate Limits                   sign-ups and sign-ins per IP, kep
 - **Yes:** `getClaims()` in the proxy, which verifies the JWT, and the refresh of the token cookie on the protected paths. `getSession()` reads the cookie without verifying it and must not decide access. The browser client still refreshes tokens on every other page.
 - **Yes:** the proxy is not the only guard. `/profile` also checks the session on the page, because Next docs say the proxy is for optimistic checks, not full authorization.
 - **Yes:** `?next=` with `safeNextPath` and the same-origin rule. An open redirect on a login page is a phishing risk. `lib/safe-next.ts` lives in this spec so SPEC 16 reuses it.
+- **Yes:** leave the login page with a full page load (`window.location.assign`), not `router.push`. Found after step 14: a visitor who reaches the login by a soft navigation leaves the proxy's redirect for the protected path in the router cache, and a soft push after signing in reused it and landed on the login again. A full load asks the proxy with the new cookies. A 5 s `sessionStorage` guard avoids a loop if the proxy and the client ever disagree about the session.
+- **Yes:** an account that opens `/login` is redirected on the client (`AuthCard`), not by the proxy, so `/login` stays outside the proxy matcher. A guest is not redirected: they may want to sign in.
 - **Yes:** a minimal `/profile` (username, email, sign-out). A protected route needs a real target. Editing features go in their own spec.
 - **No:** protect `/api/*`. `POST /api/contact` is public on purpose and `/api/health/supabase` carries no data.
 
