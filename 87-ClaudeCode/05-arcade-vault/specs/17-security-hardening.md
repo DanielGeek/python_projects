@@ -126,11 +126,11 @@ Authentication > Rate Limits                   sign-ups and sign-ins per IP, tar
 
 ## Acceptance criteria
 
-- [ ] `GET /` answers with `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Content-Security-Policy: frame-ancestors 'self'`, `Referrer-Policy: strict-origin-when-cross-origin`, `Strict-Transport-Security` and `Permissions-Policy`.
-- [ ] The same headers arrive on `/api/health/supabase` and on `/games/asteroids/index.html`.
-- [ ] `/game/asteroids/play` still loads the game inside the iframe, with no console error about framing.
-- [ ] A page from another origin cannot embed `http://localhost:3000/` in an iframe.
-- [ ] No response uses `X-Frame-Options: DENY`.
+- [x] `GET /` answers with `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Content-Security-Policy: frame-ancestors 'self'`, `Referrer-Policy: strict-origin-when-cross-origin`, `Strict-Transport-Security` and `Permissions-Policy`.
+- [x] The same headers arrive on `/api/health/supabase` and on `/games/asteroids/index.html`.
+- [x] `/game/asteroids/play` still loads the game inside the iframe, with no console error about framing.
+- [x] A page from another origin cannot embed `http://localhost:3000/` in an iframe.
+- [x] No response uses `X-Frame-Options: DENY`.
 - [ ] `get_advisors` (security) no longer lists `rls_auto_enable` for `anon` or for `authenticated`.
 - [ ] A call to `/rest/v1/rpc/rls_auto_enable` with the publishable key is rejected.
 - [ ] `username_available` still works: the sign-up form still tells a taken username from a free one.
