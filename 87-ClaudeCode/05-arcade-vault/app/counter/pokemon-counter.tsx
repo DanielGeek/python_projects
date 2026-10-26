@@ -3,10 +3,8 @@
 import { useState } from "react";
 
 const MAX_POKEMON = 1025;
-
-function artworkUrl(id: number) {
-  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-}
+const ARTWORK_BASE =
+  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork";
 
 export function PokemonCounter() {
   const [count, setCount] = useState(1);
@@ -19,7 +17,7 @@ export function PokemonCounter() {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         key={pokemonId}
-        src={artworkUrl(pokemonId)}
+        src={`${ARTWORK_BASE}/${pokemonId}.png`}
         alt={`Pokémon #${pokemonId}`}
         width={256}
         height={256}
