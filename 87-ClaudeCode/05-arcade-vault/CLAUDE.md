@@ -14,7 +14,7 @@ Arcade Vault: a web platform for playing arcade games online and competing for t
 - `npm run format` — Prettier over the whole repo (config `.prettierrc.json`, ignores `.prettierignore`).
 - `npm test` — Vitest, single run (`npm run test:watch` for watch mode). Tests sit next to the code as `*.test.ts` (e.g. `lib/contact.test.ts`); import `describe/it/expect` from `"vitest"`. `lib/test-support.ts` has `installFakeWindow()`, a fake `window` with localStorage (`failReads` and `failWrites` simulate blocked storage) used by the `lib/*.test.ts` files. `lib/games.test.ts` checks `GAMES` against the `readers` in `public/games/bridge.js` and the `av-cover-<id>` rules in `app/globals.css`, and each game's `touch` config: every button code must appear in that game's `game.js` and in the `KEYS` allowlist of `bridge.js`, `a` and `b` must exist, no code may repeat, `move` may only hold arrows and `extra` at most three buttons.
 - Dev launch: `.claude/launch.json` has the `arcade-vault` config (`npm run dev`, port 3000).
-- Notification hook: `.claude/settings.json` also plays `assets/claudecode-finished.mp3` with `afplay` (macOS) on `Notification`.
+- Notification hook: `.claude/settings.json` also plays `assets/luna.mp3` with `afplay` (macOS) on `Notification`.
 - Format hook: `.claude/hooks/format.sh` runs as a `PostToolUse` hook (`Write|Edit`, in `.claude/settings.json`). It runs Prettier on the written file, then `eslint --fix` for `.ts/.tsx/.js/.jsx/.mjs/.cjs`. Remaining ESLint errors exit 2 so Claude sees them. Skips `public/games/`, `references/`, `.claude/` and build output.
 
 ## Next.js version warning
