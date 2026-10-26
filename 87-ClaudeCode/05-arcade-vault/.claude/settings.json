@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "afplay \"$CLAUDE_PROJECT_DIR/assets/luna.mp3\" >/dev/null 2>&1 &"
+            "command": "afplay \"$CLAUDE_PROJECT_DIR/assets/brillante.mp3\" >/dev/null 2>&1 &"
           }
         ]
       }
