@@ -17,13 +17,6 @@
       "Bash(git restore *)",
       "Edit(specs/game-jam/**)",
       "Write(specs/game-jam/**)"
-    ],
-    "deny": [
-      "Bash(git push origin main*)",
-      "Bash(git push --force*)",
-      "Bash(git push -f*)",
-      "Bash(git merge*)",
-      "Bash(gh pr create*)"
     ]
   },
   "hooks": {
