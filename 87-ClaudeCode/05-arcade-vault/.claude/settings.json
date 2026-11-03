@@ -17,6 +17,12 @@
       "Bash(git restore *)",
       "Edit(specs/game-jam/**)",
       "Write(specs/game-jam/**)"
+    ],
+    "deny": [
+      "Read(.env.prod)",
+      "Read(.env.prod.local)",
+      "Read(.env.production*)",
+      "Bash(*supabase-prod.sh*)"
     ]
   },
   "hooks": {

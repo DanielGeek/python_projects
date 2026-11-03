@@ -1,0 +1,10 @@
+rls|games:true,profiles:true,scores:true
+policies|games/games are public/SELECT/anon+authenticated ; profiles/users read their own profile/SELECT/authenticated ; scores/guests submit scores as GUEST/INSERT/anon ; scores/scores are public/SELECT/anon+authenticated ; scores/users submit their own scores/INSERT/authenticated
+grants|games/anon/SELECT,games/authenticated/SELECT,profiles/authenticated/SELECT,scores/anon/SELECT,scores/authenticated/SELECT
+col_grants|scores.game_id/anon/INSERT,scores.game_id/authenticated/INSERT,scores.player/anon/INSERT,scores.player/authenticated/INSERT,scores.score/anon/INSERT,scores.score/authenticated/INSERT,scores.user_id/anon/INSERT,scores.user_id/authenticated/INSERT
+fn_exec|handle_new_user:-,rls_auto_enable:-,username_available:anon+authenticated
+games|asteroids,brick-buster,drop,froggy,snake
+trg_auth|on_auth_user_created
+event_trigger_ensure_rls|1
+scores_rows|0
+profiles_rows|0

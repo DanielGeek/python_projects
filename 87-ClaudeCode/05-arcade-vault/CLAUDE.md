@@ -66,6 +66,8 @@ Copy `.env.template` to `.env` (git-ignored). Server only, never prefix with `NE
 - `CONTACT_FROM_EMAIL` — sender, e.g. `Arcade Vault <onboarding@resend.dev>`. The Resend sandbox sender only delivers to the email that owns the Resend account.
 - `SUPABASE_DB_PASSWORD` — database password, reserved for the Supabase CLI. No code reads it.
 
+Production uses `.env.prod` (git-ignored, template `.env.prod.template`), with the same variable names pointing at the production Supabase project. Claude must never read it or run `scripts/supabase-prod.sh`: both are in the `deny` rules of `.claude/settings.json`. The Supabase MCP in `.mcp.json` reaches the development project only.
+
 If any of the first three is missing, `POST /api/contact` answers 500.
 
 Public by design (the `NEXT_PUBLIC_` prefix is intended here; security comes from RLS, not from hiding them):
@@ -104,7 +106,8 @@ Agents live in `.claude/agents/<name>.md` (scope, limits and procedure are there
 
 ## Tooling and references
 
-- `.mcp.json` configures the Supabase MCP (HTTP, scoped to this project). Apply migrations with `apply_migration` and check versions with `list_migrations`.
+- `.mcp.json` configures the Supabase MCP (HTTP, scoped to this project). Apply migrations with `apply_migration` and check versions with `list_migrations`. It is the development project only.
+- Production database: the user runs `scripts/supabase-prod.sh` (`check`, `bootstrap`, `dry-run`, `push`, `verify`) themselves. `references/production/` has the runbook, `bootstrap-rls-auto-enable.sql` (`rls_auto_enable()` and the `ensure_rls` event trigger come with a new Supabase project, no migration creates them) and `verify-prod.sql` with `verify-prod.expected`. Update `verify-prod.expected` when a migration changes policies, grants or functions (the migration list is read from `supabase/migrations/`).
 - Do not drive the browser with the Playwright MCP while `npm run dev` runs: it writes its console logs to `.playwright-mcp/` inside the project, Turbopack sees them as source changes and the page reloads in a loop. Use the Chrome DevTools MCP instead.
 - `references/` — `started-games/` (`02-asteroids`, `03-tetris`, `04-arkanoid`: sources for `/add-game`), `source-assets/snake-assets`, `templates/` (UI reference screens, `home-about/`) and `gamepad-assets/` (SPEC 13). Not part of the build; the format hook skips it.
 - `references/implemented-games.md` — table of the implemented games (ID, title, category, short description, color), matching `public.games` and `GAMES`. Look here first when you need to find or list the implemented games. Update it when a game is added to or removed from the catalog.
