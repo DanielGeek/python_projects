@@ -1,4 +1,31 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(git fetch *)",
+      "Bash(git ls-remote *)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git switch -c game-jam/*)",
+      "Bash(git add specs/game-jam/*)",
+      "Bash(git commit -m *)",
+      "Bash(git push -u origin game-jam/*)",
+      "Bash(python3 -c \"import random; print(random.randint(1,1000))\")",
+      "Bash(ls *)",
+      "Bash(grep *)",
+      "Bash(git log*)",
+      "Bash(git branch*)",
+      "Bash(git restore *)",
+      "Edit(specs/game-jam/**)",
+      "Write(specs/game-jam/**)"
+    ],
+    "deny": [
+      "Bash(git push origin main*)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git merge*)",
+      "Bash(gh pr create*)"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {
@@ -15,6 +42,7 @@
   },
   "enabledPlugins": {
     "security-guidance@anthropic-plugin-directory": true,
-    "claude-security@anthropic-plugin-directory": true
+    "claude-security@anthropic-plugin-directory": true,
+    "superpowers@anthropic-plugin-directory": true
   }
 }

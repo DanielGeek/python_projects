@@ -16,7 +16,7 @@ import {
   type AuthField,
 } from "@/lib/auth";
 import { safeNextPath } from "@/lib/safe-next";
-import { playAsGuest, useSession } from "@/lib/session";
+import { useSession } from "@/lib/session";
 
 type Mode = "login" | "register";
 
@@ -265,19 +265,6 @@ export function AuthCard() {
           {notice}
         </p>
       )}
-      <Button
-        variant="ghost"
-        block
-        onClick={async () => {
-          await playAsGuest();
-          leave(next);
-        }}
-      >
-        Play as guest
-      </Button>
-      <p className="av-auth-caption">
-        Without an account, your scores are saved on this device only.
-      </p>
       <p className="av-auth-terms">BY ENTERING YOU ACCEPT THE ARCADE TERMS</p>
     </div>
   );

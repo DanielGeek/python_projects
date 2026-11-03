@@ -15,8 +15,11 @@ describe("decideAccess for the player", () => {
     });
   });
 
-  it("lets a guest in", () => {
-    expect(decideAccess({ pathname, ...guest })).toEqual({ allow: true });
+  it("does not let a guest in", () => {
+    expect(decideAccess({ pathname, ...guest })).toEqual({
+      allow: false,
+      redirect: "/login?next=%2Fgame%2Fasteroids%2Fplay",
+    });
   });
 
   it("lets an account in", () => {

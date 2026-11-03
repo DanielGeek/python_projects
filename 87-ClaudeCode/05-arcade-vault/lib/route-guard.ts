@@ -21,9 +21,9 @@ function toLogin(pathname: string): Access {
   return { allow: false, redirect: `/login?next=${encodeURIComponent(pathname)}` };
 }
 
-export function decideAccess({ pathname, account, guest }: AccessInput): Access {
-  if (PLAYER.test(pathname)) return account || guest ? { allow: true } : toLogin(pathname);
-  // A guest does not pass: the profile is for accounts only.
+export function decideAccess({ pathname, account }: AccessInput): Access {
+  // A guest does not pass: playing and the profile are for registered accounts only.
+  if (PLAYER.test(pathname)) return account ? { allow: true } : toLogin(pathname);
   if (PROFILE.test(pathname)) return account ? { allow: true } : toLogin("/profile");
   return { allow: true };
 }
