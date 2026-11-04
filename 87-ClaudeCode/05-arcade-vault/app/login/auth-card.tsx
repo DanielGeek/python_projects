@@ -7,10 +7,12 @@ import { Input, Tabs } from "@/components/ui/interactive";
 import {
   LIMITS,
   PASSWORD_RULE,
+  requestPasswordReset,
   resendConfirmation,
   signInWithEmail,
   signInWithProvider,
   signUpWithEmail,
+  validateResetRequest,
   validateSignIn,
   validateSignUp,
   type AuthFailure,
@@ -81,6 +83,9 @@ export function AuthCard() {
   const [resent, setResent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [email, setEmail] = useState("");
+  // SPEC 16, "Forgot password?": `forgot` shows the email-only form, `resetSentTo` the confirmation.
+  const [forgot, setForgot] = useState(false);
+  const [resetSentTo, setResetSentTo] = useState("");
 
   function reset(next: Mode) {
     setMode(next);
@@ -128,6 +133,29 @@ export function AuthCard() {
       setResent(true);
       setFormError("");
     } else if (result.code !== "username_taken") setFormError(FAILURE_MESSAGES[result.code]);
+  }
+
+  async function submitReset(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (busy) return;
+    const address = String(new FormData(e.currentTarget).get("email") ?? "");
+    const found = validateResetRequest({ email: address });
+    setErrors(found);
+    setFormError("");
+    if (Object.keys(found).length) return;
+
+    setBusy(true);
+    const result = await requestPasswordReset(address);
+    setBusy(false);
+    // Same screen whether or not the email has an account: it must not reveal which ones do.
+    if (result.ok) setResetSentTo(address.trim());
+    else if (result.code !== "username_taken") setFormError(FAILURE_MESSAGES[result.code]);
+  }
+
+  function backToSignIn() {
+    setForgot(false);
+    setResetSentTo("");
+    reset("login");
   }
 
   // On success the browser leaves for the provider, so `busy` stays on until the page unloads.
@@ -194,6 +222,43 @@ export function AuthCard() {
     );
   }
 
+  if (forgot) {
+    return (
+      <div className="av-auth-card">
+        <NeonLogo size="md" className="av-auth-logo" />
+        <p className="av-auth-sub">{resetSentTo ? "CHECK YOUR EMAIL" : "RESET PASSWORD"}</p>
+        {resetSentTo ? (
+          <p className="av-modal-note" role="status">
+            If an account exists for {resetSentTo}, we sent a link to reset the password. Check your
+            inbox.
+          </p>
+        ) : (
+          <form className="av-auth-form" onSubmit={submitReset} noValidate>
+            <Input
+              name="email"
+              type="email"
+              label="Email"
+              placeholder="player@example.com"
+              autoComplete="email"
+              error={errors.email}
+            />
+            {formError && (
+              <div className="av-about-error" role="alert">
+                <span className="av-about-error-tag">[ERR]</span> {formError}
+              </div>
+            )}
+            <Button type="submit" block disabled={busy}>
+              {busy ? "Please wait…" : "Send reset link"}
+            </Button>
+          </form>
+        )}
+        <Button variant="ghost" block onClick={backToSignIn}>
+          Back to sign in
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="av-auth-card">
       <NeonLogo size="md" className="av-auth-logo" />
@@ -239,6 +304,21 @@ export function AuthCard() {
           }
           error={errors.password}
         />
+        {mode === "login" && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setForgot(true);
+              setErrors({});
+              setFormError("");
+              setNeedsConfirm(false);
+            }}
+          >
+            Forgot password?
+          </Button>
+        )}
         {formError && (
           <div className="av-about-error" role="alert">
             <span className="av-about-error-tag">[ERR]</span> {formError}

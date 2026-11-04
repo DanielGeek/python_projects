@@ -71,6 +71,14 @@ export function validateSignIn(input: SignInInput): Errors {
   return errors;
 }
 
+/** SPEC 16, "Forgot password?": the request form asks for the email only. */
+export function validateResetRequest(input: { email: string }): Errors {
+  const errors: Errors = {};
+  const email = checkEmail(input.email);
+  if (email) errors.email = email;
+  return errors;
+}
+
 export type AuthFailure =
   "username_taken" | "invalid_credentials" | "email_not_confirmed" | "network" | "unknown";
 
@@ -163,6 +171,20 @@ export async function resendConfirmation(email: string): Promise<AuthResult> {
     return error ? fail("resend confirmation", error) : { ok: true };
   } catch (error) {
     return fail("resend confirmation", error);
+  }
+}
+
+/**
+ * SPEC 16. Asks Supabase to email a reset link (the "Reset password" template sends it to `/auth/confirm`
+ * with `type=recovery`). Supabase answers the same for an unknown email, and the form shows the same
+ * message either way, so nobody can learn which emails have an account.
+ */
+export async function requestPasswordReset(email: string): Promise<AuthResult> {
+  try {
+    const { error } = await createClient().auth.resetPasswordForEmail(email.trim());
+    return error ? fail("password reset request", error) : { ok: true };
+  } catch (error) {
+    return fail("password reset request", error);
   }
 }
 

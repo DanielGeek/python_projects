@@ -3,6 +3,7 @@ import {
   LIMITS,
   PASSWORD_RULE,
   toAuthFailure,
+  validateResetRequest,
   validateSignIn,
   validateSignUp,
   type SignUpInput,
@@ -103,6 +104,29 @@ describe("validateSignIn", () => {
       email: "Enter a valid email address.",
       password: "Password is required.",
     });
+  });
+});
+
+describe("validateResetRequest", () => {
+  it("accepts a valid email and trims it", () => {
+    expect(validateResetRequest({ email: " ada@example.com " })).toEqual({});
+  });
+
+  it("asks for the email", () => {
+    expect(validateResetRequest({ email: "  " }).email).toBe("Email is required.");
+  });
+
+  it.each(["ada", "ada@", "@example.com", "ada@example"])("rejects the email %j", (email) => {
+    expect(validateResetRequest({ email }).email).toBe("Enter a valid email address.");
+  });
+
+  it("rejects an email over the limit", () => {
+    const email = `${"a".repeat(LIMITS.email)}@example.com`;
+    expect(validateResetRequest({ email }).email).toBe(`Max ${LIMITS.email} characters.`);
+  });
+
+  it("asks for nothing but the email", () => {
+    expect(Object.keys(validateResetRequest({ email: "" }))).toEqual(["email"]);
   });
 });
 
