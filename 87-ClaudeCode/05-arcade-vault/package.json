@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "build": "node scripts/with-env.mjs build",
+    "start": "node scripts/with-env.mjs start",
     "lint": "eslint",
     "format": "prettier --write .",
     "test": "vitest run",
