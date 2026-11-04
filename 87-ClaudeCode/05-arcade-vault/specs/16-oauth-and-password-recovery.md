@@ -87,7 +87,7 @@ If the sign-up metadata already carries a valid, free username (the SPEC 15 emai
 - [x] `/login/reset` with no recovery session shows a message and does not call `updateUser`.
 - [x] `safeNextPath` rejects `//evil.example`, `https://evil.example`, `/\evil` and an empty value, and accepts `/login/reset`.
 - [ ] A score saved by an OAuth user has `user_id = auth.uid()` and `player` equal to the generated username.
-- [ ] `npm test`, `npm run lint` and `npm run build` pass.
+- [x] `npm test`, `npm run lint` and `npm run build` pass.
 - [x] `get_advisors` (security) shows no new warning compared with before the migration.
 
 ---
