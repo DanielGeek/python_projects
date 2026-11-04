@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Sends a plain-text message to my Telegram through the Bot API (sendMessage).
-# Reads TELEGRAM_BOT_TOKEN and TELEGRAM_USER_ID from the project .env at run time.
+# Reads TELEGRAM_BOT_TOKEN and TELEGRAM_USER_ID from the project .env.development at run time.
 set -euo pipefail
 
 if [ "$#" -eq 0 ] || [ -z "${*// /}" ]; then
@@ -9,10 +9,10 @@ if [ "$#" -eq 0 ] || [ -z "${*// /}" ]; then
 fi
 
 ROOT="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
-ENV_FILE="$ROOT/.env"
+ENV_FILE="$ROOT/.env.development"
 
 if [ ! -f "$ENV_FILE" ]; then
-  echo "Missing .env at $ENV_FILE" >&2
+  echo "Missing .env.development at $ENV_FILE" >&2
   exit 1
 fi
 
@@ -24,7 +24,7 @@ TOKEN="$(read_key TELEGRAM_BOT_TOKEN)"
 CHAT_ID="$(read_key TELEGRAM_USER_ID)"
 
 if [ -z "$TOKEN" ] || [ -z "$CHAT_ID" ]; then
-  echo "TELEGRAM_BOT_TOKEN or TELEGRAM_USER_ID is missing in .env" >&2
+  echo "TELEGRAM_BOT_TOKEN or TELEGRAM_USER_ID is missing in .env.development" >&2
   exit 1
 fi
 

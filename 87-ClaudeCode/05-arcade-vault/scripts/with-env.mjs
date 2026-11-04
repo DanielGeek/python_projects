@@ -1,24 +1,26 @@
 #!/usr/bin/env node
-// `npm run build` and `npm start` run through this file: it loads .env.prod into process.env (when the file
-// exists) and then runs `next <command>`. A variable that is already set, for example by Vercel or by your
-// shell, wins over the file, and Next fills the rest from its own .env files.
+// `npm run dev`, `npm run build` and `npm start` run through this file: it loads an env file into process.env
+// (when the file exists) and then runs `next <command>`. `dev` loads .env.development; `build` and `start`
+// load .env.prod. A variable that is already set, for example by Vercel or by your shell, wins over the
+// file, and Next fills the rest from its own .env files.
 //
 // It is a script and not `node --env-file-if-exists=...` in package.json because Next starts its build workers
 // with the flags of this process in NODE_OPTIONS, and Node refuses `--env-file*` there. Child processes inherit
 // process.env, so they see these variables.
 //
-// Usage: node scripts/with-env.mjs build|start [next args]. `ENV_FILE` overrides the file name (tests).
+// Usage: node scripts/with-env.mjs dev|build|start [next args]. `ENV_FILE` overrides the file name (tests).
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
 
 const [command, ...args] = process.argv.slice(2);
 if (!command) {
-  console.error("Usage: node scripts/with-env.mjs build|start [next args]");
+  console.error("Usage: node scripts/with-env.mjs dev|build|start [next args]");
   process.exit(2);
 }
 
-const envFile = process.env.ENV_FILE ?? ".env.prod";
+const DEFAULT_ENV_FILES = { dev: ".env.development" };
+const envFile = process.env.ENV_FILE ?? DEFAULT_ENV_FILES[command] ?? ".env.prod";
 if (existsSync(envFile)) {
   process.loadEnvFile(envFile);
   console.log(`[with-env] loaded ${envFile}`);

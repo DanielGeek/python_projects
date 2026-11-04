@@ -8,7 +8,7 @@ Arcade Vault: a web platform for playing arcade games online and competing for t
 
 ## Commands
 
-- `npm run dev` — dev server (Turbopack)
+- `npm run dev` — dev server (Turbopack); runs through `scripts/with-env.mjs`, which loads `.env.development` first (`build` and `start` load `.env.prod` the same way)
 - `npm run build` / `npm start` — production build / serve
 - `npm run lint` — ESLint (flat config, `eslint.config.mjs`)
 - `npm run format` — Prettier over the whole repo (config `.prettierrc.json`, ignores `.prettierignore`).
@@ -59,7 +59,7 @@ Performance (SPEC 14, `references/performance-baseline.md`): the protocol, the f
 
 ## Environment variables
 
-Copy `.env.template` to `.env` (git-ignored). Server only, never prefix with `NEXT_PUBLIC_`:
+Copy `.env.development.template` to `.env.development` (git-ignored); `npm run dev` loads it. Server only, never prefix with `NEXT_PUBLIC_`:
 
 - `RESEND_API_KEY` — Resend API key.
 - `CONTACT_TO_EMAIL` — inbox that receives contact messages.
@@ -79,7 +79,7 @@ If either is missing or the URL is not `http(s)`, `getSupabaseEnv` throws and `G
 
 Supabase Auth setup lives in the dashboard, not in the repo (SPEC 15): custom SMTP through Resend (`smtp.resend.com`, port 465, user `resend`, the Resend API key as password; the sandbox sender `onboarding@resend.dev` only delivers to the email that owns the Resend account), Site URL `http://localhost:3000` with redirect URLs for every host in use (including the `NEXT_PUBLIC_LOCAL_URL` host), "Confirm email" on, and the "Confirm sign up" template link `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`. The default `{{ .ConfirmationURL }}` link does not work with `/auth/confirm`. SPEC 16 adds: the Google and GitHub providers enabled (client id and secret live only in the dashboard; every OAuth app has `https://<project-ref>.supabase.co/auth/v1/callback` as its callback), `/auth/callback` and `/auth/confirm` in the redirect URLs of every host in use, and the "Reset password" template link `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/login/reset`. Each Supabase project, dev and production, has its own providers, URLs and templates. SPEC 17 dashboard values: minimum password length 8 and password requirements "Lowercase, uppercase letters, digits and symbols (recommended)" (a direct call to the Auth API with a 7-character or all-lowercase password answers `422 weak_password`); the sign-up and sign-in rate limit per IP stays at the default of 30 requests per 5 minutes (the field has no per-hour unit), and in practice only sign-ups hit it (`429` after about 31): password sign-ins from one IP were not limited in a test of 85 attempts.
 
-Development on a phone over the network (they only hold a local address): `NEXT_PUBLIC_LOCAL_URL` (for example `http://192.168.1.170`) and `NEXT_PUBLIC_PORT` (`3000`, a note of the dev port: no code reads it). `next.config.ts` reads the hostname of `NEXT_PUBLIC_LOCAL_URL` into `allowedDevOrigins`, because Next blocks dev assets for any origin other than `localhost`, and without it the page loads on the phone but never hydrates (the menu does not open and the game stays on "Starting game"). Next matches the hostname only, so the scheme and the port are dropped, and an unset or invalid value allows nothing extra. Restart `npm run dev` after editing them. `NEXT_PUBLIC_*` values are inlined at build time: restart `npm run dev` after editing `.env`, and rebuild for production.
+Development on a phone over the network (they only hold a local address): `NEXT_PUBLIC_LOCAL_URL` (for example `http://192.168.1.170`) and `NEXT_PUBLIC_PORT` (`3000`, a note of the dev port: no code reads it). `next.config.ts` reads the hostname of `NEXT_PUBLIC_LOCAL_URL` into `allowedDevOrigins`, because Next blocks dev assets for any origin other than `localhost`, and without it the page loads on the phone but never hydrates (the menu does not open and the game stays on "Starting game"). Next matches the hostname only, so the scheme and the port are dropped, and an unset or invalid value allows nothing extra. Restart `npm run dev` after editing them. `NEXT_PUBLIC_*` values are inlined at build time: restart `npm run dev` after editing `.env.development`, and rebuild for production.
 
 ## Skills and agents
 

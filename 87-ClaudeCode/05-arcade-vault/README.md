@@ -20,8 +20,8 @@ Next.js 16 (App Router, Turbopack) · React 19 · Tailwind 4 · TypeScript · Su
 
 ```bash
 npm install
-cp .env.template .env   # then fill in the values
-npm run dev             # http://localhost:3000
+cp .env.development.template .env.development   # then fill in the values
+npm run dev                                     # http://localhost:3000, loads .env.development
 ```
 
 | Command                       | What it does                 |
