@@ -84,7 +84,7 @@ If the sign-up metadata already carries a valid, free username (the SPEC 15 emai
 - [ ] The recovery email link opens `/login/reset` with an active recovery session.
 - [ ] A password shorter than 8 characters, or two passwords that differ, is rejected by the reset form.
 - [ ] After a successful reset the user is signed in and can sign in again with the new password.
-- [ ] `/login/reset` with no recovery session shows a message and does not call `updateUser`.
+- [x] `/login/reset` with no recovery session shows a message and does not call `updateUser`.
 - [x] `safeNextPath` rejects `//evil.example`, `https://evil.example`, `/\evil` and an empty value, and accepts `/login/reset`.
 - [ ] A score saved by an OAuth user has `user_id = auth.uid()` and `player` equal to the generated username.
 - [ ] `npm test`, `npm run lint` and `npm run build` pass.

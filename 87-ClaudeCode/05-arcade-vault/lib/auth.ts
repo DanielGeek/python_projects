@@ -4,7 +4,7 @@ import { createClient } from "./supabase/client";
 
 export const LIMITS = { email: 254, passwordMin: 8, passwordMax: 72 } as const;
 
-export type AuthField = "username" | "email" | "password";
+export type AuthField = "username" | "email" | "password" | "repeat";
 
 export interface SignUpInput {
   username: string;
@@ -76,6 +76,20 @@ export function validateResetRequest(input: { email: string }): Errors {
   const errors: Errors = {};
   const email = checkEmail(input.email);
   if (email) errors.email = email;
+  return errors;
+}
+
+export interface NewPasswordInput {
+  password: string;
+  repeat: string;
+}
+
+/** SPEC 16, `/login/reset`: same password rule as sign-up (so Supabase does not answer `weak_password`) and a match check. */
+export function validateNewPassword(input: NewPasswordInput): Errors {
+  const errors: Errors = {};
+  const password = checkPassword(input.password);
+  if (password) errors.password = password;
+  if (input.repeat !== input.password) errors.repeat = "Passwords do not match.";
   return errors;
 }
 
@@ -185,6 +199,19 @@ export async function requestPasswordReset(email: string): Promise<AuthResult> {
     return error ? fail("password reset request", error) : { ok: true };
   } catch (error) {
     return fail("password reset request", error);
+  }
+}
+
+/**
+ * SPEC 16. Sets a new password for the signed-in user, which after the recovery link is the recovery
+ * session itself. The caller must check there is a session first: without one `updateUser` fails.
+ */
+export async function updatePassword(password: string): Promise<AuthResult> {
+  try {
+    const { error } = await createClient().auth.updateUser({ password });
+    return error ? fail("password update", error) : { ok: true };
+  } catch (error) {
+    return fail("password update", error);
   }
 }
 

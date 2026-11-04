@@ -3,6 +3,7 @@ import {
   LIMITS,
   PASSWORD_RULE,
   toAuthFailure,
+  validateNewPassword,
   validateResetRequest,
   validateSignIn,
   validateSignUp,
@@ -127,6 +128,44 @@ describe("validateResetRequest", () => {
 
   it("asks for nothing but the email", () => {
     expect(Object.keys(validateResetRequest({ email: "" }))).toEqual(["email"]);
+  });
+});
+
+describe("validateNewPassword", () => {
+  it("accepts a strong password that is repeated", () => {
+    expect(validateNewPassword({ password: "Abcdef1!", repeat: "Abcdef1!" })).toEqual({});
+  });
+
+  it("rejects a password shorter than the minimum", () => {
+    const short = "Ab1!";
+    expect(validateNewPassword({ password: short, repeat: short }).password).toBe(
+      `Password must be at least ${LIMITS.passwordMin} characters.`,
+    );
+  });
+
+  it("rejects a password over the maximum", () => {
+    const long = `Ab1!${"a".repeat(LIMITS.passwordMax)}`;
+    expect(validateNewPassword({ password: long, repeat: long }).password).toBe(
+      `Max ${LIMITS.passwordMax} characters.`,
+    );
+  });
+
+  it.each(["abcdefg1!", "ABCDEFG1!", "Abcdefgh!", "Abcdefg12"])(
+    "rejects %j for the missing character class",
+    (password) => {
+      expect(validateNewPassword({ password, repeat: password }).password).toBe(PASSWORD_RULE);
+    },
+  );
+
+  it("rejects two passwords that differ", () => {
+    expect(validateNewPassword({ password: "Abcdef1!", repeat: "Abcdef1?" })).toEqual({
+      repeat: "Passwords do not match.",
+    });
+  });
+
+  it("reports both problems at once", () => {
+    const errors = validateNewPassword({ password: "short", repeat: "other" });
+    expect(Object.keys(errors).sort()).toEqual(["password", "repeat"]);
   });
 });
 
