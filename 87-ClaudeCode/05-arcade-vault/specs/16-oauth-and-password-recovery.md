@@ -78,7 +78,7 @@ If the sign-up metadata already carries a valid, free username (the SPEC 15 emai
 - [x] Two OAuth users with the same provider name get two different usernames.
 - [x] An OAuth user whose provider name has no letters or digits gets `PLAYER_` followed by 4 digits.
 - [x] An email sign-up with a valid free username still keeps exactly that username.
-- [ ] A cancelled or failed OAuth flow lands on `/login?error=oauth` and shows an `[ERR]` line.
+- [x] A cancelled or failed OAuth flow lands on `/login?error=oauth` and shows an `[ERR]` line.
 - [ ] "Forgot password?" shows a form that asks for the email only.
 - [ ] The confirmation message after requesting a reset is the same for an existing and an unknown email.
 - [ ] The recovery email link opens `/login/reset` with an active recovery session.
