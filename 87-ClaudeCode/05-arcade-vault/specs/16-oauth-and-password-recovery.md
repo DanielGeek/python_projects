@@ -74,10 +74,10 @@ If the sign-up metadata already carries a valid, free username (the SPEC 15 emai
 
 - [ ] Clicking Google or GitHub on `/login` opens the provider's consent screen.
 - [ ] After consent the user lands on `/library` signed in, and the navbar shows a generated username.
-- [ ] The generated username matches `^[A-Z0-9_]{3,12}$` and is never `GUEST`.
-- [ ] Two OAuth users with the same provider name get two different usernames.
-- [ ] An OAuth user whose provider name has no letters or digits gets `PLAYER_` followed by 4 digits.
-- [ ] An email sign-up with a valid free username still keeps exactly that username.
+- [x] The generated username matches `^[A-Z0-9_]{3,12}$` and is never `GUEST`.
+- [x] Two OAuth users with the same provider name get two different usernames.
+- [x] An OAuth user whose provider name has no letters or digits gets `PLAYER_` followed by 4 digits.
+- [x] An email sign-up with a valid free username still keeps exactly that username.
 - [ ] A cancelled or failed OAuth flow lands on `/login?error=oauth` and shows an `[ERR]` line.
 - [ ] "Forgot password?" shows a form that asks for the email only.
 - [ ] The confirmation message after requesting a reset is the same for an existing and an unknown email.
@@ -88,7 +88,7 @@ If the sign-up metadata already carries a valid, free username (the SPEC 15 emai
 - [ ] `safeNextPath` rejects `//evil.example`, `https://evil.example`, `/\evil` and an empty value, and accepts `/login/reset`.
 - [ ] A score saved by an OAuth user has `user_id = auth.uid()` and `player` equal to the generated username.
 - [ ] `npm test`, `npm run lint` and `npm run build` pass.
-- [ ] `get_advisors` (security) shows no new warning compared with before the migration.
+- [x] `get_advisors` (security) shows no new warning compared with before the migration.
 
 ---
 
