@@ -7,13 +7,17 @@ import { Input, Tabs } from "@/components/ui/interactive";
 import {
   LIMITS,
   PASSWORD_RULE,
+  requestPasswordReset,
   resendConfirmation,
   signInWithEmail,
+  signInWithProvider,
   signUpWithEmail,
+  validateResetRequest,
   validateSignIn,
   validateSignUp,
   type AuthFailure,
   type AuthField,
+  type OAuthProvider,
 } from "@/lib/auth";
 import { safeNextPath } from "@/lib/safe-next";
 import { useSession } from "@/lib/session";
@@ -51,6 +55,14 @@ const FAILURE_MESSAGES: Record<Exclude<AuthFailure, "username_taken">, string> =
 
 const CONFIRM_LINK_MESSAGE =
   "That confirmation link is invalid or expired. Sign in to get a new one.";
+const OAUTH_ERROR_MESSAGE = "Sign-in with Google or GitHub did not finish. Try again.";
+
+/** Message for the `?error=` the confirm and callback routes send back to the login page. */
+function messageForError(code: string | null): string {
+  if (code === "confirm") return CONFIRM_LINK_MESSAGE;
+  if (code === "oauth") return OAUTH_ERROR_MESSAGE;
+  return "";
+}
 
 export function AuthCard() {
   const params = useSearchParams();
@@ -65,15 +77,15 @@ export function AuthCard() {
   }, [signedIn, next]);
   const [mode, setMode] = useState<Mode>("login");
   const [errors, setErrors] = useState<Partial<Record<AuthField, string>>>({});
-  const [formError, setFormError] = useState(
-    params.get("error") === "confirm" ? CONFIRM_LINK_MESSAGE : "",
-  );
+  const [formError, setFormError] = useState(messageForError(params.get("error")));
   const [needsConfirm, setNeedsConfirm] = useState(false);
   const [sentTo, setSentTo] = useState("");
   const [resent, setResent] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [notice, setNotice] = useState("");
   const [email, setEmail] = useState("");
+  // SPEC 16, "Forgot password?": `forgot` shows the email-only form, `resetSentTo` the confirmation.
+  const [forgot, setForgot] = useState(false);
+  const [resetSentTo, setResetSentTo] = useState("");
 
   function reset(next: Mode) {
     setMode(next);
@@ -123,9 +135,40 @@ export function AuthCard() {
     } else if (result.code !== "username_taken") setFormError(FAILURE_MESSAGES[result.code]);
   }
 
-  function social(provider: string) {
-    // BACKEND: start the OAuth flow (e.g. Supabase signInWithOAuth) for this provider.
-    setNotice(`Sign-in with ${provider} will be available once the server is connected.`);
+  async function submitReset(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (busy) return;
+    const address = String(new FormData(e.currentTarget).get("email") ?? "");
+    const found = validateResetRequest({ email: address });
+    setErrors(found);
+    setFormError("");
+    if (Object.keys(found).length) return;
+
+    setBusy(true);
+    const result = await requestPasswordReset(address);
+    setBusy(false);
+    // Same screen whether or not the email has an account: it must not reveal which ones do.
+    if (result.ok) setResetSentTo(address.trim());
+    else if (result.code !== "username_taken") setFormError(FAILURE_MESSAGES[result.code]);
+  }
+
+  function backToSignIn() {
+    setForgot(false);
+    setResetSentTo("");
+    reset("login");
+  }
+
+  // On success the browser leaves for the provider, so `busy` stays on until the page unloads.
+  async function social(provider: OAuthProvider) {
+    if (busy) return;
+    setBusy(true);
+    setFormError("");
+    setNeedsConfirm(false);
+    const result = await signInWithProvider(provider);
+    if (!result.ok && result.code !== "username_taken") {
+      setBusy(false);
+      setFormError(FAILURE_MESSAGES[result.code]);
+    }
   }
 
   if (account) {
@@ -179,6 +222,43 @@ export function AuthCard() {
     );
   }
 
+  if (forgot) {
+    return (
+      <div className="av-auth-card">
+        <NeonLogo size="md" className="av-auth-logo" />
+        <p className="av-auth-sub">{resetSentTo ? "CHECK YOUR EMAIL" : "RESET PASSWORD"}</p>
+        {resetSentTo ? (
+          <p className="av-modal-note" role="status">
+            If an account exists for {resetSentTo}, we sent a link to reset the password. Check your
+            inbox.
+          </p>
+        ) : (
+          <form className="av-auth-form" onSubmit={submitReset} noValidate>
+            <Input
+              name="email"
+              type="email"
+              label="Email"
+              placeholder="player@example.com"
+              autoComplete="email"
+              error={errors.email}
+            />
+            {formError && (
+              <div className="av-about-error" role="alert">
+                <span className="av-about-error-tag">[ERR]</span> {formError}
+              </div>
+            )}
+            <Button type="submit" block disabled={busy}>
+              {busy ? "Please wait…" : "Send reset link"}
+            </Button>
+          </form>
+        )}
+        <Button variant="ghost" block onClick={backToSignIn}>
+          Back to sign in
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="av-auth-card">
       <NeonLogo size="md" className="av-auth-logo" />
@@ -224,6 +304,21 @@ export function AuthCard() {
           }
           error={errors.password}
         />
+        {mode === "login" && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setForgot(true);
+              setErrors({});
+              setFormError("");
+              setNeedsConfirm(false);
+            }}
+          >
+            Forgot password?
+          </Button>
+        )}
         {formError && (
           <div className="av-about-error" role="alert">
             <span className="av-about-error-tag">[ERR]</span> {formError}
@@ -253,18 +348,13 @@ export function AuthCard() {
         <span>OR CONTINUE WITH</span>
       </div>
       <div className="av-auth-social">
-        <Button variant="outline" size="sm" onClick={() => social("Google")}>
+        <Button variant="outline" size="sm" disabled={busy} onClick={() => social("google")}>
           Google
         </Button>
-        <Button variant="outline" size="sm" onClick={() => social("GitHub")}>
+        <Button variant="outline" size="sm" disabled={busy} onClick={() => social("github")}>
           GitHub
         </Button>
       </div>
-      {notice && (
-        <p className="av-modal-note" role="status">
-          {notice}
-        </p>
-      )}
       <p className="av-auth-terms">BY ENTERING YOU ACCEPT THE ARCADE TERMS</p>
     </div>
   );

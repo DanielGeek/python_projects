@@ -63,7 +63,7 @@ If the sign-up metadata already carries a valid, free username (the SPEC 15 emai
 2. Do the manual dashboard setup: create the Google and GitHub OAuth apps, paste the client ids and secrets in Supabase, enable both providers, add `/auth/callback` and `/auth/confirm` to the redirect URLs for every host used (localhost and `NEXT_PUBLIC_LOCAL_URL`), and set the "Reset password" template link to `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/login/reset`.
 3. Create `app/auth/callback/route.ts`: read `code`, call `exchangeCodeForSession` through `lib/supabase/server.ts`, redirect to `/library` or `/login?error=oauth`. Use `await connection()`; export neither `runtime` nor `dynamic`.
 4. Add `signInWithProvider(provider)` to `lib/auth.ts` (`signInWithOAuth` with `redirectTo = origin + "/auth/callback"`) and wire the two buttons of the auth card. Remove the "not available yet" notice. Show an `[ERR]` line for `?error=oauth`.
-5. Add the `next` handling to `app/auth/confirm/route.ts`: accept only a path that starts with a single `/`, has no `//`, no `\` and no scheme; otherwise use `/library`. Add a pure `safeNextPath` function with tests.
+5. Add the `next` handling to `app/auth/confirm/route.ts`: accept only a path that starts with a single `/`, has no `//`, no `\` and no scheme; otherwise use `/library`. Reuse the pure `safeNextPath` of `lib/safe-next.ts` (SPEC 17, already tested). The route must also accept `type=recovery` next to `type=email`, because the "Reset password" template link uses it.
 6. Add `requestPasswordReset(email)` to `lib/auth.ts` and the "Forgot password?" form in the auth card. The success message is the same whether the email exists or not.
 7. Create `app/login/reset/page.tsx` with a client form: new password (at least 8 characters) and repeat, `updatePassword` through `updateUser`, then redirect to `/library`. Without a recovery session the page shows a message and a link to `/login`.
 8. Update `CLAUDE.md`.
@@ -74,21 +74,21 @@ If the sign-up metadata already carries a valid, free username (the SPEC 15 emai
 
 - [ ] Clicking Google or GitHub on `/login` opens the provider's consent screen.
 - [ ] After consent the user lands on `/library` signed in, and the navbar shows a generated username.
-- [ ] The generated username matches `^[A-Z0-9_]{3,12}$` and is never `GUEST`.
-- [ ] Two OAuth users with the same provider name get two different usernames.
-- [ ] An OAuth user whose provider name has no letters or digits gets `PLAYER_` followed by 4 digits.
-- [ ] An email sign-up with a valid free username still keeps exactly that username.
-- [ ] A cancelled or failed OAuth flow lands on `/login?error=oauth` and shows an `[ERR]` line.
+- [x] The generated username matches `^[A-Z0-9_]{3,12}$` and is never `GUEST`.
+- [x] Two OAuth users with the same provider name get two different usernames.
+- [x] An OAuth user whose provider name has no letters or digits gets `PLAYER_` followed by 4 digits.
+- [x] An email sign-up with a valid free username still keeps exactly that username.
+- [x] A cancelled or failed OAuth flow lands on `/login?error=oauth` and shows an `[ERR]` line.
 - [ ] "Forgot password?" shows a form that asks for the email only.
 - [ ] The confirmation message after requesting a reset is the same for an existing and an unknown email.
 - [ ] The recovery email link opens `/login/reset` with an active recovery session.
 - [ ] A password shorter than 8 characters, or two passwords that differ, is rejected by the reset form.
 - [ ] After a successful reset the user is signed in and can sign in again with the new password.
-- [ ] `/login/reset` with no recovery session shows a message and does not call `updateUser`.
-- [ ] `safeNextPath` rejects `//evil.example`, `https://evil.example`, `/\evil` and an empty value, and accepts `/login/reset`.
+- [x] `/login/reset` with no recovery session shows a message and does not call `updateUser`.
+- [x] `safeNextPath` rejects `//evil.example`, `https://evil.example`, `/\evil` and an empty value, and accepts `/login/reset`.
 - [ ] A score saved by an OAuth user has `user_id = auth.uid()` and `player` equal to the generated username.
-- [ ] `npm test`, `npm run lint` and `npm run build` pass.
-- [ ] `get_advisors` (security) shows no new warning compared with before the migration.
+- [x] `npm test`, `npm run lint` and `npm run build` pass.
+- [x] `get_advisors` (security) shows no new warning compared with before the migration.
 
 ---
 
