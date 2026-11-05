@@ -1,1 +1,141 @@
 @import "tailwindcss";
+
+@theme {
+	--color-cup: #141210;
+	--color-walnut: #5c3414;
+	--color-caramel: #d4ac66;
+	--color-caramel-hover: #e2bf80;
+	--color-foam: #f2eee6;
+	--color-charcoal: #2e2c29;
+
+	--font-serif: "Playfair Display", Georgia, serif;
+	--font-sans: "DM Sans", system-ui, sans-serif;
+}
+
+@layer base {
+	html {
+		scroll-behavior: smooth;
+	}
+	body {
+		@apply bg-cup font-sans text-base leading-relaxed text-foam antialiased;
+	}
+	h1,
+	h2,
+	h3 {
+		@apply font-serif font-semibold leading-[1.12] tracking-[-0.01em];
+	}
+	section[id] {
+		scroll-margin-top: 72px;
+	}
+}
+
+/* ---------- Layout helpers ---------- */
+@utility wrap {
+	margin-inline: auto;
+	width: 100%;
+	max-width: 1200px;
+	padding-inline: 1rem;
+	@media (min-width: 36rem) {
+		padding-inline: 1.5rem;
+	}
+}
+
+@utility eyebrow {
+	@apply text-xs font-semibold uppercase tracking-[0.18em] text-caramel;
+}
+
+/* ---------- Buttons ---------- */
+@utility btn {
+	@apply inline-flex min-h-12 cursor-pointer items-center justify-center gap-2.5 rounded-full border-[1.5px] border-transparent px-[26px] text-[15px] leading-none font-semibold whitespace-nowrap no-underline transition active:translate-y-px disabled:cursor-wait disabled:opacity-55 focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-caramel;
+}
+
+@utility btn-primary {
+	@apply btn bg-caramel text-cup hover:bg-caramel-hover;
+}
+
+@utility btn-secondary {
+	@apply btn border-foam/50 bg-transparent text-foam hover:border-foam hover:bg-foam/5;
+}
+
+@utility btn-text {
+	@apply inline-flex min-h-0 cursor-pointer items-center border-0 bg-transparent p-0 text-[15px] leading-none font-semibold text-foam underline decoration-caramel underline-offset-[5px] transition-colors hover:text-caramel focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-caramel;
+}
+
+/* ---------- Decorative pieces that are easier as plain CSS ---------- */
+@layer components {
+	.hero-fade {
+		background:
+			linear-gradient(90deg, #141210 0%, rgb(20 18 16 / 0.55) 18%, rgb(20 18 16 / 0) 45%),
+			linear-gradient(0deg, rgb(20 18 16 / 0.6) 0%, rgb(20 18 16 / 0) 30%);
+	}
+	@media (max-width: 860px) {
+		.hero-fade {
+			background: linear-gradient(0deg, #141210 0%, rgb(20 18 16 / 0.3) 35%, rgb(20 18 16 / 0) 60%);
+		}
+	}
+
+	.origin-fade {
+		background: linear-gradient(270deg, #5c3414 0%, rgb(92 52 20 / 0) 40%);
+	}
+	@media (max-width: 860px) {
+		.origin-fade {
+			background: linear-gradient(0deg, #5c3414 0%, rgb(92 52 20 / 0) 45%);
+		}
+	}
+
+	.news-bg {
+		background: radial-gradient(90% 140% at 100% 0%, #7a4a22 0%, #5c3414 45%, #3f230d 100%);
+	}
+
+	/* Product "photo": warm backdrop with a wooden shelf and a coffee bag. */
+	.card-media {
+		background: radial-gradient(120% 80% at 30% 15%, #4a2a12 0%, #2a1709 55%, #1b1209 100%);
+	}
+	.card-media::before {
+		content: "";
+		position: absolute;
+		inset: auto 0 0 0;
+		height: 26%;
+		background: repeating-linear-gradient(90deg, #5c3414 0 14px, #55300f 14px 15px, #613818 15px 34px);
+		opacity: 0.9;
+	}
+	.bag {
+		background: var(--bag, #1d1a17);
+		box-shadow:
+			18px 22px 30px rgb(0 0 0 / 0.45),
+			inset -10px 0 18px rgb(0 0 0 / 0.25),
+			inset 6px 0 10px rgb(255 255 255 / 0.04);
+	}
+	.bag::before {
+		content: "";
+		position: absolute;
+		top: -9px;
+		left: 4%;
+		right: 4%;
+		height: 14px;
+		border-radius: 3px;
+		background: var(--bag, #1d1a17);
+		filter: brightness(0.8);
+	}
+	.group:hover .bag {
+		transform: rotate(-2deg) translateY(-4px);
+	}
+
+	.thumb {
+		background: radial-gradient(circle at 30% 20%, #4a2a12, #1b1209);
+	}
+	.thumb i {
+		background: var(--bag);
+		box-shadow: 4px 6px 10px rgb(0 0 0 / 0.4);
+	}
+	.thumb i::after {
+		content: "";
+		position: absolute;
+		left: 3px;
+		right: 3px;
+		top: 14px;
+		height: 14px;
+		background: #f2eee6;
+		border-radius: 2px;
+	}
+}

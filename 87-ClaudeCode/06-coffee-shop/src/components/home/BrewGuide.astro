@@ -1,0 +1,70 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+
+const methods = [
+	{
+		name: 'Espresso',
+		text: 'Intenso y con cuerpo. La base de tu latte o capuchino.',
+		specs: [
+			{ value: '18 g', label: 'café' },
+			{ value: '36 g', label: 'bebida' },
+			{ value: '28 s', label: 'tiempo' },
+		],
+		icon: '<path d="M10 18h22v10a9 9 0 0 1-9 9h-4a9 9 0 0 1-9-9V18Z"/><path d="M32 21h3a4 4 0 0 1 0 8h-3M6 41h32M16 12v-2M21 12V8M26 12v-2"/>',
+	},
+	{
+		name: 'V60',
+		text: 'Limpio y brillante. Deja ver las notas frutales del origen.',
+		specs: [
+			{ value: '15 g', label: 'café' },
+			{ value: '250 g', label: 'agua' },
+			{ value: '3 min', label: 'tiempo' },
+		],
+		icon: '<path d="M8 10h32L28 30h-8L8 10Z"/><path d="M20 30v4h8v-4M14 38h20M16 16h16"/>',
+	},
+	{
+		name: 'Prensa francesa',
+		text: 'Redondo y con mucho cuerpo. Ideal para tuestes oscuros.',
+		specs: [
+			{ value: '30 g', label: 'café' },
+			{ value: '500 g', label: 'agua' },
+			{ value: '4 min', label: 'tiempo' },
+		],
+		icon: '<path d="M12 14h20v26H12z"/><path d="M32 18h4v16h-4M22 6v8M16 6h12M12 24h20"/>',
+	},
+];
+---
+
+<section id="guia" class="border-t border-foam/10 py-24 max-[860px]:py-[72px]">
+	<div class="wrap">
+		<SectionHead eyebrow="Guía de preparación" title="Saca lo mejor de cada grano">
+			<a href="#" slot="aside" class="btn-text">Ver la guía completa →</a>
+		</SectionHead>
+
+		<div class="grid grid-cols-3 gap-5 max-[860px]:grid-cols-1">
+			{
+				methods.map((m) => (
+					<a
+						href="#"
+						class="flex flex-col gap-4 rounded-[18px] border border-foam/10 p-7 no-underline transition-colors hover:border-caramel/35 hover:bg-charcoal"
+					>
+						<svg class="size-11 text-caramel" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={m.icon} />
+						<h3 class="text-2xl">{m.name}</h3>
+						<p class="text-[15px] text-foam/70">{m.text}</p>
+						<dl class="m-0 grid grid-cols-3 gap-2 border-t border-foam/10 pt-4">
+							{
+								m.specs.map((s) => (
+									<div class="text-xs text-foam/50">
+										<dd class="m-0 text-[15px] font-semibold text-foam">{s.value}</dd>
+										<dt>{s.label}</dt>
+									</div>
+								))
+							}
+						</dl>
+						<span class="mt-auto text-sm font-semibold text-caramel">Ver receta →</span>
+					</a>
+				))
+			}
+		</div>
+	</div>
+</section>

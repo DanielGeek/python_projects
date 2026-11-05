@@ -1,0 +1,96 @@
+---
+import { GRINDS, ROAST_LABELS, ROAST_TONES, WEIGHTS } from '../../config/products';
+import type { Product } from '../../types';
+import { formatPrice } from '../../utils/format';
+
+interface Props {
+	product: Product;
+}
+
+const { product } = Astro.props;
+const tone = ROAST_TONES[product.roast];
+const origin = product.originLabel ?? `${product.country} · ${product.altitude?.toLocaleString('es-ES')} m`;
+
+const pill =
+	'cursor-pointer rounded-[10px] border border-foam/10 bg-transparent px-3 py-[9px] text-[13px] leading-none font-medium text-foam/70 transition hover:border-foam/50 hover:text-foam aria-pressed:border-foam aria-pressed:bg-foam aria-pressed:text-cup focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-caramel';
+---
+
+<article
+	data-product
+	data-id={product.id}
+	data-name={product.name}
+	data-base-price={product.basePrice}
+	data-bag={product.bagColor}
+	data-weight="0"
+	data-grind="0"
+	class="group flex flex-col overflow-hidden rounded-[18px] border border-transparent bg-charcoal transition duration-200 hover:-translate-y-[3px] hover:border-caramel/35"
+>
+	<div class="card-media relative grid aspect-[4/4.2] place-items-center overflow-hidden">
+		{
+			product.badge && (
+				<div class="absolute top-3.5 left-3.5 z-[2] flex gap-1.5">
+					<span
+						class:list={[
+							'rounded-full px-2.5 py-[5px] text-[11px] font-semibold tracking-[0.02em] text-cup',
+							product.badge.featured ? 'bg-caramel' : 'bg-foam',
+						]}
+					>
+						{product.badge.label}
+					</span>
+				</div>
+			)
+		}
+		<div
+			class="bag relative z-[1] mt-[8%] flex aspect-[3/4.4] w-[46%] flex-col items-center justify-center gap-1.5 rounded-[6px_6px_10px_10px] px-2.5 py-3.5 transition-transform duration-[350ms]"
+			style={`--bag:${product.bagColor}`}
+			aria-hidden="true"
+		>
+			<span class="font-serif text-[10px] tracking-[0.1em] text-caramel">NOGAL</span>
+			<div class="w-full rounded bg-foam px-1.5 py-2.5 text-center text-cup">
+				<small class="block text-[8px] font-semibold tracking-[0.2em] text-walnut uppercase">{product.country}</small>
+				<b class="mt-[3px] block font-serif text-[15px] leading-[1.1]">{product.name}</b>
+			</div>
+		</div>
+	</div>
+
+	<div class="flex flex-1 flex-col gap-3.5 p-5">
+		<div class="flex items-baseline justify-between gap-3">
+			<div>
+				<h3 class="text-[21px]">{product.name}</h3>
+				<div class="mt-0.5 text-[13px] text-foam/50">{origin}</div>
+			</div>
+			<span data-price class="font-serif text-[22px] font-semibold whitespace-nowrap text-caramel">
+				{formatPrice(product.basePrice)}
+			</span>
+		</div>
+
+		<div class="flex flex-wrap gap-1.5">
+			{product.notes.map((note) => <span class="rounded-full border border-foam/10 px-2.5 py-[3px] text-xs text-foam/70">{note}</span>)}
+		</div>
+
+		<div class="flex items-center gap-2.5 text-xs text-foam/70">
+			<div class="flex gap-[3px]" aria-hidden="true">
+				{[1, 2, 3].map((level) => <i class="h-1.5 w-4 rounded-[3px]" style={`background:${level <= product.roast ? tone : 'rgb(242 238 230 / 0.14)'}`} />)}
+			</div>
+			Tueste {ROAST_LABELS[product.roast].toLowerCase()}
+		</div>
+
+		<div>
+			<div class="mb-1.5 text-xs text-foam/50">Peso</div>
+			<div class="flex flex-wrap gap-1.5">
+				{WEIGHTS.map((w, i) => <button type="button" class={pill} data-weight-option={i} aria-pressed={i === 0 ? 'true' : 'false'}>{w.label}</button>)}
+			</div>
+		</div>
+
+		<div>
+			<div class="mb-1.5 text-xs text-foam/50">Molienda</div>
+			<div class="flex flex-wrap gap-1.5">
+				{GRINDS.map((g, i) => <button type="button" class={pill} data-grind-option={i} aria-pressed={i === 0 ? 'true' : 'false'}>{g}</button>)}
+			</div>
+		</div>
+
+		<div class="mt-auto pt-1">
+			<button type="button" class="btn-primary w-full" data-add-to-cart>Añadir al carrito</button>
+		</div>
+	</div>
+</article>

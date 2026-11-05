@@ -1,0 +1,69 @@
+---
+import { FOOTER_COLUMNS, LEGAL_LINKS, PAYMENT_METHODS, SITE } from '../../config/site';
+import Logo from '../ui/Logo.astro';
+
+const socials = [
+	{
+		label: 'Instagram',
+		svg: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>',
+	},
+	{ label: 'TikTok', svg: '<path d="M14 3v12a4 4 0 1 1-4-4M14 3c0 3 2 5 5 5" stroke-linecap="round"/>' },
+	{
+		label: 'YouTube',
+		svg: '<rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9l5 3-5 3V9Z" fill="currentColor"/>',
+	},
+];
+---
+
+<footer class="bg-walnut pt-[72px] pb-8">
+	<div class="wrap">
+		<div class="grid grid-cols-2 gap-10 border-b border-foam/15 pb-12 min-[561px]:grid-cols-3 min-[1081px]:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]">
+			<div class="col-span-full min-[1081px]:col-span-1">
+				<Logo plain class="text-foam" />
+				<p class="mt-3.5 max-w-[32ch] text-sm text-foam/75">
+					Café de especialidad tostado en pequeños lotes, con origen directo y sin intermediarios.
+				</p>
+				<div class="mt-5 flex gap-2">
+					{
+						socials.map((s) => (
+							<a href="#" aria-label={s.label} class="grid size-10 place-items-center rounded-full border border-foam/25 transition-colors hover:bg-foam/10">
+								<svg class="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" set:html={s.svg} />
+							</a>
+						))
+					}
+				</div>
+			</div>
+
+			{
+				FOOTER_COLUMNS.map((col) => (
+					<div>
+						<h4 class="mb-4 text-xs font-semibold tracking-[0.16em] text-caramel uppercase">{col.title}</h4>
+						<ul class="m-0 flex list-none flex-col gap-2.5 p-0">
+							{col.links.map((link) => (
+								<li>
+									<a href={link.href} class="text-sm text-foam/80 no-underline hover:text-foam hover:underline hover:decoration-caramel hover:underline-offset-4">
+										{link.label}
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+				))
+			}
+		</div>
+
+		<div class="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 pt-7 text-[13px] text-foam/65">
+			<span>© {new Date().getFullYear()} {SITE.name}</span>
+			<div class="flex flex-wrap gap-x-[22px] gap-y-2">
+				{LEGAL_LINKS.map((link) => <a href={link.href} class="no-underline hover:text-foam">{link.label}</a>)}
+			</div>
+			<div class="flex gap-2" aria-label="Pagos aceptados">
+				{
+					PAYMENT_METHODS.map((m) => (
+						<span class="grid h-7 place-items-center rounded-md bg-foam px-2.5 text-[11px] font-bold tracking-[0.03em] text-cup">{m}</span>
+					))
+				}
+			</div>
+		</div>
+	</div>
+</footer>

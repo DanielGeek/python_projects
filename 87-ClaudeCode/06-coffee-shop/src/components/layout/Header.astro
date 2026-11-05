@@ -1,0 +1,65 @@
+---
+import { MOBILE_NAV_LINKS, NAV_LINKS } from '../../config/site';
+import Logo from '../ui/Logo.astro';
+
+const iconBtn =
+	'relative grid size-11 cursor-pointer place-items-center rounded-full text-foam transition-colors hover:bg-charcoal focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-caramel';
+---
+
+<header class="sticky top-0 z-40 border-b border-foam/10 bg-cup/90 backdrop-blur-md">
+	<div class="wrap flex h-[72px] items-center justify-between gap-6">
+		<Logo />
+
+		<nav class="hidden gap-9 min-[861px]:flex" aria-label="Principal">
+			{
+				NAV_LINKS.map((link) => (
+					<a href={link.href} class="text-[15px] text-foam/70 no-underline transition-colors hover:text-foam">
+						{link.label}
+					</a>
+				))
+			}
+		</nav>
+
+		<div class="flex items-center gap-2">
+			<button type="button" class={iconBtn} aria-label="Mi cuenta">
+				<svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+					<circle cx="12" cy="8" r="4"></circle>
+					<path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" stroke-linecap="round"></path>
+				</svg>
+			</button>
+			<button type="button" id="open-cart" class={iconBtn} aria-label="Abrir carrito">
+				<svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true">
+					<path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"></path>
+					<path d="M9 10V6a3 3 0 0 1 6 0v4" stroke-linecap="round"></path>
+				</svg>
+				<span
+					id="cart-count"
+					data-on="false"
+					class="absolute top-1 right-0.5 grid h-[18px] min-w-[18px] scale-0 place-items-center rounded-[9px] bg-caramel px-[5px] text-[11px] font-bold text-cup transition-transform duration-[250ms] ease-[cubic-bezier(.3,1.6,.6,1)] data-[on=true]:scale-100"
+					>0</span
+				>
+			</button>
+			<button type="button" id="burger" class:list={[iconBtn, 'min-[861px]:hidden']} aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-nav">
+				<svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+					<path d="M4 7h16M4 12h16M4 17h10"></path>
+				</svg>
+			</button>
+		</div>
+	</div>
+</header>
+
+<nav
+	id="mobile-nav"
+	data-open="false"
+	aria-label="Menú móvil"
+	class="fixed inset-x-0 top-[72px] bottom-0 z-[39] hidden flex-col gap-1 bg-cup p-6 data-[open=true]:flex min-[861px]:!hidden"
+>
+	{
+		MOBILE_NAV_LINKS.map((link) => (
+			<a href={link.href} class="border-b border-foam/10 py-3.5 font-serif text-[30px] no-underline">
+				{link.label}
+			</a>
+		))
+	}
+	<a href="#tienda" class="btn-primary mt-6 self-start">Comprar café</a>
+</nav>

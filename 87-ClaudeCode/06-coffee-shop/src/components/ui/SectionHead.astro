@@ -1,0 +1,18 @@
+---
+interface Props {
+	eyebrow: string;
+	title: string;
+	/** Use the dark-on-light eyebrow colour (for light sections). */
+	onLight?: boolean;
+}
+
+const { eyebrow, title, onLight = false } = Astro.props;
+---
+
+<div class="mb-12 flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+	<div>
+		<span class:list={['eyebrow', onLight && 'text-walnut']}>{eyebrow}</span>
+		<h2 class="mt-2.5 max-w-[18ch] text-[clamp(30px,4vw,44px)]">{title}</h2>
+	</div>
+	<slot name="aside" />
+</div>

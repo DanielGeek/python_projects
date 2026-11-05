@@ -1,0 +1,49 @@
+---
+const facts = [
+	{ value: '1.850 m', label: 'altura media de nuestras fincas' },
+	{ value: '86+', label: 'puntaje SCA mínimo' },
+];
+---
+
+<section id="nosotros" class="bg-walnut">
+	<div class="grid min-h-[560px] grid-cols-2 max-[860px]:grid-cols-1">
+		<div class="relative overflow-hidden max-[860px]:h-[360px]">
+			<img
+				src="/images/coffee.jpg"
+				alt=""
+				aria-hidden="true"
+				loading="lazy"
+				class="absolute inset-0 size-full origin-[50%_25%] scale-[1.35] object-cover object-[50%_30%] sepia-[.15] saturate-[1.1]"
+			/>
+			<div class="origin-fade absolute inset-0"></div>
+		</div>
+
+		<div
+			class="flex flex-col justify-center gap-[22px] py-[88px] pr-[max(1.5rem,calc((100vw-1200px)/2+1.5rem))] pl-16 max-[860px]:px-6 max-[860px]:pt-2 max-[860px]:pb-[72px] max-[560px]:px-4 max-[560px]:pb-16"
+		>
+			<span class="eyebrow">Nuestro origen</span>
+			<h2 class="text-[clamp(30px,4vw,46px)]">De la finca a la taza, sin intermediarios</h2>
+			<p class="max-w-[46ch] text-[17px] text-foam/80">
+				Empezamos con un tostador de 5 kilos y una idea simple: conocer a cada persona que cultiva nuestro café. Hoy
+				trabajamos con seis fincas en Colombia, Etiopía y Guatemala, y seguimos tostando cada lote a mano.
+			</p>
+			<p class="max-w-[46ch] text-[17px] text-foam/80">
+				Pagamos por calidad, no por volumen, y te contamos en cada bolsa quién la cultivó y a qué altura.
+			</p>
+			<dl class="flex gap-10 pt-2.5">
+				{
+					facts.map((f) => (
+						<div>
+							<dt class="sr-only">{f.label}</dt>
+							<dd class="m-0">
+								<strong class="block font-serif text-[32px] font-semibold text-caramel">{f.value}</strong>
+								<span class="text-[13px] text-foam/70">{f.label}</span>
+							</dd>
+						</div>
+					))
+				}
+			</dl>
+			<div><a href="#nosotros" class="btn-secondary">Conoce a los productores</a></div>
+		</div>
+	</div>
+</section>

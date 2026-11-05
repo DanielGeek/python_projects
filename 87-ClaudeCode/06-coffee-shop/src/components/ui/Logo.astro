@@ -1,0 +1,27 @@
+---
+import { SITE } from '../../config/site';
+
+interface Props {
+	/** Hide the bean icon (used in the footer). */
+	plain?: boolean;
+	class?: string;
+}
+
+const { plain = false, class: className = '' } = Astro.props;
+---
+
+<a
+	href="#inicio"
+	class:list={['flex items-center gap-2.5 font-serif text-2xl font-bold no-underline', className]}
+	aria-label={`${SITE.name}, inicio`}
+>
+	{
+		!plain && (
+			<svg class="size-[26px]" viewBox="0 0 32 32" fill="none" stroke="#D4AC66" stroke-width="2" aria-hidden="true">
+				<ellipse cx="16" cy="16" rx="9" ry="13" transform="rotate(28 16 16)" />
+				<path d="M10 7c5 5 7 13 12 18" stroke-linecap="round" />
+			</svg>
+		)
+	}
+	<span>{SITE.shortName}<span class="text-caramel">.</span></span>
+</a>

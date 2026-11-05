@@ -1,0 +1,41 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+
+const steps = [
+	{ n: '01', title: 'Elige tu café', text: 'Un origen fijo, o deja que nuestro tostador te sorprenda con el lote del mes.' },
+	{ n: '02', title: 'Define la frecuencia', text: 'Cada 1, 2 o 4 semanas, en grano, molido para tu método o en cápsula.' },
+	{ n: '03', title: 'Recíbelo recién tostado', text: 'Tostamos tu pedido el día antes de enviarlo. El envío siempre es gratis.' },
+];
+---
+
+<section id="suscripcion" class="bg-foam py-24 text-cup max-[860px]:py-[72px]">
+	<div class="wrap">
+		<SectionHead eyebrow="Suscripción" title="Nunca te quedes sin café" onLight>
+			<p slot="aside" class="max-w-[42ch] text-cup/70">
+				Elige tu café, cada cuánto lo quieres y cuántas bolsas. Pausa, cambia o cancela cuando quieras, sin permanencia.
+			</p>
+		</SectionHead>
+
+		<ol class="m-0 grid list-none grid-cols-3 gap-5 p-0 max-[860px]:grid-cols-1">
+			{
+				steps.map((s) => (
+					<li class="rounded-[18px] border border-cup/10 bg-white px-7 py-8">
+						<div class="font-serif text-[56px] leading-none text-walnut/90 italic">{s.n}</div>
+						<h3 class="mt-[18px] mb-2 text-[22px]">{s.title}</h3>
+						<p class="text-[15px] text-cup/70">{s.text}</p>
+					</li>
+				))
+			}
+		</ol>
+
+		<div class="mt-9 flex flex-wrap items-center justify-between gap-x-8 gap-y-5 rounded-[18px] bg-cup px-8 py-7 text-foam max-[560px]:p-6">
+			<div class="flex items-center gap-[18px]">
+				<div class="font-serif text-[44px] leading-none font-bold text-caramel">−15%</div>
+				<p class="max-w-[34ch] text-[15px] text-foam/70">
+					Ahorras <b class="text-foam">$3,30 por bolsa</b> frente a la compra suelta, en todos los envíos.
+				</p>
+			</div>
+			<a href="#tienda" class="btn-primary max-[560px]:w-full">Crear mi suscripción</a>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,55 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+
+const reviews = [
+	{
+		quote: 'El Huila en V60 es otra cosa. Se nota que llega recién tostado: la bolsa todavía huele a tostador.',
+		name: 'Mariana R.',
+		meta: 'Suscriptora desde 2024',
+	},
+	{
+		quote: 'Pausé la suscripción en vacaciones con un clic. Volví y el café me estaba esperando. Así de fácil.',
+		name: 'Javier T.',
+		meta: 'Compra verificada',
+	},
+	{
+		quote: 'Probé el Sidamo para espresso y ahora no tomo otro. Floral, dulce y con una crema preciosa.',
+		name: 'Carla V.',
+		meta: 'Compra verificada',
+	},
+];
+---
+
+<section class="py-24 max-[860px]:py-[72px]">
+	<div class="wrap">
+		<SectionHead eyebrow="Reseñas" title="Lo que dicen en cada mañana">
+			<div slot="aside" class="flex items-center gap-3.5">
+				<strong class="font-serif text-[44px] leading-none">4,9</strong>
+				<div>
+					<div class="text-[15px] tracking-[3px] text-caramel" aria-label="5 de 5 estrellas">★★★★★</div>
+					<span class="text-[13px] text-foam/70">Basado en 2.300 reseñas verificadas</span>
+				</div>
+			</div>
+		</SectionHead>
+
+		<div class="grid grid-cols-3 gap-5 max-[860px]:grid-cols-1">
+			{
+				reviews.map((r) => (
+					<figure class="m-0 flex flex-col gap-[18px] rounded-[18px] bg-charcoal px-7 py-[30px]">
+						<div class="text-[15px] tracking-[3px] text-caramel" aria-label="5 de 5 estrellas">★★★★★</div>
+						<blockquote class="m-0 font-serif text-[19px] leading-[1.45] font-medium italic">“{r.quote}”</blockquote>
+						<figcaption class="mt-auto flex items-center gap-3 text-sm">
+							<span class="grid size-10 place-items-center rounded-full bg-walnut font-serif font-semibold text-caramel" aria-hidden="true">
+								{r.name[0]}
+							</span>
+							<div>
+								{r.name}
+								<small class="block text-xs text-foam/50">{r.meta}</small>
+							</div>
+						</figcaption>
+					</figure>
+				))
+			}
+		</div>
+	</div>
+</section>
