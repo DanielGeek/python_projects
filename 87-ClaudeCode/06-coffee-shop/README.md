@@ -1,90 +1,86 @@
-# Astro Starter Kit: Minimal
+# 06 - Coffee Shop (Nogal Café)
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Landing page of **Nogal Café**, an online specialty-coffee shop, built with [Claude Code](https://claude.com/claude-code) and the [Impeccable](https://github.com/pbakaus/impeccable) design commands. It is a static site made with Astro 7 and Tailwind CSS v4.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The product leads with **origin and traceability**: each coffee is bought straight from a named farm, and the bag says who grew it and at what altitude. Freshness (roast to order) and a flexible subscription are supporting benefits. The copy is in Spanish; code and docs are in English.
 
-## 🚀 Project Structure
+## What is implemented
 
-Inside of your Astro project, you'll see the following folders and files:
+- **Home landing page** (`src/pages/index.astro`): hero, benefits strip, featured coffees, subscription steps, origin story, reviews, brewing guide, newsletter and footer.
+- **Featured coffees** with weight (250 g, 500 g, 1 kg) and grind (bean, ground, capsule) selectors.
+- **Side cart** with a free-shipping progress bar (free above a subtotal of $40, flat rate $4.90) and an "added to cart" notice.
+- **Mobile menu** and **newsletter** form with validation.
+- **UI polish**: transitions and motion helpers, with a dark, warm design (caramel as the only light).
+
+Limits for now: the cart lives in memory only (no persistence, no checkout, no backend). Links to pages that are not built yet show a "coming soon" notice. The remaining pages are planned in `plan-landing-coffee.md`: catalog with filters, product page, subscription page, checkout, order confirmation, about/origin, brewing guide, account, contact/FAQ and legal pages.
+
+## Stack
+
+| Area      | Choice                                           |
+| :-------- | :----------------------------------------------- |
+| Framework | Astro 7 (static output)                          |
+| Styling   | Tailwind CSS v4 via `@tailwindcss/vite`          |
+| Language  | TypeScript for scripts, utils and config         |
+| Fonts     | Newsreader (headings) and Instrument Sans (body) |
+| Runtime   | Node `>=22.23.4`                                 |
+
+## Project structure
 
 ```text
 /
-├── public/
+├── public/                  Static assets
+├── assets/                  Source images
 ├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+│   ├── components/
+│   │   ├── cart/            CartDrawer
+│   │   ├── home/            Hero, Benefits, FeaturedProducts, Subscription,
+│   │   │                    Origin, Testimonials, BrewGuide, Newsletter
+│   │   ├── layout/          Header, Footer
+│   │   ├── product/         ProductCard
+│   │   └── ui/              Arrow, Logo, SectionHead, Stars, Toast
+│   ├── config/              site.ts (brand, nav, shipping), products.ts (catalog)
+│   ├── layouts/             Layout.astro
+│   ├── pages/               index.astro
+│   ├── scripts/             cart, navigation, newsletter, product-selectors, toast, main
+│   ├── styles/              global.css (design tokens)
+│   ├── types/               Shared types
+│   └── utils/               cart, dom, format, motion, validation
+├── PRODUCT.md               Users, positioning, constraints
+├── DESIGN.md                Design system (colors, type, components)
+├── plan-landing-coffee.md   Plan for the landing and the pages to come
+└── AGENTS.md                Instructions for coding agents
 ```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## File System to implement
-
-src/
-- pages/
-- components/
-- layouts/
-- styles/
-- scripts/
-- types/
-- utils/
-- config/
 
 ## Commands
 
-[Impeccable](https://github.com/pbakaus/impeccable) commands used in this project so far.
+Run them from the project root.
 
-### Slash commands (run inside Claude Code)
+| Command           | Action                                    |
+| :---------------- | :---------------------------------------- |
+| `npm install`     | Installs dependencies                     |
+| `npm run dev`     | Starts the dev server at `localhost:4321` |
+| `npm run build`   | Builds the production site to `./dist/`   |
+| `npm run preview` | Previews the build locally                |
 
-| Command | What it does here |
-| :-- | :-- |
-| `/impeccable init` | Interviews the user and writes `PRODUCT.md` (users, positioning, constraints, evidence on hand). |
-| `/impeccable hooks on` | Enables the design detector hook for this project (writes `.impeccable/config.json` and local consent in `.impeccable/config.local.json`). |
-| `/impeccable document` | Scans the code and writes `DESIGN.md` plus the `.impeccable/design.json` sidecar (tokens, components, rules). |
-| `/impeccable live` | Starts visual variant mode: pick an element in the browser, choose an action, and get variants hot-swapped on the page. Also receives manual text edits from the browser. |
-
-### CLI scripts behind them
-
-Run from the project root. The launcher lives in the skill folder (`~/.claude/skills/impeccable/scripts/impeccable`).
-
-| Script | Used by | Purpose |
-| :-- | :-- | :-- |
-| `impeccable context` | every command | Loads `PRODUCT.md`, `DESIGN.md` and project state once per session. |
-| `impeccable hooks on` | `/impeccable hooks on` | Turns the design hook on. |
-| `impeccable detect-csp` | `/impeccable live` | Checks for a Content Security Policy that would block the live helper (none found here). |
-| `impeccable live` | `/impeccable live` | Boots the live helper (port 8400) and injects its script into `src/layouts/Layout.astro`. Needs `.impeccable/live/config.json`. |
-| `impeccable live-poll` | `/impeccable live` | Waits for browser events (generate, accept, manual edit). |
-| `impeccable live-poll --reply <id> done --data '<json>'` | `/impeccable live` | Confirms an applied manual edit back to the browser. |
-| `impeccable live-server stop` | exiting live mode | Stops the helper and removes the injected script from `Layout.astro`. Run it before committing. |
-
-### Dev server note
-
-Astro 7 needs Node `>=22.23.4`. If your default Node is older, start the server with a newer one, for example:
+Astro 7 needs Node `>=22.23.4`. If your default Node is older, start the server with a newer one:
 
 ```sh
 PATH="$HOME/.nvm/versions/node/v24.21.0/bin:$PATH" npx astro dev --background
 ```
 
-## 👀 Want to learn more?
+## Built with Claude Code and Impeccable
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+`PRODUCT.md`, `DESIGN.md` and `.impeccable/design.json` were generated with these commands:
+
+| Command                | What it does here                                                                         |
+| :--------------------- | :---------------------------------------------------------------------------------------- |
+| `/impeccable init`     | Interviews the user and writes `PRODUCT.md`.                                              |
+| `/impeccable hooks on` | Enables the design detector hook for the project.                                         |
+| `/impeccable document` | Scans the code and writes `DESIGN.md` and the design sidecar (tokens, components, rules). |
+| `/impeccable live`     | Visual variant mode: pick an element in the browser and get variants hot-swapped.         |
+
+`impeccable live` injects a helper script into `src/layouts/Layout.astro`. Run `impeccable live-server stop` before committing to remove it.
+
+## Brand
+
+Name **Nogal Café** (wordmark "Nogal."). Palette: toaster black `#141210`, toasted walnut `#5C3414`, caramel cream `#D4AC66`, milk foam `#F2EEE6` and workshop charcoal `#2E2C29`. See `DESIGN.md` for the full system.

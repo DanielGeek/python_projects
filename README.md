@@ -915,6 +915,7 @@ def retrieve(query: str, k: int = 3) -> List[Dict]:
 ### **Full-Stack Applications**
 
 - **[87-ClaudeCode/05-arcade-vault]** - Arcade Vault: spec-driven arcade game platform with Supabase Auth and a global leaderboard, live at [arcade-vault-zeta.vercel.app](https://arcade-vault-zeta.vercel.app/)
+- **[87-ClaudeCode/06-coffee-shop]** - Nogal Café: specialty-coffee storefront landing page built with Astro 7, Tailwind 4 and the Impeccable design commands
 - **[47-OpenAI-Supabase-Integration]** - DocuChat AI SaaS platform
 - **[19-AI-Powered-Meeting-System]** - Real-time transcription and analysis
 - **[18-AI-Powered-HR-System]** - Llama 3 candidate screening
@@ -1507,13 +1508,13 @@ Event-driven RAG with Google Gemini, Inngest workflows, Qdrant vector database, 
 
 #### **87. Claude Code - From First Prompt to Production**
 
-**Technologies**: Claude Code, HTML5 Canvas, JavaScript, Next.js 16, React 19, Tailwind 4, TypeScript, Supabase, Resend, Vercel
+**Technologies**: Claude Code, Impeccable, HTML5 Canvas, JavaScript, Next.js 16, React 19, Astro 7, Tailwind 4, TypeScript, Supabase, Resend, Vercel
 
-Five projects built with Claude Code ([full overview](./87-ClaudeCode/README.md)): a first counter page (`01-first-code`), three browser arcade games (`02-asteroids`, `03-claude-tetris`, `04-arkanoid`, the last one built from numbered specs), and **Arcade Vault** (`05-arcade-vault`), a full-stack, spec-driven platform for playing arcade games online and competing for the highest score.
+Six projects built with Claude Code ([full overview](./87-ClaudeCode/README.md)): a first counter page (`01-first-code`), three browser arcade games (`02-asteroids`, `03-claude-tetris`, `04-arkanoid`, the last one built from numbered specs), and **Arcade Vault** (`05-arcade-vault`), a full-stack, spec-driven platform for playing arcade games online and competing for the highest score, and **Nogal Café** (`06-coffee-shop`), a design-driven specialty-coffee storefront built with Astro and Tailwind.
 
 **Live app**: [arcade-vault-zeta.vercel.app](https://arcade-vault-zeta.vercel.app/)
 
-**Key Features**: Five playable games with skins and touch controls, Supabase Auth (email, Google, GitHub, password recovery, guests), global Hall of Fame under Row Level Security, security hardening and a read-only security-auditor agent, custom Claude Code agents and skills, Vitest tests, Vercel deployment
+**Key Features**: Five playable games with skins and touch controls, Supabase Auth (email, Google, GitHub, password recovery, guests), global Hall of Fame under Row Level Security, security hardening and a read-only security-auditor agent, custom Claude Code agents and skills, Vitest tests, Vercel deployment; Astro 7 storefront with a side cart, origin-first positioning and a documented design system (`PRODUCT.md`, `DESIGN.md`)
 
 ---
 

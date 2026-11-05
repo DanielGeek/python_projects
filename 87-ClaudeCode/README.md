@@ -1,6 +1,6 @@
 # 87 - Claude Code
 
-A progression of five projects built with [Claude Code](https://claude.com/claude-code): from a one-file experiment to a full-stack, spec-driven web platform that is live in production.
+A progression of six projects built with [Claude Code](https://claude.com/claude-code): from a one-file experiment to a full-stack, spec-driven web platform that is live in production, plus a design-driven coffee-shop storefront.
 
 | #   | Project                             | Type                     | Stack                                                       |
 | --- | ----------------------------------- | ------------------------ | ----------------------------------------------------------- |
@@ -9,6 +9,7 @@ A progression of five projects built with [Claude Code](https://claude.com/claud
 | 03  | [claude-tetris](./03-claude-tetris) | Arcade game              | HTML5 Canvas, CSS, vanilla JavaScript                       |
 | 04  | [arkanoid](./04-arkanoid)           | Spec-driven arcade game  | HTML5 Canvas, vanilla JavaScript                            |
 | 05  | [arcade-vault](./05-arcade-vault)   | Full-stack game platform | Next.js 16, React 19, Tailwind 4, Supabase, Resend, Vercel  |
+| 06  | [coffee-shop](./06-coffee-shop)     | Design-driven storefront | Astro 7, Tailwind 4, TypeScript, Impeccable                 |
 
 **Live app:** project 05 is deployed at https://arcade-vault-zeta.vercel.app/
 
@@ -61,3 +62,15 @@ What happens in this project:
 - **Deployment.** Vercel for the app and a separate production Supabase project, updated with the same migration files used in development.
 
 See [05-arcade-vault/README.md](./05-arcade-vault/README.md) for setup and [05-arcade-vault/CLAUDE.md](./05-arcade-vault/CLAUDE.md) for the full architecture.
+
+## 06 - coffee-shop
+
+**Nogal Café**, the landing page of an online specialty-coffee shop, built with Astro 7 and Tailwind CSS v4. It is the first project in this folder driven by the **Impeccable** design commands (`/impeccable init`, `hooks on`, `document`, `live`), which produced `PRODUCT.md` and `DESIGN.md`.
+
+- **Positioning.** Origin and traceability first: every coffee names the farm and the altitude. Copy is in Spanish; code and docs are in English.
+- **Landing.** Hero, benefits strip, featured coffees with weight (250 g, 500 g, 1 kg) and grind (bean, ground, capsule) selectors, subscription steps, origin story, reviews, brewing guide, newsletter and footer.
+- **Cart.** A side cart with a free-shipping progress bar (free above $40) and an "added to cart" notice. It lives in memory only: no checkout or backend yet.
+- **Structure.** `src/{components, config, layouts, pages, scripts, styles, types, utils}` with the catalog and brand data in `src/config`.
+- **Planned.** Catalog, product page, subscription page, checkout, about, brewing guide, account, FAQ and legal pages (see `plan-landing-coffee.md`).
+
+See [06-coffee-shop/README.md](./06-coffee-shop/README.md) for setup and commands (Node `>=22.23.4`).
