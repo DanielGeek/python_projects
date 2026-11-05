@@ -1,5 +1,6 @@
 import { WEIGHTS } from '../config/products';
 import { formatPrice } from '../utils/format';
+import { pulse } from '../utils/motion';
 
 function selectOption(card: HTMLElement, group: 'weight' | 'grind', index: string): void {
 	card.dataset[group] = index;
@@ -10,7 +11,13 @@ function selectOption(card: HTMLElement, group: 'weight' | 'grind', index: strin
 	if (group === 'weight') {
 		const price = Number(card.dataset.basePrice) * WEIGHTS[Number(index)].factor;
 		const label = card.querySelector('[data-price]');
-		if (label) label.textContent = formatPrice(price);
+		if (label) {
+			label.textContent = formatPrice(price);
+			pulse(label, [
+				{ opacity: 0.4, transform: 'translateY(4px)' },
+				{ opacity: 1, transform: 'translateY(0)' },
+			], { duration: 240 });
+		}
 	}
 }
 

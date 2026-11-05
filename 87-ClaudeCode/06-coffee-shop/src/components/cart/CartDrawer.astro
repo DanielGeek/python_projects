@@ -4,7 +4,7 @@
 <div
 	id="cart-overlay"
 	data-open="false"
-	class="pointer-events-none fixed inset-0 z-[60] bg-black/55 opacity-0 transition-opacity duration-300 data-[open=true]:pointer-events-auto data-[open=true]:opacity-100"
+	class="pointer-events-none fixed inset-0 z-[60] bg-black/55 opacity-0 transition-opacity duration-250 data-[open=true]:pointer-events-auto data-[open=true]:opacity-100"
 >
 </div>
 
@@ -13,7 +13,7 @@
 	data-open="false"
 	aria-label="Carrito"
 	aria-hidden="true"
-	class="fixed top-0 right-0 bottom-0 z-[70] flex w-[min(420px,100%)] translate-x-full flex-col border-l border-foam/10 bg-cup transition-transform duration-[350ms] ease-[cubic-bezier(.2,.8,.2,1)] data-[open=true]:translate-x-0"
+	class="fixed top-0 right-0 bottom-0 z-[70] flex w-[min(420px,100%)] translate-x-full flex-col border-l border-foam/10 bg-cup transition-transform duration-250 ease-in data-[open=true]:translate-x-0 data-[open=true]:duration-[450ms] data-[open=true]:ease-out-expo"
 >
 	<div class="flex items-center justify-between border-b border-foam/10 px-6 py-5">
 		<h3 class="text-2xl">Tu carrito</h3>
@@ -21,7 +21,7 @@
 			type="button"
 			id="close-cart"
 			aria-label="Cerrar carrito"
-			class="grid size-11 cursor-pointer place-items-center rounded-full transition-colors hover:bg-charcoal focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-caramel"
+			class="grid size-11 cursor-pointer place-items-center rounded-full transition duration-150 hover:bg-charcoal active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-caramel"
 		>
 			<svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
 				<path d="M6 6l12 12M18 6L6 18"></path>

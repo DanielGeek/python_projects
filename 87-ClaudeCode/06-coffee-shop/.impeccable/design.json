@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-05T05:00:00Z",
+  "generatedAt": "2026-11-05T21:50:23Z",
   "title": "Design System: Nogal Café",
   "extensions": {
     "colorMeta": {
@@ -8,55 +8,177 @@
         "role": "neutral",
         "displayName": "Negro de Tostador",
         "canonical": "#141210",
-        "tonalRamp": ["#0b0a09", "#141210", "#211e1b", "#322e29", "#4a453f", "#716b63", "#a39d94", "#d8d3ca"]
+        "tonalRamp": [
+          "#0b0a09",
+          "#141210",
+          "#211e1b",
+          "#322e29",
+          "#4a453f",
+          "#716b63",
+          "#a39d94",
+          "#d8d3ca"
+        ]
       },
       "toasted-walnut": {
         "role": "secondary",
         "displayName": "Nogal Tostado",
         "canonical": "#5C3414",
-        "tonalRamp": ["#1f1106", "#3a2009", "#5c3414", "#7a4a22", "#9a6a3f", "#bb8f66", "#d9b898", "#efdfd0"]
+        "tonalRamp": [
+          "#1f1106",
+          "#3a2009",
+          "#5c3414",
+          "#7a4a22",
+          "#9a6a3f",
+          "#bb8f66",
+          "#d9b898",
+          "#efdfd0"
+        ]
       },
       "caramel-cream": {
         "role": "primary",
         "displayName": "Crema de Caramelo",
         "canonical": "#D4AC66",
-        "tonalRamp": ["#4a3716", "#6e5223", "#9a7638", "#bb9250", "#d4ac66", "#e2bf80", "#eed5a6", "#f8ecd3"]
+        "tonalRamp": [
+          "#4a3716",
+          "#6e5223",
+          "#9a7638",
+          "#bb9250",
+          "#d4ac66",
+          "#e2bf80",
+          "#eed5a6",
+          "#f8ecd3"
+        ]
       },
       "milk-foam": {
         "role": "neutral",
         "displayName": "Espuma de Leche",
         "canonical": "#F2EEE6",
-        "tonalRamp": ["#8a8780", "#a9a69e", "#c4c1b8", "#d9d5cb", "#e6e2d9", "#f2eee6", "#f8f6f1", "#fdfcfa"]
+        "tonalRamp": [
+          "#8a8780",
+          "#a9a69e",
+          "#c4c1b8",
+          "#d9d5cb",
+          "#e6e2d9",
+          "#f2eee6",
+          "#f8f6f1",
+          "#fdfcfa"
+        ]
       },
       "workshop-charcoal": {
         "role": "neutral",
         "displayName": "Carbón de Taller",
         "canonical": "#2E2C29",
-        "tonalRamp": ["#0f0e0d", "#1c1b19", "#2e2c29", "#403d39", "#57534e", "#78736c", "#a19c94", "#cfcbc4"]
+        "tonalRamp": [
+          "#0f0e0d",
+          "#1c1b19",
+          "#2e2c29",
+          "#403d39",
+          "#57534e",
+          "#78736c",
+          "#a19c94",
+          "#cfcbc4"
+        ]
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Hero headline only, with one italic caramel word." },
-      "headline": { "displayName": "Headline", "purpose": "Section titles, max 18ch." },
-      "title": { "displayName": "Title", "purpose": "Product names, step titles, method names, drawer title." },
-      "body": { "displayName": "Body", "purpose": "Running copy and functional text in DM Sans." },
-      "label": { "displayName": "Label", "purpose": "Uppercase caramel eyebrows above section titles." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline only, with one italic caramel word."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles, max 18ch."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Product names, step titles, method names, drawer title."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running copy and functional text in Instrument Sans."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Small tracked labels (12px, 0.18em) in Instrument Sans."
+      }
     },
     "shadows": [
-      { "name": "bag", "value": "18px 22px 30px rgba(0,0,0,.45), inset -10px 0 18px rgba(0,0,0,.25), inset 6px 0 10px rgba(255,255,255,.04)", "purpose": "The coffee bag on its shelf: the one physical object with a cast shadow." },
-      { "name": "toast", "value": "0 18px 40px rgba(0,0,0,.4)", "purpose": "Floating 'added to cart' notice." },
-      { "name": "caramel-halo", "value": "0 0 0 5px rgba(212,172,102,.2)", "purpose": "Soft halo around the live-status dot in the hero tag." }
+      {
+        "name": "bag",
+        "value": "18px 22px 30px rgba(0,0,0,.45), inset -10px 0 18px rgba(0,0,0,.25), inset 6px 0 10px rgba(255,255,255,.04)",
+        "purpose": "The coffee bag on its shelf: the one physical object with a cast shadow."
+      },
+      {
+        "name": "toast",
+        "value": "0 18px 40px rgba(0,0,0,.4)",
+        "purpose": "Floating 'added to cart' notice."
+      },
+      {
+        "name": "caramel-halo",
+        "value": "0 0 0 5px rgba(212,172,102,.2)",
+        "purpose": "Soft halo around the live-status dot in the hero tag."
+      }
     ],
     "motion": [
-      { "name": "ease-drawer", "value": "cubic-bezier(.2,.8,.2,1)", "purpose": "Cart drawer slide-in (350ms)." },
-      { "name": "ease-toast", "value": "cubic-bezier(.2,.9,.3,1.2)", "purpose": "Toast rising from the bottom edge (350ms)." },
-      { "name": "ease-badge", "value": "cubic-bezier(.3,1.6,.6,1)", "purpose": "Cart count badge pop (250ms)." },
-      { "name": "card-hover", "value": "200ms ease, translateY(-3px)", "purpose": "Product card lift on hover." }
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The one easing: confident deceleration for every arrival (drawer, toast, underline, rise-in). No bounce or overshoot."
+      },
+      {
+        "name": "feedback",
+        "value": "100-150ms",
+        "purpose": "Hover, press (scale .95 or 1px drop) on icon buttons, option pills and buttons."
+      },
+      {
+        "name": "state-change",
+        "value": "220-320ms",
+        "purpose": "Price swap, quantity bump, total refresh, badge pop, toast check pulse, newsletter message fade."
+      },
+      {
+        "name": "drawer",
+        "value": "450ms in / 250ms out, ease-out-expo / ease-in",
+        "purpose": "Cart drawer and toast: exits are faster than entrances."
+      },
+      {
+        "name": "add-to-cart",
+        "value": "bag hop -12px (420ms) + button 'Añadido' check (1.4s) + badge pulse x1.35",
+        "purpose": "The focal moment: the action is acknowledged on the card, the button and the cart icon."
+      },
+      {
+        "name": "shipping-progress",
+        "value": "width 500ms ease-out-expo",
+        "purpose": "Free-shipping bar fill; the bar persists between renders so it actually animates."
+      },
+      {
+        "name": "nav-underline",
+        "value": "background-size 0 to 100%, 280ms",
+        "purpose": "Desktop nav links draw a 1.5px caramel underline from the left."
+      },
+      {
+        "name": "card-hover",
+        "value": "200ms, translateY(-3px), bag rotate(-2deg)",
+        "purpose": "Product card lift on hover."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "transitions/animations ~0ms; scripted pulses skipped",
+        "purpose": "Text and colour state changes still apply; movement is dropped."
+      }
     ],
     "breakpoints": [
-      { "name": "mobile", "value": "560px" },
-      { "name": "tablet", "value": "860px" },
-      { "name": "desktop", "value": "1080px" }
+      {
+        "name": "mobile",
+        "value": "560px"
+      },
+      {
+        "name": "tablet",
+        "value": "860px"
+      },
+      {
+        "name": "desktop",
+        "value": "1080px"
+      }
     ]
   },
   "components": [
@@ -66,7 +188,7 @@
       "refersTo": "button-primary",
       "description": "The one caramel call to action: buy, subscribe, claim.",
       "html": "<button class=\"ds-btn-primary\">Comprar café</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 26px; border: 1.5px solid transparent; border-radius: 999px; background: #D4AC66; color: #141210; font: 600 15px/1 'DM Sans', system-ui, sans-serif; cursor: pointer; transition: background .2s, transform .15s; } .ds-btn-primary:hover { background: #E2BF80; } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: 2px solid #D4AC66; outline-offset: 3px; }"
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 26px; border: 1.5px solid transparent; border-radius: 999px; background: #D4AC66; color: #141210; font: 600 15px/1 'Instrument Sans', system-ui, sans-serif; cursor: pointer; transition: background .15s, transform .15s; } .ds-btn-primary:hover { background: #E2BF80; } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: 2px solid #D4AC66; outline-offset: 3px; }"
     },
     {
       "name": "Secondary Button",
@@ -74,14 +196,14 @@
       "refersTo": "button-secondary",
       "description": "Outlined foam pill for the quieter second action.",
       "html": "<button class=\"ds-btn-secondary\">Ver suscripción</button>",
-      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 26px; border: 1.5px solid rgba(242,238,230,.5); border-radius: 999px; background: transparent; color: #F2EEE6; font: 600 15px/1 'DM Sans', system-ui, sans-serif; cursor: pointer; transition: background .2s, border-color .2s; } .ds-btn-secondary:hover { border-color: #F2EEE6; background: rgba(242,238,230,.06); } .ds-btn-secondary:focus-visible { outline: 2px solid #D4AC66; outline-offset: 3px; }"
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 26px; border: 1.5px solid rgba(242,238,230,.5); border-radius: 999px; background: transparent; color: #F2EEE6; font: 600 15px/1 'Instrument Sans', system-ui, sans-serif; cursor: pointer; transition: background .2s, border-color .2s; } .ds-btn-secondary:hover { border-color: #F2EEE6; background: rgba(242,238,230,.06); } .ds-btn-secondary:focus-visible { outline: 2px solid #D4AC66; outline-offset: 3px; }"
     },
     {
       "name": "Text Button",
       "kind": "button",
       "description": "Inline link-style action with a caramel underline.",
       "html": "<button class=\"ds-btn-text\">Ver toda la tienda →</button>",
-      "css": ".ds-btn-text { padding: 0; border: 0; background: none; color: #F2EEE6; font: 600 15px/1 'DM Sans', system-ui, sans-serif; text-decoration: underline; text-decoration-color: #D4AC66; text-underline-offset: 5px; cursor: pointer; transition: color .2s; } .ds-btn-text:hover { color: #D4AC66; } .ds-btn-text:focus-visible { outline: 2px solid #D4AC66; outline-offset: 3px; }"
+      "css": ".ds-btn-text { padding: 0; border: 0; background: none; color: #F2EEE6; font: 600 15px/1 'Instrument Sans', system-ui, sans-serif; text-decoration: underline; text-decoration-color: #D4AC66; text-underline-offset: 5px; cursor: pointer; transition: color .2s; } .ds-btn-text:hover { color: #D4AC66; } .ds-btn-text:focus-visible { outline: 2px solid #D4AC66; outline-offset: 3px; }"
     },
     {
       "name": "Option Pill",
@@ -89,7 +211,7 @@
       "refersTo": "option-pill",
       "description": "Weight and grind selector; the selected state inverts to foam.",
       "html": "<div class=\"ds-pills\"><button class=\"ds-pill\" aria-pressed=\"true\">250 g</button><button class=\"ds-pill\" aria-pressed=\"false\">500 g</button><button class=\"ds-pill\" aria-pressed=\"false\">1 kg</button></div>",
-      "css": ".ds-pills { display: flex; gap: 6px; } .ds-pill { padding: 9px 12px; border: 1px solid rgba(242,238,230,.12); border-radius: 10px; background: transparent; color: rgba(242,238,230,.7); font: 500 13px/1 'DM Sans', system-ui, sans-serif; cursor: pointer; transition: all .15s; } .ds-pill:hover { border-color: rgba(242,238,230,.5); color: #F2EEE6; } .ds-pill[aria-pressed='true'] { background: #F2EEE6; border-color: #F2EEE6; color: #141210; } .ds-pill:focus-visible { outline: 2px solid #D4AC66; outline-offset: 3px; }"
+      "css": ".ds-pills { display: flex; gap: 6px; } .ds-pill { padding: 9px 12px; border: 1px solid rgba(242,238,230,.12); border-radius: 10px; background: transparent; color: rgba(242,238,230,.7); font: 500 13px/1 'Instrument Sans', system-ui, sans-serif; cursor: pointer; transition: border-color .15s, color .15s, background .15s, transform .15s; } .ds-pill:hover { border-color: rgba(242,238,230,.5); color: #F2EEE6; } .ds-pill[aria-pressed='true'] { background: #F2EEE6; border-color: #F2EEE6; color: #141210; } .ds-pill:focus-visible { outline: 2px solid #D4AC66; outline-offset: 3px; } .ds-pill:active { transform: scale(.95); }"
     },
     {
       "name": "Product Card",
@@ -97,7 +219,7 @@
       "refersTo": "product-card",
       "description": "A coffee on its shelf: origin first, then price, notes, roast level and the buy action.",
       "html": "<article class=\"ds-card\"><div class=\"ds-card-media\"><span class=\"ds-card-badge\">Más vendido</span><div class=\"ds-bag\"><span class=\"ds-bag-brand\">NOGAL</span><div class=\"ds-bag-label\"><small>COLOMBIA</small><b>Huila</b></div></div></div><div class=\"ds-card-body\"><div class=\"ds-card-title\"><div><h3>Huila</h3><div class=\"ds-card-origin\">Colombia · 1.750 m</div></div><span class=\"ds-card-price\">$18,00</span></div><div class=\"ds-card-notes\"><span>Caramelo</span><span>Naranja</span><span>Cacao</span></div><button class=\"ds-card-buy\">Añadir al carrito</button></div></article>",
-      "css": ".ds-card { width: 280px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid transparent; border-radius: 18px; background: #2E2C29; color: #F2EEE6; font-family: 'DM Sans', system-ui, sans-serif; transition: border-color .25s, transform .25s; } .ds-card:hover { border-color: rgba(212,172,102,.35); transform: translateY(-3px); } .ds-card-media { position: relative; display: grid; place-items: center; aspect-ratio: 4 / 4.2; overflow: hidden; background: radial-gradient(120% 80% at 30% 15%, #4a2a12 0%, #2a1709 55%, #1b1209 100%); } .ds-card-media::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 26%; background: repeating-linear-gradient(90deg, #5C3414 0 14px, #55300f 14px 15px, #613818 15px 34px); opacity: .9; } .ds-card-badge { position: absolute; top: 14px; left: 14px; z-index: 2; padding: 5px 10px; border-radius: 999px; background: #D4AC66; color: #141210; font-size: 11px; font-weight: 600; } .ds-bag { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: 46%; aspect-ratio: 3 / 4.4; margin-top: 8%; padding: 14px 10px; border-radius: 6px 6px 10px 10px; background: #1d1a17; box-shadow: 18px 22px 30px rgba(0,0,0,.45), inset -10px 0 18px rgba(0,0,0,.25), inset 6px 0 10px rgba(255,255,255,.04); } .ds-bag-brand { font-family: 'Playfair Display', Georgia, serif; font-size: 10px; letter-spacing: .1em; color: #D4AC66; } .ds-bag-label { width: 100%; padding: 10px 6px; border-radius: 4px; background: #F2EEE6; color: #141210; text-align: center; } .ds-bag-label small { display: block; font-size: 8px; letter-spacing: .2em; color: #5C3414; font-weight: 600; } .ds-bag-label b { display: block; margin-top: 3px; font-family: 'Playfair Display', Georgia, serif; font-size: 15px; line-height: 1.1; } .ds-card-body { display: flex; flex-direction: column; gap: 14px; padding: 20px; } .ds-card-title { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; } .ds-card-title h3 { margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 21px; font-weight: 600; line-height: 1.12; } .ds-card-origin { margin-top: 2px; font-size: 13px; color: rgba(242,238,230,.5); } .ds-card-price { font-family: 'Playfair Display', Georgia, serif; font-size: 22px; font-weight: 600; color: #D4AC66; } .ds-card-notes { display: flex; flex-wrap: wrap; gap: 6px; } .ds-card-notes span { padding: 3px 10px; border: 1px solid rgba(242,238,230,.12); border-radius: 999px; font-size: 12px; color: rgba(242,238,230,.7); } .ds-card-buy { min-height: 48px; border: 0; border-radius: 999px; background: #D4AC66; color: #141210; font: 600 15px/1 'DM Sans', system-ui, sans-serif; cursor: pointer; transition: background .2s; } .ds-card-buy:hover { background: #E2BF80; } .ds-card-buy:focus-visible { outline: 2px solid #D4AC66; outline-offset: 3px; }"
+      "css": ".ds-card { width: 280px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid transparent; border-radius: 18px; background: #2E2C29; color: #F2EEE6; font-family: 'Instrument Sans', system-ui, sans-serif; transition: border-color .25s, transform .25s; } .ds-card:hover { border-color: rgba(212,172,102,.35); transform: translateY(-3px); } .ds-card-media { position: relative; display: grid; place-items: center; aspect-ratio: 4 / 4.2; overflow: hidden; background: radial-gradient(120% 80% at 30% 15%, #4a2a12 0%, #2a1709 55%, #1b1209 100%); } .ds-card-media::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 26%; background: repeating-linear-gradient(90deg, #5C3414 0 14px, #55300f 14px 15px, #613818 15px 34px); opacity: .9; } .ds-card-badge { position: absolute; top: 14px; left: 14px; z-index: 2; padding: 5px 10px; border-radius: 999px; background: #D4AC66; color: #141210; font-size: 11px; font-weight: 600; } .ds-bag { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: 46%; aspect-ratio: 3 / 4.4; margin-top: 8%; padding: 14px 10px; border-radius: 6px 6px 10px 10px; background: #1d1a17; box-shadow: 18px 22px 30px rgba(0,0,0,.45), inset -10px 0 18px rgba(0,0,0,.25), inset 6px 0 10px rgba(255,255,255,.04); } .ds-bag-brand { font-family: 'Newsreader', Georgia, serif; font-size: 10px; letter-spacing: .1em; color: #D4AC66; } .ds-bag-label { width: 100%; padding: 10px 6px; border-radius: 4px; background: #F2EEE6; color: #141210; text-align: center; } .ds-bag-label small { display: block; font-size: 8px; letter-spacing: .2em; color: #5C3414; font-weight: 600; } .ds-bag-label b { display: block; margin-top: 3px; font-family: 'Newsreader', Georgia, serif; font-size: 15px; line-height: 1.1; } .ds-card-body { display: flex; flex-direction: column; gap: 14px; padding: 20px; } .ds-card-title { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; } .ds-card-title h3 { margin: 0; font-family: 'Newsreader', Georgia, serif; font-size: 21px; font-weight: 600; line-height: 1.12; } .ds-card-origin { margin-top: 2px; font-size: 13px; color: rgba(242,238,230,.5); } .ds-card-price { font-family: 'Newsreader', Georgia, serif; font-size: 22px; font-weight: 600; color: #D4AC66; } .ds-card-notes { display: flex; flex-wrap: wrap; gap: 6px; } .ds-card-notes span { padding: 3px 10px; border: 1px solid rgba(242,238,230,.12); border-radius: 999px; font-size: 12px; color: rgba(242,238,230,.7); } .ds-card-buy { min-height: 48px; border: 0; border-radius: 999px; background: #D4AC66; color: #141210; font: 600 15px/1 'Instrument Sans', system-ui, sans-serif; cursor: pointer; transition: background .2s; } .ds-card-buy:hover { background: #E2BF80; } .ds-card-buy:focus-visible { outline: 2px solid #D4AC66; outline-offset: 3px; }"
     },
     {
       "name": "Newsletter Field",
@@ -105,14 +227,14 @@
       "refersTo": "newsletter-input",
       "description": "Pill email field that pairs with a primary button; shows caramel on focus and clay on error.",
       "html": "<div class=\"ds-field\"><label for=\"ds-email\">Tu correo electrónico</label><div class=\"ds-field-row\"><input id=\"ds-email\" type=\"email\" placeholder=\"nombre@correo.com\"><button class=\"ds-field-btn\">Quiero mi 10%</button></div><span>Puedes darte de baja cuando quieras.</span></div>",
-      "css": ".ds-field { display: flex; flex-direction: column; gap: 8px; font-family: 'DM Sans', system-ui, sans-serif; color: #F2EEE6; } .ds-field label { font-size: 13px; font-weight: 500; } .ds-field-row { display: flex; gap: 10px; } .ds-field input { flex: 1; min-width: 0; height: 52px; padding: 0 22px; border: 1.5px solid rgba(242,238,230,.25); border-radius: 999px; background: rgba(20,18,16,.35); color: #F2EEE6; font: 400 16px 'DM Sans', system-ui, sans-serif; transition: border-color .2s; } .ds-field input::placeholder { color: rgba(242,238,230,.5); } .ds-field input:hover { border-color: rgba(242,238,230,.45); } .ds-field input:focus { border-color: #D4AC66; outline: none; } .ds-field-btn { min-height: 48px; padding: 0 26px; border: 0; border-radius: 999px; background: #D4AC66; color: #141210; font: 600 15px/1 'DM Sans', system-ui, sans-serif; cursor: pointer; } .ds-field-btn:hover { background: #E2BF80; } .ds-field span { font-size: 13px; color: rgba(242,238,230,.7); }"
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 8px; font-family: 'Instrument Sans', system-ui, sans-serif; color: #F2EEE6; } .ds-field label { font-size: 13px; font-weight: 500; } .ds-field-row { display: flex; gap: 10px; } .ds-field input { flex: 1; min-width: 0; height: 52px; padding: 0 22px; border: 1.5px solid rgba(242,238,230,.25); border-radius: 999px; background: rgba(20,18,16,.35); color: #F2EEE6; font: 400 16px 'Instrument Sans', system-ui, sans-serif; transition: border-color .2s; } .ds-field input::placeholder { color: rgba(242,238,230,.5); } .ds-field input:hover { border-color: rgba(242,238,230,.45); } .ds-field input:focus { border-color: #D4AC66; outline: none; } .ds-field-btn { min-height: 48px; padding: 0 26px; border: 0; border-radius: 999px; background: #D4AC66; color: #141210; font: 600 15px/1 'Instrument Sans', system-ui, sans-serif; cursor: pointer; } .ds-field-btn:hover { background: #E2BF80; } .ds-field span { font-size: 13px; color: rgba(242,238,230,.7); }"
     },
     {
       "name": "Navigation Bar",
       "kind": "nav",
       "description": "Sticky 72px bar: serif wordmark, foam links, round icon buttons.",
       "html": "<header class=\"ds-nav\"><a class=\"ds-nav-logo\" href=\"#\">Nogal<span>.</span></a><nav><a href=\"#\">Tienda</a><a href=\"#\">Suscripción</a><a href=\"#\">Nosotros</a><a href=\"#\">Guía</a></nav><button class=\"ds-nav-icon\" aria-label=\"Abrir carrito\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"><path d=\"M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z\"/><path d=\"M9 10V6a3 3 0 0 1 6 0v4\" stroke-linecap=\"round\"/></svg></button></header>",
-      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 72px; padding: 0 24px; border-bottom: 1px solid rgba(242,238,230,.1); background: rgba(20,18,16,.9); backdrop-filter: blur(12px); font-family: 'DM Sans', system-ui, sans-serif; } .ds-nav-logo { font-family: 'Playfair Display', Georgia, serif; font-size: 24px; font-weight: 700; color: #F2EEE6; text-decoration: none; } .ds-nav-logo span { color: #D4AC66; } .ds-nav nav { display: flex; gap: 36px; } .ds-nav nav a { font-size: 15px; color: rgba(242,238,230,.7); text-decoration: none; transition: color .2s; } .ds-nav nav a:hover { color: #F2EEE6; } .ds-nav-icon { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: none; color: #F2EEE6; cursor: pointer; transition: background .2s; } .ds-nav-icon:hover { background: #2E2C29; } .ds-nav-icon:focus-visible { outline: 2px solid #D4AC66; outline-offset: 3px; }"
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 72px; padding: 0 24px; border-bottom: 1px solid rgba(242,238,230,.1); background: rgba(20,18,16,.9); backdrop-filter: blur(12px); font-family: 'Instrument Sans', system-ui, sans-serif; } .ds-nav-logo { font-family: 'Newsreader', Georgia, serif; font-size: 24px; font-weight: 700; color: #F2EEE6; text-decoration: none; } .ds-nav-logo span { color: #D4AC66; } .ds-nav nav { display: flex; gap: 36px; } .ds-nav nav a { padding-block: 4px; font-size: 15px; color: rgba(242,238,230,.7); text-decoration: none; background: linear-gradient(#D4AC66, #D4AC66) 0 100% / 0 1.5px no-repeat; transition: color .15s, background-size .28s cubic-bezier(.16,1,.3,1); } .ds-nav nav a:hover { color: #F2EEE6; background-size: 100% 1.5px; } .ds-nav-icon { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: none; color: #F2EEE6; cursor: pointer; transition: background .15s, transform .15s; } .ds-nav-icon:hover { background: #2E2C29; } .ds-nav-icon:active { transform: scale(.95); } .ds-nav-icon:focus-visible { outline: 2px solid #D4AC66; outline-offset: 3px; }"
     }
   ],
   "narrative": {
@@ -125,10 +247,26 @@
       "Rounded, tactile components; depth by tonal layering, shadow only on physical objects and floating layers."
     ],
     "rules": [
-      { "name": "The One Light Rule", "body": "Caramel is the only accent. If it is not pressable, a price, a rating or a roast level, it should not be caramel. Its rarity is what makes the call to action readable.", "section": "colors" },
-      { "name": "The Warm Black Rule", "body": "The ground is #141210, never #000, and every grey is a warm one. Cold neutrals break the roastery.", "section": "colors" },
-      { "name": "The Serif Speaks Rule", "body": "Playfair carries meaning (headings, prices, quotes, big numbers). DM Sans carries function (buttons, fields, metadata). Never set a button label in the serif.", "section": "typography" },
-      { "name": "The Flat-At-Rest Rule", "body": "Cards and panels never carry a shadow in their resting state. Hover lifts them 3px and turns the border caramel at 35% instead.", "section": "elevation" }
+      {
+        "name": "The One Light Rule",
+        "body": "Caramel is the only accent. If it is not pressable, a price, a rating or a roast level, it should not be caramel. Its rarity is what makes the call to action readable.",
+        "section": "colors"
+      },
+      {
+        "name": "The Warm Black Rule",
+        "body": "The ground is #141210, never #000, and every grey is a warm one. Cold neutrals break the roastery.",
+        "section": "colors"
+      },
+      {
+        "name": "The Serif Speaks Rule",
+        "body": "Newsreader carries meaning (headings, prices, quotes, big numbers). Instrument Sans carries function (buttons, fields, metadata). Never set a button label in the serif.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-At-Rest Rule",
+        "body": "Cards and panels never carry a shadow in their resting state. Hover lifts them 3px and turns the border caramel at 35% instead.",
+        "section": "elevation"
+      }
     ],
     "dos": [
       "Do keep Caramel Cream (#D4AC66) for pressable things, prices, ratings and roast levels only.",
@@ -136,7 +274,7 @@
       "Do use Toaster Black (#141210) and warm greys; keep Milk Foam as text and as the one light section.",
       "Do make actions full pills and cards 18px, and lift cards 3px with a caramel border on hover.",
       "Do keep tap targets at 44px or larger and show a 2px caramel focus outline on everything interactive.",
-      "Do set headings in Playfair Display and all functional text in DM Sans."
+      "Do set headings in Newsreader and all functional text in Instrument Sans."
     ],
     "donts": [
       "Don't use pure black, cold greys or a second accent colour next to caramel.",

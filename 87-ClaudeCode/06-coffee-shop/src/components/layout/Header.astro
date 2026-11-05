@@ -3,7 +3,7 @@ import { MOBILE_NAV_LINKS, NAV_LINKS } from '../../config/site';
 import Logo from '../ui/Logo.astro';
 
 const iconBtn =
-	'relative grid size-11 cursor-pointer place-items-center rounded-full text-foam transition-colors hover:bg-charcoal focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-caramel';
+	'relative grid size-11 cursor-pointer place-items-center rounded-full text-foam transition duration-150 hover:bg-charcoal active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-caramel';
 ---
 
 <header class="sticky top-0 z-40 border-b border-foam/10 bg-cup/95">
@@ -13,7 +13,7 @@ const iconBtn =
 		<nav class="hidden gap-9 min-[861px]:flex" aria-label="Principal">
 			{
 				NAV_LINKS.map((link) => (
-					<a href={link.href} class="text-[15px] text-foam/70 no-underline transition-colors hover:text-foam">
+					<a href={link.href} class="nav-link text-[15px] text-foam/70 no-underline hover:text-foam">
 						{link.label}
 					</a>
 				))

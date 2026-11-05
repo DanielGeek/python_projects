@@ -12,7 +12,7 @@ const tone = ROAST_TONES[product.roast];
 const origin = product.originLabel ?? `${product.country} · ${product.altitude?.toLocaleString('es-ES')} m`;
 
 const pill =
-	'cursor-pointer rounded-[10px] border border-foam/10 bg-transparent px-3 py-[9px] text-[13px] leading-none font-medium text-foam/70 transition hover:border-foam/50 hover:text-foam aria-pressed:border-foam aria-pressed:bg-foam aria-pressed:text-cup focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-caramel';
+	'cursor-pointer rounded-[10px] border border-foam/10 bg-transparent px-3 py-[9px] text-[13px] leading-none font-medium text-foam/70 transition duration-150 active:scale-95 hover:border-foam/50 hover:text-foam aria-pressed:border-foam aria-pressed:bg-foam aria-pressed:text-cup focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-caramel';
 ---
 
 <article

@@ -11,6 +11,8 @@
 	--color-clay: #e58a6e;
 	--color-clay-text: #f0a58e;
 
+	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
 	--font-serif: "Newsreader", Georgia, serif;
 	--font-sans: "Instrument Sans", system-ui, sans-serif;
 }
@@ -151,6 +153,52 @@
 	}
 	.group:hover .bag {
 		transform: rotate(-2deg) translateY(-4px);
+	}
+
+	/* Arrow glyphs inside text links and buttons nudge forward on hover. */
+	.btn-text svg,
+	.btn svg {
+		transition: transform 200ms var(--ease-out-expo);
+	}
+	.btn-text:hover svg,
+	.btn:hover svg {
+		transform: translateX(3px);
+	}
+
+	/* Desktop nav: a caramel underline draws in from the left. */
+	.nav-link {
+		background: linear-gradient(var(--color-caramel), var(--color-caramel)) 0 100% / 0 1.5px no-repeat;
+		padding-block: 4px;
+		transition:
+			color 150ms,
+			background-size 280ms var(--ease-out-expo);
+	}
+	.nav-link:hover,
+	.nav-link:focus-visible {
+		background-size: 100% 1.5px;
+	}
+
+	/* Mobile menu: links rise in one after another when the sheet opens. */
+	@keyframes rise-in {
+		from {
+			opacity: 0;
+			transform: translateY(10px);
+		}
+	}
+	#mobile-nav[data-open='true'] > * {
+		animation: rise-in 380ms var(--ease-out-expo) backwards;
+	}
+	#mobile-nav[data-open='true'] > :nth-child(2) {
+		animation-delay: 40ms;
+	}
+	#mobile-nav[data-open='true'] > :nth-child(3) {
+		animation-delay: 80ms;
+	}
+	#mobile-nav[data-open='true'] > :nth-child(4) {
+		animation-delay: 120ms;
+	}
+	#mobile-nav[data-open='true'] > :nth-child(5) {
+		animation-delay: 160ms;
 	}
 
 	.thumb {
