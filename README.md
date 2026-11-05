@@ -914,6 +914,7 @@ def retrieve(query: str, k: int = 3) -> List[Dict]:
 
 ### **Full-Stack Applications**
 
+- **[87-ClaudeCode/05-arcade-vault]** - Arcade Vault: spec-driven arcade game platform with Supabase Auth and a global leaderboard, live at [arcade-vault-zeta.vercel.app](https://arcade-vault-zeta.vercel.app/)
 - **[47-OpenAI-Supabase-Integration]** - DocuChat AI SaaS platform
 - **[19-AI-Powered-Meeting-System]** - Real-time transcription and analysis
 - **[18-AI-Powered-HR-System]** - Llama 3 candidate screening
@@ -1502,6 +1503,20 @@ Event-driven RAG with Google Gemini, Inngest workflows, Qdrant vector database, 
 
 ---
 
+### **🎮 Claude Code Projects**
+
+#### **87. Claude Code - From First Prompt to Production**
+
+**Technologies**: Claude Code, HTML5 Canvas, JavaScript, Next.js 16, React 19, Tailwind 4, TypeScript, Supabase, Resend, Vercel
+
+Five projects built with Claude Code ([full overview](./87-ClaudeCode/README.md)): a first counter page (`01-first-code`), three browser arcade games (`02-asteroids`, `03-claude-tetris`, `04-arkanoid`, the last one built from numbered specs), and **Arcade Vault** (`05-arcade-vault`), a full-stack, spec-driven platform for playing arcade games online and competing for the highest score.
+
+**Live app**: [arcade-vault-zeta.vercel.app](https://arcade-vault-zeta.vercel.app/)
+
+**Key Features**: Five playable games with skins and touch controls, Supabase Auth (email, Google, GitHub, password recovery, guests), global Hall of Fame under Row Level Security, security hardening and a read-only security-auditor agent, custom Claude Code agents and skills, Vitest tests, Vercel deployment
+
+---
+
 ### **📚 Python Fundamentals & Learning Modules**
 
 #### **01-14. Python Learning Modules**
@@ -1647,4 +1662,4 @@ This portfolio is for demonstration and educational purposes. Individual project
 
 **Built with ❤️ using Python, LangChain, LangGraph, and modern AI/ML technologies**
 
-*Last Updated: April 2026*
+*Last Updated: November 2026*
