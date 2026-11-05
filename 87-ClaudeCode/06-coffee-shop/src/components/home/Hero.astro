@@ -1,9 +1,4 @@
 ---
-const stats = [
-	{ value: '72 h', label: 'del tostador a tu casa' },
-	{ value: '6', label: 'fincas aliadas' },
-	{ value: '4,9★', label: '2.300 reseñas' },
-];
 ---
 
 <section
@@ -11,9 +6,8 @@ const stats = [
 	class="relative grid min-h-[calc(100svh-72px)] grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] overflow-hidden max-[860px]:min-h-0 max-[860px]:grid-cols-1"
 >
 	<div
-		class="relative z-[2] flex flex-col justify-center gap-7 py-[72px] pr-12 pl-[max(1.5rem,calc((100vw-1200px)/2+1.5rem))] max-[860px]:-mt-[72px] max-[860px]:px-6 max-[860px]:pt-0 max-[860px]:pb-14 max-[560px]:px-4 max-[560px]:pb-12"
+		class="relative z-[2] flex flex-col justify-center gap-7 py-20 pr-12 pl-[max(1.5rem,calc((100vw-1200px)/2+1.5rem))] max-[860px]:-mt-[72px] max-[860px]:px-6 max-[860px]:pt-0 max-[860px]:pb-14 max-[560px]:px-4 max-[560px]:pb-12"
 	>
-		<span class="eyebrow">Tostado esta semana · Lote 47</span>
 		<h1 class="text-[clamp(42px,6vw,80px)]">
 			Café de origen,<br /><em class="font-medium text-caramel italic">tostado</em> para tu taza.
 		</h1>
@@ -29,19 +23,6 @@ const stats = [
 			</a>
 			<a href="#suscripcion" class="btn-secondary">Ver suscripción</a>
 		</div>
-		<dl class="mt-3 flex max-w-[460px] gap-8 border-t border-foam/10 pt-7 max-[560px]:gap-[22px]">
-			{
-				stats.map((s) => (
-					<div>
-						<dt class="sr-only">{s.label}</dt>
-						<dd class="m-0">
-							<strong class="block font-serif text-[28px] font-semibold max-[560px]:text-2xl">{s.value}</strong>
-							<span class="text-[13px] text-foam/50">{s.label}</span>
-						</dd>
-					</div>
-				))
-			}
-		</dl>
 	</div>
 
 	<div class="relative max-[860px]:order-first max-[860px]:h-[56vh] max-[860px]:min-h-[340px]">
@@ -55,7 +36,7 @@ const stats = [
 		<div
 			class="absolute right-7 bottom-7 z-[2] flex max-w-[290px] items-center gap-3.5 rounded-[14px] border border-foam/10 bg-cup/80 px-[18px] py-3.5 backdrop-blur-sm max-[860px]:hidden"
 		>
-			<span class="size-2.5 flex-none rounded-full bg-caramel shadow-[0_0_0_5px_rgb(212_172_102/0.2)]"></span>
+			<span class="size-2.5 flex-none rounded-full bg-caramel shadow-[0_2px_8px_rgb(212_172_102/0.45)]"></span>
 			<div>
 				<small class="block text-xs text-foam/50">Hoy en la taza</small>
 				<b class="text-sm font-semibold">Huila, Colombia · notas de caramelo y naranja</b>

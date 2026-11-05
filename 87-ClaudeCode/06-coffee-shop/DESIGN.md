@@ -12,29 +12,29 @@ colors:
   error-clay-text: "#F0A58E"
 typography:
   display:
-    fontFamily: "Playfair Display, Georgia, serif"
+    fontFamily: "Newsreader, Georgia, serif"
     fontSize: "clamp(42px, 6vw, 80px)"
     fontWeight: 600
     lineHeight: 1.12
     letterSpacing: "-0.01em"
   headline:
-    fontFamily: "Playfair Display, Georgia, serif"
+    fontFamily: "Newsreader, Georgia, serif"
     fontSize: "clamp(30px, 4vw, 44px)"
     fontWeight: 600
     lineHeight: 1.12
     letterSpacing: "-0.01em"
   title:
-    fontFamily: "Playfair Display, Georgia, serif"
+    fontFamily: "Newsreader, Georgia, serif"
     fontSize: "21px"
     fontWeight: 600
     lineHeight: 1.12
   body:
-    fontFamily: "DM Sans, system-ui, sans-serif"
+    fontFamily: "Instrument Sans, system-ui, sans-serif"
     fontSize: "16px"
     fontWeight: 400
     lineHeight: 1.6
   label:
-    fontFamily: "DM Sans, system-ui, sans-serif"
+    fontFamily: "Instrument Sans, system-ui, sans-serif"
     fontSize: "12px"
     fontWeight: 600
     letterSpacing: "0.18em"
@@ -108,7 +108,7 @@ The one light-surface moment is the subscription section, a foam-coloured band t
 A roastery palette: one near-black, one wood brown, one caramel, one off-white, one workshop grey. The five are the whole system.
 
 ### Primary
-- **Caramel Cream** (#D4AC66): the only accent. Primary buttons, prices, eyebrow labels, the roast-level bar, ratings, the free-shipping progress fill, the italic emphasis word in the hero, focus outlines.
+- **Caramel Cream** (#D4AC66): the only accent. Primary buttons, prices, the roast-level bar, ratings, the free-shipping progress fill, the italic emphasis word in the hero, focus outlines.
 - **Caramel Cream Hover** (#E2BF80): the lighter state of Caramel Cream on primary buttons.
 
 ### Secondary
@@ -129,21 +129,20 @@ A roastery palette: one near-black, one wood brown, one caramel, one off-white, 
 
 ## Typography
 
-**Display Font:** Playfair Display (with Georgia, serif)
-**Body Font:** DM Sans (with system-ui, sans-serif)
+**Display Font:** Newsreader (with Georgia, serif)
+**Body Font:** Instrument Sans (with system-ui, sans-serif)
 
-**Character:** A high-contrast serif with italics gives headlines warmth and authority; DM Sans keeps everything functional quiet and legible. The serif speaks about the coffee, the sans handles buying it.
+**Character:** A high-contrast serif with italics gives headlines warmth and authority; Instrument Sans keeps everything functional quiet and legible. The serif speaks about the coffee, the sans handles buying it.
 
 ### Hierarchy
-- **Display** (600, clamp(42px, 6vw, 80px), 1.12): hero headline only, with one italic Playfair 500 word in Caramel Cream.
+- **Display** (600, clamp(42px, 6vw, 80px), 1.12): hero headline only, with one italic Newsreader 500 word in Caramel Cream.
 - **Headline** (600, clamp(30px, 4vw, 44px), 1.12, max 18ch): section titles.
 - **Title** (600, 21px to 24px, 1.12): product names, step titles, method names, drawer title.
 - **Body** (400, 16px, 1.6): running copy; lead paragraphs in the hero and origin sections go to 17px to 18px at 70% to 80% foam. Keep lines at or under 46ch to 54ch.
-- **Label** (600, 12px, 0.18em tracking, uppercase, Caramel Cream): eyebrows above section titles. In the light section the eyebrow switches to Toasted Walnut.
-- **Price** (Playfair 600, 22px, Caramel Cream): numbers that matter, such as price and totals.
+- **Price** (Newsreader 600, 22px, Caramel Cream): numbers that matter, such as price and totals.
 
 ### Named Rules
-**The Serif Speaks Rule.** Playfair carries meaning (headings, prices, quotes, big numbers). DM Sans carries function (buttons, fields, metadata). Never set a button label in the serif.
+**The Serif Speaks Rule.** Newsreader carries meaning (headings, prices, quotes, big numbers). Instrument Sans carries function (buttons, fields, metadata). Never set a button label in the serif.
 
 ## Layout
 
@@ -151,7 +150,7 @@ A single 1200px container with 24px side gutters (16px under 560px). Sections si
 
 The hero is a full-height split (text and photograph) that stacks under 860px with the photograph first and the copy pulled up over its fade. The origin section is a full-bleed half-and-half. The header is sticky at 72px.
 
-Section heads pair an eyebrow, a headline and an optional side element (link, paragraph or rating), aligned to the baseline and wrapping on narrow screens.
+Section heads pair a headline with an optional side element (link, paragraph or rating), aligned to the baseline and wrapping on narrow screens.
 
 Mobile is the primary channel: tap targets are 44px or larger, the menu becomes a full-screen serif list, and the cart is a drawer that fills the screen width.
 
@@ -176,7 +175,7 @@ Rounded and tactile. Actions and inputs are full pills (999px). Cards use a wide
 ## Components
 
 ### Buttons
-- **Shape:** full pill (999px), 48px minimum height, 26px horizontal padding, 15px DM Sans 600.
+- **Shape:** full pill (999px), 48px minimum height, 26px horizontal padding, 15px Instrument Sans 600.
 - **Primary:** Caramel Cream fill with Toaster Black text; hover lightens to Caramel Cream Hover; pressed moves down 1px.
 - **Secondary:** transparent with a 1.5px Milk Foam 50% outline; hover brightens the outline to full foam and adds a 6% foam wash.
 - **Text:** no box; Milk Foam text underlined in caramel with a 5px offset; hover turns the text caramel.
@@ -188,7 +187,7 @@ Rounded and tactile. Actions and inputs are full pills (999px). Cards use a wide
 - **Hover:** lifts 3px, border turns Caramel Cream at 35%, the bag tilts 2 degrees.
 
 ### Option Pills
-- **Style:** 10px radius, 1px foam hairline, 13px DM Sans 500, foam at 70%.
+- **Style:** 10px radius, 1px foam hairline, 13px Instrument Sans 500, foam at 70%.
 - **Selected:** Milk Foam fill with Toaster Black text (`aria-pressed="true"`). Selection state is never colour-only: the fill inverts.
 
 ### Inputs / Fields
@@ -213,7 +212,7 @@ Milk Foam surface, 14px radius, Toasted Walnut check disc, Toaster Black text, a
 - **Do** use Toaster Black (#141210) and warm greys; keep Milk Foam as text and as the one light section.
 - **Do** make actions full pills and cards 18px, and lift cards 3px with a caramel border on hover.
 - **Do** keep tap targets at 44px or larger and show a 2px caramel focus outline on everything interactive.
-- **Do** set headings in Playfair Display and all functional text in DM Sans.
+- **Do** set headings in Newsreader and all functional text in Instrument Sans.
 
 ### Don't:
 - **Don't** use pure black, cold greys or a second accent colour next to caramel.

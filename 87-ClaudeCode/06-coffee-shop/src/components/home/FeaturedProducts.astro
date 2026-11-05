@@ -2,12 +2,13 @@
 import { FEATURED_PRODUCTS } from '../../config/products';
 import ProductCard from '../product/ProductCard.astro';
 import SectionHead from '../ui/SectionHead.astro';
+import Arrow from '../ui/Arrow.astro';
 ---
 
 <section id="tienda" class="py-24 max-[860px]:py-[72px]">
 	<div class="wrap">
-		<SectionHead eyebrow="Cafés destacados" title="Lo que estamos tostando ahora">
-			<a href="#" slot="aside" class="btn-text">Ver toda la tienda →</a>
+		<SectionHead title="Lo que estamos tostando ahora">
+			<a href="#" slot="aside" class="btn-text">Ver toda la tienda <Arrow /></a>
 		</SectionHead>
 		<div class="grid grid-cols-4 gap-5 max-[1080px]:grid-cols-2 max-[560px]:grid-cols-1">
 			{FEATURED_PRODUCTS.map((product) => <ProductCard product={product} />)}

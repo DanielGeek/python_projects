@@ -1,5 +1,6 @@
 ---
 import SectionHead from '../ui/SectionHead.astro';
+import Arrow from '../ui/Arrow.astro';
 
 const methods = [
 	{
@@ -37,8 +38,8 @@ const methods = [
 
 <section id="guia" class="border-t border-foam/10 py-24 max-[860px]:py-[72px]">
 	<div class="wrap">
-		<SectionHead eyebrow="Guía de preparación" title="Saca lo mejor de cada grano">
-			<a href="#" slot="aside" class="btn-text">Ver la guía completa →</a>
+		<SectionHead title="Saca lo mejor de cada grano">
+			<a href="#" slot="aside" class="btn-text">Ver la guía completa <Arrow /></a>
 		</SectionHead>
 
 		<div class="grid grid-cols-3 gap-5 max-[860px]:grid-cols-1">
@@ -46,7 +47,7 @@ const methods = [
 				methods.map((m) => (
 					<a
 						href="#"
-						class="flex flex-col gap-4 rounded-[18px] border border-foam/10 p-7 no-underline transition-colors hover:border-caramel/35 hover:bg-charcoal"
+						class="group flex flex-col gap-4 rounded-[18px] border border-foam/10 p-7 no-underline transition-colors hover:border-caramel/35 hover:bg-charcoal"
 					>
 						<svg class="size-11 text-caramel" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={m.icon} />
 						<h3 class="text-2xl">{m.name}</h3>
@@ -55,13 +56,13 @@ const methods = [
 							{
 								m.specs.map((s) => (
 									<div class="text-xs text-foam/50">
-										<dd class="m-0 text-[15px] font-semibold text-foam">{s.value}</dd>
+										<dd class="m-0 text-[15px] font-semibold text-foam tabular-nums">{s.value}</dd>
 										<dt>{s.label}</dt>
 									</div>
 								))
 							}
 						</dl>
-						<span class="mt-auto text-sm font-semibold text-caramel">Ver receta →</span>
+						<span class="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-caramel transition-transform group-hover:translate-x-0.5">Ver receta <Arrow /></span>
 					</a>
 				))
 			}

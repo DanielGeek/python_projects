@@ -1,5 +1,6 @@
 ---
 import SectionHead from '../ui/SectionHead.astro';
+import Stars from '../ui/Stars.astro';
 
 const reviews = [
 	{
@@ -22,12 +23,12 @@ const reviews = [
 
 <section class="py-24 max-[860px]:py-[72px]">
 	<div class="wrap">
-		<SectionHead eyebrow="Reseñas" title="Lo que dicen en cada mañana">
+		<SectionHead title="Lo que dicen en cada mañana">
 			<div slot="aside" class="flex items-center gap-3.5">
-				<strong class="font-serif text-[44px] leading-none">4,9</strong>
+				<strong class="font-serif text-[44px] leading-none tabular-nums">4,9</strong>
 				<div>
-					<div class="text-[15px] tracking-[3px] text-caramel" aria-label="5 de 5 estrellas">★★★★★</div>
-					<span class="text-[13px] text-foam/70">Basado en 2.300 reseñas verificadas</span>
+					<Stars />
+					<span class="mt-1.5 block text-[13px] text-foam/70">Basado en 2.300 reseñas verificadas</span>
 				</div>
 			</div>
 		</SectionHead>
@@ -36,7 +37,7 @@ const reviews = [
 			{
 				reviews.map((r) => (
 					<figure class="m-0 flex flex-col gap-[18px] rounded-[18px] bg-charcoal px-7 py-[30px]">
-						<div class="text-[15px] tracking-[3px] text-caramel" aria-label="5 de 5 estrellas">★★★★★</div>
+						<Stars />
 						<blockquote class="m-0 font-serif text-[19px] leading-[1.45] font-medium italic">“{r.quote}”</blockquote>
 						<figcaption class="mt-auto flex items-center gap-3 text-sm">
 							<span class="grid size-10 place-items-center rounded-full bg-walnut font-serif font-semibold text-caramel" aria-hidden="true">
