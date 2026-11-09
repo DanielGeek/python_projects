@@ -35,6 +35,24 @@ npm run lint
 npm run build
 ```
 
+## Adding Spec Kit to an Existing Project
+
+To start Spec Kit in a repository that already exists and has code (instead of creating a new folder),
+run `specify init` from the project root:
+
+```bash
+cd path/to/your-existing-repo
+specify init --here --integration claude --extension git
+```
+
+- `--here` (same as `.`) initializes in the current directory and keeps your existing files.
+- `--integration claude` installs the Spec Kit commands as Claude Code skills (`/speckit-*`).
+- `--extension git` also installs the git extension so each feature gets its own branch.
+- Add `--force` to skip the confirmation prompt when the directory is not empty.
+- Commit or stash your changes first so the files Spec Kit adds (`.specify/`, `.claude/skills/`) show up as a clean diff.
+
+Then continue with `/speckit-constitution` (step 1 below).
+
 ## Spec Kit Workflow
 
 Reference flow for spec-driven development with Spec Kit. The main path runs left to right; the two
