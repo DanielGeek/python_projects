@@ -161,4 +161,10 @@ Each goal can be checked using a checkbox and then either moved to the completed
 /speckit-specify drag and drop - Let's make it so that users can reorder goals by dragging and dropping them above or below other goals in the list.
 ```
 
+### `/speckit-plan` — 2026-11-09
+
+```text
+/speckit-plan Plant is using the sortable library for sorting list items and Tailwind for styling. No testing whatsoever.
+```
+
 <!-- SPECKIT-COMMANDS:END -->
