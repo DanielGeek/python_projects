@@ -125,4 +125,10 @@ Each goal can be checked using a checkbox and then either moved to the completed
 /speckit-implement
 ```
 
+### `/speckit-specify` — 2026-11-08
+
+```text
+/speckit-specify Quiero que los colores de la aplicación luzcan mejor, algo mucho mejor que el actual.
+```
+
 <!-- SPECKIT-COMMANDS:END -->
