@@ -8,6 +8,12 @@
 
 **Input**: User description: "drag and drop - Let's make it so that users can reorder goals by dragging and dropping them above or below other goals in the list."
 
+## Clarifications
+
+### Session 2026-11-09
+
+- Q: Once a user has dragged any goal, should the list stop sorting by end date and keep only the user's manual order from then on? → A: Yes. The first drag freezes the whole list in the user's order; new goals go to the bottom and the list is never auto-sorted again.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Reorder current goals by dragging (Priority: P1)
@@ -71,7 +77,7 @@ not limited to mouse users.
 - The list is long enough to scroll: dragging near the top or bottom edge lets the user reach goals that are out of view.
 - A goal has a very long title: it can still be grabbed and dragged without breaking the layout.
 - Highlighted goals (due within 3 days or overdue) are dragged: they stay highlighted in their new position.
-- A goal is checked and showing its "Move to completed" / "Delete permanently" actions: it can still be reordered, or reordering is paused until the choice is made, without losing the checked state.
+- A goal is checked and showing its "Move to completed" / "Delete permanently" actions: it can still be reordered and keeps its checked state and actions.
 - The completed goals column: it is not reorderable.
 - Narrow screens: dragging works within the single-column or stacked layout without horizontal scrolling.
 
@@ -84,8 +90,8 @@ not limited to mouse users.
 - **FR-003**: While dragging, the system MUST show which goal is being moved and where it will land if released.
 - **FR-004**: Users MUST be able to cancel a drag (release outside the list or press Escape) and have the original order restored.
 - **FR-005**: The custom order MUST persist on the user's device and survive reload or revisit.
-- **FR-006**: A custom order MUST take precedence over the end-date ordering defined in the goal tracking board (001, FR-016); end-date ordering applies only to goals the user has not manually placed. This feature supersedes that requirement.
-- **FR-007**: A newly added goal MUST appear at the bottom of the current goals column without changing the existing order.
+- **FR-006**: Until the user first reorders a goal, the current goals column MUST keep the end-date ordering from the goal tracking board (001, FR-016). After the first drag, the list MUST keep exactly the user's manual order and MUST NOT be auto-sorted by end date again. This feature supersedes 001 FR-016 from that point on.
+- **FR-007**: After the first drag, a newly added goal MUST appear at the bottom of the current goals column without changing the existing order. Before the first drag, new goals are placed by end date (FR-006).
 - **FR-008**: Completing or permanently deleting a goal MUST NOT change the relative order of the remaining current goals.
 - **FR-009**: Reordering MUST work with touch input and with the keyboard, not only with a mouse, and keyboard users MUST get clear focus and position feedback.
 - **FR-010**: Interactive controls inside a goal (checkbox, action buttons) MUST keep working and MUST NOT trigger a drag.
@@ -112,7 +118,7 @@ not limited to mouse users.
 
 - Reordering applies only to the current goals column; completed goals are not reorderable.
 - Dragging happens within a single column; moving goals between columns by dragging is out of scope (completion still uses the checkbox flow).
-- Once a user reorders goals, their manual order replaces automatic end-date sorting; the nearest-first rule only decides the initial order for goals the user has not placed.
-- Goals created before this feature keep their current end-date order until the user first reorders them.
+- Before the first drag, goals stay in end-date order (nearest first). After the first drag, the whole list follows the user's manual order and is never auto-sorted again.
+- Goals created before this feature keep their end-date order until the user first reorders them.
 - Single user on a single device; the custom order is stored on the device and not shared.
 - Project principles (clean code, simple UX, responsive design, minimal dependencies, no automated testing) apply, as defined in the constitution.

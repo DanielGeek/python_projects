@@ -31,4 +31,4 @@
 
 ## Notes
 
-- FR-006 deliberately supersedes 001 FR-016 (end-date ordering); worth confirming in `/speckit-clarify`.
+- FR-006 supersedes 001 FR-016 (end-date ordering) after the first drag; confirmed in clarification session 2026-11-09.
