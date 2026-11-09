@@ -1,26 +1,101 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+/* Light theme only: `.dark` is never applied, so shadcn `dark:` utilities stay inert. */
+@custom-variant dark (&:is(.dark *));
+
+/* Soft pastel palette. Each `-600` shade is dark enough for text on its pastel family. */
+@theme {
+  --color-mint-50: #effaf4;
+  --color-mint-100: #d6f3e3;
+  --color-mint-200: #b4e8cc;
+  --color-mint-600: #2b7556;
+
+  --color-lavender-50: #f6f3fd;
+  --color-lavender-100: #e9e3f9;
+  --color-lavender-200: #d4c9f2;
+  --color-lavender-600: #5f4aa8;
+
+  --color-peach-50: #fff5ed;
+  --color-peach-100: #ffe5d2;
+  --color-peach-200: #ffd0b0;
+  --color-peach-600: #a8480f;
+
+  --color-rose-50: #fff1f4;
+  --color-rose-100: #ffdce3;
+  --color-rose-200: #ffbfcd;
+  --color-rose-600: #b0304f;
+
+  --color-sky-50: #f0f8fd;
+  --color-sky-100: #daeefb;
+  --color-sky-200: #badef4;
+  --color-sky-600: #25688f;
+
+  --color-ink: #2a2640;
+  --color-ink-soft: #57516f;
+}
+
+/* shadcn/ui semantic tokens mapped onto the palette above. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: var(--color-lavender-50);
+  --foreground: var(--color-ink);
+  --card: #ffffff;
+  --card-foreground: var(--color-ink);
+  --popover: #ffffff;
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-lavender-600);
+  --primary-foreground: #ffffff;
+  --secondary: var(--color-mint-100);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-lavender-100);
+  --muted-foreground: var(--color-ink-soft);
+  --accent: var(--color-lavender-100);
+  --accent-foreground: var(--color-ink);
+  --destructive: var(--color-rose-600);
+  --border: var(--color-lavender-200);
+  --input: var(--color-lavender-200);
+  --ring: var(--color-lavender-600);
+  --radius: 0.75rem;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }
