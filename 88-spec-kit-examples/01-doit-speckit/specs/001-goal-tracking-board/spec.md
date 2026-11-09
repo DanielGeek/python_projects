@@ -118,7 +118,8 @@ unchanged.
 - The user submits the form with an empty or whitespace-only title: submission is blocked with a clear message.
 - The user submits the form without an end date: submission is blocked with a clear message.
 - The user picks an end date in the past: the form asks them to choose today or a later date.
-- A very long title: it wraps or truncates gracefully without breaking the column layout.
+- A title longer than 100 characters: the field does not accept more than 100 characters.
+- A very long title (up to 100 characters): it wraps or truncates gracefully without breaking the column layout.
 - Many goals in one column: the column remains usable and scrolls without breaking the page layout.
 - The user opens the modal and presses Escape or clicks outside it: the modal closes without saving.
 - The days-left count changes at midnight: it reflects the current date whenever the board is shown.
@@ -132,7 +133,7 @@ unchanged.
 - **FR-002**: The page MUST show two columns: current goals on the left and completed goals on the right.
 - **FR-003**: Each current goal MUST show its title and the number of days left until its end date.
 - **FR-004**: Users MUST be able to open a new-goal form in a modal by clicking an "Add goal" button.
-- **FR-005**: The form MUST have a title field and an end date field, and both MUST be required.
+- **FR-005**: The form MUST have a title field and an end date field, and both MUST be required; after trimming, the title MUST be 1 to 100 characters long.
 - **FR-006**: The system MUST reject an empty title and an end date earlier than today, with a clear message.
 - **FR-007**: Each current goal MUST have a checkbox; checking it MUST offer the actions "Move to completed" and "Delete permanently".
 - **FR-008**: "Move to completed" MUST remove the goal from the left column, record the completion date, and show the goal in the right column with its title and completion date.
@@ -168,6 +169,7 @@ unchanged.
 - Overdue goals stay in the current column, highlighted, until the user completes or deletes them.
 - "Permanently deleted" means no undo or trash; a confirmation step precedes every deletion (see FR-009).
 - Completed goals are shown in the right column with title and completion date, without days-left information, and cannot be edited or restored in this version.
+- Completed goals are listed with the most recently completed first.
 - Editing an existing goal's title or end date is out of scope for this version.
 - The phrase "Lex uses a modern light theme" in the request is read as "uses a modern light theme".
 - Project principles (clean code, simple UX, responsive design, minimal dependencies, no automated testing) apply, as defined in the constitution.
