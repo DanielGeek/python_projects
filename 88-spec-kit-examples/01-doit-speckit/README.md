@@ -35,6 +35,24 @@ npm run lint
 npm run build
 ```
 
+## Adding Spec Kit to an Existing Project
+
+To start Spec Kit in a repository that already exists and has code (instead of creating a new folder),
+run `specify init` from the project root:
+
+```bash
+cd path/to/your-existing-repo
+specify init --here --integration claude --extension git
+```
+
+- `--here` (same as `.`) initializes in the current directory and keeps your existing files.
+- `--integration claude` installs the Spec Kit commands as Claude Code skills (`/speckit-*`).
+- `--extension git` also installs the git extension so each feature gets its own branch.
+- Add `--force` to skip the confirmation prompt when the directory is not empty.
+- Commit or stash your changes first so the files Spec Kit adds (`.specify/`, `.claude/skills/`) show up as a clean diff.
+
+Then continue with `/speckit-constitution` (step 1 below).
+
 ## Spec Kit Workflow
 
 Reference flow for spec-driven development with Spec Kit. The main path runs left to right; the two
@@ -135,6 +153,18 @@ Each goal can be checked using a checkbox and then either moved to the completed
 
 ```text
 /speckit-plan
+```
+
+### `/speckit-specify` — 2026-11-09
+
+```text
+/speckit-specify drag and drop - Let's make it so that users can reorder goals by dragging and dropping them above or below other goals in the list.
+```
+
+### `/speckit-plan` — 2026-11-09
+
+```text
+/speckit-plan Plant is using the sortable library for sorting list items and Tailwind for styling. No testing whatsoever.
 ```
 
 <!-- SPECKIT-COMMANDS:END -->

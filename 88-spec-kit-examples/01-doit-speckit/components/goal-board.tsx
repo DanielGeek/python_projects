@@ -4,15 +4,23 @@ import { useState } from "react";
 import { AddGoalDialog } from "@/components/add-goal-dialog";
 import { CompletedGoalCard } from "@/components/completed-goal-card";
 import { DeleteGoalDialog } from "@/components/delete-goal-dialog";
-import { GoalCard } from "@/components/goal-card";
 import { GoalColumn } from "@/components/goal-column";
+import { SortableGoalColumn } from "@/components/sortable-goal-list";
 import { Button } from "@/components/ui/button";
-import { addGoal, completeGoal, deleteGoal, useGoals } from "@/lib/goal-store";
-import { sortCompleted, sortCurrent } from "@/lib/goals";
+import {
+  addGoal,
+  completeGoal,
+  deleteGoal,
+  reorderGoals,
+  useGoalOrder,
+  useGoals,
+} from "@/lib/goal-store";
+import { orderCurrent, sortCompleted } from "@/lib/goals";
 import { useToday } from "@/lib/use-today";
 
 export function GoalBoard() {
   const goals = useGoals();
+  const order = useGoalOrder();
   const today = useToday();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [checkedIds, setCheckedIds] = useState<ReadonlySet<string>>(new Set());
@@ -20,7 +28,7 @@ export function GoalBoard() {
 
   if (goals === null || today === null) return <BoardPlaceholder />;
 
-  const currentGoals = sortCurrent(goals);
+  const currentGoals = orderCurrent(goals, order);
   const completedGoals = sortCompleted(goals);
   const pendingDelete = goals.find((goal) => goal.id === pendingDeleteId);
 
@@ -49,27 +57,18 @@ export function GoalBoard() {
         </Button>
       </header>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
-        <GoalColumn
-          title="Current goals"
-          count={currentGoals.length}
-          emptyMessage="Goals you are working on show up here. Add your first goal to get started."
-          className="border-line bg-surface"
-        >
-          {currentGoals.map((goal) => (
-            <GoalCard
-              key={goal.id}
-              goal={goal}
-              today={today}
-              checked={checkedIds.has(goal.id)}
-              onCheckedChange={(checked) => setChecked(goal.id, checked)}
-              onComplete={() => {
-                completeGoal(goal.id, today);
-                setChecked(goal.id, false);
-              }}
-              onDelete={() => setPendingDeleteId(goal.id)}
-            />
-          ))}
-        </GoalColumn>
+        <SortableGoalColumn
+          goals={currentGoals}
+          today={today}
+          checkedIds={checkedIds}
+          onCheckedChange={setChecked}
+          onComplete={(goal) => {
+            completeGoal(goal.id, today);
+            setChecked(goal.id, false);
+          }}
+          onDelete={setPendingDeleteId}
+          onReorder={reorderGoals}
+        />
         <GoalColumn
           title="Completed goals"
           count={completedGoals.length}

@@ -1,4 +1,5 @@
-import { AlarmClockIcon } from "lucide-react";
+import type { ButtonHTMLAttributes } from "react";
+import { AlarmClockIcon, GripVerticalIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
@@ -11,6 +12,11 @@ type GoalCardProps = {
   onCheckedChange: (checked: boolean) => void;
   onComplete: () => void;
   onDelete: () => void;
+  /** Shows the "Move" handle used to reorder the goal. */
+  showHandle: boolean;
+  handleProps?: ButtonHTMLAttributes<HTMLButtonElement>;
+  /** True while the goal is picked up for keyboard reordering. */
+  picked?: boolean;
 };
 
 export function GoalCard({
@@ -20,13 +26,18 @@ export function GoalCard({
   onCheckedChange,
   onComplete,
   onDelete,
+  showHandle,
+  handleProps,
+  picked = false,
 }: GoalCardProps) {
   const dueSoon = isDueSoon(goal, today);
 
   return (
     <li
+      data-goal-id={goal.id}
       className={cn(
         "rounded-xl border p-4 shadow-sm",
+        picked && "ring-2 ring-ring ring-offset-2 ring-offset-background",
         dueSoon
           ? "border-2 border-urgent-foreground bg-urgent"
           : "border-border bg-card",
@@ -51,6 +62,17 @@ export function GoalCard({
             {daysLeftLabel(goal.endDate, today)}
           </p>
         </div>
+        {showHandle && (
+          <button
+            type="button"
+            aria-label={`Move goal: ${goal.title}`}
+            {...handleProps}
+            className="goal-handle inline-flex min-h-11 min-w-11 shrink-0 cursor-grab touch-none items-center justify-center gap-1 rounded-lg px-2 text-sm text-ink-soft focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none aria-pressed:bg-line active:cursor-grabbing"
+          >
+            <GripVerticalIcon className="size-4" aria-hidden="true" />
+            Move
+          </button>
+        )}
       </div>
       {checked && (
         <div className="mt-3 flex flex-wrap gap-2">
