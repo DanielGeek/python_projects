@@ -84,4 +84,10 @@ Each goal can be checked using a checkbox and then either moved to the completed
 /speckit-plan Plant this using Tailwind @theme for theme colors, local storage for goals, and shadcn for UI components. Use date-fns for data formatting. No unit tests, integration tests, or end-to-end tests needed.
 ```
 
+### `/speckit-tasks` — 2026-11-08
+
+```text
+/speckit-tasks
+```
+
 <!-- SPECKIT-COMMANDS:END -->
