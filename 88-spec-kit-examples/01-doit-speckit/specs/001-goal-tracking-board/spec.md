@@ -141,8 +141,8 @@ unchanged.
 - **FR-011**: The modal MUST be dismissible via a cancel control, the Escape key, or a click outside it.
 - **FR-012**: The app MUST persist goals on the user's device so they remain after reload or revisit.
 - **FR-013**: The layout MUST remain usable from phone to desktop widths, with no horizontal page scroll.
-- **FR-014**: The interface MUST use a modern light theme with soft pastel colors, keeping text readable against backgrounds.
-- **FR-015**: Each column MUST show a friendly empty state when it has no goals.
+- **FR-014**: The interface MUST use a modern light theme with soft pastel colors, keeping text readable against backgrounds (a contrast ratio of at least 4.5:1 for body text).
+- **FR-015**: Each column MUST show a friendly empty state when it has no goals: a short plain-language message that says what the column is for and, for current goals, invites the user to add the first goal.
 - **FR-016**: Current goals MUST be ordered by end date, with the nearest (including overdue) first; goals with the same end date keep the order in which they were added.
 
 ### Key Entities
@@ -158,7 +158,7 @@ unchanged.
 - **SC-003**: 100% of goals due within 3 days are highlighted, and 0% of goals due later are highlighted.
 - **SC-004**: After reloading the app, 100% of previously saved goals appear in the correct column.
 - **SC-005**: On screens from 360 px to 1920 px wide, all goals and actions are reachable without horizontal scrolling.
-- **SC-006**: A first-time user completes the add-then-complete flow without any instructions.
+- **SC-006**: A first-time user completes the add-then-complete flow without any instructions, because every button and field has a plain-text label (no icon-only controls).
 
 ## Assumptions
 

@@ -90,4 +90,10 @@ Each goal can be checked using a checkbox and then either moved to the completed
 /speckit-tasks
 ```
 
+### `/speckit-analyze` — 2026-11-08
+
+```text
+/speckit-analyze
+```
+
 <!-- SPECKIT-COMMANDS:END -->

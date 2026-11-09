@@ -96,6 +96,7 @@ components/
 lib/
 ├── goals.ts               # Goal type, validation, daysLeft, isDueSoon, sorting, labels (date-fns)
 ├── goal-store.ts          # localStorage-backed store + useGoals() hook (useSyncExternalStore)
+├── use-today.ts           # useToday() hook: today's date, refreshed when the tab becomes visible
 └── utils.ts               # cn() helper required by shadcn/ui
 
 components.json            # shadcn/ui configuration

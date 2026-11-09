@@ -33,7 +33,7 @@ date-fns documentation (via Context7) and the Next.js 16 docs bundled in `node_m
 
 - **Decision**: One key, `doit:goals:v1`, holding a JSON array of goals. A small store module reads, validates
   and writes it, and notifies subscribers. React reads it through `useSyncExternalStore` with a server snapshot of
-  an empty list.
+  `null` (loading).
 - **Rationale**: `localStorage` is not available during server rendering, so reading it in a component body causes
   hydration mismatches (see Next.js "Preventing flash before hydration" guide). `useSyncExternalStore` handles the
   server/client difference and cross-tab updates (`storage` event) without `useEffect` + `setState`.
@@ -41,8 +41,8 @@ date-fns documentation (via Context7) and the Next.js 16 docs bundled in `node_m
   setting state in effects); a state library (extra dependency, violates Principle IV); IndexedDB (overkill).
 - **Error handling**: Missing, corrupt or non-array data is treated as an empty list. A failed write (quota or
   private mode) keeps the in-memory state and does not crash the page.
-- **Brief empty flash**: the server renders the empty board and the client replaces it with saved goals right after
-  hydration. The columns render a neutral state until the first client snapshot, so saved goals never flicker as "empty".
+- **No empty flash**: the server snapshot is `null` (loading), not an empty list. The board renders a neutral
+  placeholder until the first client snapshot arrives, so saved goals never flicker as "empty".
 
 ## 4. Date handling with `date-fns`
 
