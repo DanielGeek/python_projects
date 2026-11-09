@@ -56,6 +56,20 @@ optional steps sit below the stage they refine.
 | 4b | `/speckit-analyze` (optional) | Check spec, plan, and tasks for consistency. Run it after `/speckit-tasks` and before `/speckit-implement`. |
 | 5 | `/speckit-implement` | Build the feature by executing the tasks. |
 
+### Automatic feature branches (git extension)
+
+`/speckit-specify` does not create branches by itself. A `before_specify` hook provided by the `git`
+extension ("Git Branching Workflow") does, naming them `{number}-{slug}` (e.g. `002-my-feature`).
+Without the extension, all work lands on `main`.
+
+```bash
+specify extension list        # check what is installed ("No extensions installed." = missing)
+specify extension add git     # install it; registers the hooks in .specify/extensions.yml
+```
+
+Branch numbering and naming are configured in `.specify/extensions/git/git-config.yml`. Commit or
+clean the working tree before running `/speckit-specify`: the branch is created from wherever you are.
+
 ## Commands
 
 Every `/speckit-*` command run in Claude Code is recorded here automatically by the hook in
@@ -103,6 +117,12 @@ Each goal can be checked using a checkbox and then either moved to the completed
 
 ```text
 /speckit-analyze
+```
+
+### `/speckit-implement` — 2026-11-08
+
+```text
+/speckit-implement
 ```
 
 <!-- SPECKIT-COMMANDS:END -->
