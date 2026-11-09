@@ -34,9 +34,9 @@ All Technical Context items are resolved; there are no open `NEEDS CLARIFICATION
 
 ## 6. Interactivity & JavaScript budget
 
-- **Decision**: All pages are Server Components; no client components are required in v1. Mobile navigation uses a CSS-only/`<details>` pattern so it works without JS. Any motion respects `prefers-reduced-motion`.
-- **Rationale**: Content readable with scripting disabled or slow networks (edge case), minimal JS for fast mobile load (SC-007), fewer accessibility pitfalls.
-- **Alternatives considered**: Client-side menu state with `useState` (adds JS for no user benefit).
+- **Decision**: All pages are Server Components. The only client component is a tiny `NavLinks` that uses `usePathname()` to set `aria-current="page"` on the active link (a shared layout cannot know the current route otherwise). Client components are still prerendered under static export, so the attribute is present in the static HTML and works without JS. Mobile navigation uses a CSS-only/`<details>` pattern so it works without JS. Any motion respects `prefers-reduced-motion`.
+- **Rationale**: Content readable with scripting disabled or slow networks (edge case), minimal JS for fast mobile load (SC-007), fewer accessibility pitfalls. One small client island is the simplest way to meet FR-002 (current page indicated) from a shared layout.
+- **Alternatives considered**: Passing a `current` prop from every page into the header (duplicates the header in each page, drift risk); client-side menu state with `useState` (adds JS for no user benefit).
 
 ## 7. Accessibility
 

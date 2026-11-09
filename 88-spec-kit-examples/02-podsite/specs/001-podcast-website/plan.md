@@ -78,8 +78,9 @@ src/
 │   ├── not-found.tsx        # exported as 404.html
 │   ├── sitemap.ts           # static sitemap.xml
 │   └── robots.ts            # static robots.txt
-├── components/              # SiteHeader, SiteFooter, FeaturedEpisode, EpisodeCard,
-│                            # CoverArt, StatCard, JsonLd (each with a co-located *.module.css)
+├── components/              # SiteHeader, NavLinks (only client component), SiteFooter,
+│                            # FeaturedEpisode, EpisodeCard, CoverArt, StatCard, JsonLd
+│                            # (each visual one with a co-located *.module.css)
 ├── data/
 │   ├── podcast.ts           # Podcast + follow links
 │   ├── hosts.ts             # Host[]

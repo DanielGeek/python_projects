@@ -223,5 +223,5 @@ Task: "Create src/app/episodes/page.tsx"                                    (T02
 - [P] tasks = different files, no dependencies on incomplete tasks
 - [Story] label maps each task to a user story for traceability
 - The spec's acceptance scenarios are numbered lists, not checkboxes. Progress is tracked by ticking the boxes in this file as each task completes, and by updating `checklists/requirements.md` Notes after each phase (T045)
-- One deliberate deviation from research.md §6: `NavLinks.tsx` (T019) is a single small client component so `aria-current` can follow the current route. It is prerendered into the static HTML, so it still works without JavaScript
+- `NavLinks.tsx` (T019) is the only client component (see research.md §6): it lets `aria-current` follow the current route, and it is prerendered into the static HTML, so it still works without JavaScript
 - Commit after each task or logical group
