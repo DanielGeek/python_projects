@@ -47,23 +47,62 @@ npm run lint
 npm run build
 ```
 
-## Adding Spec Kit to an Existing Project
+## Starting Spec Kit in a Project
 
-To start Spec Kit in a repository that already exists and has code (instead of creating a new folder),
-run `specify init` from the project root:
+Follow these steps in order. They work for a brand-new folder and for a repository that already has code.
 
-```bash
-cd path/to/your-existing-repo
-specify init --here --integration claude --extension git
-```
+1. **Check the CLI and your tools.** Confirms that `git` and your coding agent are available, and shows the CLI version.
 
-- `--here` (same as `.`) initializes in the current directory and keeps your existing files.
-- `--integration claude` installs the Spec Kit commands as Claude Code skills (`/speckit-*`).
-- `--extension git` also installs the git extension so each feature gets its own branch.
-- Add `--force` to skip the confirmation prompt when the directory is not empty.
-- Commit or stash your changes first so the files Spec Kit adds (`.specify/`, `.claude/skills/`) show up as a clean diff.
+   ```bash
+   specify check
+   specify self check     # optional: is there a newer CLI release? (read-only)
+   ```
 
-Then continue with `/speckit-constitution` (step 1 below).
+2. **Prepare the repository.** For an existing project, commit or stash your changes first so the files Spec Kit
+   adds (`.specify/`, `.claude/skills/`) show up as a clean diff. For a new project, create the folder (step 3 does it for you).
+
+3. **Initialize Spec Kit.**
+
+   ```bash
+   # New project: creates the folder
+   specify init my-project --integration claude --extension git
+
+   # Existing project: run from the repository root
+   cd path/to/your-existing-repo
+   specify init --here --integration claude --extension git
+   ```
+
+   - `--here` (same as `.`) initializes in the current directory and keeps your existing files.
+   - `--integration claude` installs the Spec Kit commands as Claude Code skills (`/speckit-*`).
+   - `--extension git` installs the git extension so each feature gets its own branch.
+   - Add `--force` to skip the confirmation prompt when the directory is not empty.
+
+4. **Verify the extensions.** Without the git extension all work lands on `main`.
+
+   ```bash
+   specify extension list        # "No extensions installed." = missing
+   specify extension add git     # install it if it is missing
+   ```
+
+5. **Verify the agent integration.** Shows what is installed, and lets you add or change agents later without re-initializing.
+
+   ```bash
+   specify integration status    # report the project's integration status, no files changed
+   specify integration list      # available integrations and which are installed
+   specify integration install <name>   # add another agent
+   specify integration switch <name>    # replace the current agent
+   ```
+
+6. **Open the agent and start the workflow.** Run `/speckit-constitution` (step 1 of the workflow below). In an existing
+   project, base the principles on what is already there, such as the versions in `package.json`.
+
+7. **Keep the tools up to date (any time).**
+
+   ```bash
+   specify version               # CLI and system information, useful when reporting problems
+   specify self upgrade          # upgrade the CLI to the latest release (or a pinned --tag)
+   specify integration upgrade <name>   # reinstall an integration, handling file diffs
+   ```
 
 ## Spec Kit Workflow
 
