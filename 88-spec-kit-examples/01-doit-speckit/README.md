@@ -137,4 +137,10 @@ Each goal can be checked using a checkbox and then either moved to the completed
 /speckit-plan
 ```
 
+### `/speckit-specify` — 2026-11-09
+
+```text
+/speckit-specify drag and drop - Let's make it so that users can reorder goals by dragging and dropping them above or below other goals in the list.
+```
+
 <!-- SPECKIT-COMMANDS:END -->
