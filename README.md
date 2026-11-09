@@ -2,7 +2,7 @@
 
 > **Senior Backend AI/ML Engineer specializing in Production-Ready LLM Applications**
 >
-> 87+ projects | 50K+ lines of code | 10+ production systems | RAG expert | Multi-agent orchestration | MLOps pipelines
+> 88+ projects | 50K+ lines of code | 10+ production systems | RAG expert | Multi-agent orchestration | MLOps pipelines
 
 [![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
 [![LangChain Expert](https://img.shields.io/badge/LangChain-Expert-green.svg)](https://langchain.com/)
@@ -914,6 +914,7 @@ def retrieve(query: str, k: int = 3) -> List[Dict]:
 
 ### **Full-Stack Applications**
 
+- **[88-spec-kit-examples/01-doit-speckit]** - Doit: goal-tracking board built with GitHub Spec Kit and Claude Code (Next.js 16, React 19, Tailwind 4, shadcn/ui); three specs from the initial board to a refined palette and drag-and-drop reordering with SortableJS
 - **[87-ClaudeCode/05-arcade-vault]** - Arcade Vault: spec-driven arcade game platform with Supabase Auth and a global leaderboard, live at [arcade-vault-zeta.vercel.app](https://arcade-vault-zeta.vercel.app/)
 - **[87-ClaudeCode/06-coffee-shop]** - Nogal Café: specialty-coffee storefront landing page built with Astro 7, Tailwind 4 and the Impeccable design commands
 - **[47-OpenAI-Supabase-Integration]** - DocuChat AI SaaS platform
@@ -1518,6 +1519,18 @@ Six projects built with Claude Code ([full overview](./87-ClaudeCode/README.md))
 
 ---
 
+### **📋 Spec-Driven Development**
+
+#### **88. Spec Kit Examples - Doit Goal Tracker**
+
+**Technologies**: GitHub Spec Kit, Claude Code, Next.js 16, React 19, Tailwind CSS 4, TypeScript, shadcn/ui, date-fns, SortableJS
+
+Examples of spec-driven development with [GitHub Spec Kit](https://github.com/github/spec-kit) ([full overview](./88-spec-kit-examples/README.md)). `01-doit-speckit` is **Doit**, a goal-tracking board with current and completed columns, built feature by feature: `001` the board itself, `002` a refined color palette, and `003` drag-and-drop reordering of goals with mouse, touch and keyboard. Each feature has its own spec, plan, tasks and manual quickstart, and the README keeps a log of the exact `/speckit-*` commands used so the workflow can be repeated.
+
+**Key Features**: Constitution-driven rules (clean code, simple UX, minimal dependencies, deliberately no automated tests), automatic feature branches through the Spec Kit git extension, `localStorage` persistence, accessible keyboard reordering with live announcements, instructions for adding Spec Kit to an existing project
+
+---
+
 ### **📚 Python Fundamentals & Learning Modules**
 
 #### **01-14. Python Learning Modules**
@@ -1605,7 +1618,7 @@ RATE_LIMIT=20/minute
 
 ## 📊 Project Statistics
 
-- **Total Projects**: 87+
+- **Total Projects**: 88+
 - **Lines of Code**: 50,000+
 - **Production Systems**: 10+
 - **AI/ML Projects**: 40+

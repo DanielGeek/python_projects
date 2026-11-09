@@ -16,6 +16,18 @@ Spec Kit commands used so the workflow can be repeated in new projects.
 `package.json` is the source of truth for versions. Next.js 16 has breaking changes, so read the guides in
 `node_modules/next/dist/docs/` before writing framework code.
 
+Other libraries: shadcn/ui for components, `date-fns` for date math, and `sortablejs` for drag-and-drop reordering.
+
+## Features
+
+Each feature lives in [`specs/`](specs) with its spec, plan, tasks, and a manual quickstart.
+
+| Spec | Feature |
+| --- | --- |
+| [`001-goal-tracking-board`](specs/001-goal-tracking-board/spec.md) | Two-column board, add-goal modal, complete or delete goals, due-soon highlight, `localStorage` persistence |
+| [`002-refine-color-palette`](specs/002-refine-color-palette/spec.md) | Refined color palette defined as Tailwind `@theme` tokens |
+| [`003-goal-drag-reorder`](specs/003-goal-drag-reorder/spec.md) | Reorder current goals by dragging (mouse, touch) or with the keyboard; the order is saved on the device |
+
 ## Project Principles
 
 Defined in [`.specify/memory/constitution.md`](.specify/memory/constitution.md) (v1.1.0):
