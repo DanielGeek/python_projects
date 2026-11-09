@@ -28,7 +28,7 @@ export function GoalCard({
       className={cn(
         "rounded-xl border p-4 shadow-sm",
         dueSoon
-          ? "border-2 border-peach-600 bg-peach-100"
+          ? "border-2 border-urgent-foreground bg-urgent"
           : "border-border bg-card",
       )}
     >
@@ -37,14 +37,14 @@ export function GoalCard({
           checked={checked}
           onCheckedChange={onCheckedChange}
           aria-label={`Select goal: ${goal.title}`}
-          className="mt-0.5 size-6 border-ink-soft after:-inset-2.5"
+          className="mt-0.5 size-6 after:-inset-2.5"
         />
         <div className="min-w-0 flex-1">
           <p className="font-medium break-words">{goal.title}</p>
           <p
             className={cn(
               "mt-1 flex items-center gap-1.5 text-sm",
-              dueSoon ? "font-medium text-peach-600" : "text-muted-foreground",
+              dueSoon ? "font-medium text-urgent-foreground" : "text-muted-foreground",
             )}
           >
             {dueSoon && <AlarmClockIcon className="size-4" aria-hidden="true" />}
