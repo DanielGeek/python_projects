@@ -37,15 +37,24 @@ npm run build
 
 ## Spec Kit Workflow
 
-Typical order of commands:
+Reference flow for spec-driven development with Spec Kit. The main path runs left to right; the two
+optional steps sit below the stage they refine.
 
-1. `/speckit-constitution` — define project principles
-2. `/speckit-specify` — describe a feature
-3. `/speckit-clarify` — resolve ambiguities (optional)
-4. `/speckit-plan` — create the technical plan
-5. `/speckit-tasks` — generate the task list
-6. `/speckit-analyze` — check consistency across artifacts (optional)
-7. `/speckit-implement` — build it
+```text
+/constitution ──▶ /specify ──▶ /plan ──▶ /tasks ──▶ /implement
+                      │            ▲         │            ▲
+                      └─ /clarify ─┘         └─ /analyze ─┘
+```
+
+| Step | Command | Purpose |
+| --- | --- | --- |
+| 1 | `/speckit-constitution` | Define the project principles and constraints. |
+| 2 | `/speckit-specify` | Describe the feature: what and why, not how. |
+| 2b | `/speckit-clarify` (optional) | Resolve ambiguities in the spec before planning. Run it after `/speckit-specify` and before `/speckit-plan`. |
+| 3 | `/speckit-plan` | Choose the technical approach and produce the design artifacts. |
+| 4 | `/speckit-tasks` | Generate the dependency-ordered task list. |
+| 4b | `/speckit-analyze` (optional) | Check spec, plan, and tasks for consistency. Run it after `/speckit-tasks` and before `/speckit-implement`. |
+| 5 | `/speckit-implement` | Build the feature by executing the tasks. |
 
 ## Commands
 
