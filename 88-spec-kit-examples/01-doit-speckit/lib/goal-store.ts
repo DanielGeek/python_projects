@@ -1,12 +1,16 @@
 import { useSyncExternalStore } from "react";
-import { isGoal, type Goal } from "@/lib/goals";
+import { isGoal, isIdList, type Goal } from "@/lib/goals";
 
 const STORAGE_KEY = "doit:goals:v1";
+const ORDER_STORAGE_KEY = "doit:goal-order:v1";
 
 const listeners = new Set<() => void>();
 
 /** In-memory copy of the goals; `null` until first read on the client. */
 let goals: Goal[] | null = null;
+
+/** Manual order of current goal ids; `null` = never reordered, `undefined` = not read yet. */
+let order: string[] | null | undefined;
 
 function readFromStorage(): Goal[] {
   try {
@@ -19,9 +23,24 @@ function readFromStorage(): Goal[] {
   }
 }
 
+function readOrderFromStorage(): string[] | null {
+  try {
+    const raw = localStorage.getItem(ORDER_STORAGE_KEY);
+    if (raw === null) return null;
+    const parsed: unknown = JSON.parse(raw);
+    return isIdList(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 function handleStorageEvent(event: StorageEvent): void {
-  if (event.key !== STORAGE_KEY && event.key !== null) return;
-  goals = readFromStorage();
+  if (event.key === null || event.key === STORAGE_KEY) {
+    goals = readFromStorage();
+  }
+  if (event.key === null || event.key === ORDER_STORAGE_KEY) {
+    order = readOrderFromStorage();
+  }
   notify();
 }
 
@@ -47,6 +66,11 @@ function getSnapshot(): Goal[] {
   return goals;
 }
 
+function getOrderSnapshot(): string[] | null {
+  if (order === undefined) order = readOrderFromStorage();
+  return order;
+}
+
 function getServerSnapshot(): null {
   return null;
 }
@@ -64,6 +88,22 @@ function save(next: Goal[]): void {
 /** All goals, or `null` while the first client snapshot is not available yet. */
 export function useGoals(): Goal[] | null {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+
+/** Manual order of current goal ids, or `null` while the user has never reordered. */
+export function useGoalOrder(): string[] | null {
+  return useSyncExternalStore(subscribe, getOrderSnapshot, getServerSnapshot);
+}
+
+/** Saves the user's manual order; from now on the list is no longer sorted by end date. */
+export function reorderGoals(ids: string[]): void {
+  order = ids;
+  try {
+    localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(ids));
+  } catch {
+    // Storage is full or unavailable: keep the in-memory order so the page stays usable.
+  }
+  notify();
 }
 
 export function addGoal(title: string, endDate: string): void {

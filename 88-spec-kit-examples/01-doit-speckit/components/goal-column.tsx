@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode, Ref } from "react";
 import { cn } from "@/lib/utils";
 
 type GoalColumnProps = {
@@ -6,6 +6,7 @@ type GoalColumnProps = {
   count: number;
   emptyMessage: string;
   className?: string;
+  listRef?: Ref<HTMLUListElement>;
   children: ReactNode;
 };
 
@@ -14,6 +15,7 @@ export function GoalColumn({
   count,
   emptyMessage,
   className,
+  listRef,
   children,
 }: GoalColumnProps) {
   return (
@@ -33,7 +35,10 @@ export function GoalColumn({
       {count === 0 ? (
         <p className="mt-4 text-sm text-muted-foreground">{emptyMessage}</p>
       ) : (
-        <ul className="mt-4 flex min-h-0 flex-col gap-3 overflow-y-auto">
+        <ul
+          ref={listRef}
+          className="mt-4 flex min-h-0 flex-col gap-3 overflow-y-auto"
+        >
           {children}
         </ul>
       )}
