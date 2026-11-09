@@ -72,4 +72,10 @@ This application should be a goal tracking web app called Doit. There should be 
 Each goal can be checked using a checkbox and then either moved to the completed goals or permanently deleted. To add new goals, a user can click on a button to open a new goal form in a modal. Title and end date fields. Goals reaching their end date within 3 days are highlighted. Lex uses a modern light theme with soft pastel colors.
 ```
 
+### `/speckit-clarify` — 2026-11-08
+
+```text
+/speckit-clarify
+```
+
 <!-- SPECKIT-COMMANDS:END -->

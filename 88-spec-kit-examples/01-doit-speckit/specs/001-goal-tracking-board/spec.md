@@ -8,6 +8,14 @@
 
 **Input**: User description: "Initial page setup. This application should be a goal tracking web app called Doit. There should be two columns: a left one where current goals are shown, along with how many days left the user has to achieve the goal, and a right one where completed goals are. Each goal can be checked using a checkbox and then either moved to the completed goals or permanently deleted. To add new goals, a user can click on a button to open a new goal form in a modal. Title and end date fields. Goals reaching their end date within 3 days are highlighted. Uses a modern light theme with soft pastel colors."
 
+## Clarifications
+
+### Session 2026-11-08
+
+- Q: In what order should goals appear in the current goals column? → A: By end date, nearest first
+- Q: What should happen when the user chooses "Delete permanently" on a goal? → A: Ask for confirmation before deleting
+- Q: What should the user see in the completed goals column besides each goal's title? → A: Title and completion date
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Add a goal and see it on the board (Priority: P1)
@@ -51,10 +59,12 @@ left column and appears in the right column.
 1. **Given** a current goal, **When** the user checks its checkbox, **Then** the user is offered
    "Move to completed" and "Delete permanently" actions for that goal.
 2. **Given** the checkbox is checked, **When** the user chooses "Move to completed", **Then** the goal
-   disappears from the left column and appears in the right column.
-3. **Given** the checkbox is checked, **When** the user chooses "Delete permanently", **Then** the
-   goal is removed from the board and does not appear in either column.
-4. **Given** the checkbox is checked, **When** the user unchecks it, **Then** the goal returns to
+   disappears from the left column and appears in the right column with its title and today's date as the completion date.
+3. **Given** the checkbox is checked, **When** the user chooses "Delete permanently" and confirms,
+   **Then** the goal is removed from the board and does not appear in either column.
+4. **Given** the delete confirmation is shown, **When** the user cancels, **Then** the goal stays
+   in the current column unchanged.
+5. **Given** the checkbox is checked, **When** the user unchecks it, **Then** the goal returns to
    its normal state and no action is taken.
 
 ---
@@ -125,18 +135,19 @@ unchanged.
 - **FR-005**: The form MUST have a title field and an end date field, and both MUST be required.
 - **FR-006**: The system MUST reject an empty title and an end date earlier than today, with a clear message.
 - **FR-007**: Each current goal MUST have a checkbox; checking it MUST offer the actions "Move to completed" and "Delete permanently".
-- **FR-008**: "Move to completed" MUST remove the goal from the left column and show it in the right column.
-- **FR-009**: "Delete permanently" MUST remove the goal from the board entirely.
+- **FR-008**: "Move to completed" MUST remove the goal from the left column, record the completion date, and show the goal in the right column with its title and completion date.
+- **FR-009**: "Delete permanently" MUST first ask the user to confirm; only after confirmation MUST it remove the goal from the board entirely, and cancelling MUST leave the goal unchanged.
 - **FR-010**: Current goals with 3 or fewer days left (including due today and overdue) MUST be visually highlighted.
 - **FR-011**: The modal MUST be dismissible via a cancel control, the Escape key, or a click outside it.
 - **FR-012**: The app MUST persist goals on the user's device so they remain after reload or revisit.
 - **FR-013**: The layout MUST remain usable from phone to desktop widths, with no horizontal page scroll.
 - **FR-014**: The interface MUST use a modern light theme with soft pastel colors, keeping text readable against backgrounds.
 - **FR-015**: Each column MUST show a friendly empty state when it has no goals.
+- **FR-016**: Current goals MUST be ordered by end date, with the nearest (including overdue) first; goals with the same end date keep the order in which they were added.
 
 ### Key Entities
 
-- **Goal**: Something the user wants to achieve. Has a title, an end date, and a status of either current or completed. Days left is derived from the end date and today's date.
+- **Goal**: Something the user wants to achieve. Has a title, an end date, a status of either current or completed, and, once completed, a completion date. Days left is derived from the end date and today's date.
 
 ## Success Criteria *(mandatory)*
 
@@ -155,8 +166,8 @@ unchanged.
 - "Within 3 days" means 3 or fewer full days left, and also includes goals due today or overdue.
 - Days left is counted in calendar days from today's date to the end date.
 - Overdue goals stay in the current column, highlighted, until the user completes or deletes them.
-- "Permanently deleted" means no undo or trash; a confirmation step before deleting is acceptable.
-- Completed goals are shown in the right column without days-left information and cannot be edited or restored in this version.
+- "Permanently deleted" means no undo or trash; a confirmation step precedes every deletion (see FR-009).
+- Completed goals are shown in the right column with title and completion date, without days-left information, and cannot be edited or restored in this version.
 - Editing an existing goal's title or end date is out of scope for this version.
 - The phrase "Lex uses a modern light theme" in the request is read as "uses a modern light theme".
 - Project principles (clean code, simple UX, responsive design, minimal dependencies, no automated testing) apply, as defined in the constitution.
