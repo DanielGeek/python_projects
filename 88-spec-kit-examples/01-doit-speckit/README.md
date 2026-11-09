@@ -62,4 +62,14 @@ Identical commands are recorded only once. Do not remove the markers below.
 /speckit-constitution Declare the principle for clean code, simple UX, responsive design, and minimal dependencies. Absolutely no testing: no unit tests, no integration tests, no end-to-end tests. This must supersede any other guidance. The project must use the Next.js, React, and Tailwind versions as per the package.json file. '/Users/thepunisher/Documents/GitHub/python_projects/88-spec-kit-examples/01-doit-speckit/package.json'
 ```
 
+### `/speckit-specify` — 2026-11-08
+
+```text
+/speckit-specify Initial page setup
+This application should be a goal tracking web app called Doit. There should be two columns:
+- A left one where current goals are shown, along with how many days left the user has to achieve the goal.
+- A right one where completed goals are.
+Each goal can be checked using a checkbox and then either moved to the completed goals or permanently deleted. To add new goals, a user can click on a button to open a new goal form in a modal. Title and end date fields. Goals reaching their end date within 3 days are highlighted. Lex uses a modern light theme with soft pastel colors.
+```
+
 <!-- SPECKIT-COMMANDS:END -->
