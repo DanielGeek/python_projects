@@ -18,7 +18,7 @@ Spec Kit commands used so the workflow can be repeated in new projects.
 
 ## Project Principles
 
-Defined in [`.specify/memory/constitution.md`](.specify/memory/constitution.md) (v1.0.0):
+Defined in [`.specify/memory/constitution.md`](.specify/memory/constitution.md) (v1.1.0):
 
 1. **Clean code** — small, single-purpose, strictly typed, lint-clean.
 2. **Simple UX** — one primary action per screen, plain language, keyboard accessible.
@@ -76,6 +76,12 @@ Each goal can be checked using a checkbox and then either moved to the completed
 
 ```text
 /speckit-clarify
+```
+
+### `/speckit-plan` — 2026-11-08
+
+```text
+/speckit-plan Plant this using Tailwind @theme for theme colors, local storage for goals, and shadcn for UI components. Use date-fns for data formatting. No unit tests, integration tests, or end-to-end tests needed.
 ```
 
 <!-- SPECKIT-COMMANDS:END -->

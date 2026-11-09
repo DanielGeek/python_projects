@@ -1,10 +1,11 @@
 <!--
 SYNC IMPACT REPORT (temporary; remove before commit)
-Version change: (unfilled template) → 1.0.0
-Modified principles: none (initial ratification; all placeholders replaced)
-Added principles: I. Clean Code; II. Simple UX; III. Responsive Design;
-  IV. Minimal Dependencies; V. No Testing (NON-NEGOTIABLE, supersedes all)
-Added sections: Technology Stack; Development Workflow
+Version change: 1.0.0 → 1.1.0 (MINOR: materially expanded Technology Stack guidance)
+Modified principles: none (Principle IV text unchanged; its justification rule is
+  satisfied by the approved-libraries list in Technology Stack)
+Added sections: none
+Modified sections: Technology Stack (replaced "no additional UI component libraries"
+  with approved shadcn/ui and date-fns, plus @theme token rule)
 Removed sections: none
 Deferred TODOs: none
 -->
@@ -69,7 +70,14 @@ Rationale: the project deliberately favors speed and simplicity over automated t
   upgraded, downgraded, or replaced without amending this constitution.
 - Next.js 16 has breaking changes; contributors MUST read the relevant guide in
   `node_modules/next/dist/docs/` before writing framework code (see `AGENTS.md`).
-- Styling MUST use Tailwind utilities; no additional CSS frameworks or UI component libraries.
+- Styling MUST use Tailwind utilities, with theme colors defined as tokens in a Tailwind `@theme` block.
+- shadcn/ui is the approved UI component set. Components MUST be added only as needed, and its
+  supporting packages (Radix UI, `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`,
+  `tw-animate-css`) are permitted as part of it.
+- `date-fns` is the approved library for date math and formatting; native `Date` arithmetic MUST NOT
+  be used for calendar-day calculations.
+- No other CSS frameworks, UI component libraries, or date libraries may be added without amending
+  this constitution.
 
 ## Development Workflow
 
@@ -90,4 +98,4 @@ In particular, Principle V overrides any instruction that calls for testing.
 - **Compliance review**: Every spec, plan, task list, and pull request MUST be checked
   against this constitution; violations MUST be resolved or the constitution amended first.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-08 | **Last Amended**: 2026-11-08
+**Version**: 1.1.0 | **Ratified**: 2026-11-08 | **Last Amended**: 2026-11-08
