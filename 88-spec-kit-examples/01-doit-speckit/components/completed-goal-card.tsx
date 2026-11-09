@@ -6,10 +6,10 @@ type CompletedGoalCardProps = {
 
 export function CompletedGoalCard({ goal }: CompletedGoalCardProps) {
   return (
-    <li className="rounded-xl border border-border bg-card p-4 shadow-sm">
+    <li className="rounded-xl border border-border bg-done p-4 shadow-sm">
       <p className="font-medium break-words">{goal.title}</p>
       {goal.completedAt && (
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-sm text-done-foreground">
           Completed {formatDisplayDate(goal.completedAt)}
         </p>
       )}

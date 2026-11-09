@@ -5,57 +5,54 @@
 /* Light theme only: `.dark` is never applied, so shadcn `dark:` utilities stay inert. */
 @custom-variant dark (&:is(.dark *));
 
-/* Soft pastel palette. Each `-600` shade is dark enough for text on its pastel family. */
+/*
+ * Color roles (see specs/002-refine-color-palette/contracts/color-roles.md).
+ * Text pairs are at least 4.5:1; control borders and focus rings are at least 3:1.
+ */
 @theme {
-  --color-mint-50: #effaf4;
-  --color-mint-100: #d6f3e3;
-  --color-mint-200: #b4e8cc;
-  --color-mint-600: #2b7556;
+  --color-cream: #faf8f5;
+  --color-surface: #ffffff;
+  --color-line: #e6e0d6;
+  --color-control: #7c7690;
 
-  --color-lavender-50: #f6f3fd;
-  --color-lavender-100: #e9e3f9;
-  --color-lavender-200: #d4c9f2;
-  --color-lavender-600: #5f4aa8;
+  --color-ink: #1f1b2e;
+  --color-ink-soft: #5b566b;
 
-  --color-peach-50: #fff5ed;
-  --color-peach-100: #ffe5d2;
-  --color-peach-200: #ffd0b0;
-  --color-peach-600: #a8480f;
+  --color-brand: #6d4aff;
+  --color-brand-strong: #5b3ae6;
 
-  --color-rose-50: #fff1f4;
-  --color-rose-100: #ffdce3;
-  --color-rose-200: #ffbfcd;
-  --color-rose-600: #b0304f;
+  --color-urgent: #ffe8d6;
+  --color-urgent-foreground: #b4410c;
 
-  --color-sky-50: #f0f8fd;
-  --color-sky-100: #daeefb;
-  --color-sky-200: #badef4;
-  --color-sky-600: #25688f;
+  --color-done: #e3f5ec;
+  --color-done-foreground: #1f7a4d;
 
-  --color-ink: #2a2640;
-  --color-ink-soft: #57516f;
+  --color-danger: #b01d36;
+  --color-danger-soft: #fbe4e8;
 }
 
-/* shadcn/ui semantic tokens mapped onto the palette above. */
+/* shadcn/ui semantic tokens mapped onto the color roles above. */
 :root {
-  --background: var(--color-lavender-50);
+  color-scheme: light;
+
+  --background: var(--color-cream);
   --foreground: var(--color-ink);
-  --card: #ffffff;
+  --card: var(--color-cream);
   --card-foreground: var(--color-ink);
-  --popover: #ffffff;
+  --popover: var(--color-surface);
   --popover-foreground: var(--color-ink);
-  --primary: var(--color-lavender-600);
+  --primary: var(--color-brand);
   --primary-foreground: #ffffff;
-  --secondary: var(--color-mint-100);
+  --secondary: var(--color-line);
   --secondary-foreground: var(--color-ink);
-  --muted: var(--color-lavender-100);
+  --muted: var(--color-line);
   --muted-foreground: var(--color-ink-soft);
-  --accent: var(--color-lavender-100);
+  --accent: var(--color-line);
   --accent-foreground: var(--color-ink);
-  --destructive: var(--color-rose-600);
-  --border: var(--color-lavender-200);
-  --input: var(--color-lavender-200);
-  --ring: var(--color-lavender-600);
+  --destructive: var(--color-danger);
+  --border: var(--color-line);
+  --input: var(--color-control);
+  --ring: var(--color-brand);
   --radius: 0.75rem;
 }
 

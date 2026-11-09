@@ -53,7 +53,7 @@ export function GoalBoard() {
           title="Current goals"
           count={currentGoals.length}
           emptyMessage="Goals you are working on show up here. Add your first goal to get started."
-          className="border-sky-200 bg-sky-50"
+          className="border-line bg-surface"
         >
           {currentGoals.map((goal) => (
             <GoalCard
@@ -74,7 +74,7 @@ export function GoalBoard() {
           title="Completed goals"
           count={completedGoals.length}
           emptyMessage="Goals you finish move here, so you can see what you have achieved."
-          className="border-mint-200 bg-mint-50"
+          className="border-line bg-surface"
         >
           {completedGoals.map((goal) => (
             <CompletedGoalCard key={goal.id} goal={goal} />
@@ -107,8 +107,8 @@ function BoardPlaceholder() {
     >
       <h1 className="text-3xl font-semibold tracking-tight">Doit</h1>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="h-48 rounded-2xl bg-muted/50" />
-        <div className="h-48 rounded-2xl bg-muted/50" />
+        <div className="h-48 rounded-2xl bg-line" />
+        <div className="h-48 rounded-2xl bg-line" />
       </div>
     </main>
   );
