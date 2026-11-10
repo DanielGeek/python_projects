@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { isGoal, isIdList, type Goal } from "@/lib/goals";
+import { isGoal, isIdList, orderCurrent, type Goal } from "@/lib/goals";
 
 const STORAGE_KEY = "doit:goals:v1";
 const ORDER_STORAGE_KEY = "doit:goal-order:v1";
@@ -129,24 +129,26 @@ export function completeGoal(id: string, today: string): void {
 }
 
 export function updateGoal(id: string, title: string, endDate: string): void {
+  const previousGoals = getSnapshot();
+  if (!previousGoals.some((goal) => goal.id === id)) return;
   save(
-    getSnapshot().map((goal) =>
+    previousGoals.map((goal) =>
       goal.id === id ? { ...goal, title: title.trim(), endDate } : goal,
     ),
   );
 }
 
-/** Moves a completed goal back to current; it returns to the end-date position unless the list was manually ordered. */
+/** Moves a completed goal back to Current, last in the list (a manual order is pinned and the goal appended). */
 export function reopenGoal(id: string): void {
-  goals = getSnapshot().map((goal) =>
-    goal.id === id
-      ? { ...goal, status: "current", completedAt: null }
-      : goal,
+  const previousGoals = getSnapshot();
+  if (!previousGoals.some((goal) => goal.id === id && goal.status === "completed")) return;
+  const currentOrder = getOrderSnapshot();
+  goals = previousGoals.map((goal) =>
+    goal.id === id ? { ...goal, status: "current", completedAt: null } : goal,
   );
   persist(STORAGE_KEY, goals);
-  const currentOrder = getOrderSnapshot();
   if (currentOrder !== null) {
-    order = currentOrder.filter((orderedId) => orderedId !== id);
+    order = [...orderCurrent(previousGoals, currentOrder).map((goal) => goal.id), id];
     persist(ORDER_STORAGE_KEY, order);
   }
   notify();

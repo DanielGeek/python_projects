@@ -34,7 +34,10 @@ export function GoalBoard() {
   const currentGoals = orderCurrent(goals, order);
   const completedGoals = sortCompleted(goals);
   const pendingDelete = goals.find((goal) => goal.id === pendingDeleteId);
-  const editingGoal = goals.find((goal) => goal.id === editingId);
+  const editingGoal = goals.find(
+    (goal) => goal.id === editingId && goal.status === "current",
+  );
+  if (editingId !== null && editingGoal === undefined) setEditingId(null);
 
   function setChecked(id: string, checked: boolean) {
     setCheckedIds((previous) => {
@@ -90,7 +93,10 @@ export function GoalBoard() {
             <CompletedGoalCard
               key={goal.id}
               goal={goal}
-              onReopen={() => reopenGoal(goal.id)}
+              onReopen={() => {
+                reopenGoal(goal.id);
+                setChecked(goal.id, false);
+              }}
             />
           ))}
         </GoalColumn>
