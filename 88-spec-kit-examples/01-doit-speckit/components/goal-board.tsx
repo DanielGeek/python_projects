@@ -11,6 +11,7 @@ import {
   addGoal,
   completeGoal,
   deleteGoal,
+  reopenGoal,
   reorderGoals,
   updateGoal,
   useGoalOrder,
@@ -86,7 +87,11 @@ export function GoalBoard() {
           className="border-line bg-surface"
         >
           {completedGoals.map((goal) => (
-            <CompletedGoalCard key={goal.id} goal={goal} />
+            <CompletedGoalCard
+              key={goal.id}
+              goal={goal}
+              onReopen={() => reopenGoal(goal.id)}
+            />
           ))}
         </GoalColumn>
       </div>
