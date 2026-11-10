@@ -83,7 +83,7 @@ Most likely first. Each is pinned by a manual-check step in the owning task.
 
 - [ ] **Step 2: Add `updateGoal` and `reopenGoal`** in `lib/goal-store.ts`.
   - `updateGoal`: map over `getSnapshot()`; for the matching id, set `title` to `title.trim()` and `endDate`; leave every other field and the manual order alone; persist via `save`. An unknown id changes nothing.
-  - `reopenGoal`: for the matching completed goal set `status: "current"` and `completedAt: null` (title and end date kept). If `getOrderSnapshot()` is not `null`, also set `order` to a copy without this id. Persist both keys and call `notify()` **once**. An unknown id changes nothing.
+  - `reopenGoal`: for the matching completed goal set `status: "current"` and `completedAt: null` (title and end date kept). If `getOrderSnapshot()` is not `null`, also set `order` to the displayed order (`orderCurrent` of the goals before the flip) plus this id. Persist both keys and call `notify()` **once**. An unknown id, or a goal that is not completed, changes nothing.
   - Persistence refactor to support this: extract a private `persist(key: string, value: unknown): void` (the existing try/catch around `localStorage.setItem(key, JSON.stringify(value))`, same swallow-and-keep-in-memory comment). Use it in `save`, `reorderGoals` and `reopenGoal`. Behavior of `save` and `reorderGoals` must not change.
 
 - [ ] **Step 3: Rename the dialog.** Run `git mv components/add-goal-dialog.tsx components/goal-dialog.tsx`.

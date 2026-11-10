@@ -21,14 +21,14 @@ Users can fix a typo or move the deadline on a **current** goal, and can bring a
 | Question | Decision |
 |---|---|
 | Editing an overdue goal: keep its past end date? | **Yes.** A past date is accepted only if it equals the goal's current end date. Any newly picked date must be today or later. |
-| Where does a reopened goal go in the manual order? | **End of the Current list.** `reopenGoal` removes the goal's id from the manual order. With no manual order, the end-date sort applies as usual. |
+| Where does a reopened goal go in the manual order? | **End of the Current list.** `reopenGoal` pins the displayed order and appends the goal's id. With no manual order, the end-date sort applies as usual. |
 | Where does Edit live? | In the existing action row revealed by ticking a current goal's checkbox (next to "Move to completed" and "Delete permanently"). |
 | Where does Reopen live? | A button directly on each completed card. |
 | Dialog strategy | Generalize the add dialog into one dialog with add and edit modes. |
 
 ### Why reopen must touch the manual order
 
-`completeGoal` never removes a goal's id from the stored manual order (`doit:goal-order:v1`). `orderCurrent` ignores ids that are not current, but keeps them in the list. If `reopenGoal` only flipped the status, the goal would jump back to its **old manual position**. Removing the id makes it count as "added later", so `orderCurrent` places it last.
+`completeGoal` never removes a goal's id from the stored manual order (`doit:goal-order:v1`). `orderCurrent` ignores ids that are not current, but keeps them in the list. If `reopenGoal` only flipped the status, the goal would jump back to its **old manual position**. Removing the id would not be enough either: goals added after the last drag are also "unplaced" and sorted by `createdAt`, so an older reopened goal would land above them. Instead `reopenGoal` writes the displayed order (`orderCurrent` on the goals before the status flip) plus the reopened id, so it is always last.
 
 ## Design
 
@@ -39,7 +39,7 @@ Users can fix a typo or move the deadline on a **current** goal, and can bring a
 ### `lib/goal-store.ts`
 
 - `updateGoal(id, title, endDate)`: maps over `getSnapshot()`, replaces `title` (trimmed) and `endDate` on the matching goal, then calls `save`. Status, `createdAt`, `completedAt` and manual order are untouched. No-op if the id is not found.
-- `reopenGoal(id)`: sets `status: "current"` and `completedAt: null`, keeping title and end date, via `save`. If a manual order exists, it also writes a copy of the order without this id. No-op if the id is not found.
+- `reopenGoal(id)`: sets `status: "current"` and `completedAt: null`, keeping title and end date, via `save`. If a manual order exists, it also pins the currently displayed order and appends this id (with no manual order none is created). No-op if the id is not found or the goal is not completed.
 - Extract the order-persisting body of `reorderGoals` (set in-memory `order`, write localStorage in try/catch, `notify`) into a small shared helper used by both `reorderGoals` and `reopenGoal`. Avoid notifying twice for a single reopen if it can be done cleanly (update both module variables, persist both keys, notify once).
 
 ### `components/goal-dialog.tsx` (renamed from `add-goal-dialog.tsx` with `git mv`)
