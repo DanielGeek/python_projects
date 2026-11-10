@@ -12,6 +12,7 @@ import {
   completeGoal,
   deleteGoal,
   reorderGoals,
+  updateGoal,
   useGoalOrder,
   useGoals,
 } from "@/lib/goal-store";
@@ -25,12 +26,14 @@ export function GoalBoard() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [checkedIds, setCheckedIds] = useState<ReadonlySet<string>>(new Set());
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   if (goals === null || today === null) return <BoardPlaceholder />;
 
   const currentGoals = orderCurrent(goals, order);
   const completedGoals = sortCompleted(goals);
   const pendingDelete = goals.find((goal) => goal.id === pendingDeleteId);
+  const editingGoal = goals.find((goal) => goal.id === editingId);
 
   function setChecked(id: string, checked: boolean) {
     setCheckedIds((previous) => {
@@ -46,6 +49,12 @@ export function GoalBoard() {
     deleteGoal(pendingDeleteId);
     setChecked(pendingDeleteId, false);
     setPendingDeleteId(null);
+  }
+
+  function handleEditSubmit(title: string, endDate: string) {
+    if (!editingGoal) return;
+    updateGoal(editingGoal.id, title, endDate);
+    setChecked(editingGoal.id, false);
   }
 
   return (
@@ -66,6 +75,7 @@ export function GoalBoard() {
             completeGoal(goal.id, today);
             setChecked(goal.id, false);
           }}
+          onEdit={setEditingId}
           onDelete={setPendingDeleteId}
           onReorder={reorderGoals}
         />
@@ -86,6 +96,18 @@ export function GoalBoard() {
         today={today}
         onSubmit={addGoal}
       />
+      {editingGoal && (
+        <GoalDialog
+          key={editingGoal.id}
+          open
+          onOpenChange={(open) => {
+            if (!open) setEditingId(null);
+          }}
+          today={today}
+          goal={editingGoal}
+          onSubmit={handleEditSubmit}
+        />
+      )}
       <DeleteGoalDialog
         open={pendingDelete !== undefined}
         onOpenChange={(open) => {

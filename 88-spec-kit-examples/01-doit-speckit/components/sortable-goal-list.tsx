@@ -13,6 +13,7 @@ type SortableGoalColumnProps = {
   checkedIds: ReadonlySet<string>;
   onCheckedChange: (id: string, checked: boolean) => void;
   onComplete: (goal: Goal) => void;
+  onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onReorder: (ids: string[]) => void;
 };
@@ -23,6 +24,7 @@ export function SortableGoalColumn({
   checkedIds,
   onCheckedChange,
   onComplete,
+  onEdit,
   onDelete,
   onReorder,
 }: SortableGoalColumnProps) {
@@ -59,6 +61,7 @@ export function SortableGoalColumn({
             checked={checkedIds.has(goal.id)}
             onCheckedChange={(checked) => onCheckedChange(goal.id, checked)}
             onComplete={() => onComplete(goal)}
+            onEdit={() => onEdit(goal.id)}
             onDelete={() => onDelete(goal.id)}
             showHandle={goals.length > 1}
             handleProps={getHandleProps(goal.id, goal.title)}

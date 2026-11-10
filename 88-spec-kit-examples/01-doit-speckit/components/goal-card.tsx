@@ -11,6 +11,7 @@ type GoalCardProps = {
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
   onComplete: () => void;
+  onEdit: () => void;
   onDelete: () => void;
   /** Shows the "Move" handle used to reorder the goal. */
   showHandle: boolean;
@@ -25,6 +26,7 @@ export function GoalCard({
   checked,
   onCheckedChange,
   onComplete,
+  onEdit,
   onDelete,
   showHandle,
   handleProps,
@@ -78,6 +80,9 @@ export function GoalCard({
         <div className="mt-3 flex flex-wrap gap-2">
           <Button className="h-11" onClick={onComplete}>
             Move to completed
+          </Button>
+          <Button variant="outline" className="h-11" onClick={onEdit}>
+            Edit
           </Button>
           <Button variant="destructive" className="h-11" onClick={onDelete}>
             Delete permanently
