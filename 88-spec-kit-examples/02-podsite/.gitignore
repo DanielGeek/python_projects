@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+
+# build output
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# test output
+playwright-report/
+test-results/
+coverage/
+
+# env
+.env*.local
+
+# logs / OS / editor
+*.log
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/

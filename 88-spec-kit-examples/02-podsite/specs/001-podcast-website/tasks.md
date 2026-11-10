@@ -23,14 +23,14 @@ description: "Task list for the Podcast Website feature"
 
 **Purpose**: Project initialization and tooling
 
-- [ ] T001 Create `package.json` with scripts `dev` (`next dev`), `build` (`next build`), `start:static` (serve `./out` on port 4173, e.g. `npx serve out -l 4173`), `lint`, `test` (`vitest run`), `test:e2e` (`playwright test`); dependencies `next@16`, `react@19`, `react-dom@19`; devDependencies `typescript`, `@types/node`, `@types/react`, `@types/react-dom`, `eslint`, `eslint-config-next`, `vitest`, `ajv`, `ajv-formats`, `@playwright/test`, `@axe-core/playwright`, `serve`; set `"engines": { "node": ">=20.9" }`
-- [ ] T002 [P] Create `tsconfig.json` (strict mode, `moduleResolution: bundler`, path alias `@/*` → `src/*`, Next.js plugin) at repository root
-- [ ] T003 [P] Create `next.config.mjs` with `output: 'export'`, `trailingSlash: true`, `images: { unoptimized: true }` (no `basePath`; see research.md §2, §4, §11)
-- [ ] T004 [P] Create `vitest.config.ts` (node environment, include `tests/unit/**/*.test.ts`, alias `@` → `src`)
-- [ ] T005 [P] Create `playwright.config.ts` (testDir `tests/e2e`, chromium only, `webServer` runs `npm run start:static` against `./out` on `http://localhost:4173`, `reuseExistingServer: true`)
-- [ ] T006 [P] Create `.gitignore` ignoring `node_modules/`, `.next/`, `out/`, `playwright-report/`, `test-results/`, `next-env.d.ts`, `.env*.local`
-- [ ] T007 [P] Create `eslint.config.mjs` extending the Next.js core-web-vitals config
-- [ ] T008 Run `npm install` and `npx playwright install chromium`; confirm `npx tsc --noEmit` has no config errors
+- [X] T001 Create `package.json` with scripts `dev` (`next dev`), `build` (`next build`), `start:static` (serve `./out` on port 4173, e.g. `npx serve out -l 4173`), `lint`, `test` (`vitest run`), `test:e2e` (`playwright test`); dependencies `next@16`, `react@19`, `react-dom@19`; devDependencies `typescript`, `@types/node`, `@types/react`, `@types/react-dom`, `eslint`, `eslint-config-next`, `vitest`, `ajv`, `ajv-formats`, `@playwright/test`, `@axe-core/playwright`, `serve`; set `"engines": { "node": ">=20.9" }`
+- [X] T002 [P] Create `tsconfig.json` (strict mode, `moduleResolution: bundler`, path alias `@/*` → `src/*`, Next.js plugin) at repository root
+- [X] T003 [P] Create `next.config.mjs` with `output: 'export'`, `trailingSlash: true`, `images: { unoptimized: true }` (no `basePath`; see research.md §2, §4, §11)
+- [X] T004 [P] Create `vitest.config.ts` (node environment, include `tests/unit/**/*.test.ts`, alias `@` → `src`)
+- [X] T005 [P] Create `playwright.config.ts` (testDir `tests/e2e`, chromium only, `webServer` runs `npm run start:static` against `./out` on `http://localhost:4173`, `reuseExistingServer: true`)
+- [X] T006 [P] Create `.gitignore` ignoring `node_modules/`, `.next/`, `out/`, `playwright-report/`, `test-results/`, `next-env.d.ts`, `.env*.local`
+- [X] T007 [P] Create `eslint.config.mjs` extending the Next.js core-web-vitals config
+- [X] T008 Run `npm install` and `npx playwright install chromium`; confirm `npx tsc --noEmit` has no config errors
 
 ---
 
@@ -40,20 +40,20 @@ description: "Task list for the Podcast Website feature"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T009 [P] Create `src/lib/types.ts` exporting `Podcast`, `Host` and `Episode` types exactly as in data-model.md (`Episode`: `number` integer, `title` string, `description` string, `publishedAt` `YYYY-MM-DD` string, `durationSeconds` integer, `guests` string[], `topics` string[], `featured` boolean)
-- [ ] T010 [P] Create `src/data/podcast.ts` exporting the `podcast` object: fictional `name`, `tagline`, `description`, `premise`, and `followLinks` (≥ 1 placeholder `{ label, href }`)
-- [ ] T011 [P] Create `src/data/hosts.ts` exporting `hosts: Host[]` with ≥ 1 host (id slug, name, short bio; no photo required)
-- [ ] T012 Create `src/data/episodes.ts` exporting `episodes: Episode[]` with 20 mocked records. Constraints from data-model.md, verbatim: "Exactly 20 episodes; `number` values are unique and cover 1–20", "Exactly 1 episode has `featured: true` (default: the highest-numbered/most recent)", "`publishedAt` is a valid date and unique", "`durationSeconds` is a positive integer", `topics` has ≥ 1 tag, `guests` may be empty. Include at least one episode with a very long title and description (edge case) and at least two episodes with no guests (depends on T009)
-- [ ] T013 Create `src/lib/episodes.ts` exporting `sortNewestFirst(episodes)`, `getFeatured(episodes)` (returns the single `featured` episode), `formatDuration(seconds)` (`H:MM:SS` when ≥ 1 h, else `M:SS`), `formatDate(isoDate)` (e.g. "Nov 9, 2026"), and `shortDescription(text, maxChars)` (depends on T009)
-- [ ] T014 [P] Create `tests/unit/episodes.data.test.ts`: validate `episodes` against `specs/001-podcast-website/contracts/episode.schema.json` using `ajv/dist/2020` + `ajv-formats`, and assert unique `number` values covering 1–20, unique `publishedAt`, exactly one `featured` (depends on T012)
-- [ ] T015 [P] Create `tests/unit/episodes.lib.test.ts` covering `sortNewestFirst` (descending by date), `getFeatured`, `formatDuration` (e.g. 59 → `0:59`, 3725 → `1:02:05`) and `shortDescription` truncation (depends on T013)
-- [ ] T016 [P] Create `src/app/globals.css`: design tokens as CSS custom properties (dark editorial palette with one bold accent, fluid type scale via `clamp()`, spacing scale), minimal reset, `:focus-visible` outline, `prefers-reduced-motion` handling, `.visually-hidden` and skip-link styles; text contrast ≥ 4.5:1 and touch targets ≥ 44px (research.md §5, §7)
-- [ ] T017 [P] Create `src/components/CoverArt.tsx` + `src/components/CoverArt.module.css`: server component rendering deterministic inline SVG/CSS art from `number` and first `topic` (research.md §4), `role="img"` with `aria-label` built from the episode title; always renders (acts as its own fallback)
-- [ ] T018 [P] Create `src/components/JsonLd.tsx`: renders `<script type="application/ld+json">` from a `data` prop
-- [ ] T019 [P] Create `src/components/NavLinks.tsx` as a small client component using `usePathname()` to set `aria-current="page"` on the active link for `/`, `/episodes/`, `/about/`, `/facts/` (it is prerendered, so the attribute is present in the static HTML)
-- [ ] T020 Create `src/components/SiteHeader.tsx` + `src/components/SiteHeader.module.css`: podcast name linking to `/`, `<nav>` using `NavLinks`, mobile menu via `<details>`/`<summary>` (works without JS) (depends on T019)
-- [ ] T021 [P] Create `src/components/SiteFooter.tsx` + `src/components/SiteFooter.module.css`: shared footer with nav repeat, follow links and copyright
-- [ ] T022 Create `src/app/layout.tsx`: `<html lang="en">`, fonts via `next/font` (self-hosted), import `globals.css`, skip-to-content link as first focusable element, `SiteHeader`, `<main id="main">`, `SiteFooter`, default `metadata` with `metadataBase` from `process.env.NEXT_PUBLIC_SITE_URL` (placeholder default `https://example.com`) and Open Graph defaults (depends on T016, T020, T021)
+- [X] T009 [P] Create `src/lib/types.ts` exporting `Podcast`, `Host` and `Episode` types exactly as in data-model.md (`Episode`: `number` integer, `title` string, `description` string, `publishedAt` `YYYY-MM-DD` string, `durationSeconds` integer, `guests` string[], `topics` string[], `featured` boolean)
+- [X] T010 [P] Create `src/data/podcast.ts` exporting the `podcast` object: fictional `name`, `tagline`, `description`, `premise`, and `followLinks` (≥ 1 placeholder `{ label, href }`)
+- [X] T011 [P] Create `src/data/hosts.ts` exporting `hosts: Host[]` with ≥ 1 host (id slug, name, short bio; no photo required)
+- [X] T012 Create `src/data/episodes.ts` exporting `episodes: Episode[]` with 20 mocked records. Constraints from data-model.md, verbatim: "Exactly 20 episodes; `number` values are unique and cover 1–20", "Exactly 1 episode has `featured: true` (default: the highest-numbered/most recent)", "`publishedAt` is a valid date and unique", "`durationSeconds` is a positive integer", `topics` has ≥ 1 tag, `guests` may be empty. Include at least one episode with a very long title and description (edge case) and at least two episodes with no guests (depends on T009)
+- [X] T013 Create `src/lib/episodes.ts` exporting `sortNewestFirst(episodes)`, `getFeatured(episodes)` (returns the single `featured` episode), `formatDuration(seconds)` (`H:MM:SS` when ≥ 1 h, else `M:SS`), `formatDate(isoDate)` (e.g. "Nov 9, 2026"), and `shortDescription(text, maxChars)` (depends on T009)
+- [X] T014 [P] Create `tests/unit/episodes.data.test.ts`: validate `episodes` against `specs/001-podcast-website/contracts/episode.schema.json` using `ajv/dist/2020` + `ajv-formats`, and assert unique `number` values covering 1–20, unique `publishedAt`, exactly one `featured` (depends on T012)
+- [X] T015 [P] Create `tests/unit/episodes.lib.test.ts` covering `sortNewestFirst` (descending by date), `getFeatured`, `formatDuration` (e.g. 59 → `0:59`, 3725 → `1:02:05`) and `shortDescription` truncation (depends on T013)
+- [X] T016 [P] Create `src/app/globals.css`: design tokens as CSS custom properties (dark editorial palette with one bold accent, fluid type scale via `clamp()`, spacing scale), minimal reset, `:focus-visible` outline, `prefers-reduced-motion` handling, `.visually-hidden` and skip-link styles; text contrast ≥ 4.5:1 and touch targets ≥ 44px (research.md §5, §7)
+- [X] T017 [P] Create `src/components/CoverArt.tsx` + `src/components/CoverArt.module.css`: server component rendering deterministic inline SVG/CSS art from `number` and first `topic` (research.md §4), `role="img"` with `aria-label` built from the episode title; always renders (acts as its own fallback)
+- [X] T018 [P] Create `src/components/JsonLd.tsx`: renders `<script type="application/ld+json">` from a `data` prop
+- [X] T019 [P] Create `src/components/NavLinks.tsx` as a small client component using `usePathname()` to set `aria-current="page"` on the active link for `/`, `/episodes/`, `/about/`, `/facts/` (it is prerendered, so the attribute is present in the static HTML)
+- [X] T020 Create `src/components/SiteHeader.tsx` + `src/components/SiteHeader.module.css`: podcast name linking to `/`, `<nav>` using `NavLinks`, nav wraps under the brand on narrow screens (no JS, no duplicated nav landmark) (depends on T019)
+- [X] T021 [P] Create `src/components/SiteFooter.tsx` + `src/components/SiteFooter.module.css`: shared footer with tagline, follow links and copyright
+- [X] T022 Create `src/app/layout.tsx`: `<html lang="en">`, fonts via `next/font` (self-hosted), import `globals.css`, skip-to-content link as first focusable element, `SiteHeader`, `<main id="main">`, `SiteFooter`, default `metadata` with `metadataBase` from `process.env.NEXT_PUBLIC_SITE_URL` (placeholder default `https://example.com`) and Open Graph defaults (depends on T016, T020, T021)
 
 **Checkpoint**: `npx tsc --noEmit` and `npm run test` pass. Shell and data are ready, and user stories can begin.
 
@@ -67,13 +67,13 @@ description: "Task list for the Podcast Website feature"
 
 ### Tests for User Story 1
 
-- [ ] T023 [P] [US1] Create `tests/e2e/home.spec.ts`: on `/` assert podcast name and tagline visible without scrolling, exactly one featured episode block containing number, title, description, date, duration and cover art, CTA link `href="/episodes/"`, nav has links to `/`, `/episodes/`, `/about/`, `/facts/` with `aria-current="page"` on Home, and JSON-LD `PodcastSeries` present
+- [X] T023 [P] [US1] Create `tests/e2e/home.spec.ts`: on `/` assert podcast name and tagline visible without scrolling, exactly one featured episode block containing number, title, description, date, duration and cover art, CTA link `href="/episodes/"`, nav has links to `/`, `/episodes/`, `/about/`, `/facts/` with `aria-current="page"` on Home, and JSON-LD `PodcastSeries` present
 
 ### Implementation for User Story 1
 
-- [ ] T024 [P] [US1] Create `src/components/FeaturedEpisode.tsx` + `src/components/FeaturedEpisode.module.css`: large card using `CoverArt`, episode number, title, description, formatted date and duration (props: one `Episode`)
-- [ ] T025 [US1] Create `src/app/page.tsx`: export `metadata` (unique title + description), hero with `podcast.name` as the `<h1>` and tagline, `FeaturedEpisode` for `getFeatured(episodes)`, CTA link to `/episodes/`, and `JsonLd` `PodcastSeries` (depends on T024)
-- [ ] T026 [US1] Run `npm run build && npx playwright test tests/e2e/home.spec.ts`; fix failures until `out/index.html` passes
+- [X] T024 [P] [US1] Create `src/components/FeaturedEpisode.tsx` + `src/components/FeaturedEpisode.module.css`: large card using `CoverArt`, episode number, title, description, formatted date and duration (props: one `Episode`)
+- [X] T025 [US1] Create `src/app/page.tsx`: export `metadata` (unique title + description), hero with `podcast.name` as the `<h1>` and tagline, `FeaturedEpisode` for `getFeatured(episodes)`, CTA link to `/episodes/`, and `JsonLd` `PodcastSeries` (depends on T024)
+- [X] T026 [US1] Run `npm run build && npx playwright test tests/e2e/home.spec.ts`; fix failures until `out/index.html` passes
 
 **Checkpoint**: User Story 1 is fully functional and testable independently, and is the MVP.
 
@@ -87,12 +87,12 @@ description: "Task list for the Podcast Website feature"
 
 ### Tests for User Story 2
 
-- [ ] T027 [P] [US2] Create `tests/e2e/episodes.spec.ts`: on `/episodes/` assert exactly 20 entries, order is newest first (dates descending), each entry shows number, title, short description, date, duration and cover art, and JSON-LD `PodcastEpisode` items are present
+- [X] T027 [P] [US2] Create `tests/e2e/episodes.spec.ts`: on `/episodes/` assert exactly 20 entries, order is newest first (dates descending), each entry shows number, title, short description, date, duration and cover art, and JSON-LD `PodcastEpisode` items are present
 
 ### Implementation for User Story 2
 
-- [ ] T028 [P] [US2] Create `src/components/EpisodeCard.tsx` + `src/components/EpisodeCard.module.css`: list item with `CoverArt`, number, title, `shortDescription`, date, duration; wraps long titles and descriptions without overflow (`overflow-wrap: anywhere`)
-- [ ] T029 [US2] Create `src/app/episodes/page.tsx`: export `metadata`, `<h1>`, ordered list of `EpisodeCard` from `sortNewestFirst(episodes)`, and `JsonLd` with `PodcastEpisode` entries (depends on T028)
+- [X] T028 [P] [US2] Create `src/components/EpisodeCard.tsx` + `src/components/EpisodeCard.module.css`: list item with `CoverArt`, number, title, `shortDescription`, date, duration; wraps long titles and descriptions without overflow (`overflow-wrap: anywhere`)
+- [X] T029 [US2] Create `src/app/episodes/page.tsx`: export `metadata`, `<h1>`, ordered list of `EpisodeCard` from `sortNewestFirst(episodes)`, and `JsonLd` with `PodcastEpisode` entries (depends on T028)
 
 **Checkpoint**: User Stories 1 and 2 both work independently.
 
@@ -106,11 +106,11 @@ description: "Task list for the Podcast Website feature"
 
 ### Tests for User Story 3
 
-- [ ] T030 [P] [US3] Create `tests/e2e/about.spec.ts`: on `/about/` assert the premise text, ≥ 1 host with name and bio, and ≥ 1 follow link
+- [X] T030 [P] [US3] Create `tests/e2e/about.spec.ts`: on `/about/` assert the premise text, ≥ 1 host with name and bio, and ≥ 1 follow link
 
 ### Implementation for User Story 3
 
-- [ ] T031 [US3] Create `src/app/about/page.tsx` + `src/app/about/about.module.css`: export `metadata`, `<h1>`, `podcast.premise`, host list from `hosts`, follow links from `podcast.followLinks`
+- [X] T031 [US3] Create `src/app/about/page.tsx` + `src/app/about/about.module.css`: export `metadata`, `<h1>`, `podcast.premise`, host list from `hosts`, follow links from `podcast.followLinks`
 
 **Checkpoint**: User Stories 1–3 work independently.
 
@@ -124,14 +124,14 @@ description: "Task list for the Podcast Website feature"
 
 ### Tests for User Story 4
 
-- [ ] T032 [P] [US4] Create `tests/unit/facts.test.ts`: `computeFacts(episodes)` returns `episodeCount` 20, `totalRuntimeSeconds` equal to the sum of `durationSeconds`, `distinctGuestCount` equal to the size of the set of all `guests`, `topTopics` ranked by frequency (top 5, ties by name), and correct `longestEpisode`/`shortestEpisode`
-- [ ] T033 [P] [US4] Create `tests/e2e/facts.spec.ts`: on `/facts/` assert displayed episode count, total runtime, distinct guests and top topics equal values computed from `src/data/episodes.ts` (SC-008), and ≥ 3 fun facts
+- [X] T032 [P] [US4] Create `tests/unit/facts.test.ts`: `computeFacts(episodes)` returns `episodeCount` 20, `totalRuntimeSeconds` equal to the sum of `durationSeconds`, `distinctGuestCount` equal to the size of the set of all `guests`, `topTopics` ranked by frequency (top 5, ties by name), and correct `longestEpisode`/`shortestEpisode`
+- [X] T033 [P] [US4] Create `tests/e2e/facts.spec.ts`: on `/facts/` assert displayed episode count, total runtime, distinct guests and top topics equal values computed from `src/data/episodes.ts` (SC-008), and ≥ 3 fun facts
 
 ### Implementation for User Story 4
 
-- [ ] T034 [US4] Create `src/lib/facts.ts` exporting `computeFacts(episodes)` and the `Facts` type per data-model.md "Facts (derived, not stored)" (depends on T009)
-- [ ] T035 [P] [US4] Create `src/components/StatCard.tsx` + `src/components/StatCard.module.css`: label + large value card
-- [ ] T036 [US4] Create `src/app/facts/page.tsx` + `src/app/facts/facts.module.css`: export `metadata`, `<h1>`, `StatCard`s from `computeFacts(episodes)` (episode count, total runtime via `formatDuration`, distinct guests, top topics, longest/shortest episode) and ≥ 3 hand-written fun facts as static copy (depends on T034, T035)
+- [X] T034 [US4] Create `src/lib/facts.ts` exporting `computeFacts(episodes)` and the `Facts` type per data-model.md "Facts (derived, not stored)" (depends on T009)
+- [X] T035 [P] [US4] Create `src/components/StatCard.tsx` + `src/components/StatCard.module.css`: label + large value card
+- [X] T036 [US4] Create `src/app/facts/page.tsx` + `src/app/facts/facts.module.css`: export `metadata`, `<h1>`, `StatCard`s from `computeFacts(episodes)` (episode count, total runtime via `formatDuration`, distinct guests, top topics, longest/shortest episode) and ≥ 3 hand-written fun facts as static copy (depends on T034, T035)
 
 **Checkpoint**: All four user stories are independently functional.
 
@@ -141,16 +141,16 @@ description: "Task list for the Podcast Website feature"
 
 **Purpose**: 404, SEO files and the cross-page success-criteria checks
 
-- [ ] T037 [P] Create `src/app/not-found.tsx`: friendly message with a link back to `/` (exported as `out/404.html`; FR-014)
-- [ ] T038 [P] Create `src/app/sitemap.ts` with `export const dynamic = 'force-static'` listing `/`, `/episodes/`, `/about/`, `/facts/` using `NEXT_PUBLIC_SITE_URL`
-- [ ] T039 [P] Create `src/app/robots.ts` with `export const dynamic = 'force-static'`, allow all and reference the sitemap
-- [ ] T040 [P] Create `tests/e2e/navigation.spec.ts`: from every page click each nav link and land on the right page (SC-001), `aria-current="page"` follows the active page, and an unknown path serves the friendly 404 with a link to `/` (FR-014)
-- [ ] T041 [P] Create `tests/e2e/responsive.spec.ts`: at 320px width, no horizontal scroll (`document.documentElement.scrollWidth <= clientWidth`) on `/`, `/episodes/`, `/about/`, `/facts/` (SC-005)
-- [ ] T042 [P] Create `tests/e2e/a11y.spec.ts`: run `@axe-core/playwright` on all four pages and `/404.html`, expect zero serious/critical violations (SC-006); tab through each page and assert every link is reachable with a visible focus indicator
-- [ ] T043 [P] Create `tests/e2e/seo.spec.ts`: each page has a unique `<title>` and `<meta name="description">`, Open Graph tags exist, JSON-LD parses, and `/sitemap.xml` and `/robots.txt` are served (FR-012)
-- [ ] T044 Run `npm run lint && npx tsc --noEmit && npm run test && npm run build && npm run test:e2e`; fix any failures
-- [ ] T045 Run the manual quickstart.md scenarios 10 (JavaScript disabled) and 11 (Lighthouse mobile on served `out/`: content visible ≤ 2 s, no render-blocking third-party requests); record results in `specs/001-podcast-website/checklists/requirements.md` Notes
-- [ ] T046 Review `specs/001-podcast-website/quickstart.md` scenarios 1–9 against the running build and confirm each matches its expected outcome
+- [X] T037 [P] Create `src/app/not-found.tsx`: friendly message with a link back to `/` (exported as `out/404.html`; FR-014)
+- [X] T038 [P] Create `src/app/sitemap.ts` with `export const dynamic = 'force-static'` listing `/`, `/episodes/`, `/about/`, `/facts/` using `NEXT_PUBLIC_SITE_URL`
+- [X] T039 [P] Create `src/app/robots.ts` with `export const dynamic = 'force-static'`, allow all and reference the sitemap
+- [X] T040 [P] Create `tests/e2e/navigation.spec.ts`: from every page click each nav link and land on the right page (SC-001), `aria-current="page"` follows the active page, and an unknown path serves the friendly 404 with a link to `/` (FR-014)
+- [X] T041 [P] Create `tests/e2e/responsive.spec.ts`: at 320px width, no horizontal scroll (`document.documentElement.scrollWidth <= clientWidth`) on `/`, `/episodes/`, `/about/`, `/facts/` (SC-005)
+- [X] T042 [P] Create `tests/e2e/a11y.spec.ts`: run `@axe-core/playwright` on all four pages and `/404.html`, expect zero serious/critical violations (SC-006); tab through each page and assert every link is reachable with a visible focus indicator
+- [X] T043 [P] Create `tests/e2e/seo.spec.ts`: each page has a unique `<title>` and `<meta name="description">`, Open Graph tags exist, JSON-LD parses, and `/sitemap.xml` and `/robots.txt` are served (FR-012)
+- [X] T044 Run `npm run lint && npx tsc --noEmit && npm run test && npm run build && npm run test:e2e`; fix any failures
+- [X] T045 Run the manual quickstart.md scenarios 10 (JavaScript disabled) and 11 (Lighthouse mobile on served `out/`: content visible ≤ 2 s, no render-blocking third-party requests); record results in `specs/001-podcast-website/checklists/requirements.md` Notes
+- [X] T046 Review `specs/001-podcast-website/quickstart.md` scenarios 1–9 against the running build and confirm each matches its expected outcome
 
 ---
 
@@ -224,4 +224,5 @@ Task: "Create src/app/episodes/page.tsx"                                    (T02
 - [Story] label maps each task to a user story for traceability
 - The spec's acceptance scenarios are numbered lists, not checkboxes. Progress is tracked by ticking the boxes in this file as each task completes, and by updating `checklists/requirements.md` Notes after each phase (T045)
 - `NavLinks.tsx` (T019) is the only client component (see research.md §6): it lets `aria-current` follow the current route, and it is prerendered into the static HTML, so it still works without JavaScript
+- Added during implementation: `src/lib/metadata.ts` (`pageMetadata()` helper so every page gets unique title/description, canonical and Open Graph tags) and `src/components/NavLinks.module.css`
 - Commit after each task or logical group

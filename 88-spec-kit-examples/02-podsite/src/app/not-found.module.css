@@ -1,0 +1,10 @@
+.wrap {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-6);
+}
+
+.title {
+  font-size: var(--step-3);
+  letter-spacing: -0.04em;
+}

@@ -1,0 +1,42 @@
+.header {
+  padding-block: var(--space-4);
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap);
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+}
+
+.orb {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff2c9, var(--accent) 45%, var(--glow) 100%);
+  box-shadow: 0 0 18px 2px rgba(255, 140, 90, 0.65);
+  animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 14px 1px rgba(255, 140, 90, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 26px 6px rgba(255, 140, 90, 0.8);
+  }
+}

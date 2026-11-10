@@ -34,3 +34,10 @@
 - Validated in 1 iteration; no items failed.
 - FR-011, FR-012 and FR-013 restate project constitution constraints in user-facing terms (accessible, discoverable, no backend needed) rather than naming technologies.
 - Ready for `/speckit-clarify` or `/speckit-plan`.
+
+## Implementation validation (recorded 2026-11-09, after `/speckit-implement`)
+
+- Automated: 21 Vitest unit tests and 75 Playwright e2e tests (incl. axe WCAG 2.2 AA) pass against the built `out/`; `eslint` and `tsc --noEmit` are clean.
+- Quickstart scenario 10 (JavaScript disabled): all four pages render their full content and `aria-current` is present in the static HTML.
+- Quickstart scenario 11 (Lighthouse mobile, local static server, 4 pages): Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 0.9 s, TBT ≤ 30 ms, CLS 0. A throttled run (slow 4G, 4x CPU) measured LCP ≤ 0.53 s with requests only to the site's own host (no third parties).
+- Found and fixed during validation: missing favicon caused a 404 console error (Best Practices 96 → 100); added `src/app/icon.svg`.
