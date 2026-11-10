@@ -75,13 +75,17 @@ function getServerSnapshot(): null {
   return null;
 }
 
+function persist(key: string, value: unknown): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Storage is full or unavailable: keep the in-memory state so the page stays usable.
+  }
+}
+
 function save(next: Goal[]): void {
   goals = next;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  } catch {
-    // Storage is full or unavailable: keep the in-memory goals so the page stays usable.
-  }
+  persist(STORAGE_KEY, next);
   notify();
 }
 
@@ -98,11 +102,7 @@ export function useGoalOrder(): string[] | null {
 /** Saves the user's manual order; from now on the list is no longer sorted by end date. */
 export function reorderGoals(ids: string[]): void {
   order = ids;
-  try {
-    localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(ids));
-  } catch {
-    // Storage is full or unavailable: keep the in-memory order so the page stays usable.
-  }
+  persist(ORDER_STORAGE_KEY, ids);
   notify();
 }
 
@@ -126,6 +126,30 @@ export function completeGoal(id: string, today: string): void {
         : goal,
     ),
   );
+}
+
+export function updateGoal(id: string, title: string, endDate: string): void {
+  save(
+    getSnapshot().map((goal) =>
+      goal.id === id ? { ...goal, title: title.trim(), endDate } : goal,
+    ),
+  );
+}
+
+/** Moves a completed goal back to current; it returns to the end-date position unless the list was manually ordered. */
+export function reopenGoal(id: string): void {
+  goals = getSnapshot().map((goal) =>
+    goal.id === id
+      ? { ...goal, status: "current", completedAt: null }
+      : goal,
+  );
+  persist(STORAGE_KEY, goals);
+  const currentOrder = getOrderSnapshot();
+  if (currentOrder !== null) {
+    order = currentOrder.filter((orderedId) => orderedId !== id);
+    persist(ORDER_STORAGE_KEY, order);
+  }
+  notify();
 }
 
 export function deleteGoal(id: string): void {

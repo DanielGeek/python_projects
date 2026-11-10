@@ -15,37 +15,45 @@ import { Label } from "@/components/ui/label";
 import {
   TITLE_MAX_LENGTH,
   validateGoalInput,
+  type Goal,
   type GoalInputErrors,
 } from "@/lib/goals";
 
-type AddGoalDialogProps = {
+type GoalDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   today: string;
-  onAdd: (title: string, endDate: string) => void;
+  /** Present = edit this goal; absent = add a new one. */
+  goal?: Goal;
+  onSubmit: (title: string, endDate: string) => void;
 };
 
-export function AddGoalDialog({
+export function GoalDialog({
   open,
   onOpenChange,
   today,
-  onAdd,
-}: AddGoalDialogProps) {
+  goal,
+  onSubmit,
+}: GoalDialogProps) {
+  const isEdit = goal !== undefined;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle>Add a goal</DialogTitle>
+          <DialogTitle>{isEdit ? "Edit goal" : "Add a goal"}</DialogTitle>
           <DialogDescription>
-            What do you want to achieve, and by when?
+            {isEdit
+              ? "Update the title or end date."
+              : "What do you want to achieve, and by when?"}
           </DialogDescription>
         </DialogHeader>
         {/* Mounted only while the dialog is open, so the form resets on every open. */}
-        <AddGoalForm
+        <GoalForm
           today={today}
+          goal={goal}
           onCancel={() => onOpenChange(false)}
           onSubmit={(title, endDate) => {
-            onAdd(title, endDate);
+            onSubmit(title, endDate);
             onOpenChange(false);
           }}
         />
@@ -54,26 +62,27 @@ export function AddGoalDialog({
   );
 }
 
-type AddGoalFormProps = {
+type GoalFormProps = {
   today: string;
+  goal?: Goal;
   onCancel: () => void;
   onSubmit: (title: string, endDate: string) => void;
 };
 
-function AddGoalForm({ today, onCancel, onSubmit }: AddGoalFormProps) {
+function GoalForm({ today, goal, onCancel, onSubmit }: GoalFormProps) {
   const id = useId();
   const titleId = `${id}-title`;
   const titleErrorId = `${id}-title-error`;
   const endDateId = `${id}-end-date`;
   const endDateErrorId = `${id}-end-date-error`;
 
-  const [title, setTitle] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [title, setTitle] = useState(goal?.title ?? "");
+  const [endDate, setEndDate] = useState(goal?.endDate ?? "");
   const [errors, setErrors] = useState<GoalInputErrors>({});
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const found = validateGoalInput(title, endDate, today);
+    const found = validateGoalInput(title, endDate, today, goal?.endDate);
     setErrors(found);
     if (found.title || found.endDate) return;
     onSubmit(title, endDate);
@@ -104,7 +113,7 @@ function AddGoalForm({ today, onCancel, onSubmit }: AddGoalFormProps) {
           id={endDateId}
           type="date"
           value={endDate}
-          min={today}
+          min={goal && goal.endDate < today ? goal.endDate : today}
           onChange={(event) => setEndDate(event.target.value)}
           aria-invalid={errors.endDate ? true : undefined}
           aria-describedby={errors.endDate ? endDateErrorId : undefined}
@@ -121,7 +130,7 @@ function AddGoalForm({ today, onCancel, onSubmit }: AddGoalFormProps) {
           Cancel
         </Button>
         <Button type="submit" className="h-11">
-          Add goal
+          {goal ? "Save changes" : "Add goal"}
         </Button>
       </DialogFooter>
     </form>

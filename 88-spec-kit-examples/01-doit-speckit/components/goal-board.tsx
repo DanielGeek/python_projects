@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AddGoalDialog } from "@/components/add-goal-dialog";
+import { GoalDialog } from "@/components/goal-dialog";
 import { CompletedGoalCard } from "@/components/completed-goal-card";
 import { DeleteGoalDialog } from "@/components/delete-goal-dialog";
 import { GoalColumn } from "@/components/goal-column";
@@ -80,11 +80,11 @@ export function GoalBoard() {
           ))}
         </GoalColumn>
       </div>
-      <AddGoalDialog
+      <GoalDialog
         open={isAddOpen}
         onOpenChange={setIsAddOpen}
         today={today}
-        onAdd={addGoal}
+        onSubmit={addGoal}
       />
       <DeleteGoalDialog
         open={pendingDelete !== undefined}

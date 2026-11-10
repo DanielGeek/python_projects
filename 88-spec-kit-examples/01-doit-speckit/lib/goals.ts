@@ -109,6 +109,7 @@ export function validateGoalInput(
   title: string,
   endDate: string,
   today: string,
+  keptEndDate?: string,
 ): GoalInputErrors {
   const errors: GoalInputErrors = {};
   const trimmed = title.trim();
@@ -121,7 +122,7 @@ export function validateGoalInput(
 
   if (endDate === "") {
     errors.endDate = "Pick an end date.";
-  } else if (endDate < today) {
+  } else if (endDate < today && endDate !== keptEndDate) {
     errors.endDate = "Choose today or a later date.";
   }
 
