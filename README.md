@@ -914,6 +914,7 @@ def retrieve(query: str, k: int = 3) -> List[Dict]:
 
 ### **Full-Stack Applications**
 
+- **[88-spec-kit-examples/02-podsite]** - Podsite: sleek static podcast website (fictional show "Afterglow") built with GitHub Spec Kit, Claude Code and Next.js static export; Home, Episodes, About and Facts pages over 20 mocked episodes, Lighthouse 100/100/100/100 and 96 automated tests
 - **[88-spec-kit-examples/01-doit-speckit]** - Doit: goal-tracking board built with GitHub Spec Kit and Claude Code (Next.js 16, React 19, Tailwind 4, shadcn/ui); three specs from the initial board to a refined palette and drag-and-drop reordering with SortableJS
 - **[87-ClaudeCode/05-arcade-vault]** - Arcade Vault: spec-driven arcade game platform with Supabase Auth and a global leaderboard, live at [arcade-vault-zeta.vercel.app](https://arcade-vault-zeta.vercel.app/)
 - **[87-ClaudeCode/06-coffee-shop]** - Nogal Café: specialty-coffee storefront landing page built with Astro 7, Tailwind 4 and the Impeccable design commands
@@ -1521,13 +1522,13 @@ Six projects built with Claude Code ([full overview](./87-ClaudeCode/README.md))
 
 ### **📋 Spec-Driven Development**
 
-#### **88. Spec Kit Examples - Doit Goal Tracker**
+#### **88. Spec Kit Examples - Doit Goal Tracker and Podsite**
 
-**Technologies**: GitHub Spec Kit, Claude Code, Next.js 16, React 19, Tailwind CSS 4, TypeScript, shadcn/ui, date-fns, SortableJS
+**Technologies**: GitHub Spec Kit, Claude Code, Next.js 16 (including static export), React 19, Tailwind CSS 4, TypeScript, shadcn/ui, date-fns, SortableJS, Vitest, Playwright, axe-core, Lighthouse
 
-Examples of spec-driven development with [GitHub Spec Kit](https://github.com/github/spec-kit) ([full overview](./88-spec-kit-examples/README.md)). `01-doit-speckit` is **Doit**, a goal-tracking board with current and completed columns, built feature by feature: `001` the board itself, `002` a refined color palette, and `003` drag-and-drop reordering of goals with mouse, touch and keyboard. Each feature has its own spec, plan, tasks and manual quickstart, and the README keeps a log of the exact `/speckit-*` commands used so the workflow can be repeated.
+Examples of spec-driven development with [GitHub Spec Kit](https://github.com/github/spec-kit) ([full overview](./88-spec-kit-examples/README.md)). `01-doit-speckit` is **Doit**, a goal-tracking board with current and completed columns, built feature by feature: `001` the board itself, `002` a refined color palette, and `003` drag-and-drop reordering of goals with mouse, touch and keyboard. `02-podsite` is **Podsite**, a sleek, mobile-first static website for a fictional podcast ("Afterglow") with a landing page featuring one episode, an episodes page, an about page and a facts page, all driven by 20 mocked episodes and a single spec (`001-podcast-website`). Each feature has its own spec, plan, tasks and manual quickstart, and the README keeps a log of the exact `/speckit-*` commands used so the workflow can be repeated.
 
-**Key Features**: Constitution-driven rules (clean code, simple UX, minimal dependencies, deliberately no automated tests), automatic feature branches through the Spec Kit git extension, `localStorage` persistence, accessible keyboard reordering with live announcements, instructions for adding Spec Kit to an existing project
+**Key Features**: Constitution-driven rules (Doit: clean code, simple UX, minimal dependencies, deliberately no automated tests; Podsite: static-first, simplicity, accessibility and SEO baseline), automatic feature branches through the Spec Kit git extension, `localStorage` persistence, accessible keyboard reordering with live announcements, Next.js static export with no server or database, generated SVG cover art, JSON-LD structured data, sitemap and robots, 96 automated tests (Vitest unit tests plus Playwright and axe end-to-end checks against the exported site), Lighthouse 100 on performance, accessibility, best practices and SEO, instructions for adding Spec Kit to an existing project
 
 ---
 
