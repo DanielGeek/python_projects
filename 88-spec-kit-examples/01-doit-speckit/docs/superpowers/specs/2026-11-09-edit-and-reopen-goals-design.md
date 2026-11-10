@@ -1,7 +1,7 @@
 # Edit and Reopen Goals — Design
 
 Date: 2026-11-09
-Status: Approved design, pending implementation plan
+Status: Implemented; this document describes the final code
 Builds on: `specs/001-goal-tracking-board`, `specs/003-goal-drag-reorder`
 
 ## Purpose
@@ -34,13 +34,13 @@ Users can fix a typo or move the deadline on a **current** goal, and can bring a
 
 ### `lib/goals.ts`
 
-- `validateGoalInput(title, endDate, today, currentEndDate?)`: the "Choose today or a later date." error fires only when `endDate < today` **and** `endDate !== currentEndDate`. Add mode passes no fourth argument and behaves exactly as before.
+- `validateGoalInput(title, endDate, today, keptEndDate?)`: the "Choose today or a later date." error fires only when `endDate < today` **and** `endDate !== keptEndDate`. Add mode passes no fourth argument and behaves exactly as before.
 
 ### `lib/goal-store.ts`
 
 - `updateGoal(id, title, endDate)`: maps over `getSnapshot()`, replaces `title` (trimmed) and `endDate` on the matching goal, then calls `save`. Status, `createdAt`, `completedAt` and manual order are untouched. No-op if the id is not found.
-- `reopenGoal(id)`: sets `status: "current"` and `completedAt: null`, keeping title and end date, via `save`. If a manual order exists, it also pins the currently displayed order and appends this id (with no manual order none is created). No-op if the id is not found or the goal is not completed.
-- Extract the order-persisting body of `reorderGoals` (set in-memory `order`, write localStorage in try/catch, `notify`) into a small shared helper used by both `reorderGoals` and `reopenGoal`. Avoid notifying twice for a single reopen if it can be done cleanly (update both module variables, persist both keys, notify once).
+- `reopenGoal(id)`: sets `status: "current"` and `completedAt: null`, keeping title and end date. If a manual order exists, it also pins the currently displayed order and appends this id (with no manual order none is created). No-op if the id is not found or the goal is not completed. It does not go through `save`: it assigns the in-memory goals (and order), persists both keys, and calls `notify()` once.
+- Extract a private, key-agnostic helper `persist(key, value)` (the existing try/catch around `localStorage.setItem`, keeping the in-memory state when storage fails) and use it in `save`, `reorderGoals` and `reopenGoal`. The behavior of `save` and `reorderGoals` is unchanged.
 
 ### `components/goal-dialog.tsx` (renamed from `add-goal-dialog.tsx` with `git mv`)
 
@@ -60,7 +60,7 @@ Users can fix a typo or move the deadline on a **current** goal, and can bring a
 
 ### `components/goal-board.tsx`
 
-- New state `editingId: string | null`; derive `editingGoal = goals.find(g => g.id === editingId)`.
+- New state `editingId: string | null`; derive `editingGoal` as the goal with that id **only while it is `current`** (a goal completed in another tab is no longer editable). When `editingId` is set but `editingGoal` is `undefined`, clear `editingId` (a guarded state update during render), so the dialog cannot reappear if that goal is later reopened.
 - Render the goal dialog for both modes (one instance driven by `isAddOpen` / `editingGoal`, or two instances if the plan finds that clearer).
 - Edit submit: `updateGoal(editingId, title, endDate)`, clear the checkbox selection for that id, close the dialog. This matches Complete and Delete.
 - Pass `onEdit={() => setEditingId(goal.id)}` through `SortableGoalColumn` to `GoalCard`, and `onReopen={() => reopenGoal(goal.id)}` to `CompletedGoalCard`. `sortable-goal-list.tsx` only forwards props; check it for the exact prop plumbing.
@@ -70,7 +70,7 @@ Users can fix a typo or move the deadline on a **current** goal, and can bring a
 
 - No manual order: changing the end date re-sorts Current automatically by end date.
 - Manual order set: an edited goal keeps its position.
-- Reopened goal: last in Current in both cases (by end date when there is no manual order).
+- Reopened goal: with a manual order, last in Current (the displayed order is pinned and the id appended); with no manual order, placed by end date like every other goal.
 
 ## Edge cases and errors
 

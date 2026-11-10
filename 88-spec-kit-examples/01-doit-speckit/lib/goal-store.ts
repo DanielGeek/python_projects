@@ -138,7 +138,10 @@ export function updateGoal(id: string, title: string, endDate: string): void {
   );
 }
 
-/** Moves a completed goal back to Current, last in the list (a manual order is pinned and the goal appended). */
+/**
+ * Moves a completed goal back to Current. With a manual order, that order is
+ * pinned and the goal appended (last); with none, end-date sorting applies.
+ */
 export function reopenGoal(id: string): void {
   const previousGoals = getSnapshot();
   if (!previousGoals.some((goal) => goal.id === id && goal.status === "completed")) return;
