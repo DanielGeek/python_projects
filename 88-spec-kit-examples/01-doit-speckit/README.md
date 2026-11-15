@@ -139,6 +139,102 @@ specify extension add git     # install it; registers the hooks in .specify/exte
 Branch numbering and naming are configured in `.specify/extensions/git/git-config.yml`. Commit or
 clean the working tree before running `/speckit-specify`: the branch is created from wherever you are.
 
+## Superpowers Workflow
+
+The [Superpowers](https://github.com/obra/superpowers) plugin (by Jesse Vincent) is an alternative to Spec Kit for
+the same job: it takes a feature from idea to merged branch using skills for design, planning, execution and review.
+Install it from the official marketplace:
+
+```text
+/plugin install superpowers@claude-plugins-official
+```
+
+Spec Kit and Superpowers overlap on specifying and planning. To compare them fairly, each feature uses **one** flow:
+
+| Flow | Used for | Artifacts |
+| --- | --- | --- |
+| Spec Kit | `001`, `002`, `003` | [`specs/`](specs) (spec, plan, tasks, quickstart) |
+| Superpowers | Edit and reopen goals | [`docs/superpowers/`](docs/superpowers) (design doc, then implementation plan) |
+
+> **Constitution Principle V (no tests) wins over Superpowers.** Do **not** use
+> `superpowers:test-driven-development`, and tell every plan and subagent not to add tests, TDD steps or test tasks.
+> Verification is `npm run lint`, `npm run build` and a manual browser walkthrough.
+> Subagents also need to be told to read `AGENTS.md` and `node_modules/next/dist/docs/` before writing Next.js code.
+
+### Feature: edit and reopen goals
+
+Lets users edit a current goal's title and end date, and reopen a completed goal back to Current.
+Design: [`docs/superpowers/specs/2026-11-09-edit-and-reopen-goals-design.md`](docs/superpowers/specs/2026-11-09-edit-and-reopen-goals-design.md).
+
+Key decisions from the design:
+
+- **Overdue goals:** a past end date is accepted only if it equals the goal's current end date. Any newly picked date must be today or later.
+- **Reopen order:** a reopened goal goes to the **end** of the Current list. `completeGoal` never removes an id from the saved manual order, so `reopenGoal` must remove it, otherwise the goal would jump back to its old position.
+- **Edit** lives in the action row revealed by ticking a current goal. **Reopen** is a button on each completed card.
+- The add dialog is generalized into one dialog with add and edit modes. No new dependencies, and the goal shape and storage keys do not change.
+
+Run these in order, one at a time, waiting for each to finish. Steps marked ✅ are done.
+
+| # | Status | Command |
+| --- | --- | --- |
+| 1 | ✅ | `/superpowers:brainstorming` |
+| 2 | ☐ | `/superpowers:using-git-worktrees` |
+| 3 | ☐ | `/superpowers:writing-plans` |
+| 4 | ☐ | `/superpowers:subagent-driven-development` |
+| 5 | ☐ | `/superpowers:verification-before-completion` |
+| 6 | ☐ | `/superpowers:requesting-code-review` |
+| 7 | ☐ | `/superpowers:finishing-a-development-branch` |
+
+**1. Design**
+
+```text
+/superpowers:brainstorming Feature for Doit (01-doit-speckit): let users edit a current goal's title and end date, and reopen a completed goal back to Current. Constraints: constitution Principle V forbids any automated tests (no TDD, no test tasks). Read AGENTS.md first. Reuse lib/goals.ts (validateGoalInput, TITLE_MAX_LENGTH), lib/goal-store.ts (save/getSnapshot pattern, add updateGoal and reopenGoal) and components/add-goal-dialog.tsx (generalize to add/edit mode). Open questions: allow keeping an overdue goal's past end date when editing? Where does a reopened goal go in the manual order? Write the design doc in English.
+```
+
+**2. Isolated branch**
+
+```text
+/superpowers:using-git-worktrees Create a worktree on a new branch 004-edit-reopen-goals for the edit & reopen goals feature.
+```
+
+**3. Implementation plan**
+
+```text
+/superpowers:writing-plans Write the implementation plan from the edit & reopen goals design doc. Do not include any test or TDD steps: constitution Principle V forbids tests. Verification per task is npm run lint and npm run build plus a manual browser check.
+```
+
+**4. Execution**
+
+```text
+/superpowers:subagent-driven-development Execute the edit & reopen goals plan. Tell every subagent: read AGENTS.md and node_modules/next/dist/docs/ before writing Next.js code, and never add tests (constitution Principle V).
+```
+
+**5. Verification**
+
+```text
+/superpowers:verification-before-completion Verify the edit & reopen goals feature: run npm run lint and npm run build, then check in the browser with the Playwright MCP the checklist in the design doc. No test files.
+```
+
+**6. Review**
+
+```text
+/superpowers:requesting-code-review Review the diff of branch 004-edit-reopen-goals against the design doc.
+```
+
+**7. Finish**
+
+```text
+/superpowers:finishing-a-development-branch
+```
+
+Manual checklist for step 5 (no test files):
+
+- Editing the title and date updates the card and its "days left" label. An empty title or a newly picked past date shows the existing error messages.
+- Editing an overdue goal without changing its date saves.
+- Reopen moves a completed goal back to Current, clears "Completed …" and places it last (or by end date if there is no manual order).
+- Changes survive a reload, and a second tab updates through the `storage` event.
+- Keyboard only: Edit and Reopen are reachable, the dialog traps focus, and Esc closes it.
+
 ## Commands
 
 Every `/speckit-*` command run in Claude Code is recorded here automatically by the hook in
