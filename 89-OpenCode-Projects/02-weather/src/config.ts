@@ -1,3 +1,14 @@
+import { dirname, join } from "node:path";
+
+async function loadExecutableEnvironment(): Promise<void> {
+  const envPath = join(dirname(process.execPath), ".env");
+  if (await Bun.file(envPath).exists()) {
+    process.loadEnvFile(envPath);
+  }
+}
+
+await loadExecutableEnvironment();
+
 function requireEnvironmentVariable(name: string): string {
   const value = Bun.env[name]?.trim();
   if (!value) {

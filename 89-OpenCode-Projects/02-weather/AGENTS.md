@@ -5,7 +5,7 @@
 - Bun TypeScript CLI. `index.ts` starts the application; `src/cli.ts` owns the interactive menu, `src/open-meteo.ts` the HTTP client, `src/config.ts` environment loading, `src/store.ts` state and persistence, and `src/types.ts` shared types and validation.
 - Open-Meteo geocoding supplies coordinates for the forecast request. Geocoding uses `language=en`, matching the README example; the CLI itself is in English.
 - State is stored as `weather.json` in the process working directory. The first saved city becomes the default, and option 8 toggles Celsius/Fahrenheit. Runtime data and compiled binaries are gitignored.
-- `OPEN_METEO_GEOCODING_URL` and `OPEN_METEO_FORECAST_URL` are required endpoint settings loaded centrally by `src/config.ts`; application code and tests import `environment` from that module. Copy `.env.example` to `.env`; Bun loads it automatically. Follow `bun-instructions.md` and prefer Bun APIs over Node-oriented dependencies.
+- `OPEN_METEO_GEOCODING_URL` and `OPEN_METEO_FORECAST_URL` are required endpoint settings loaded centrally by `src/config.ts`; application code and tests import `environment` from that module. Copy `.env.example` to `.env`. Bun loads the working-directory file automatically, and `src/config.ts` additionally loads the `.env` beside a compiled executable so Finder launches work. Follow `bun-instructions.md` and prefer Bun APIs over Node-oriented dependencies.
 
 ## Commands
 

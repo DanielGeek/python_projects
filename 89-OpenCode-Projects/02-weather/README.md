@@ -57,6 +57,8 @@ bun run build
 ./weather
 ```
 
+The executable also loads `.env` from its own directory, so it can be opened from Finder or launched from another working directory. If you move the binary elsewhere, keep a configured `.env` beside it or export the two endpoint variables in your shell.
+
 ### Menu example
 
 ```text
