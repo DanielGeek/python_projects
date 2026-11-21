@@ -1,5 +1,13 @@
 import { environment } from "./config";
-import { parseCity, type City, type TemperatureUnit } from "./types";
+import {
+  isFiniteNumber,
+  parseCity,
+  parseDailyForecast,
+  type City,
+  type CurrentWeather,
+  type DailyForecast,
+  type TemperatureUnit,
+} from "./types";
 
 export type Fetcher = (
   input: string | URL | Request,
@@ -61,24 +69,50 @@ export async function findCity(
   return city;
 }
 
-export async function getCurrentTemperature(
-  city: City,
-  unit: TemperatureUnit,
-  fetcher: Fetcher = fetch,
-): Promise<number> {
+function buildForecastUrl(city: City, unit: TemperatureUnit): URL {
   const url = new URL(environment.openMeteoForecastUrl);
   url.searchParams.set("latitude", String(city.latitude));
   url.searchParams.set("longitude", String(city.longitude));
-  url.searchParams.set("current", "temperature_2m");
   url.searchParams.set("temperature_unit", unit);
+  return url;
+}
+
+export async function getCurrentWeather(
+  city: City,
+  unit: TemperatureUnit,
+  fetcher: Fetcher = fetch,
+): Promise<CurrentWeather> {
+  const url = buildForecastUrl(city, unit);
+  url.searchParams.set("current", "temperature_2m,weather_code");
 
   const payload = asRecord(await requestJson(url, fetcher));
   const current = asRecord(payload?.current);
   const temperature = current?.temperature_2m;
+  const weatherCode = current?.weather_code;
 
-  if (typeof temperature !== "number" || !Number.isFinite(temperature)) {
+  if (!isFiniteNumber(temperature) || !isFiniteNumber(weatherCode)) {
     throw new Error("Open-Meteo returned an invalid weather response.");
   }
 
-  return temperature;
+  return { temperature, weatherCode };
+}
+
+export async function getDailyForecast(
+  city: City,
+  unit: TemperatureUnit,
+  fetcher: Fetcher = fetch,
+): Promise<DailyForecast[]> {
+  const url = buildForecastUrl(city, unit);
+  url.searchParams.set("daily", "temperature_2m_max,temperature_2m_min");
+  url.searchParams.set("forecast_days", "7");
+  url.searchParams.set("timezone", "auto");
+
+  const payload = asRecord(await requestJson(url, fetcher));
+  const forecast = parseDailyForecast(payload?.daily);
+
+  if (!forecast) {
+    throw new Error("Open-Meteo returned an invalid forecast response.");
+  }
+
+  return forecast;
 }

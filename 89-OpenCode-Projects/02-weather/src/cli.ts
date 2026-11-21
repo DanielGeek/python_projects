@@ -1,5 +1,5 @@
 import { cyan, green, red, yellow } from "./colors";
-import { findCity, getCurrentTemperature } from "./open-meteo";
+import { findCity, getCurrentWeather, getDailyForecast } from "./open-meteo";
 import {
   addCity as addCityToState,
   getDefaultCity,
@@ -9,7 +9,8 @@ import {
   setDefaultCity,
   toggleUnit,
 } from "./store";
-import type { AppState, City, TemperatureUnit } from "./types";
+import type { AppState, City, DailyForecast, TemperatureUnit } from "./types";
+import { describeWeatherCode } from "./weather-codes";
 
 const DIVIDER = "════════════════════════════════════════";
 
@@ -39,6 +40,7 @@ function printMenu(state: AppState): void {
     "  3. Search for and add a city",
     "  4. Remove a city",
     "  5. Set default city",
+    `  6. 7 day forecast for all cities (${state.cities.length})`,
     `  8. Settings (${unitSymbol(state.unit)})`,
     "  9. Exit",
     DIVIDER,
@@ -74,9 +76,10 @@ function selectCity(state: AppState, action: string): City | null {
 }
 
 async function printCityWeather(city: City, state: AppState): Promise<void> {
-  const temperature = await getCurrentTemperature(city, state.unit);
-  const temperatureText = `${temperature.toFixed(1)} ${unitSymbol(state.unit)}`;
-  console.log(`  ${formatCity(city)}: ${yellow(temperatureText)}`);
+  const weather = await getCurrentWeather(city, state.unit);
+  const temperatureText = `${weather.temperature.toFixed(1)} ${unitSymbol(state.unit)}`;
+  const condition = describeWeatherCode(weather.weatherCode);
+  console.log(`  ${formatCity(city)}: ${yellow(temperatureText)}, ${condition}`);
 }
 
 async function showDefaultWeather(state: AppState): Promise<void> {
@@ -89,7 +92,10 @@ async function showDefaultWeather(state: AppState): Promise<void> {
   await printCityWeather(city, state);
 }
 
-async function showAllWeather(state: AppState): Promise<void> {
+async function showForEachCity(
+  state: AppState,
+  print: (city: City, state: AppState) => Promise<void>,
+): Promise<void> {
   if (state.cities.length === 0) {
     printError("No cities saved. Add a city with option 3.");
     return;
@@ -97,12 +103,39 @@ async function showAllWeather(state: AppState): Promise<void> {
 
   for (const city of state.cities) {
     try {
-      await printCityWeather(city, state);
+      await print(city, state);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       printError(`${formatCity(city)}: ${message}`);
     }
   }
+}
+
+async function showAllWeather(state: AppState): Promise<void> {
+  await showForEachCity(state, printCityWeather);
+}
+
+function formatForecastDay(day: DailyForecast, unit: TemperatureUnit): string {
+  const dateText = new Date(`${day.date}T00:00:00`).toLocaleDateString("en", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+  const maxText = `${day.maxTemperature.toFixed(1)} ${unitSymbol(unit)}`;
+  const minText = `${day.minTemperature.toFixed(1)} ${unitSymbol(unit)}`;
+  return `    ${dateText.padEnd(12)} max ${yellow(maxText)}  min ${yellow(minText)}`;
+}
+
+async function printCityForecast(city: City, state: AppState): Promise<void> {
+  const forecast = await getDailyForecast(city, state.unit);
+  console.log(cyan(`  ${formatCity(city)}`));
+  for (const day of forecast) {
+    console.log(formatForecastDay(day, state.unit));
+  }
+}
+
+async function showAllForecasts(state: AppState): Promise<void> {
+  await showForEachCity(state, printCityForecast);
 }
 
 async function searchAndAddCity(state: AppState): Promise<void> {
@@ -202,11 +235,14 @@ export async function runCli(): Promise<void> {
         case "5":
           await chooseDefaultCity(state);
           break;
+        case "6":
+          await showAllForecasts(state);
+          break;
         case "8":
           await changeUnit(state);
           break;
         default:
-          printError("Invalid option. Select 1, 2, 3, 4, 5, 8, or 9.");
+          printError("Invalid option. Select 1, 2, 3, 4, 5, 6, 8, or 9.");
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
