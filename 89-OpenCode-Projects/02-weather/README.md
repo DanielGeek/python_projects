@@ -1,38 +1,65 @@
-## Weather CLI APP
+## Weather CLI App
 
-The goal of this application is to build a console application that prompts the user to enter a city. At the end, we will generate an executable binary.
+A console application for saving cities and checking their current weather with Open-Meteo. It can also be compiled into a standalone executable.
 
-### Options:
+### Features
 
-- Enter a city name.
-- Save the default city.
-- Register several other cities to look up the weather in those cities.
+- Search for and save cities.
+- Keep a default city.
+- Check the weather for the default city or all saved cities.
+- Switch between Celsius and Fahrenheit.
+- Persist settings and cities locally in `weather.json`.
 
 ## Stack
 
 - Bun.js
-- OpenMeteo
+- TypeScript
+- Open-Meteo
 
-## HTTP request example:
+## Open-Meteo requests
 
-1. Step 1: Geocoding API.
-2. Step 2: OpenMeteo API.
+1. Use the Geocoding API to find the city's coordinates.
+2. Use the Forecast API to get the current temperature at those coordinates.
 
 ```
-https://geocoding-api.open-meteo.com/v1/search?name=Ottawa&count=1&language=es&format=json
+https://geocoding-api.open-meteo.com/v1/search?name=Ottawa&count=1&language=en&format=json
 https://api.open-meteo.com/v1/forecast?latitude=45.41117&longitude=-75.69812&current=temperature_2m
 ```
 
-## Initialize project
+## Setup and run
 
 ```bash
-bun init
+cp .env.example .env
+bun install
+bun run start
+```
+
+The two Open-Meteo endpoints are configured through environment variables:
+
+```bash
+OPEN_METEO_GEOCODING_URL=https://geocoding-api.open-meteo.com/v1/search
+OPEN_METEO_FORECAST_URL=https://api.open-meteo.com/v1/forecast
+```
+
+The first saved city becomes the default. Option 8 toggles the temperature unit. Local data is stored in `weather.json` in the directory where the application runs.
+
+## Verification
+
+```bash
+bun run typecheck
+bun test
+```
+
+## Build the executable
+
+```bash
+bun run build
+./weather
 ```
 
 ### Menu example
-This is the appearance we want to create.
 
-```bash
+```text
 ════════════════════════════════════════
          WEATHER CLI
 ════════════════════════════════════════
