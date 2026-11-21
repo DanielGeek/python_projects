@@ -1,3 +1,4 @@
+import { red } from "./colors";
 import {
   parseCity,
   type AppState,
@@ -109,7 +110,7 @@ export async function loadState(path = STORAGE_PATH): Promise<AppState> {
     }
     return state;
   } catch {
-    console.warn(`Saved data in ${path} is invalid or unreadable. Starting with empty data.`);
+    console.warn(red(`Saved data in ${path} is invalid or unreadable. Starting with empty data.`));
     return createInitialState();
   }
 }

@@ -1,3 +1,4 @@
+import { cyan, green, red, yellow } from "./colors";
 import { findCity, getCurrentTemperature } from "./open-meteo";
 import {
   addCity as addCityToState,
@@ -20,30 +21,46 @@ export function formatCity(city: City): string {
   return [city.name, city.admin1, city.country].filter(Boolean).join(", ");
 }
 
+function printSuccess(message: string): void {
+  console.log(green(`  ${message}`));
+}
+
+function printError(message: string): void {
+  console.error(red(`  ${message}`));
+}
+
 function printMenu(state: AppState): void {
-  console.log(`\n${DIVIDER}`);
-  console.log("         WEATHER CLI");
-  console.log(DIVIDER);
-  console.log("  1. Default city weather");
-  console.log(`  2. Weather for all cities (${state.cities.length})`);
-  console.log("  3. Search for and add a city");
-  console.log("  4. Remove a city");
-  console.log("  5. Set default city");
-  console.log(`  8. Settings (${unitSymbol(state.unit)})`);
-  console.log("  9. Exit");
-  console.log(DIVIDER);
+  const menu = [
+    `\n${DIVIDER}`,
+    "         WEATHER CLI",
+    DIVIDER,
+    "  1. Default city weather",
+    `  2. Weather for all cities (${state.cities.length})`,
+    "  3. Search for and add a city",
+    "  4. Remove a city",
+    "  5. Set default city",
+    `  8. Settings (${unitSymbol(state.unit)})`,
+    "  9. Exit",
+    DIVIDER,
+  ].join("\n");
+
+  console.log(cyan(menu));
 }
 
 function printCities(state: AppState): void {
-  state.cities.forEach((city, index) => {
-    const defaultMarker = city.id === state.defaultCityId ? " (default)" : "";
-    console.log(`  ${index + 1}. ${formatCity(city)}${defaultMarker}`);
-  });
+  const cities = state.cities
+    .map((city, index) => {
+      const defaultMarker = city.id === state.defaultCityId ? " (default)" : "";
+      return `  ${index + 1}. ${formatCity(city)}${defaultMarker}`;
+    })
+    .join("\n");
+
+  console.log(cyan(cities));
 }
 
 function selectCity(state: AppState, action: string): City | null {
   printCities(state);
-  const answer = prompt(`  City number to ${action}: `);
+  const answer = prompt(cyan(`  City number to ${action}: `));
   if (answer === null) {
     return null;
   }
@@ -58,13 +75,14 @@ function selectCity(state: AppState, action: string): City | null {
 
 async function printCityWeather(city: City, state: AppState): Promise<void> {
   const temperature = await getCurrentTemperature(city, state.unit);
-  console.log(`  ${formatCity(city)}: ${temperature.toFixed(1)} ${unitSymbol(state.unit)}`);
+  const temperatureText = `${temperature.toFixed(1)} ${unitSymbol(state.unit)}`;
+  console.log(`  ${formatCity(city)}: ${yellow(temperatureText)}`);
 }
 
 async function showDefaultWeather(state: AppState): Promise<void> {
   const city = getDefaultCity(state);
   if (!city) {
-    console.log("  No default city is set. Add a city with option 3.");
+    printError("No default city is set. Add a city with option 3.");
     return;
   }
 
@@ -73,7 +91,7 @@ async function showDefaultWeather(state: AppState): Promise<void> {
 
 async function showAllWeather(state: AppState): Promise<void> {
   if (state.cities.length === 0) {
-    console.log("  No cities saved. Add a city with option 3.");
+    printError("No cities saved. Add a city with option 3.");
     return;
   }
 
@@ -82,72 +100,72 @@ async function showAllWeather(state: AppState): Promise<void> {
       await printCityWeather(city, state);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      console.log(`  ${formatCity(city)}: ${message}`);
+      printError(`${formatCity(city)}: ${message}`);
     }
   }
 }
 
 async function searchAndAddCity(state: AppState): Promise<void> {
-  const query = prompt("  City name: ")?.trim();
+  const query = prompt(cyan("  City name: "))?.trim();
   if (!query) {
-    console.log("  Enter a city name.");
+    printError("Enter a city name.");
     return;
   }
 
   const city = await findCity(query);
   if (!city) {
-    console.log(`  No results found for "${query}".`);
+    printError(`No results found for "${query}".`);
     return;
   }
 
   if (!addCityToState(state, city)) {
-    console.log(`  ${formatCity(city)} is already saved.`);
+    printError(`${formatCity(city)} is already saved.`);
     return;
   }
 
   await saveState(state);
   const defaultMessage = state.defaultCityId === city.id ? " and set it as default" : "";
-  console.log(`  Added ${formatCity(city)}${defaultMessage}.`);
+  printSuccess(`Added ${formatCity(city)}${defaultMessage}.`);
 }
 
 async function removeCity(state: AppState): Promise<void> {
   if (state.cities.length === 0) {
-    console.log("  No cities saved.");
+    printError("No cities saved.");
     return;
   }
 
   const city = selectCity(state, "remove");
   if (!city) {
-    console.log("  Invalid city selection.");
+    printError("Invalid city selection.");
     return;
   }
 
   removeCityFromState(state, city.id);
   await saveState(state);
-  console.log(`  Removed ${formatCity(city)}.`);
+  printSuccess(`Removed ${formatCity(city)}.`);
 }
 
 async function chooseDefaultCity(state: AppState): Promise<void> {
   if (state.cities.length === 0) {
-    console.log("  No cities saved. Add a city with option 3.");
+    printError("No cities saved. Add a city with option 3.");
     return;
   }
 
   const city = selectCity(state, "set as default");
   if (!city) {
-    console.log("  Invalid city selection.");
+    printError("Invalid city selection.");
     return;
   }
 
   setDefaultCity(state, city.id);
   await saveState(state);
-  console.log(`  Default city set to ${formatCity(city)}.`);
+  printSuccess(`Default city set to ${formatCity(city)}.`);
 }
 
 async function changeUnit(state: AppState): Promise<void> {
   const unit = toggleUnit(state);
   await saveState(state);
-  console.log(`  Temperature unit set to ${unitSymbol(unit)}.`);
+  printSuccess(`Temperature unit set to ${unitSymbol(unit)}.`);
 }
 
 export async function runCli(): Promise<void> {
@@ -155,15 +173,15 @@ export async function runCli(): Promise<void> {
 
   while (true) {
     printMenu(state);
-    const answer = prompt("  Select an option: ");
+    const answer = prompt(cyan("  Select an option: "));
     if (answer === null) {
-      console.log("\nGoodbye!");
+      printSuccess("Goodbye!");
       return;
     }
 
     const option = answer.trim();
     if (option === "9") {
-      console.log("Goodbye!");
+      printSuccess("Goodbye!");
       return;
     }
 
@@ -188,11 +206,11 @@ export async function runCli(): Promise<void> {
           await changeUnit(state);
           break;
         default:
-          console.log("  Invalid option. Select 1, 2, 3, 4, 5, 8, or 9.");
+          printError("Invalid option. Select 1, 2, 3, 4, 5, 8, or 9.");
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      console.error(`  Error: ${message}`);
+      printError(`Error: ${message}`);
     }
   }
 }

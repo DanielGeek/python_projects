@@ -8,6 +8,7 @@ A console application for saving cities and checking their current weather with 
 - Keep a default city.
 - Check the weather for the default city or all saved cities.
 - Switch between Celsius and Fahrenheit.
+- Colored terminal output: cyan menu, yellow temperature, green success, and red errors. Set `NO_COLOR=1` to disable colors.
 - Persist settings and cities locally in `weather.json`.
 
 ## Stack
