@@ -142,9 +142,6 @@ class PowerUp {
   }
 
   draw() {
-    // Blink when about to despawn
-    if (this.ttl < 3 && Math.floor(this.ttl * 8) % 2 === 0) return;
-
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.strokeStyle = '#0ff';
@@ -172,6 +169,9 @@ class PowerUp {
     ctx.lineTo( 5,  0);
     ctx.lineTo( 1,  4);
     ctx.stroke();
+
+    // Despawn bar: depletes as expiry approaches
+    drawTimerBar(-13, this.radius + 5, 26, 3, this.ttl / POWERUP_TTL);
 
     ctx.restore();
   }
@@ -446,6 +446,15 @@ function update(dt) {
 }
 
 // ── Draw ──────────────────────────────────────────────────────────────────────
+// Cyan timer bar: dim track plus a bright fill that depletes with ratio (0–1)
+function drawTimerBar(x, y, width, height, ratio) {
+  const clamped = Math.max(0, Math.min(1, ratio));
+  ctx.fillStyle = 'rgba(0, 255, 255, 0.25)';
+  ctx.fillRect(x, y, width, height);
+  ctx.fillStyle = '#0ff';
+  ctx.fillRect(x, y, width * clamped, height);
+}
+
 function drawLifeIcon(x, y) {
   ctx.save();
   ctx.translate(x, y);
@@ -473,7 +482,10 @@ function drawHUD() {
   if (ship.velocityTimer > 0) {
     ctx.fillStyle = '#0ff';
     ctx.font = '13px monospace';
-    ctx.fillText(`VELOCITY ${ship.velocityTimer.toFixed(1)}s`, 14, 46);
+    ctx.fillText('VELOCITY', 14, 46);
+    drawTimerBar(14, 52, 62, 4, ship.velocityTimer / VELOCITY_DURATION);
+    ctx.fillStyle = '#fff';
+    ctx.font = '15px monospace';
   }
 
   ctx.textAlign = 'center';

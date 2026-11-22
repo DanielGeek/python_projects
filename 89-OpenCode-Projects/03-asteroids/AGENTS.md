@@ -10,11 +10,11 @@
 
 - Input: `keys`/`justPressed` maps plus `pressed(code)` for edge detection; arrow keys rotate and thrust, `Space` fires and also restarts after game over.
 - Utils: `wrap` (toroidal space — entities wrap at the edges), `dist`, `rand`, `randInt`.
-- Classes: `Bullet` (fixed speed, ttl), `Asteroid` (sizes 1–3 driven by the `RADII`/`SPEEDS`/`POINTS` tables; splitting produces two of the next smaller size), `Ship` (thrust, drag, respawn invincibility, shoot cooldown, velocity timer), `PowerUp` (cyan hexagon pickup with despawn ttl and blinking), `Particle` (explosion sparks, optional color).
+- Classes: `Bullet` (fixed speed, ttl), `Asteroid` (sizes 1–3 driven by the `RADII`/`SPEEDS`/`POINTS` tables; splitting produces two of the next smaller size), `Ship` (thrust, drag, respawn invincibility, shoot cooldown, velocity timer), `PowerUp` (cyan hexagon pickup; the bar beneath it depletes as its despawn ttl runs out), `Particle` (explosion sparks, optional color).
 - Game state lives in module-level variables (`ship`, `bullets`, `asteroids`, `particles`, `powerups`, `score`, `lives`, `level`) with a `state` machine: `'playing' | 'dead' | 'gameover'`.
 - `update(dt)` and `draw()` run from a `requestAnimationFrame` loop with delta time clamped to 0.05s.
 - `spawnAsteroids` keeps a 130px safe distance from the canvas center so asteroids never spawn on the ship.
-- Velocity power-up: doubles ship thrust for `VELOCITY_DURATION` seconds (picking one up mid-effect just refreshes the timer; the effect is lost on death or level change). It appears via a periodic spawn (`FIRST_SPAWN_DELAY`, then every `SPAWN_INTERVAL` seconds, only when none is on screen, `POWERUP_SAFE_DIST` from the ship) and via a `DROP_CHANCE` roll whenever an asteroid is destroyed. The thruster flame turns cyan and the HUD shows the remaining seconds while active.
+- Velocity power-up: doubles ship thrust for `VELOCITY_DURATION` seconds (picking one up mid-effect just refreshes the timer; the effect is lost on death or level change). It appears via a periodic spawn (`FIRST_SPAWN_DELAY`, then every `SPAWN_INTERVAL` seconds, only when none is on screen, `POWERUP_SAFE_DIST` from the ship) and via a `DROP_CHANCE` roll whenever an asteroid is destroyed. The thruster flame turns cyan while the HUD shows a `VELOCITY` label with a depleting bar (both bars are drawn by `drawTimerBar`).
 
 ## Conventions
 
