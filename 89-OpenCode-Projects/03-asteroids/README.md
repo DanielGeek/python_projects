@@ -50,3 +50,4 @@ Then visit `http://localhost:3000`.
 - 3 lives with temporary invincibility upon respawning (blinking)
 - Asteroids break into smaller fragments upon destruction
 - Explosion particles when asteroids are destroyed
+- **Velocity power-up**: doubles ship thrust for 5 seconds. Spawns periodically on the field and can drop from destroyed asteroids; collect the cyan hexagon to activate it
