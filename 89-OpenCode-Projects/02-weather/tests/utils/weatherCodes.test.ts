@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { describeWeatherCode } from "../src/weather-codes";
+import { describeWeatherCode } from "../../src/utils/weatherCodes";
 
 describe("Weather codes", () => {
   test("describes known weather codes", () => {

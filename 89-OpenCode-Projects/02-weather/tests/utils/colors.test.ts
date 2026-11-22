@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { colorize } from "../src/colors";
+import { colorize } from "../../src/utils/colors";
 
 describe("terminal colors", () => {
   test("wraps text with the requested ANSI color", () => {

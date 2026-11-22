@@ -1,12 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { environment } from "../src/config";
-import {
-  findCity,
-  getCurrentWeather,
-  getDailyForecast,
-  type Fetcher,
-} from "../src/open-meteo";
-import type { City } from "../src/types";
+import type { Fetcher } from "../../src/api/client";
+import { getCurrentWeather, getDailyForecast } from "../../src/api/weather";
+import type { City } from "../../src/types/City";
+import { environment } from "../../src/utils/environment";
 
 const ottawa: City = {
   id: 6094817,
@@ -17,32 +13,8 @@ const ottawa: City = {
   longitude: -75.69812,
 };
 
-describe("Open-Meteo client", () => {
-  test("finds a city using the configured geocoding endpoint", async () => {
-    const requests: URL[] = [];
-    const fetcher: Fetcher = async (input) => {
-      requests.push(new URL(String(input)));
-      return Response.json({ results: [ottawa] });
-    };
-
-    const city = await findCity("Ottawa", fetcher);
-
-    expect(city).toEqual(ottawa);
-    expect(requests).toHaveLength(1);
-    const url = requests[0]!;
-    expect(url.origin + url.pathname).toBe(environment.openMeteoGeocodingUrl);
-    expect(url.searchParams.get("name")).toBe("Ottawa");
-    expect(url.searchParams.get("count")).toBe("1");
-    expect(url.searchParams.get("language")).toBe("en");
-    expect(url.searchParams.get("format")).toBe("json");
-  });
-
-  test("returns null when no city matches", async () => {
-    const fetcher: Fetcher = async () => Response.json({ results: [] });
-    expect(await findCity("Nowhere", fetcher)).toBeNull();
-  });
-
-  test("gets weather using the configured forecast endpoint", async () => {
+describe("Open-Meteo weather", () => {
+  test("gets current weather using the configured forecast endpoint", async () => {
     const requests: URL[] = [];
     const fetcher: Fetcher = async (input) => {
       requests.push(new URL(String(input)));
@@ -122,13 +94,6 @@ describe("Open-Meteo client", () => {
 
     await expect(getDailyForecast(ottawa, "celsius", fetcher)).rejects.toThrow(
       "Open-Meteo returned an invalid forecast response.",
-    );
-  });
-
-  test("reports HTTP errors", async () => {
-    const fetcher: Fetcher = async () => new Response("Unavailable", { status: 503 });
-    await expect(findCity("Ottawa", fetcher)).rejects.toThrow(
-      "Open-Meteo request failed with status 503.",
     );
   });
 });

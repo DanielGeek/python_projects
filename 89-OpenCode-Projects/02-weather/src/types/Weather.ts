@@ -1,19 +1,6 @@
+import { isFiniteNumber } from "./validation";
+
 export type TemperatureUnit = "celsius" | "fahrenheit";
-
-export interface City {
-  id: number;
-  name: string;
-  admin1?: string;
-  country?: string;
-  latitude: number;
-  longitude: number;
-}
-
-export interface AppState {
-  cities: City[];
-  defaultCityId: number | null;
-  unit: TemperatureUnit;
-}
 
 export interface CurrentWeather {
   temperature: number;
@@ -24,37 +11,6 @@ export interface DailyForecast {
   date: string;
   maxTemperature: number;
   minTemperature: number;
-}
-
-export function isFiniteNumber(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value);
-}
-
-export function parseCity(value: unknown): City | null {
-  if (typeof value !== "object" || value === null) {
-    return null;
-  }
-
-  const city = value as Record<string, unknown>;
-  const { id, latitude, longitude, name } = city;
-  if (
-    !isFiniteNumber(id) ||
-    !isFiniteNumber(latitude) ||
-    !isFiniteNumber(longitude) ||
-    typeof name !== "string" ||
-    !name.trim()
-  ) {
-    return null;
-  }
-
-  return {
-    id,
-    name: name.trim(),
-    admin1: typeof city.admin1 === "string" ? city.admin1 : undefined,
-    country: typeof city.country === "string" ? city.country : undefined,
-    latitude,
-    longitude,
-  };
 }
 
 export function parseDailyForecast(value: unknown): DailyForecast[] | null {

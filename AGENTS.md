@@ -30,7 +30,7 @@ uv add <package>               # updates pyproject.toml and uv.lock
 Follow `package.json` scripts and the existing lockfile rather than applying the Python workflow.
 
 - With `bun.lock`, use Bun instead of Node/npm: `bun install`, `bun <entrypoint>`, and `bun test` when tests exist.
-- `89-OpenCode-Projects/02-weather` uses `bun index.ts` and `bun run typecheck` (which runs `bun check`).
+- `89-OpenCode-Projects/02-weather` uses `bun run start` and `bun run typecheck` (which runs `bun check`).
 - Other projects use npm or framework-specific commands; check their local instructions and scripts.
 
 ## Secrets

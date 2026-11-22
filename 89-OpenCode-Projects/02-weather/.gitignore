@@ -35,6 +35,9 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Local application data
 /weather.json
+/weather.json.bak
+/cities.json
+/settings.json
 
 # Compiled executable
 /weather

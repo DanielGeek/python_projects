@@ -8,9 +8,10 @@ A console application for saving cities and checking their current weather with 
 - Keep a default city.
 - Check the weather (temperature and condition) for the default city or all saved cities.
 - Check the 7 day forecast for all saved cities.
+- List saved cities.
 - Switch between Celsius and Fahrenheit.
 - Colored terminal output: cyan menu, yellow temperature, green success, and red errors. Set `NO_COLOR=1` to disable colors.
-- Persist settings and cities locally in `weather.json`.
+- Persist settings and cities locally in `cities.json` and `settings.json`.
 
 ## Stack
 
@@ -45,7 +46,7 @@ OPEN_METEO_GEOCODING_URL=https://geocoding-api.open-meteo.com/v1/search
 OPEN_METEO_FORECAST_URL=https://api.open-meteo.com/v1/forecast
 ```
 
-The first saved city becomes the default. Option 8 toggles the temperature unit. Local data is stored in `weather.json` in the directory where the application runs.
+The first saved city becomes the default. Option 8 toggles the temperature unit. Local data is stored in `cities.json` and `settings.json` in the directory where the application runs. A legacy `weather.json` from earlier versions is migrated automatically on the first run.
 
 ## Verification
 
@@ -75,6 +76,7 @@ The executable also loads `.env` from its own directory, so it can be opened fro
   4. Remove a city
   5. Set default city
   6. 7 day forecast for all cities (1)
+  7. List saved cities
   8. Settings (°C)
   9. Exit
 ════════════════════════════════════════
