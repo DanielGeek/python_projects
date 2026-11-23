@@ -1,6 +1,6 @@
 // game.js
 // State and rules. Depends on maze.js globals: MAZE, TUNNEL_ROW,
-// PACMAN_START, GHOST_STARTS.
+// PACMAN_START, GHOST_STARTS, GHOST_RELEASE_SECONDS.
 
 const DIRS = {
   left: { x: -1, y: 0 },
@@ -12,6 +12,7 @@ const OPPOSITE = { left: 'right', right: 'left', up: 'down', down: 'up' };
 
 const PACMAN_SPEED = 0.125; // 1/8 cell/frame -> aligns every 8 frames
 const GHOST_SPEED = 0.1;    // 1/10 cell/frame
+const TICK_SECONDS = 1 / 60; // gameplay seconds added by each update() tick
 
 // Creates a new game. Copies MAZE (pristine) into game.grid so dots can be
 // eaten without destroying the original, and to allow restarts.
@@ -29,6 +30,9 @@ function createGame() {
     lives: 3,
     dotsRemaining: dots,
     grid,
+    clock: 0,             // gameplay seconds; drives waves and release
+    ghostMode: 'scatter', // 'scatter' | 'chase'
+    modeSeconds: 0,       // time spent in the current mode
     pacman: {
       x: PACMAN_START.x,
       y: PACMAN_START.y,
@@ -42,6 +46,7 @@ function createGame() {
       dir: 'up',
       speed: GHOST_SPEED,
       kind: g.kind,
+      released: false, // waits in the pen until its scheduled time
     } ) ),
   };
 }
@@ -50,27 +55,24 @@ function aligned( v ) {
   return Math.abs( v - Math.round( v ) ) < 1e-3;
 }
 
-// Is a cell a wall for the given actor?
-//   pacman: blocked by wall (1) and door (3)
-//   ghost:  blocked only by wall (1)
-function isWall( grid, x, y, actor ) {
+// Is a cell a wall? Walls (1) and the pen door (3) block every actor;
+// ghosts leave the pen only through their scripted exit.
+function isWall( grid, x, y ) {
   if ( y < 0 || y >= grid.length ) return true;
   if ( x < 0 || x >= grid[ 0 ].length ) return true;
   const v = grid[ y ][ x ];
-  if ( v === 1 ) return true;
-  if ( v === 3 && actor === 'pacman' ) return true;
-  return false;
+  return v === 1 || v === 3;
 }
 
 // Can the actor advance from (x,y) in direction dir?
-function canMove( grid, x, y, dir, actor ) {
+function canMove( grid, x, y, dir ) {
   const d = DIRS[ dir ];
   if ( !d ) return false;
   const tx = x + d.x;
   const ty = y + d.y;
   // Tunnel: exiting through an edge on the tunnel row is always valid.
   if ( ty === TUNNEL_ROW && ( tx < 0 || tx >= grid[ 0 ].length ) ) return true;
-  return !isWall( grid, tx, ty, actor );
+  return !isWall( grid, tx, ty );
 }
 
 function wrapTunnel( a, width ) {
@@ -78,6 +80,16 @@ function wrapTunnel( a, width ) {
     if ( a.x < 0 ) a.x += width;
     else if ( a.x >= width ) a.x -= width;
   }
+}
+
+// The pen: door row 12 plus interior rows 13-15, columns 11-16.
+const PEN = { left: 11, top: 12, right: 16, bottom: 15 };
+
+function inPen( g ) {
+  return (
+    g.x >= PEN.left && g.x <= PEN.right &&
+    g.y >= PEN.top && g.y <= PEN.bottom
+  );
 }
 
 function movePacman( game ) {
@@ -90,7 +102,7 @@ function movePacman( game ) {
     p.y = Math.round( p.y );
 
     // Apply pending turn if possible.
-    if ( p.nextDir && canMove( grid, p.x, p.y, p.nextDir, 'pacman' ) ) {
+    if ( p.nextDir && canMove( grid, p.x, p.y, p.nextDir ) ) {
       p.dir = p.nextDir;
       p.nextDir = null;
     }
@@ -101,7 +113,7 @@ function movePacman( game ) {
       game.dotsRemaining--;
     }
     // If it cannot keep going, stop at the cell.
-    if ( !canMove( grid, p.x, p.y, p.dir, 'pacman' ) ) return;
+    if ( !canMove( grid, p.x, p.y, p.dir ) ) return;
   }
 
   const d = DIRS[ p.dir ];
@@ -115,7 +127,7 @@ function decideGhost( game, g ) {
   const p = game.pacman;
 
   const options = Object.keys( DIRS ).filter(
-    ( dir ) => dir !== OPPOSITE[ g.dir ] && canMove( grid, g.x, g.y, dir, 'ghost' )
+    ( dir ) => dir !== OPPOSITE[ g.dir ] && canMove( grid, g.x, g.y, dir )
   );
   // No way out (dead end): allow the 180-degree turn.
   const choices = options.length ? options : [ '' + OPPOSITE[ g.dir ] ];
@@ -145,11 +157,22 @@ function moveGhost( game, g ) {
   const grid = game.grid;
   const width = grid[ 0 ].length;
 
+  // Unreleased ghosts wait in place inside the pen.
+  if ( !g.released ) return;
+
+  // Scripted exit: a released ghost walks straight up through the door and
+  // joins normal movement once outside the pen.
+  if ( inPen( g ) ) {
+    g.dir = 'up';
+    g.y -= g.speed;
+    return;
+  }
+
   if ( aligned( g.x ) && aligned( g.y ) ) {
     g.x = Math.round( g.x );
     g.y = Math.round( g.y );
     decideGhost( game, g );
-    if ( !canMove( grid, g.x, g.y, g.dir, 'ghost' ) ) return;
+    if ( !canMove( grid, g.x, g.y, g.dir ) ) return;
   }
 
   const d = DIRS[ g.dir ];
@@ -168,6 +191,7 @@ function resetPositions( game ) {
     g.x = GHOST_STARTS[ i ].x;
     g.y = GHOST_STARTS[ i ].y;
     g.dir = 'up';
+    g.released = false;
   } );
 }
 
@@ -175,7 +199,17 @@ function collides( a, b ) {
   return Math.abs( a.x - b.x ) < 0.5 && Math.abs( a.y - b.y ) < 0.5;
 }
 
+// Open the pen for every ghost whose scheduled release time has arrived.
+function releaseGhosts( game ) {
+  for ( const g of game.ghosts ) {
+    if ( !g.released && game.clock >= GHOST_RELEASE_SECONDS[ g.kind ] ) g.released = true;
+  }
+}
+
 function update( game ) {
+  game.clock += TICK_SECONDS;
+  releaseGhosts( game );
+
   movePacman( game );
   game.ghosts.forEach( ( g ) => moveGhost( game, g ) );
 
