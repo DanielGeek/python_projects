@@ -181,19 +181,32 @@ class ShootingStar extends Asteroid {
   }
 }
 
-// ── Power-up: Velocity ─────────────────────────────────────────────────────────
+// ── Power-ups: Velocity and Shield ────────────────────────────────────────────
 const POWERUP_TTL       = 10;    // seconds before despawning
 const POWERUP_SAFE_DIST = 150;   // min distance from the ship on periodic spawn
 const SPAWN_INTERVAL    = 15;    // seconds between periodic spawns
 const FIRST_SPAWN_DELAY = 10;    // delay before the first periodic spawn
-const VELOCITY_DURATION   = 5;   // seconds of doubled thrust
-const VELOCITY_MULTIPLIER = 2;
 const DROP_CHANCE       = 0.10;  // chance a destroyed asteroid drops a power-up
 
+const VELOCITY_DURATION   = 5;   // seconds of doubled thrust
+const VELOCITY_MULTIPLIER = 2;
+const VELOCITY_RGB        = '0,255,255';
+
+const SHIELD_DURATION = 6;      // seconds of collision protection
+const SHIELD_RADIUS   = 22;     // bubble radius around the ship
+const SHIELD_RGB      = '0,255,0';
+
+// Each kind fixes the pickup color, burst and HUD bar
+const POWERUP_COLORS = { velocity: VELOCITY_RGB, shield: SHIELD_RGB };
+const POWERUP_KINDS  = Object.keys(POWERUP_COLORS);
+const randomKind     = () => POWERUP_KINDS[randInt(0, POWERUP_KINDS.length - 1)];
+
 class PowerUp {
-  constructor(x, y) {
+  constructor(x, y, kind) {
     this.x = x;
     this.y = y;
+    this.kind = kind;
+    this.rgb    = POWERUP_COLORS[kind];
     this.radius = 11;
     this.ttl = POWERUP_TTL;
     this.dead = false;
@@ -207,7 +220,7 @@ class PowerUp {
   draw() {
     ctx.save();
     ctx.translate(this.x, this.y);
-    ctx.strokeStyle = '#0ff';
+    ctx.strokeStyle = `rgb(${this.rgb})`;
     ctx.lineWidth   = 1.5;
     ctx.lineJoin    = 'round';
 
@@ -223,20 +236,32 @@ class PowerUp {
     ctx.closePath();
     ctx.stroke();
 
-    // Double chevron ">>"
-    ctx.beginPath();
-    ctx.moveTo(-5, -4);
-    ctx.lineTo(-1,  0);
-    ctx.lineTo(-5,  4);
-    ctx.moveTo( 1, -4);
-    ctx.lineTo( 5,  0);
-    ctx.lineTo( 1,  4);
-    ctx.stroke();
+    this.drawGlyph();
 
     // Despawn bar: depletes as expiry approaches
-    drawTimerBar(-13, this.radius + 5, 26, 3, this.ttl / POWERUP_TTL);
+    drawTimerBar(-13, this.radius + 5, 26, 3, this.ttl / POWERUP_TTL, this.rgb);
 
     ctx.restore();
+  }
+
+  // Inner glyph identifies the effect
+  drawGlyph() {
+    ctx.beginPath();
+    if (this.kind === 'shield') {
+      // Shield: dome sitting on a base line
+      ctx.arc(0, 2, 5, Math.PI, 0);
+      ctx.moveTo(-5, 2);
+      ctx.lineTo( 5, 2);
+    } else {
+      // Velocity: double chevron ">>"
+      ctx.moveTo(-5, -4);
+      ctx.lineTo(-1,  0);
+      ctx.lineTo(-5,  4);
+      ctx.moveTo( 1, -4);
+      ctx.lineTo( 5,  0);
+      ctx.lineTo( 1,  4);
+    }
+    ctx.stroke();
   }
 }
 
@@ -255,6 +280,7 @@ class Ship {
     this.invincible    = 3;
     this.shootCooldown = 0;
     this.velocityTimer = 0;
+    this.shieldTimer   = 0;
     this.dead          = false;
   }
 
@@ -263,6 +289,7 @@ class Ship {
     if (this.invincible    > 0) this.invincible    -= dt;
     if (this.shootCooldown > 0) this.shootCooldown -= dt;
     if (this.velocityTimer > 0) this.velocityTimer  = Math.max(0, this.velocityTimer - dt);
+    if (this.shieldTimer   > 0) this.shieldTimer    = Math.max(0, this.shieldTimer - dt);
 
     const ROT   = 3.5;   // rad/s
     const BASE_THRUST = 260;  // px/s²
@@ -321,8 +348,17 @@ class Ship {
       ctx.lineTo(-8 - rand(6, 14), 0);
       ctx.lineTo(-8,  4);
       ctx.strokeStyle = this.velocityTimer > 0
-        ? 'rgba(0, 255, 255, 0.85)'
+        ? `rgba(${VELOCITY_RGB}, 0.85)`
         : 'rgba(255, 130, 0, 0.85)';
+      ctx.stroke();
+    }
+
+    // Shield bubble: gentle pulse while Shield is active
+    if (this.shieldTimer > 0) {
+      const r = SHIELD_RADIUS + Math.sin(this.shieldTimer * 6) * 1.5;
+      ctx.strokeStyle = `rgba(${SHIELD_RGB}, 0.7)`;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
       ctx.stroke();
     }
 
@@ -475,7 +511,7 @@ function update(dt) {
     powerupTimer -= dt;
     if (powerupTimer <= 0) {
       const [x, y] = randomPositionAwayFrom(ship.x, ship.y, POWERUP_SAFE_DIST);
-      powerups.push(new PowerUp(x, y));
+      powerups.push(new PowerUp(x, y, randomKind()));
       powerupTimer = SPAWN_INTERVAL;
     }
   }
@@ -499,7 +535,7 @@ function update(dt) {
         a.dead = true;
         score += a.points;
         explode(a.x, a.y, a.size * 5, a.rgb);
-        if (Math.random() < DROP_CHANCE) powerups.push(new PowerUp(a.x, a.y));
+        if (Math.random() < DROP_CHANCE) powerups.push(new PowerUp(a.x, a.y, randomKind()));
         newAsteroids.push(...a.split());
       }
     }
@@ -507,22 +543,29 @@ function update(dt) {
   asteroids = asteroids.filter(a => !a.dead).concat(newAsteroids);
   bullets   = bullets.filter(b => !b.dead);
 
-  // Ship vs asteroid
+  // Ship vs asteroid: an active shield vaporizes it, otherwise the ship dies
   if (ship.invincible <= 0) {
     for (const a of asteroids) {
       if (dist(ship, a) < ship.radius + a.radius * 0.82) {
-        killShip();
-        break;
+        if (ship.shieldTimer > 0) {
+          a.dead = true;
+          explode(a.x, a.y, a.size * 5, a.rgb);
+        } else {
+          killShip();
+          break;
+        }
       }
     }
+    asteroids = asteroids.filter(a => !a.dead);
   }
 
-  // Ship vs power-up: collect Velocity
+  // Ship vs power-up: collect Velocity or Shield
   for (const p of powerups) {
     if (!p.dead && !ship.dead && dist(ship, p) < ship.radius + p.radius) {
       p.dead = true;
-      ship.velocityTimer = VELOCITY_DURATION;
-      explode(p.x, p.y, 12, '0,255,255');
+      if (p.kind === 'shield') ship.shieldTimer   = SHIELD_DURATION;
+      else                     ship.velocityTimer = VELOCITY_DURATION;
+      explode(p.x, p.y, 12, p.rgb);
     }
   }
 
@@ -531,12 +574,12 @@ function update(dt) {
 }
 
 // ── Draw ──────────────────────────────────────────────────────────────────────
-// Cyan timer bar: dim track plus a bright fill that depletes with ratio (0–1)
-function drawTimerBar(x, y, width, height, ratio) {
+// Timer bar: dim track plus a bright fill that depletes with ratio (0–1)
+function drawTimerBar(x, y, width, height, ratio, rgb) {
   const clamped = Math.max(0, Math.min(1, ratio));
-  ctx.fillStyle = 'rgba(0, 255, 255, 0.25)';
+  ctx.fillStyle = `rgba(${rgb}, 0.25)`;
   ctx.fillRect(x, y, width, height);
-  ctx.fillStyle = '#0ff';
+  ctx.fillStyle = `rgb(${rgb})`;
   ctx.fillRect(x, y, width * clamped, height);
 }
 
@@ -557,6 +600,14 @@ function drawLifeIcon(x, y) {
   ctx.restore();
 }
 
+// Effect label with a depleting bar, stacked under the score
+function drawEffect(label, ratio, rgb, y) {
+  ctx.fillStyle = `rgb(${rgb})`;
+  ctx.font = '13px monospace';
+  ctx.fillText(label, 14, y);
+  drawTimerBar(14, y + 6, 62, 4, ratio, rgb);
+}
+
 function drawHUD() {
   ctx.fillStyle = '#fff';
   ctx.font = '15px monospace';
@@ -564,15 +615,17 @@ function drawHUD() {
   ctx.textAlign = 'left';
   ctx.fillText(`SCORE  ${score}`, 14, 26);
 
+  let effectY = 46;
   if (ship.velocityTimer > 0) {
-    ctx.fillStyle = '#0ff';
-    ctx.font = '13px monospace';
-    ctx.fillText('VELOCITY', 14, 46);
-    drawTimerBar(14, 52, 62, 4, ship.velocityTimer / VELOCITY_DURATION);
-    ctx.fillStyle = '#fff';
-    ctx.font = '15px monospace';
+    drawEffect('VELOCITY', ship.velocityTimer / VELOCITY_DURATION, VELOCITY_RGB, effectY);
+    effectY += 20;
+  }
+  if (ship.shieldTimer > 0) {
+    drawEffect('SHIELD', ship.shieldTimer / SHIELD_DURATION, SHIELD_RGB, effectY);
   }
 
+  ctx.fillStyle = '#fff';
+  ctx.font = '15px monospace';
   ctx.textAlign = 'center';
   ctx.fillText(`LEVEL ${level}`, W / 2, 26);
 
