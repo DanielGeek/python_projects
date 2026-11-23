@@ -181,7 +181,7 @@ class ShootingStar extends Asteroid {
   }
 }
 
-// ── Power-ups: Velocity and Shield ────────────────────────────────────────────
+// ── Power-ups: Velocity, Shield and Triple shot ──────────────────────────────
 const POWERUP_TTL       = 10;    // seconds before despawning
 const POWERUP_SAFE_DIST = 150;   // min distance from the ship on periodic spawn
 const SPAWN_INTERVAL    = 15;    // seconds between periodic spawns
@@ -190,23 +190,20 @@ const DROP_CHANCE       = 0.10;  // chance a destroyed asteroid drops a power-up
 
 const VELOCITY_DURATION   = 5;   // seconds of doubled thrust
 const VELOCITY_MULTIPLIER = 2;
-const VELOCITY_RGB        = '0,255,255';
+const VELOCITY_RGB        = '0,255,255';     // cyan
 
 const SHIELD_DURATION = 6;      // seconds of collision protection
 const SHIELD_RADIUS   = 22;     // bubble radius around the ship
-const SHIELD_RGB      = '0,255,0';
+const SHIELD_RGB      = '0,255,0';     // green
 
-// Each kind fixes the pickup color, burst and HUD bar
-const POWERUP_COLORS = { velocity: VELOCITY_RGB, shield: SHIELD_RGB };
-const POWERUP_KINDS  = Object.keys(POWERUP_COLORS);
-const randomKind     = () => POWERUP_KINDS[randInt(0, POWERUP_KINDS.length - 1)];
+const TRIPLE_DURATION = 5;      // seconds of triple shot
+const TRIPLE_OFFSET   = 6;      // px between the parallel bullets
+const TRIPLE_RGB      = '255,0,255';     // magenta
 
 class PowerUp {
-  constructor(x, y, kind) {
+  constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.kind = kind;
-    this.rgb    = POWERUP_COLORS[kind];
     this.radius = 11;
     this.ttl = POWERUP_TTL;
     this.dead = false;
@@ -216,6 +213,9 @@ class PowerUp {
     this.ttl -= dt;
     if (this.ttl <= 0) this.dead = true;
   }
+
+  apply(ship) {}
+  drawIcon() {}
 
   draw() {
     ctx.save();
@@ -236,33 +236,81 @@ class PowerUp {
     ctx.closePath();
     ctx.stroke();
 
-    this.drawGlyph();
+    this.drawIcon();
 
     // Despawn bar: depletes as expiry approaches
     drawTimerBar(-13, this.radius + 5, 26, 3, this.ttl / POWERUP_TTL, this.rgb);
 
     ctx.restore();
   }
+}
 
-  // Inner glyph identifies the effect
-  drawGlyph() {
+// Doubles ship thrust while active
+class VelocityPowerUp extends PowerUp {
+  constructor(x, y) {
+    super(x, y);
+    this.rgb = VELOCITY_RGB;
+  }
+
+  apply(ship) { ship.velocityTimer = VELOCITY_DURATION; }
+
+  // Double chevron ">>"
+  drawIcon() {
     ctx.beginPath();
-    if (this.kind === 'shield') {
-      // Shield: dome sitting on a base line
-      ctx.arc(0, 2, 5, Math.PI, 0);
-      ctx.moveTo(-5, 2);
-      ctx.lineTo( 5, 2);
-    } else {
-      // Velocity: double chevron ">>"
-      ctx.moveTo(-5, -4);
-      ctx.lineTo(-1,  0);
-      ctx.lineTo(-5,  4);
-      ctx.moveTo( 1, -4);
-      ctx.lineTo( 5,  0);
-      ctx.lineTo( 1,  4);
+    ctx.moveTo(-5, -4);
+    ctx.lineTo(-1,  0);
+    ctx.lineTo(-5,  4);
+    ctx.moveTo( 1, -4);
+    ctx.lineTo( 5,  0);
+    ctx.lineTo( 1,  4);
+    ctx.stroke();
+  }
+}
+
+// Grants collision protection while active
+class ShieldPowerUp extends PowerUp {
+  constructor(x, y) {
+    super(x, y);
+    this.rgb = SHIELD_RGB;
+  }
+
+  apply(ship) { ship.shieldTimer = SHIELD_DURATION; }
+
+  // Dome sitting on a base line
+  drawIcon() {
+    ctx.beginPath();
+    ctx.arc(0, 2, 5, Math.PI, 0);
+    ctx.moveTo(-5, 2);
+    ctx.lineTo( 5, 2);
+    ctx.stroke();
+  }
+}
+
+// Fires three parallel bullets while active
+class TripleShotPowerUp extends PowerUp {
+  constructor(x, y) {
+    super(x, y);
+    this.rgb = TRIPLE_RGB;
+  }
+
+  apply(ship) { ship.tripleTimer = TRIPLE_DURATION; }
+
+  // Three parallel strokes "|||"
+  drawIcon() {
+    ctx.beginPath();
+    for (const dx of [-4, 0, 4]) {
+      ctx.moveTo(dx, -5);
+      ctx.lineTo(dx,  5);
     }
     ctx.stroke();
   }
+}
+
+const POWERUP_KINDS = [VelocityPowerUp, ShieldPowerUp, TripleShotPowerUp];
+
+function spawnPowerUp(x, y) {
+  const Kind = POWERUP_KINDS[randInt(0, POWERUP_KINDS.length - 1)];
+  powerups.push(new Kind(x, y));
 }
 
 // ── Ship skins ───────────────────────────────────────────────────────────────
@@ -376,6 +424,7 @@ class Ship {
     this.shootCooldown = 0;
     this.velocityTimer = 0;
     this.shieldTimer   = 0;
+    this.tripleTimer   = 0;
     this.dead          = false;
   }
 
@@ -385,6 +434,7 @@ class Ship {
     if (this.shootCooldown > 0) this.shootCooldown -= dt;
     if (this.velocityTimer > 0) this.velocityTimer  = Math.max(0, this.velocityTimer - dt);
     if (this.shieldTimer   > 0) this.shieldTimer    = Math.max(0, this.shieldTimer - dt);
+    if (this.tripleTimer   > 0) this.tripleTimer    = Math.max(0, this.tripleTimer - dt);
 
     const ROT   = 3.5;   // rad/s
     const BASE_THRUST = 260;  // px/s²
@@ -412,7 +462,11 @@ class Ship {
     const NOSE = 21;
     const ox = this.x + Math.cos(this.angle) * NOSE;
     const oy = this.y + Math.sin(this.angle) * NOSE;
-    return [new Bullet(ox, oy, this.angle)];
+    if (this.tripleTimer <= 0) return [new Bullet(ox, oy, this.angle)];
+    const px = -Math.sin(this.angle);   // perpendicular to the nose direction
+    const py =  Math.cos(this.angle);
+    return [-TRIPLE_OFFSET, 0, TRIPLE_OFFSET].map(off =>
+      new Bullet(ox + px * off, oy + py * off, this.angle));
   }
 
   draw() {
@@ -607,7 +661,7 @@ function update(dt) {
     powerupTimer -= dt;
     if (powerupTimer <= 0) {
       const [x, y] = randomPositionAwayFrom(ship.x, ship.y, POWERUP_SAFE_DIST);
-      powerups.push(new PowerUp(x, y, randomKind()));
+      spawnPowerUp(x, y);
       powerupTimer = SPAWN_INTERVAL;
     }
   }
@@ -631,7 +685,7 @@ function update(dt) {
         a.dead = true;
         score += a.points;
         explode(a.x, a.y, a.size * 5, a.rgb);
-        if (Math.random() < DROP_CHANCE) powerups.push(new PowerUp(a.x, a.y, randomKind()));
+        if (Math.random() < DROP_CHANCE) spawnPowerUp(a.x, a.y);
         newAsteroids.push(...a.split());
       }
     }
@@ -655,12 +709,11 @@ function update(dt) {
     asteroids = asteroids.filter(a => !a.dead);
   }
 
-  // Ship vs power-up: collect Velocity or Shield
+  // Ship vs power-up: collect the effect
   for (const p of powerups) {
     if (!p.dead && !ship.dead && dist(ship, p) < ship.radius + p.radius) {
       p.dead = true;
-      if (p.kind === 'shield') ship.shieldTimer   = SHIELD_DURATION;
-      else                     ship.velocityTimer = VELOCITY_DURATION;
+      p.apply(ship);
       explode(p.x, p.y, 12, p.rgb);
     }
   }
@@ -679,6 +732,17 @@ function drawTimerBar(x, y, width, height, ratio, rgb) {
   ctx.fillRect(x, y, width * clamped, height);
 }
 
+// Active-effect label with its depleting bar, stacked under the score
+function drawActiveEffect(label, ratio, rgb, y) {
+  ctx.textAlign = 'left';
+  ctx.fillStyle = `rgb(${rgb})`;
+  ctx.font = '13px monospace';
+  ctx.fillText(label, 14, y);
+  drawTimerBar(14, y + 6, 62, 4, ratio, rgb);
+  ctx.fillStyle = '#fff';
+  ctx.font = '15px monospace';
+}
+
 function drawLifeIcon(x, y) {
   const skin = SKINS[skinIndex];
   ctx.save();
@@ -693,14 +757,6 @@ function drawLifeIcon(x, y) {
   ctx.restore();
 }
 
-// Effect label with a depleting bar, stacked under the score
-function drawEffect(label, ratio, rgb, y) {
-  ctx.fillStyle = `rgb(${rgb})`;
-  ctx.font = '13px monospace';
-  ctx.fillText(label, 14, y);
-  drawTimerBar(14, y + 6, 62, 4, ratio, rgb);
-}
-
 function drawHUD() {
   ctx.fillStyle = '#fff';
   ctx.font = '15px monospace';
@@ -710,12 +766,15 @@ function drawHUD() {
 
   let effectY = 46;
   if (ship.velocityTimer > 0) {
-    drawEffect('VELOCITY', ship.velocityTimer / VELOCITY_DURATION, VELOCITY_RGB, effectY);
-    effectY += 20;
+    drawActiveEffect('VELOCITY', ship.velocityTimer / VELOCITY_DURATION, VELOCITY_RGB, effectY);
+    effectY += 26;
   }
   if (ship.shieldTimer > 0) {
-    drawEffect('SHIELD', ship.shieldTimer / SHIELD_DURATION, SHIELD_RGB, effectY);
+    drawActiveEffect('SHIELD', ship.shieldTimer / SHIELD_DURATION, SHIELD_RGB, effectY);
+    effectY += 26;
   }
+  if (ship.tripleTimer > 0)
+    drawActiveEffect('TRIPLE', ship.tripleTimer / TRIPLE_DURATION, TRIPLE_RGB, effectY);
 
   ctx.fillStyle = '#fff';
   ctx.font = '15px monospace';
