@@ -11,7 +11,7 @@ Answer Pokemon questions with live data from PokeAPI (<https://pokeapi.co>). Do 
 
 Run the bundled script (`scripts/fetch_pokemon.py`, relative to this skill's directory). Never fetch the raw endpoints with webfetch or curl: each response is ~100 KB of JSON, and the script prints only the fields that matter.
 
-Battle data — types, abilities, base stats, height, weight, artwork:
+Battle data — types, abilities, base stats, height, weight, artwork, cry:
 
 ```bash
 python3 scripts/fetch_pokemon.py ditto

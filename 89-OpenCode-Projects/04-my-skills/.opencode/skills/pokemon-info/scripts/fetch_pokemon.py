@@ -78,6 +78,10 @@ def print_battle_summary(identifier):
     if artwork:
         print(f"Official artwork: {artwork}")
 
+    cry = (data.get("cries") or {}).get("latest")
+    if cry:
+        print(f"Cry: {cry}")
+
 
 def format_evolution_details(details):
     """List unique evolution conditions; the API repeats one per game generation."""
