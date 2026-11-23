@@ -181,14 +181,24 @@ class ShootingStar extends Asteroid {
   }
 }
 
-// ── Power-up: Velocity ─────────────────────────────────────────────────────────
+// ── Power-ups: Velocity, Shield and Triple shot ──────────────────────────────
 const POWERUP_TTL       = 10;    // seconds before despawning
 const POWERUP_SAFE_DIST = 150;   // min distance from the ship on periodic spawn
 const SPAWN_INTERVAL    = 15;    // seconds between periodic spawns
 const FIRST_SPAWN_DELAY = 10;    // delay before the first periodic spawn
+const DROP_CHANCE       = 0.10;  // chance a destroyed asteroid drops a power-up
+
 const VELOCITY_DURATION   = 5;   // seconds of doubled thrust
 const VELOCITY_MULTIPLIER = 2;
-const DROP_CHANCE       = 0.10;  // chance a destroyed asteroid drops a power-up
+const VELOCITY_RGB        = '0,255,255';     // cyan
+
+const SHIELD_DURATION = 6;      // seconds of collision protection
+const SHIELD_RADIUS   = 22;     // bubble radius around the ship
+const SHIELD_RGB      = '0,255,0';     // green
+
+const TRIPLE_DURATION = 5;      // seconds of triple shot
+const TRIPLE_OFFSET   = 6;      // px between the parallel bullets
+const TRIPLE_RGB      = '255,0,255';     // magenta
 
 class PowerUp {
   constructor(x, y) {
@@ -204,10 +214,13 @@ class PowerUp {
     if (this.ttl <= 0) this.dead = true;
   }
 
+  apply(ship) {}
+  drawIcon() {}
+
   draw() {
     ctx.save();
     ctx.translate(this.x, this.y);
-    ctx.strokeStyle = '#0ff';
+    ctx.strokeStyle = `rgb(${this.rgb})`;
     ctx.lineWidth   = 1.5;
     ctx.lineJoin    = 'round';
 
@@ -223,7 +236,26 @@ class PowerUp {
     ctx.closePath();
     ctx.stroke();
 
-    // Double chevron ">>"
+    this.drawIcon();
+
+    // Despawn bar: depletes as expiry approaches
+    drawTimerBar(-13, this.radius + 5, 26, 3, this.ttl / POWERUP_TTL, this.rgb);
+
+    ctx.restore();
+  }
+}
+
+// Doubles ship thrust while active
+class VelocityPowerUp extends PowerUp {
+  constructor(x, y) {
+    super(x, y);
+    this.rgb = VELOCITY_RGB;
+  }
+
+  apply(ship) { ship.velocityTimer = VELOCITY_DURATION; }
+
+  // Double chevron ">>"
+  drawIcon() {
     ctx.beginPath();
     ctx.moveTo(-5, -4);
     ctx.lineTo(-1,  0);
@@ -232,12 +264,148 @@ class PowerUp {
     ctx.lineTo( 5,  0);
     ctx.lineTo( 1,  4);
     ctx.stroke();
-
-    // Despawn bar: depletes as expiry approaches
-    drawTimerBar(-13, this.radius + 5, 26, 3, this.ttl / POWERUP_TTL);
-
-    ctx.restore();
   }
+}
+
+// Grants collision protection while active
+class ShieldPowerUp extends PowerUp {
+  constructor(x, y) {
+    super(x, y);
+    this.rgb = SHIELD_RGB;
+  }
+
+  apply(ship) { ship.shieldTimer = SHIELD_DURATION; }
+
+  // Dome sitting on a base line
+  drawIcon() {
+    ctx.beginPath();
+    ctx.arc(0, 2, 5, Math.PI, 0);
+    ctx.moveTo(-5, 2);
+    ctx.lineTo( 5, 2);
+    ctx.stroke();
+  }
+}
+
+// Fires three parallel bullets while active
+class TripleShotPowerUp extends PowerUp {
+  constructor(x, y) {
+    super(x, y);
+    this.rgb = TRIPLE_RGB;
+  }
+
+  apply(ship) { ship.tripleTimer = TRIPLE_DURATION; }
+
+  // Three parallel strokes "|||"
+  drawIcon() {
+    ctx.beginPath();
+    for (const dx of [-4, 0, 4]) {
+      ctx.moveTo(dx, -5);
+      ctx.lineTo(dx,  5);
+    }
+    ctx.stroke();
+  }
+}
+
+const POWERUP_KINDS = [VelocityPowerUp, ShieldPowerUp, TripleShotPowerUp];
+
+function spawnPowerUp(x, y) {
+  const Kind = POWERUP_KINDS[randInt(0, POWERUP_KINDS.length - 1)];
+  powerups.push(new Kind(x, y));
+}
+
+// ── Ship skins ───────────────────────────────────────────────────────────────
+// Each skin: display name, stroke color, optional fill, thruster flame color,
+// hull as closed subpaths (nose points +x), and the x anchor of the flame.
+const SKINS = [
+  {
+    name:  'CLASSIC',
+    stroke: '#fff',
+    flame:  'rgba(255, 130, 0, 0.85)',
+    rear:   -8,
+    hull: [
+      [[20, 0], [-12, -9], [-7, 0], [-12, 9]],
+    ],
+  },
+  {
+    name:  'DART',
+    stroke: '#0ff',
+    flame:  'rgba(0, 255, 255, 0.8)',
+    rear:   -17,
+    hull: [
+      [[22, 0], [-6, -5], [-16, -2], [-16, 2], [-6, 5]],
+    ],
+  },
+  {
+    name:  'FALCON',
+    stroke: '#f45',
+    flame:  'rgba(255, 80, 0, 0.85)',
+    rear:   -16,
+    hull: [
+      [[18, 0], [-12, -8], [-7, 0], [-12, 8]],
+      [[-1, -8], [-15, -14], [-9, -4]],
+      [[-1, 8], [-15, 14], [-9, 4]],
+    ],
+  },
+  {
+    name:  'PHOENIX',
+    stroke: '#fc3',
+    fill:   'rgba(255, 200, 60, 0.12)',
+    flame:  'rgba(255, 200, 60, 0.9)',
+    rear:   -17,
+    hull: [
+      [[18, 0], [0, -11], [-16, -13], [-6, 0], [-16, 13], [0, 11]],
+    ],
+  },
+  {
+    name:  'RAY',
+    stroke: '#6f9',
+    flame:  'rgba(120, 255, 150, 0.85)',
+    rear:   -14,
+    hull: [
+      [[14, 0], [6, -7], [-8, -12], [-13, -5], [-9, 0], [-13, 5], [-8, 12], [6, 7]],
+    ],
+  },
+];
+
+const SKIN_STORAGE_KEY = 'asteroids-skin';
+const SKIN_LABEL_TTL    = 2;   // seconds the skin name toast stays visible
+
+// Trace closed hull subpaths on ctx without stroking or filling
+function traceHull(hull) {
+  ctx.beginPath();
+  for (const subpath of hull) {
+    ctx.moveTo(subpath[0][0], subpath[0][1]);
+    for (let i = 1; i < subpath.length; i++)
+      ctx.lineTo(subpath[i][0], subpath[i][1]);
+    ctx.closePath();
+  }
+}
+
+function readStoredSkin() {
+  try { return localStorage.getItem(SKIN_STORAGE_KEY); }
+  catch { return null; }   // storage unavailable: default skin, session-only pick
+}
+
+function storeSkin(index) {
+  try { localStorage.setItem(SKIN_STORAGE_KEY, String(index)); }
+  catch { /* keep the pick for this session only */ }
+}
+
+function loadSkinIndex() {
+  const raw   = readStoredSkin();
+  const index = Number(raw);
+  return raw !== null && Number.isInteger(index) && index >= 0 && index < SKINS.length
+    ? index
+    : 0;
+}
+
+let skinIndex      = loadSkinIndex();
+let skinLabelTimer = SKIN_LABEL_TTL;   // announce the current skin on load
+
+function cycleSkin() {
+  skinIndex = (skinIndex + 1) % SKINS.length;
+  storeSkin(skinIndex);
+  skinLabelTimer = SKIN_LABEL_TTL;
 }
 
 // ── Ship ──────────────────────────────────────────────────────────────────────
@@ -255,6 +423,8 @@ class Ship {
     this.invincible    = 3;
     this.shootCooldown = 0;
     this.velocityTimer = 0;
+    this.shieldTimer   = 0;
+    this.tripleTimer   = 0;
     this.dead          = false;
   }
 
@@ -263,6 +433,8 @@ class Ship {
     if (this.invincible    > 0) this.invincible    -= dt;
     if (this.shootCooldown > 0) this.shootCooldown -= dt;
     if (this.velocityTimer > 0) this.velocityTimer  = Math.max(0, this.velocityTimer - dt);
+    if (this.shieldTimer   > 0) this.shieldTimer    = Math.max(0, this.shieldTimer - dt);
+    if (this.tripleTimer   > 0) this.tripleTimer    = Math.max(0, this.tripleTimer - dt);
 
     const ROT   = 3.5;   // rad/s
     const BASE_THRUST = 260;  // px/s²
@@ -290,7 +462,11 @@ class Ship {
     const NOSE = 21;
     const ox = this.x + Math.cos(this.angle) * NOSE;
     const oy = this.y + Math.sin(this.angle) * NOSE;
-    return [new Bullet(ox, oy, this.angle)];
+    if (this.tripleTimer <= 0) return [new Bullet(ox, oy, this.angle)];
+    const px = -Math.sin(this.angle);   // perpendicular to the nose direction
+    const py =  Math.cos(this.angle);
+    return [-TRIPLE_OFFSET, 0, TRIPLE_OFFSET].map(off =>
+      new Bullet(ox + px * off, oy + py * off, this.angle));
   }
 
   draw() {
@@ -298,31 +474,37 @@ class Ship {
     // Blink while invincible after respawn
     if (this.invincible > 0 && Math.floor(this.invincible * 8) % 2 === 0) return;
 
+    const skin = SKINS[skinIndex];
+
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
-    ctx.strokeStyle = '#fff';
+    ctx.strokeStyle = skin.stroke;
     ctx.lineWidth   = 1.5;
     ctx.lineJoin    = 'round';
 
-    // Classic silhouette: triangle with a rear notch
-    ctx.beginPath();
-    ctx.moveTo( 20,  0);   // nose
-    ctx.lineTo(-12, -9);   // left wing
-    ctx.lineTo( -7,  0);   // rear notch
-    ctx.lineTo(-12,  9);   // right wing
-    ctx.closePath();
+    traceHull(skin.hull);
+    if (skin.fill) { ctx.fillStyle = skin.fill; ctx.fill(); }
     ctx.stroke();
 
-    // Thruster flame (cyan while Velocity is active)
+    // Thruster flame (cyan overrides the skin while Velocity is active)
     if (this.thrusting && Math.random() > 0.35) {
       ctx.beginPath();
-      ctx.moveTo(-8, -4);
-      ctx.lineTo(-8 - rand(6, 14), 0);
-      ctx.lineTo(-8,  4);
+      ctx.moveTo(skin.rear, -4);
+      ctx.lineTo(skin.rear - rand(6, 14), 0);
+      ctx.lineTo(skin.rear, 4);
       ctx.strokeStyle = this.velocityTimer > 0
-        ? 'rgba(0, 255, 255, 0.85)'
-        : 'rgba(255, 130, 0, 0.85)';
+        ? `rgba(${VELOCITY_RGB}, 0.85)`
+        : skin.flame;
+      ctx.stroke();
+    }
+
+    // Shield bubble: gentle pulse while Shield is active
+    if (this.shieldTimer > 0) {
+      const r = SHIELD_RADIUS + Math.sin(this.shieldTimer * 6) * 1.5;
+      ctx.strokeStyle = `rgba(${SHIELD_RGB}, 0.7)`;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
       ctx.stroke();
     }
 
@@ -439,6 +621,10 @@ function updateAsteroids(dt) {
 
 // ── Update ────────────────────────────────────────────────────────────────────
 function update(dt) {
+  // Skin cycling works in every state
+  if (pressed('KeyS')) cycleSkin();
+  if (skinLabelTimer > 0) skinLabelTimer -= dt;
+
   if (state === 'gameover') {
     if (pressed('Space')) initGame();
     particles.forEach(p => p.update(dt));
@@ -475,7 +661,7 @@ function update(dt) {
     powerupTimer -= dt;
     if (powerupTimer <= 0) {
       const [x, y] = randomPositionAwayFrom(ship.x, ship.y, POWERUP_SAFE_DIST);
-      powerups.push(new PowerUp(x, y));
+      spawnPowerUp(x, y);
       powerupTimer = SPAWN_INTERVAL;
     }
   }
@@ -499,7 +685,7 @@ function update(dt) {
         a.dead = true;
         score += a.points;
         explode(a.x, a.y, a.size * 5, a.rgb);
-        if (Math.random() < DROP_CHANCE) powerups.push(new PowerUp(a.x, a.y));
+        if (Math.random() < DROP_CHANCE) spawnPowerUp(a.x, a.y);
         newAsteroids.push(...a.split());
       }
     }
@@ -507,22 +693,28 @@ function update(dt) {
   asteroids = asteroids.filter(a => !a.dead).concat(newAsteroids);
   bullets   = bullets.filter(b => !b.dead);
 
-  // Ship vs asteroid
+  // Ship vs asteroid: an active shield vaporizes it, otherwise the ship dies
   if (ship.invincible <= 0) {
     for (const a of asteroids) {
       if (dist(ship, a) < ship.radius + a.radius * 0.82) {
-        killShip();
-        break;
+        if (ship.shieldTimer > 0) {
+          a.dead = true;
+          explode(a.x, a.y, a.size * 5, a.rgb);
+        } else {
+          killShip();
+          break;
+        }
       }
     }
+    asteroids = asteroids.filter(a => !a.dead);
   }
 
-  // Ship vs power-up: collect Velocity
+  // Ship vs power-up: collect the effect
   for (const p of powerups) {
     if (!p.dead && !ship.dead && dist(ship, p) < ship.radius + p.radius) {
       p.dead = true;
-      ship.velocityTimer = VELOCITY_DURATION;
-      explode(p.x, p.y, 12, '0,255,255');
+      p.apply(ship);
+      explode(p.x, p.y, 12, p.rgb);
     }
   }
 
@@ -531,28 +723,36 @@ function update(dt) {
 }
 
 // ── Draw ──────────────────────────────────────────────────────────────────────
-// Cyan timer bar: dim track plus a bright fill that depletes with ratio (0–1)
-function drawTimerBar(x, y, width, height, ratio) {
+// Timer bar: dim track plus a bright fill that depletes with ratio (0–1)
+function drawTimerBar(x, y, width, height, ratio, rgb) {
   const clamped = Math.max(0, Math.min(1, ratio));
-  ctx.fillStyle = 'rgba(0, 255, 255, 0.25)';
+  ctx.fillStyle = `rgba(${rgb}, 0.25)`;
   ctx.fillRect(x, y, width, height);
-  ctx.fillStyle = '#0ff';
+  ctx.fillStyle = `rgb(${rgb})`;
   ctx.fillRect(x, y, width * clamped, height);
 }
 
+// Active-effect label with its depleting bar, stacked under the score
+function drawActiveEffect(label, ratio, rgb, y) {
+  ctx.textAlign = 'left';
+  ctx.fillStyle = `rgb(${rgb})`;
+  ctx.font = '13px monospace';
+  ctx.fillText(label, 14, y);
+  drawTimerBar(14, y + 6, 62, 4, ratio, rgb);
+  ctx.fillStyle = '#fff';
+  ctx.font = '15px monospace';
+}
+
 function drawLifeIcon(x, y) {
+  const skin = SKINS[skinIndex];
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(-Math.PI / 2);
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth   = 1.2;
+  ctx.scale(0.5, 0.5);
+  ctx.strokeStyle = skin.stroke;
+  ctx.lineWidth   = 2;   // doubled so it renders at ~1px after the 0.5 scale
   ctx.lineJoin    = 'round';
-  ctx.beginPath();
-  ctx.moveTo( 9,  0);
-  ctx.lineTo(-6, -5);
-  ctx.lineTo(-3,  0);
-  ctx.lineTo(-6,  5);
-  ctx.closePath();
+  traceHull(skin.hull);
   ctx.stroke();
   ctx.restore();
 }
@@ -564,21 +764,44 @@ function drawHUD() {
   ctx.textAlign = 'left';
   ctx.fillText(`SCORE  ${score}`, 14, 26);
 
+  let effectY = 46;
   if (ship.velocityTimer > 0) {
-    ctx.fillStyle = '#0ff';
-    ctx.font = '13px monospace';
-    ctx.fillText('VELOCITY', 14, 46);
-    drawTimerBar(14, 52, 62, 4, ship.velocityTimer / VELOCITY_DURATION);
-    ctx.fillStyle = '#fff';
-    ctx.font = '15px monospace';
+    drawActiveEffect('VELOCITY', ship.velocityTimer / VELOCITY_DURATION, VELOCITY_RGB, effectY);
+    effectY += 26;
   }
+  if (ship.shieldTimer > 0) {
+    drawActiveEffect('SHIELD', ship.shieldTimer / SHIELD_DURATION, SHIELD_RGB, effectY);
+    effectY += 26;
+  }
+  if (ship.tripleTimer > 0)
+    drawActiveEffect('TRIPLE', ship.tripleTimer / TRIPLE_DURATION, TRIPLE_RGB, effectY);
 
+  ctx.fillStyle = '#fff';
+  ctx.font = '15px monospace';
   ctx.textAlign = 'center';
   ctx.fillText(`LEVEL ${level}`, W / 2, 26);
+
+  // Skin name toast, fading out in the skin's own color
+  if (skinLabelTimer > 0) {
+    const skin = SKINS[skinIndex];
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, skinLabelTimer * 2);
+    ctx.fillStyle = skin.stroke;
+    ctx.font = '13px monospace';
+    ctx.fillText(`SKIN: ${skin.name}`, W / 2, 46);
+    ctx.restore();
+  }
 
   for (let i = 0; i < lives; i++)
     drawLifeIcon(W - 16 - i * 22, 18);
 
+  // Persistent hint so the skin key is discoverable in every state
+  ctx.save();
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+  ctx.font = '12px monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText('S: CHANGE SKIN', 14, H - 14);
+  ctx.restore();
 }
 
 function drawOverlay(title, sub) {
