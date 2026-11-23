@@ -1,16 +1,22 @@
 name: opencode
 
 on:
-  pull_request:
-    paths:
-      - '89-OpenCode-Projects/03-asteroids/**'
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
 
 jobs:
   opencode:
+    if: |
+      github.event.comment.user.login == 'DanielGeek' &&
+      (contains(github.event.comment.body, '/oc') || contains(github.event.comment.body, '/opencode'))
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      contents: read
+      contents: write
+      pull-requests: write
+      issues: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -25,6 +31,5 @@ jobs:
         with:
           model: opencode-go/glm-5.3
           prompt: |
-            Review this pull request, focusing on the changes under
-            89-OpenCode-Projects/03-asteroids. Point out bugs, gameplay
-            regressions and unclear code. Be concise.
+            Only modify files under 89-OpenCode-Projects/03-asteroids.
+            Follow the AGENTS.md in that directory.
