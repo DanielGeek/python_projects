@@ -94,8 +94,8 @@ Coordinates: cells with origin top-left, as today.
 - [x] The ambusher cuts in front of Pac-Man's direction instead of toward his current tile.
 - [x] The flanker approaches from the opposite side of the chaser when both are active.
 - [x] The shy one heads to its bottom-left corner whenever it is within 8 tiles of Pac-Man.
-- [ ] Losing a life sends all four back to the pen and the staggered release happens again.
-- [ ] Tunnel wrap, win, lose and restart still work; the console shows no errors.
+- [x] Losing a life sends all four back to the pen and the staggered release happens again.
+- [x] Tunnel wrap, win, lose and restart still work; the console shows no errors.
 
 ## Decisions
 
