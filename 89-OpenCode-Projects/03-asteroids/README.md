@@ -28,6 +28,7 @@ Then visit `http://localhost:3000`.
 | `←` `→` | Rotate ship |
 | `↑`     | Propel      |
 | `Space` | Fire        |
+| `S`     | Change ship skin |
 
 ## Score
 
@@ -46,3 +47,4 @@ Then visit `http://localhost:3000`.
 - **Velocity power-up**: doubles ship thrust for 5 seconds. Spawns periodically on the field and can drop from destroyed asteroids; collect the cyan hexagon to activate it
 - **Shield power-up**: protects the ship for 6 seconds. While active, a pulsing green bubble vaporizes any asteroid that touches it. Spawns periodically on the field and can drop from destroyed asteroids; collect the green hexagon to activate it
 - **Shooting star**: fast golden asteroid worth 200 points that never splits. Spawns periodically with a comet tail and bursts into golden particles when its time runs out
+- **Ship skins**: press `S` to cycle through 5 hull styles (Classic, Dart, Falcon, Phoenix, Ray), each with its own color scheme and thruster flame. The pick persists between sessions via `localStorage`, the life icons match the active skin, and a persistent on-screen hint plus a brief name toast show which skin is active

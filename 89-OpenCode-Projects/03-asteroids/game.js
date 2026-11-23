@@ -265,6 +265,101 @@ class PowerUp {
   }
 }
 
+// ── Ship skins ───────────────────────────────────────────────────────────────
+// Each skin: display name, stroke color, optional fill, thruster flame color,
+// hull as closed subpaths (nose points +x), and the x anchor of the flame.
+const SKINS = [
+  {
+    name:  'CLASSIC',
+    stroke: '#fff',
+    flame:  'rgba(255, 130, 0, 0.85)',
+    rear:   -8,
+    hull: [
+      [[20, 0], [-12, -9], [-7, 0], [-12, 9]],
+    ],
+  },
+  {
+    name:  'DART',
+    stroke: '#0ff',
+    flame:  'rgba(0, 255, 255, 0.8)',
+    rear:   -17,
+    hull: [
+      [[22, 0], [-6, -5], [-16, -2], [-16, 2], [-6, 5]],
+    ],
+  },
+  {
+    name:  'FALCON',
+    stroke: '#f45',
+    flame:  'rgba(255, 80, 0, 0.85)',
+    rear:   -16,
+    hull: [
+      [[18, 0], [-12, -8], [-7, 0], [-12, 8]],
+      [[-1, -8], [-15, -14], [-9, -4]],
+      [[-1, 8], [-15, 14], [-9, 4]],
+    ],
+  },
+  {
+    name:  'PHOENIX',
+    stroke: '#fc3',
+    fill:   'rgba(255, 200, 60, 0.12)',
+    flame:  'rgba(255, 200, 60, 0.9)',
+    rear:   -17,
+    hull: [
+      [[18, 0], [0, -11], [-16, -13], [-6, 0], [-16, 13], [0, 11]],
+    ],
+  },
+  {
+    name:  'RAY',
+    stroke: '#6f9',
+    flame:  'rgba(120, 255, 150, 0.85)',
+    rear:   -14,
+    hull: [
+      [[14, 0], [6, -7], [-8, -12], [-13, -5], [-9, 0], [-13, 5], [-8, 12], [6, 7]],
+    ],
+  },
+];
+
+const SKIN_STORAGE_KEY = 'asteroids-skin';
+const SKIN_LABEL_TTL    = 2;   // seconds the skin name toast stays visible
+
+// Trace closed hull subpaths on ctx without stroking or filling
+function traceHull(hull) {
+  ctx.beginPath();
+  for (const subpath of hull) {
+    ctx.moveTo(subpath[0][0], subpath[0][1]);
+    for (let i = 1; i < subpath.length; i++)
+      ctx.lineTo(subpath[i][0], subpath[i][1]);
+    ctx.closePath();
+  }
+}
+
+function readStoredSkin() {
+  try { return localStorage.getItem(SKIN_STORAGE_KEY); }
+  catch { return null; }   // storage unavailable: default skin, session-only pick
+}
+
+function storeSkin(index) {
+  try { localStorage.setItem(SKIN_STORAGE_KEY, String(index)); }
+  catch { /* keep the pick for this session only */ }
+}
+
+function loadSkinIndex() {
+  const raw   = readStoredSkin();
+  const index = Number(raw);
+  return raw !== null && Number.isInteger(index) && index >= 0 && index < SKINS.length
+    ? index
+    : 0;
+}
+
+let skinIndex      = loadSkinIndex();
+let skinLabelTimer = SKIN_LABEL_TTL;   // announce the current skin on load
+
+function cycleSkin() {
+  skinIndex = (skinIndex + 1) % SKINS.length;
+  storeSkin(skinIndex);
+  skinLabelTimer = SKIN_LABEL_TTL;
+}
+
 // ── Ship ──────────────────────────────────────────────────────────────────────
 class Ship {
   constructor() { this.reset(); }
@@ -325,31 +420,28 @@ class Ship {
     // Blink while invincible after respawn
     if (this.invincible > 0 && Math.floor(this.invincible * 8) % 2 === 0) return;
 
+    const skin = SKINS[skinIndex];
+
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
-    ctx.strokeStyle = '#fff';
+    ctx.strokeStyle = skin.stroke;
     ctx.lineWidth   = 1.5;
     ctx.lineJoin    = 'round';
 
-    // Classic silhouette: triangle with a rear notch
-    ctx.beginPath();
-    ctx.moveTo( 20,  0);   // nose
-    ctx.lineTo(-12, -9);   // left wing
-    ctx.lineTo( -7,  0);   // rear notch
-    ctx.lineTo(-12,  9);   // right wing
-    ctx.closePath();
+    traceHull(skin.hull);
+    if (skin.fill) { ctx.fillStyle = skin.fill; ctx.fill(); }
     ctx.stroke();
 
-    // Thruster flame (cyan while Velocity is active)
+    // Thruster flame (cyan overrides the skin while Velocity is active)
     if (this.thrusting && Math.random() > 0.35) {
       ctx.beginPath();
-      ctx.moveTo(-8, -4);
-      ctx.lineTo(-8 - rand(6, 14), 0);
-      ctx.lineTo(-8,  4);
+      ctx.moveTo(skin.rear, -4);
+      ctx.lineTo(skin.rear - rand(6, 14), 0);
+      ctx.lineTo(skin.rear, 4);
       ctx.strokeStyle = this.velocityTimer > 0
         ? `rgba(${VELOCITY_RGB}, 0.85)`
-        : 'rgba(255, 130, 0, 0.85)';
+        : skin.flame;
       ctx.stroke();
     }
 
@@ -475,6 +567,10 @@ function updateAsteroids(dt) {
 
 // ── Update ────────────────────────────────────────────────────────────────────
 function update(dt) {
+  // Skin cycling works in every state
+  if (pressed('KeyS')) cycleSkin();
+  if (skinLabelTimer > 0) skinLabelTimer -= dt;
+
   if (state === 'gameover') {
     if (pressed('Space')) initGame();
     particles.forEach(p => p.update(dt));
@@ -584,18 +680,15 @@ function drawTimerBar(x, y, width, height, ratio, rgb) {
 }
 
 function drawLifeIcon(x, y) {
+  const skin = SKINS[skinIndex];
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(-Math.PI / 2);
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth   = 1.2;
+  ctx.scale(0.5, 0.5);
+  ctx.strokeStyle = skin.stroke;
+  ctx.lineWidth   = 2;   // doubled so it renders at ~1px after the 0.5 scale
   ctx.lineJoin    = 'round';
-  ctx.beginPath();
-  ctx.moveTo( 9,  0);
-  ctx.lineTo(-6, -5);
-  ctx.lineTo(-3,  0);
-  ctx.lineTo(-6,  5);
-  ctx.closePath();
+  traceHull(skin.hull);
   ctx.stroke();
   ctx.restore();
 }
@@ -629,9 +722,27 @@ function drawHUD() {
   ctx.textAlign = 'center';
   ctx.fillText(`LEVEL ${level}`, W / 2, 26);
 
+  // Skin name toast, fading out in the skin's own color
+  if (skinLabelTimer > 0) {
+    const skin = SKINS[skinIndex];
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, skinLabelTimer * 2);
+    ctx.fillStyle = skin.stroke;
+    ctx.font = '13px monospace';
+    ctx.fillText(`SKIN: ${skin.name}`, W / 2, 46);
+    ctx.restore();
+  }
+
   for (let i = 0; i < lives; i++)
     drawLifeIcon(W - 16 - i * 22, 18);
 
+  // Persistent hint so the skin key is discoverable in every state
+  ctx.save();
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+  ctx.font = '12px monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText('S: CHANGE SKIN', 14, H - 14);
+  ctx.restore();
 }
 
 function drawOverlay(title, sub) {
