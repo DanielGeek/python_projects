@@ -315,7 +315,8 @@ function spawnPowerUp(x, y) {
 
 // ── Ship skins ───────────────────────────────────────────────────────────────
 // Each skin: display name, stroke color, optional fill, thruster flame color,
-// hull as closed subpaths (nose points +x), and the x anchor of the flame.
+// hull as closed subpaths (nose points +x), the x anchor of the flame, and
+// optional scale (drawn size, hitbox and nose offset) and scoreMultiplier.
 const SKINS = [
   {
     name:  'CLASSIC',
@@ -363,6 +364,19 @@ const SKINS = [
     rear:   -14,
     hull: [
       [[14, 0], [6, -7], [-8, -12], [-13, -5], [-9, 0], [-13, 5], [-8, 12], [6, 7]],
+    ],
+  },
+  {
+    // Purple 2x ship: twice the size, double points while flying it
+    name:  'AMETHYST',
+    stroke: '#a6f',
+    fill:   'rgba(170, 102, 255, 0.12)',
+    flame:  'rgba(170, 102, 255, 0.9)',
+    rear:   -8,
+    scale:  2,
+    scoreMultiplier: 2,
+    hull: [
+      [[20, 0], [-12, -9], [-7, 0], [-12, 9]],
     ],
   },
 ];
@@ -418,7 +432,6 @@ class Ship {
     this.angle  = -Math.PI / 2;
     this.vx     = 0;
     this.vy     = 0;
-    this.radius = 12;
     this.thrusting     = false;
     this.invincible    = 3;
     this.shootCooldown = 0;
@@ -427,6 +440,9 @@ class Ship {
     this.tripleTimer   = 0;
     this.dead          = false;
   }
+
+  // Collision radius follows the active skin's scale
+  get radius() { return 12 * (SKINS[skinIndex].scale || 1); }
 
   update(dt) {
     if (this.dead) return;
@@ -459,7 +475,7 @@ class Ship {
   tryShoot() {
     if (this.shootCooldown > 0 || this.dead) return [];
     this.shootCooldown = 0.2;
-    const NOSE = 21;
+    const NOSE = 21 * (SKINS[skinIndex].scale || 1);
     const ox = this.x + Math.cos(this.angle) * NOSE;
     const oy = this.y + Math.sin(this.angle) * NOSE;
     if (this.tripleTimer <= 0) return [new Bullet(ox, oy, this.angle)];
@@ -474,13 +490,15 @@ class Ship {
     // Blink while invincible after respawn
     if (this.invincible > 0 && Math.floor(this.invincible * 8) % 2 === 0) return;
 
-    const skin = SKINS[skinIndex];
+    const skin  = SKINS[skinIndex];
+    const scale = skin.scale || 1;
 
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
+    ctx.scale(scale, scale);
     ctx.strokeStyle = skin.stroke;
-    ctx.lineWidth   = 1.5;
+    ctx.lineWidth   = 1.5 / scale;   // keeps the stroke at ~1.5px on screen
     ctx.lineJoin    = 'round';
 
     traceHull(skin.hull);
@@ -683,7 +701,7 @@ function update(dt) {
       if (!a.dead && !b.dead && dist(b, a) < a.radius) {
         b.dead = true;
         a.dead = true;
-        score += a.points;
+        score += a.points * (SKINS[skinIndex].scoreMultiplier || 1);
         explode(a.x, a.y, a.size * 5, a.rgb);
         if (Math.random() < DROP_CHANCE) spawnPowerUp(a.x, a.y);
         newAsteroids.push(...a.split());
