@@ -89,11 +89,11 @@ Coordinates: cells with origin top-left, as today.
 - [x] Four ghosts appear at start, each in its own color: red, pink, cyan, orange.
 - [x] Only the chaser leaves immediately; the others come out at about 2 s, 4 s and 6 s.
 - [x] Ghosts still inside the pen do not move.
-- [ ] During the first 7 seconds the released ghosts head to their corners; at 7 s they all U-turn and attack for 20 s; the wave repeats.
-- [ ] In chase mode the chaser moves toward Pac-Man's current tile at every intersection.
-- [ ] The ambusher cuts in front of Pac-Man's direction instead of toward his current tile.
-- [ ] The flanker approaches from the opposite side of the chaser when both are active.
-- [ ] The shy one heads to its bottom-left corner whenever it is within 8 tiles of Pac-Man.
+- [x] During the first 7 seconds the released ghosts head to their corners; at 7 s they all U-turn and attack for 20 s; the wave repeats.
+- [x] In chase mode the chaser moves toward Pac-Man's current tile at every intersection.
+- [x] The ambusher cuts in front of Pac-Man's direction instead of toward his current tile.
+- [x] The flanker approaches from the opposite side of the chaser when both are active.
+- [x] The shy one heads to its bottom-left corner whenever it is within 8 tiles of Pac-Man.
 - [ ] Losing a life sends all four back to the pen and the staggered release happens again.
 - [ ] Tunnel wrap, win, lose and restart still work; the console shows no errors.
 

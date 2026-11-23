@@ -1,6 +1,6 @@
 // game.js
 // State and rules. Depends on maze.js globals: MAZE, TUNNEL_ROW,
-// PACMAN_START, GHOST_STARTS, GHOST_RELEASE_SECONDS.
+// PACMAN_START, GHOST_STARTS, GHOST_RELEASE_SECONDS, GHOST_CORNERS.
 
 const DIRS = {
   left: { x: -1, y: 0 },
@@ -9,6 +9,8 @@ const DIRS = {
   down: { x: 0, y: 1 },
 };
 const OPPOSITE = { left: 'right', right: 'left', up: 'down', down: 'up' };
+// Arcade tie-break: with equal target distances prefer up, then left, down, right.
+const DIR_PRIORITY = [ 'up', 'left', 'down', 'right' ];
 
 const PACMAN_SPEED = 0.125; // 1/8 cell/frame -> aligns every 8 frames
 const GHOST_SPEED = 0.1;    // 1/10 cell/frame
@@ -124,35 +126,70 @@ function movePacman( game ) {
   wrapTunnel( p, width );
 }
 
+// Tile `cells` steps ahead of pac-man in his facing direction.
+function aheadOfPacman( game, cells ) {
+  const d = DIRS[ game.pacman.dir ];
+  return {
+    x: Math.round( game.pacman.x ) + d.x * cells,
+    y: Math.round( game.pacman.y ) + d.y * cells,
+  };
+}
+
+// Chase target of each ghost, per its classic personality.
+function chaseTarget( game, g ) {
+  const here = { x: Math.round( game.pacman.x ), y: Math.round( game.pacman.y ) };
+
+  if ( g.kind === 'chaser' ) return here;
+  if ( g.kind === 'ambusher' ) return aheadOfPacman( game, 4 );
+
+  if ( g.kind === 'flanker' ) {
+    // Mirror the chaser's tile through the tile 2 ahead of pac-man.
+    const ahead = aheadOfPacman( game, 2 );
+    const chaser = game.ghosts.find( ( gh ) => gh.kind === 'chaser' );
+    return {
+      x: 2 * ahead.x - Math.round( chaser.x ),
+      y: 2 * ahead.y - Math.round( chaser.y ),
+    };
+  }
+
+  // shy: chase pac-man while 8 or more tiles away (straight-line),
+  // otherwise retreat to his corner.
+  const dx = here.x - Math.round( g.x );
+  const dy = here.y - Math.round( g.y );
+  return Math.hypot( dx, dy ) >= 8 ? here : GHOST_CORNERS.shy;
+}
+
+// The tile a ghost steers toward in its current mode.
+function ghostTarget( game, g ) {
+  if ( game.ghostMode === 'scatter' ) return GHOST_CORNERS[ g.kind ];
+  return chaseTarget( game, g );
+}
+
+// Greedy step: pick the direction whose next cell is closest (Manhattan) to
+// the target tile, never reversing unless stuck in a dead end.
 function decideGhost( game, g ) {
   const grid = game.grid;
-  const p = game.pacman;
+  const target = ghostTarget( game, g );
 
-  const options = Object.keys( DIRS ).filter(
+  const options = DIR_PRIORITY.filter(
     ( dir ) => dir !== OPPOSITE[ g.dir ] && canMove( grid, g.x, g.y, dir )
   );
   // No way out (dead end): allow the 180-degree turn.
   const choices = options.length ? options : [ '' + OPPOSITE[ g.dir ] ];
 
-  if ( g.kind === 'hunter' ) {
-    const px = Math.round( p.x );
-    const py = Math.round( p.y );
-    let best = choices[ 0 ];
-    let bestDist = Infinity;
-    for ( const dir of choices ) {
-      const d = DIRS[ dir ];
-      const nx = g.x + d.x;
-      const ny = g.y + d.y;
-      const dist = Math.abs( nx - px ) + Math.abs( ny - py );
-      if ( dist < bestDist ) {
-        bestDist = dist;
-        best = dir;
-      }
+  let best = choices[ 0 ];
+  let bestDist = Infinity;
+  for ( const dir of choices ) {
+    const d = DIRS[ dir ];
+    const nx = g.x + d.x;
+    const ny = g.y + d.y;
+    const dist = Math.abs( nx - target.x ) + Math.abs( ny - target.y );
+    if ( dist < bestDist ) {
+      bestDist = dist;
+      best = dir;
     }
-    g.dir = best;
-  } else {
-    g.dir = choices[ Math.floor( Math.random() * choices.length ) ];
   }
+  g.dir = best;
 }
 
 function moveGhost( game, g ) {
