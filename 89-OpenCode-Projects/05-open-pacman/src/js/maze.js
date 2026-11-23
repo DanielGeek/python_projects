@@ -1,7 +1,7 @@
 // maze.js
 // 28x31 maze faithful to the geometry of Pac-Man's level 1.
 // Written as 31 strings of 28 chars (readable) and parsed into numbers.
-//   '#' wall(1) · '.' dot(2) · ' ' empty walkable(0) · '-' pen door(3)
+//   '#' wall(1) · '.' dot(2) · 'o' energizer(4) · ' ' empty walkable(0) · '-' pen door(3)
 // Coordinates: cell (x,y), origin top-left. x in [0,27], y in [0,30].
 // Symmetric about the central vertical axis (between cols 13 and 14).
 
@@ -9,7 +9,7 @@ const MAZE_STR = [
   '############################', // 0  border
   '#............##............#', // 1
   '#.####.#####.##.#####.####.#', // 2
-  '#.####.#####.##.#####.####.#', // 3
+  '#o####.#####.##.#####.####o#', // 3
   '#.####.#####.##.#####.####.#', // 4
   '#..........................#', // 5
   '#.####.##.########.##.####.#', // 6
@@ -29,7 +29,7 @@ const MAZE_STR = [
   '#............##............#', // 20
   '#.####.#####.##.#####.####.#', // 21
   '#.####.#####.##.#####.####.#', // 22
-  '#...##................##...#', // 23  Pacman start row (13,23)
+  '#o..##................##..o#', // 23  Pacman start row (13,23)
   '###.##.##.########.##.##.###', // 24
   '###.##.##.########.##.##.###', // 25
   '#......##....##....##......#', // 26
@@ -42,6 +42,7 @@ const MAZE_STR = [
 function parseTile( ch ) {
   if ( ch === '#' ) return 1;
   if ( ch === '.' ) return 2;
+  if ( ch === 'o' ) return 4; // energizer (power pellet)
   if ( ch === '-' ) return 3;
   return 0; // space = empty walkable
 }
