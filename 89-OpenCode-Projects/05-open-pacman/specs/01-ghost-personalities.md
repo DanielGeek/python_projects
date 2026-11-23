@@ -1,6 +1,6 @@
 # SPEC 01 — Four ghosts with classic personalities
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** none
 > **Date:** 2026-11-23
 > **Objective:** Replace the two placeholder ghosts with the four classic arcade ghosts, each with its own targeting rule — one an aggressive direct chaser — plus scatter/chase waves and a staggered pen release.
