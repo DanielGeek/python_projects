@@ -2,7 +2,7 @@
 
 > **Senior Backend AI/ML Engineer specializing in Production-Ready LLM Applications**
 >
-> 88+ projects | 50K+ lines of code | 10+ production systems | RAG expert | Multi-agent orchestration | MLOps pipelines
+> 89+ projects | 50K+ lines of code | 10+ production systems | RAG expert | Multi-agent orchestration | MLOps pipelines
 
 [![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
 [![LangChain Expert](https://img.shields.io/badge/LangChain-Expert-green.svg)](https://langchain.com/)
@@ -914,6 +914,9 @@ def retrieve(query: str, k: int = 3) -> List[Dict]:
 
 ### **Full-Stack Applications**
 
+- **[89-OpenCode-Projects/03-asteroids]** - Asteroids: dependency-free HTML5 Canvas arcade game with power-ups, shooting stars and 6 ship skins, extended through OpenCode GitHub Actions (`/oc` issue comments open PRs) and git worktrees
+- **[89-OpenCode-Projects/02-weather]** - Weather CLI: Bun + TypeScript console app on Open-Meteo that saves cities, shows current weather and 7-day forecasts, and compiles to a standalone executable
+- **[89-OpenCode-Projects/01-demo]** - Demo: first OpenCode experiment, a small static website styled with Tailwind CSS 4 via CDN
 - **[88-spec-kit-examples/02-podsite]** - Podsite: sleek static podcast website (fictional show "Afterglow") built with GitHub Spec Kit, Claude Code and Next.js static export; Home, Episodes, About and Facts pages over 20 mocked episodes, Lighthouse 100/100/100/100 and 96 automated tests
 - **[88-spec-kit-examples/01-doit-speckit]** - Doit: goal-tracking board built with GitHub Spec Kit and Claude Code (Next.js 16, React 19, Tailwind 4, shadcn/ui); three specs from the initial board to a refined palette and drag-and-drop reordering with SortableJS
 - **[87-ClaudeCode/05-arcade-vault]** - Arcade Vault: spec-driven arcade game platform with Supabase Auth and a global leaderboard, live at [arcade-vault-zeta.vercel.app](https://arcade-vault-zeta.vercel.app/)
@@ -1532,6 +1535,18 @@ Examples of spec-driven development with [GitHub Spec Kit](https://github.com/gi
 
 ---
 
+### **🧩 OpenCode Projects**
+
+#### **89. OpenCode Projects - Demo, Weather CLI and Asteroids**
+
+**Technologies**: OpenCode, HTML5 Canvas, JavaScript, HTML, Tailwind CSS 4, Bun, TypeScript, Open-Meteo, GitHub Actions, git worktrees
+
+Three independent projects built with [OpenCode](https://opencode.ai) ([full overview](./89-OpenCode-Projects/README.md)). `01-demo` is a first static website for exploring the tool. `02-weather` is a **Weather CLI** built with Bun and TypeScript: it searches cities with the Open-Meteo geocoding API, saves them with a default city, shows current weather and 7-day forecasts, toggles Celsius/Fahrenheit and compiles to a standalone executable. `03-asteroids` is a dependency-free **Asteroids** clone in HTML5 Canvas that grew feature by feature with OpenCode: velocity, shield and triple-shot power-ups, a shooting-star asteroid, and 6 selectable ship skins including the double-size Amethyst that doubles all points.
+
+**Key Features**: Colored terminal output with `NO_COLOR` support, endpoints configured via `.env`, Bun tests and typecheck, standalone binary build, a `/worktree` custom OpenCode command that creates git worktrees for parallel feature branches, and an `opencode.yml` GitHub Actions workflow that runs OpenCode from `/oc` or `/opencode` comments on issues and opens pull requests (the Amethyst skin was delivered this way from an issue)
+
+---
+
 ### **📚 Python Fundamentals & Learning Modules**
 
 #### **01-14. Python Learning Modules**
@@ -1619,7 +1634,7 @@ RATE_LIMIT=20/minute
 
 ## 📊 Project Statistics
 
-- **Total Projects**: 88+
+- **Total Projects**: 89+
 - **Lines of Code**: 50,000+
 - **Production Systems**: 10+
 - **AI/ML Projects**: 40+

@@ -17,7 +17,8 @@ Spaceship in an asteroid field with edge wrapping (space is toroidal). Destroy a
 Open `index.html` directly in your browser (double-click), or use a local server:
 
 ```bash
-`npx serve .```
+npx serve .
+```
 
 Then visit `http://localhost:3000`.
 
@@ -52,3 +53,11 @@ All points are doubled while flying the Amethyst skin.
 - **Shooting star**: fast golden asteroid worth 200 points that never splits. Spawns periodically with a comet tail and bursts into golden particles when its time runs out
 - **Ship skins**: press `S` to cycle through 6 hull styles (Classic, Dart, Falcon, Phoenix, Ray, Amethyst), each with its own color scheme and thruster flame. The pick persists between sessions via `localStorage`, the life icons match the active skin, and a persistent on-screen hint plus a brief name toast show which skin is active
 - **Amethyst skin**: a purple ship twice the size of the original — bigger target, bigger hitbox — that earns double points for everything it destroys
+
+## OpenCode Workflow
+
+This project is developed with [OpenCode](https://opencode.ai):
+
+- **Worktree command**: `.opencode/commands/` defines a custom command that creates a git worktree under `.worktrees/<name>` from a short task description (`.worktrees` is gitignored). Skins, shield and triple shot were built this way in parallel branches.
+- **GitHub Actions**: the repository workflow `.github/workflows/opencode.yml` runs OpenCode when the owner comments `/oc` or `/opencode` on an issue, and OpenCode opens a pull request with the change (the Amethyst skin came from an issue this way). It requires the `OPENCODE_API_KEY` repository secret.
+- **Local setup**: copy `.env.template` to `.env` and set `OPENCODE_API_KEY`. `.env` is gitignored.
