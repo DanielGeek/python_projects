@@ -44,4 +44,5 @@ Then visit `http://localhost:3000`.
 - Asteroids break into smaller fragments upon destruction
 - Explosion particles when asteroids are destroyed
 - **Velocity power-up**: doubles ship thrust for 5 seconds. Spawns periodically on the field and can drop from destroyed asteroids; collect the cyan hexagon to activate it
+- **Triple shot power-up**: fires three parallel bullets for 5 seconds. Spawns periodically on the field and can drop from destroyed asteroids; collect the magenta hexagon to activate it
 - **Shooting star**: fast golden asteroid worth 200 points that never splits. Spawns periodically with a comet tail and bursts into golden particles when its time runs out

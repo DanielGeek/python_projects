@@ -181,14 +181,20 @@ class ShootingStar extends Asteroid {
   }
 }
 
-// ── Power-up: Velocity ─────────────────────────────────────────────────────────
+// ── Power-ups ──────────────────────────────────────────────────────────────
 const POWERUP_TTL       = 10;    // seconds before despawning
 const POWERUP_SAFE_DIST = 150;   // min distance from the ship on periodic spawn
 const SPAWN_INTERVAL    = 15;    // seconds between periodic spawns
 const FIRST_SPAWN_DELAY = 10;    // delay before the first periodic spawn
+const DROP_CHANCE       = 0.10;  // chance a destroyed asteroid drops a power-up
+
 const VELOCITY_DURATION   = 5;   // seconds of doubled thrust
 const VELOCITY_MULTIPLIER = 2;
-const DROP_CHANCE       = 0.10;  // chance a destroyed asteroid drops a power-up
+const VELOCITY_RGB        = '0,255,255';     // cyan
+
+const TRIPLE_DURATION = 5;      // seconds of triple shot
+const TRIPLE_OFFSET   = 6;      // px between the parallel bullets
+const TRIPLE_RGB      = '255,0,255';     // magenta
 
 class PowerUp {
   constructor(x, y) {
@@ -204,10 +210,13 @@ class PowerUp {
     if (this.ttl <= 0) this.dead = true;
   }
 
+  apply(ship) {}
+  drawIcon() {}
+
   draw() {
     ctx.save();
     ctx.translate(this.x, this.y);
-    ctx.strokeStyle = '#0ff';
+    ctx.strokeStyle = `rgb(${this.rgb})`;
     ctx.lineWidth   = 1.5;
     ctx.lineJoin    = 'round';
 
@@ -223,7 +232,26 @@ class PowerUp {
     ctx.closePath();
     ctx.stroke();
 
-    // Double chevron ">>"
+    this.drawIcon();
+
+    // Despawn bar: depletes as expiry approaches
+    drawTimerBar(-13, this.radius + 5, 26, 3, this.ttl / POWERUP_TTL, this.rgb);
+
+    ctx.restore();
+  }
+}
+
+// Doubles ship thrust while active
+class VelocityPowerUp extends PowerUp {
+  constructor(x, y) {
+    super(x, y);
+    this.rgb = VELOCITY_RGB;
+  }
+
+  apply(ship) { ship.velocityTimer = VELOCITY_DURATION; }
+
+  // Double chevron ">>"
+  drawIcon() {
     ctx.beginPath();
     ctx.moveTo(-5, -4);
     ctx.lineTo(-1,  0);
@@ -232,12 +260,34 @@ class PowerUp {
     ctx.lineTo( 5,  0);
     ctx.lineTo( 1,  4);
     ctx.stroke();
-
-    // Despawn bar: depletes as expiry approaches
-    drawTimerBar(-13, this.radius + 5, 26, 3, this.ttl / POWERUP_TTL);
-
-    ctx.restore();
   }
+}
+
+// Fires three parallel bullets while active
+class TripleShotPowerUp extends PowerUp {
+  constructor(x, y) {
+    super(x, y);
+    this.rgb = TRIPLE_RGB;
+  }
+
+  apply(ship) { ship.tripleTimer = TRIPLE_DURATION; }
+
+  // Three parallel strokes "|||"
+  drawIcon() {
+    ctx.beginPath();
+    for (const dx of [-4, 0, 4]) {
+      ctx.moveTo(dx, -5);
+      ctx.lineTo(dx,  5);
+    }
+    ctx.stroke();
+  }
+}
+
+const POWERUP_KINDS = [VelocityPowerUp, TripleShotPowerUp];
+
+function spawnPowerUp(x, y) {
+  const Kind = POWERUP_KINDS[randInt(0, POWERUP_KINDS.length - 1)];
+  powerups.push(new Kind(x, y));
 }
 
 // ── Ship ──────────────────────────────────────────────────────────────────────
@@ -255,6 +305,7 @@ class Ship {
     this.invincible    = 3;
     this.shootCooldown = 0;
     this.velocityTimer = 0;
+    this.tripleTimer   = 0;
     this.dead          = false;
   }
 
@@ -263,6 +314,7 @@ class Ship {
     if (this.invincible    > 0) this.invincible    -= dt;
     if (this.shootCooldown > 0) this.shootCooldown -= dt;
     if (this.velocityTimer > 0) this.velocityTimer  = Math.max(0, this.velocityTimer - dt);
+    if (this.tripleTimer   > 0) this.tripleTimer    = Math.max(0, this.tripleTimer - dt);
 
     const ROT   = 3.5;   // rad/s
     const BASE_THRUST = 260;  // px/s²
@@ -290,7 +342,11 @@ class Ship {
     const NOSE = 21;
     const ox = this.x + Math.cos(this.angle) * NOSE;
     const oy = this.y + Math.sin(this.angle) * NOSE;
-    return [new Bullet(ox, oy, this.angle)];
+    if (this.tripleTimer <= 0) return [new Bullet(ox, oy, this.angle)];
+    const px = -Math.sin(this.angle);   // perpendicular to the nose direction
+    const py =  Math.cos(this.angle);
+    return [-TRIPLE_OFFSET, 0, TRIPLE_OFFSET].map(off =>
+      new Bullet(ox + px * off, oy + py * off, this.angle));
   }
 
   draw() {
@@ -475,7 +531,7 @@ function update(dt) {
     powerupTimer -= dt;
     if (powerupTimer <= 0) {
       const [x, y] = randomPositionAwayFrom(ship.x, ship.y, POWERUP_SAFE_DIST);
-      powerups.push(new PowerUp(x, y));
+      spawnPowerUp(x, y);
       powerupTimer = SPAWN_INTERVAL;
     }
   }
@@ -499,7 +555,7 @@ function update(dt) {
         a.dead = true;
         score += a.points;
         explode(a.x, a.y, a.size * 5, a.rgb);
-        if (Math.random() < DROP_CHANCE) powerups.push(new PowerUp(a.x, a.y));
+        if (Math.random() < DROP_CHANCE) spawnPowerUp(a.x, a.y);
         newAsteroids.push(...a.split());
       }
     }
@@ -517,12 +573,12 @@ function update(dt) {
     }
   }
 
-  // Ship vs power-up: collect Velocity
+  // Ship vs power-up: collect the effect
   for (const p of powerups) {
     if (!p.dead && !ship.dead && dist(ship, p) < ship.radius + p.radius) {
       p.dead = true;
-      ship.velocityTimer = VELOCITY_DURATION;
-      explode(p.x, p.y, 12, '0,255,255');
+      p.apply(ship);
+      explode(p.x, p.y, 12, p.rgb);
     }
   }
 
@@ -531,13 +587,24 @@ function update(dt) {
 }
 
 // ── Draw ──────────────────────────────────────────────────────────────────────
-// Cyan timer bar: dim track plus a bright fill that depletes with ratio (0–1)
-function drawTimerBar(x, y, width, height, ratio) {
+// Timer bar: dim track plus a bright fill that depletes with ratio (0–1)
+function drawTimerBar(x, y, width, height, ratio, rgb = '0,255,255') {
   const clamped = Math.max(0, Math.min(1, ratio));
-  ctx.fillStyle = 'rgba(0, 255, 255, 0.25)';
+  ctx.fillStyle = `rgba(${rgb}, 0.25)`;
   ctx.fillRect(x, y, width, height);
-  ctx.fillStyle = '#0ff';
+  ctx.fillStyle = `rgb(${rgb})`;
   ctx.fillRect(x, y, width * clamped, height);
+}
+
+// Active-effect label with its depleting bar, stacked under the score
+function drawActiveEffect(label, ratio, rgb, y) {
+  ctx.textAlign = 'left';
+  ctx.fillStyle = `rgb(${rgb})`;
+  ctx.font = '13px monospace';
+  ctx.fillText(label, 14, y);
+  drawTimerBar(14, y + 6, 62, 4, ratio, rgb);
+  ctx.fillStyle = '#fff';
+  ctx.font = '15px monospace';
 }
 
 function drawLifeIcon(x, y) {
@@ -564,14 +631,13 @@ function drawHUD() {
   ctx.textAlign = 'left';
   ctx.fillText(`SCORE  ${score}`, 14, 26);
 
+  let effectY = 46;
   if (ship.velocityTimer > 0) {
-    ctx.fillStyle = '#0ff';
-    ctx.font = '13px monospace';
-    ctx.fillText('VELOCITY', 14, 46);
-    drawTimerBar(14, 52, 62, 4, ship.velocityTimer / VELOCITY_DURATION);
-    ctx.fillStyle = '#fff';
-    ctx.font = '15px monospace';
+    drawActiveEffect('VELOCITY', ship.velocityTimer / VELOCITY_DURATION, VELOCITY_RGB, effectY);
+    effectY += 26;
   }
+  if (ship.tripleTimer > 0)
+    drawActiveEffect('TRIPLE', ship.tripleTimer / TRIPLE_DURATION, TRIPLE_RGB, effectY);
 
   ctx.textAlign = 'center';
   ctx.fillText(`LEVEL ${level}`, W / 2, 26);
