@@ -17,6 +17,7 @@ const GHOST_SPEED = 0.1;    // 1/10 cell/frame
 const TICK_SECONDS = 1 / 60; // gameplay seconds added by each update() tick
 const SCATTER_SECONDS = 7;   // scatter phase length before each chase phase
 const CHASE_SECONDS = 20;    // chase phase length before each scatter phase
+const FRIGHT_SECONDS = 6;    // fright duration; a new energizer refreshes it
 
 // Creates a new game. Copies MAZE (pristine) into game.grid so dots can be
 // eaten without destroying the original, and to allow restarts.
@@ -38,6 +39,7 @@ function createGame() {
     clock: 0,             // gameplay seconds; drives waves and release
     ghostMode: 'scatter', // 'scatter' | 'chase'
     modeSeconds: 0,       // time spent in the current mode
+    frightSeconds: 0,     // > 0 while the ghosts are frightened
     pacman: {
       x: PACMAN_START.x,
       y: PACMAN_START.y,
@@ -117,6 +119,7 @@ function movePacman( game ) {
       grid[ p.y ][ p.x ] = 0;
       game.score += tile === 4 ? 50 : 10;
       game.dotsRemaining--;
+      if ( tile === 4 ) startFright( game );
     }
     // If it cannot keep going, stop at the cell.
     if ( !canMove( grid, p.x, p.y, p.dir ) ) return;
@@ -137,9 +140,24 @@ function aheadOfPacman( game, cells ) {
   };
 }
 
+// Pac-Man's current tile.
+function pacmanTile( game ) {
+  return { x: Math.round( game.pacman.x ), y: Math.round( game.pacman.y ) };
+}
+
+// The tile a frightened ghost steers toward: diametrically opposite
+// Pac-Man, seen from the ghost — chasing it equals running away.
+function fleeTarget( game, g ) {
+  const here = pacmanTile( game );
+  return {
+    x: 2 * Math.round( g.x ) - here.x,
+    y: 2 * Math.round( g.y ) - here.y,
+  };
+}
+
 // Chase target of each ghost, per its classic personality.
 function chaseTarget( game, g ) {
-  const here = { x: Math.round( game.pacman.x ), y: Math.round( game.pacman.y ) };
+  const here = pacmanTile( game );
 
   if ( g.kind === 'chaser' ) return here;
   if ( g.kind === 'ambusher' ) return aheadOfPacman( game, 4 );
@@ -163,6 +181,7 @@ function chaseTarget( game, g ) {
 
 // The tile a ghost steers toward in its current mode.
 function ghostTarget( game, g ) {
+  if ( game.frightSeconds > 0 ) return fleeTarget( game, g );
   if ( game.ghostMode === 'scatter' ) return GHOST_CORNERS[ g.kind ];
   return chaseTarget( game, g );
 }
@@ -264,15 +283,28 @@ function updateWaves( game ) {
 
   game.ghostMode = game.ghostMode === 'scatter' ? 'chase' : 'scatter';
   game.modeSeconds = 0;
+  reverseGhosts( game );
+}
+
+// Classic group U-turn: every released ghost flips direction.
+function reverseGhosts( game ) {
   for ( const g of game.ghosts ) {
     if ( g.released ) g.dir = OPPOSITE[ g.dir ];
   }
 }
 
+// Eating an energizer refreshes the fright and U-turns the group.
+function startFright( game ) {
+  game.frightSeconds = FRIGHT_SECONDS;
+  reverseGhosts( game );
+}
+
 function update( game ) {
   game.clock += TICK_SECONDS;
+  if ( game.frightSeconds > 0 ) game.frightSeconds -= TICK_SECONDS;
   releaseGhosts( game );
-  updateWaves( game );
+  // The wave clock pauses while frightened.
+  if ( game.frightSeconds <= 0 ) updateWaves( game );
 
   movePacman( game );
   game.ghosts.forEach( ( g ) => moveGhost( game, g ) );
