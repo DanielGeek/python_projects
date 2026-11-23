@@ -13,6 +13,8 @@ const OPPOSITE = { left: 'right', right: 'left', up: 'down', down: 'up' };
 const PACMAN_SPEED = 0.125; // 1/8 cell/frame -> aligns every 8 frames
 const GHOST_SPEED = 0.1;    // 1/10 cell/frame
 const TICK_SECONDS = 1 / 60; // gameplay seconds added by each update() tick
+const SCATTER_SECONDS = 7;   // scatter phase length before each chase phase
+const CHASE_SECONDS = 20;    // chase phase length before each scatter phase
 
 // Creates a new game. Copies MAZE (pristine) into game.grid so dots can be
 // eaten without destroying the original, and to allow restarts.
@@ -206,9 +208,24 @@ function releaseGhosts( game ) {
   }
 }
 
+// Advance the scatter/chase wave clock. On every switch each released ghost
+// reverses direction, producing the classic group U-turn.
+function updateWaves( game ) {
+  game.modeSeconds += TICK_SECONDS;
+  const duration = game.ghostMode === 'scatter' ? SCATTER_SECONDS : CHASE_SECONDS;
+  if ( game.modeSeconds < duration ) return;
+
+  game.ghostMode = game.ghostMode === 'scatter' ? 'chase' : 'scatter';
+  game.modeSeconds = 0;
+  for ( const g of game.ghosts ) {
+    if ( g.released ) g.dir = OPPOSITE[ g.dir ];
+  }
+}
+
 function update( game ) {
   game.clock += TICK_SECONDS;
   releaseGhosts( game );
+  updateWaves( game );
 
   movePacman( game );
   game.ghosts.forEach( ( g ) => moveGhost( game, g ) );
