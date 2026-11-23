@@ -3,7 +3,7 @@
 ## Project
 
 - Vanilla HTML5 Canvas clone of the arcade game Asteroids. No dependencies, no build step, no bundler, no manifest, no tests.
-- `index.html` mounts a fixed 800×600 canvas and loads `game.js`, which holds all game logic in a single file.
+- `index.html` mounts a fixed 1600×1200 canvas and loads `game.js`, which holds all game logic in a single file.
 - Run by opening `index.html` directly in a browser, or serve the directory (`npx serve .`) and visit `http://localhost:3000`.
 
 ## Code layout (`game.js`)
