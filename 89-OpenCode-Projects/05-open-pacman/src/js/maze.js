@@ -51,12 +51,27 @@ const MAZE = MAZE_STR.map( ( row ) => row.split( '' ).map( parseTile ) );
 
 const TUNNEL_ROW = 14;
 const PACMAN_START = { x: 13, y: 23 };
+// Four ghosts in a 2x2 block inside the pen (rows 13-14, cols 13-14).
+// Both columns sit below a door tile, so each ghost can exit straight up.
 const GHOST_STARTS = [
-  { x: 13, y: 14, kind: 'hunter' }, // inside the pen
-  { x: 14, y: 14, kind: 'random' }, // inside the pen
+  { x: 13, y: 13, kind: 'chaser' },    // Blinky — leaves first
+  { x: 14, y: 13, kind: 'ambusher' },  // Pinky
+  { x: 13, y: 14, kind: 'flanker' },   // Inky
+  { x: 14, y: 14, kind: 'shy' },       // Clyde — leaves last
 ];
+// Scatter targets, one corner per ghost.
+const GHOST_CORNERS = {
+  chaser:   { x: 26, y: 1 },  // top-right
+  ambusher: { x: 1,  y: 1 },  // top-left
+  flanker:  { x: 26, y: 29 }, // bottom-right
+  shy:      { x: 1,  y: 29 }, // bottom-left
+};
+// Seconds of gameplay before each ghost leaves the pen.
+const GHOST_RELEASE_SECONDS = { chaser: 0, ambusher: 2, flanker: 4, shy: 6 };
 
 window.MAZE = MAZE;
 window.TUNNEL_ROW = TUNNEL_ROW;
 window.PACMAN_START = PACMAN_START;
 window.GHOST_STARTS = GHOST_STARTS;
+window.GHOST_CORNERS = GHOST_CORNERS;
+window.GHOST_RELEASE_SECONDS = GHOST_RELEASE_SECONDS;
