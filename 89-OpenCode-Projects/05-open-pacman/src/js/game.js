@@ -18,6 +18,7 @@ const TICK_SECONDS = 1 / 60; // gameplay seconds added by each update() tick
 const SCATTER_SECONDS = 7;   // scatter phase length before each chase phase
 const CHASE_SECONDS = 20;    // chase phase length before each scatter phase
 const FRIGHT_SECONDS = 6;    // fright duration; a new energizer refreshes it
+const EYES_SPEED = GHOST_SPEED * 2; // eaten ghosts race back to the pen
 
 // Creates a new game. Copies MAZE (pristine) into game.grid so dots can be
 // eaten without destroying the original, and to allow restarts.
@@ -40,6 +41,7 @@ function createGame() {
     ghostMode: 'scatter', // 'scatter' | 'chase'
     modeSeconds: 0,       // time spent in the current mode
     frightSeconds: 0,     // > 0 while the ghosts are frightened
+    frightChain: 0,       // ghosts eaten during the current fright
     pacman: {
       x: PACMAN_START.x,
       y: PACMAN_START.y,
@@ -54,6 +56,8 @@ function createGame() {
       speed: GHOST_SPEED,
       kind: g.kind,
       released: false, // waits in the pen until its scheduled time
+      eaten: false,    // true while returning to the pen as eyes
+      home: { x: g.x, y: g.y }, // its pen cell; eyes re-enter through it
     } ) ),
   };
 }
@@ -186,17 +190,14 @@ function ghostTarget( game, g ) {
   return chaseTarget( game, g );
 }
 
-// Greedy step: pick the direction whose next cell is closest (Manhattan) to
-// the target tile, never reversing unless stuck in a dead end.
-function decideGhost( game, g ) {
-  const grid = game.grid;
-  const target = ghostTarget( game, g );
-
+// Greedy step: the direction whose next cell is closest (Manhattan) to the
+// target tile, never reversing unless stuck in a dead end.
+function chooseDirToward( grid, g, target ) {
   const options = DIR_PRIORITY.filter(
     ( dir ) => dir !== OPPOSITE[ g.dir ] && canMove( grid, g.x, g.y, dir )
   );
   // No way out (dead end): allow the 180-degree turn.
-  const choices = options.length ? options : [ '' + OPPOSITE[ g.dir ] ];
+  const choices = options.length ? options : [ OPPOSITE[ g.dir ] ];
 
   let best = choices[ 0 ];
   let bestDist = Infinity;
@@ -210,7 +211,11 @@ function decideGhost( game, g ) {
       best = dir;
     }
   }
-  g.dir = best;
+  return best;
+}
+
+function decideGhost( game, g ) {
+  g.dir = chooseDirToward( game.grid, g, ghostTarget( game, g ) );
 }
 
 function moveGhost( game, g ) {
@@ -219,6 +224,12 @@ function moveGhost( game, g ) {
 
   // Unreleased ghosts wait in place inside the pen.
   if ( !g.released ) return;
+
+  // Eyes race home on their own and ignore the normal pen rules below.
+  if ( g.eaten ) {
+    moveEyes( game, g );
+    return;
+  }
 
   // Scripted exit: a released ghost walks straight up through the door and
   // joins normal movement once outside the pen.
@@ -238,6 +249,39 @@ function moveGhost( game, g ) {
   const d = DIRS[ g.dir ];
   g.x += d.x * g.speed;
   g.y += d.y * g.speed;
+  wrapTunnel( g, width );
+}
+
+// Eyes race home at double speed: greedy toward the door-top tile of their
+// pen column, a scripted dive through the door, and a revert to a normal
+// ghost at the start cell.
+function moveEyes( game, g ) {
+  const grid = game.grid;
+  const width = grid[ 0 ].length;
+  const doorTop = { x: g.home.x, y: PEN.top - 1 };
+
+  if ( aligned( g.x ) && aligned( g.y ) ) {
+    g.x = Math.round( g.x );
+    g.y = Math.round( g.y );
+
+    if ( g.y >= PEN.top ) {
+      // Inside the pen: finish the descent to the ghost's own cell.
+      if ( g.y === g.home.y ) {
+        g.eaten = false;
+        g.released = false; // its release time already passed: leaves at once
+        return;
+      }
+      g.dir = 'down';
+    } else if ( g.x === doorTop.x && g.y === doorTop.y ) {
+      g.dir = 'down'; // at the door-top tile: dive through the door
+    } else {
+      g.dir = chooseDirToward( grid, g, doorTop );
+    }
+  }
+
+  const d = DIRS[ g.dir ];
+  g.x += d.x * EYES_SPEED;
+  g.y += d.y * EYES_SPEED;
   wrapTunnel( g, width );
 }
 
@@ -267,6 +311,13 @@ function collides( a, b ) {
   return Math.abs( a.x - b.x ) < 0.5 && Math.abs( a.y - b.y ) < 0.5;
 }
 
+// Eating a frightened ghost: it turns into eyes and pays a doubling bonus.
+function eatGhost( game, g ) {
+  g.eaten = true;
+  game.score += 200 * 2 ** game.frightChain;
+  game.frightChain++;
+}
+
 // Open the pen for every ghost whose scheduled release time has arrived.
 function releaseGhosts( game ) {
   for ( const g of game.ghosts ) {
@@ -286,16 +337,19 @@ function updateWaves( game ) {
   reverseGhosts( game );
 }
 
-// Classic group U-turn: every released ghost flips direction.
+// Classic group U-turn: every released ghost flips direction. Eyes keep
+// heading home.
 function reverseGhosts( game ) {
   for ( const g of game.ghosts ) {
-    if ( g.released ) g.dir = OPPOSITE[ g.dir ];
+    if ( g.released && !g.eaten ) g.dir = OPPOSITE[ g.dir ];
   }
 }
 
-// Eating an energizer refreshes the fright and U-turns the group.
+// Eating an energizer refreshes the fright, resets the bonus chain and
+// U-turns the group.
 function startFright( game ) {
   game.frightSeconds = FRIGHT_SECONDS;
+  game.frightChain = 0;
   reverseGhosts( game );
 }
 
@@ -310,15 +364,19 @@ function update( game ) {
   game.ghosts.forEach( ( g ) => moveGhost( game, g ) );
 
   for ( const g of game.ghosts ) {
-    if ( collides( game.pacman, g ) ) {
-      game.lives--;
-      if ( game.lives <= 0 ) {
-        game.state = 'lost';
-        return;
-      }
-      resetRound( game );
-      break;
+    if ( !collides( game.pacman, g ) ) continue;
+    if ( g.eaten ) continue; // eyes neither kill nor are eaten
+    if ( game.frightSeconds > 0 ) {
+      eatGhost( game, g );
+      continue;
     }
+    game.lives--;
+    if ( game.lives <= 0 ) {
+      game.state = 'lost';
+      return;
+    }
+    resetRound( game );
+    break;
   }
 
   if ( game.dotsRemaining <= 0 ) game.state = 'won';

@@ -70,16 +70,16 @@ Coordinates: cells with origin top-left, as today.
 
 ## Acceptance criteria
 
-- [ ] Four larger, blinking pellets appear near the corners at start.
-- [ ] Eating one scores 50 and every released ghost U-turns.
-- [ ] Frightened ghosts pick directions that take them away from Pac-Man.
+- [x] Four larger, blinking pellets appear near the corners at start.
+- [x] Eating one scores 50 and every released ghost U-turns.
+- [x] Frightened ghosts pick directions that take them away from Pac-Man.
 - [ ] Ghosts flash white in the final ~2 s and revert to normal after ~6 s.
-- [ ] Eating another pellet mid-fright restarts the 6 s countdown.
-- [ ] Pac-Man survives touching a frightened ghost.
-- [ ] Eating ghosts in one fright scores 200, 400, 800, 1600 in order.
-- [ ] The chain restarts at 200 with each new pellet.
+- [x] Eating another pellet mid-fright restarts the 6 s countdown.
+- [x] Pac-Man survives touching a frightened ghost.
+- [x] Eating ghosts in one fright scores 200, 400, 800, 1600 in order.
+- [x] The chain restarts at 200 with each new pellet.
 - [ ] An eaten ghost renders as eyes only, cannot kill or be re-eaten, and travels back to the pen.
-- [ ] A returned ghost becomes normal and leaves the pen again.
+- [x] A returned ghost becomes normal and leaves the pen again.
 - [ ] Losing a life while frightened starts the next round with no fright active.
 - [ ] Win still requires every dot and pellet; no console errors.
 
