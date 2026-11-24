@@ -288,7 +288,7 @@ function moveEyes( game, g ) {
 
 // Return everything to the start of a round after pac-man loses a life:
 // actors at their starts, ghosts unreleased in the pen, and the gameplay,
-// wave and release clocks back to zero so the staggered release repeats.
+// wave, release and fright clocks back to zero so the staggered release repeats.
 function resetRound( game ) {
   const p = game.pacman;
   p.x = PACMAN_START.x;
@@ -299,12 +299,15 @@ function resetRound( game ) {
   game.clock = 0;
   game.ghostMode = 'scatter';
   game.modeSeconds = 0;
+  game.frightSeconds = 0;
+  game.frightChain = 0;
 
   game.ghosts.forEach( ( g, i ) => {
     g.x = GHOST_STARTS[ i ].x;
     g.y = GHOST_STARTS[ i ].y;
     g.dir = 'up';
     g.released = false;
+    g.eaten = false;
   } );
 }
 

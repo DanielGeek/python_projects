@@ -80,7 +80,7 @@ Coordinates: cells with origin top-left, as today.
 - [x] The chain restarts at 200 with each new pellet.
 - [x] An eaten ghost renders as eyes only, cannot kill or be re-eaten, and travels back to the pen.
 - [x] A returned ghost becomes normal and leaves the pen again.
-- [ ] Losing a life while frightened starts the next round with no fright active.
+- [x] Losing a life while frightened starts the next round with no fright active.
 - [ ] Win still requires every dot and pellet; no console errors.
 
 ## Decisions
