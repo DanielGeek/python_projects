@@ -265,7 +265,7 @@ function moveEyes( game, g ) {
     g.x = Math.round( g.x );
     g.y = Math.round( g.y );
 
-    if ( g.y >= PEN.top ) {
+    if ( inPen( g ) ) {
       // Inside the pen: finish the descent to the ghost's own cell.
       if ( g.y === g.home.y ) {
         g.eaten = false;
@@ -315,8 +315,12 @@ function collides( a, b ) {
   return Math.abs( a.x - b.x ) < 0.5 && Math.abs( a.y - b.y ) < 0.5;
 }
 
-// Eating a frightened ghost: it turns into eyes and pays a doubling bonus.
+// Eating a frightened ghost: it snaps to its tile — the double-speed eyes
+// step by 0.2 and must stay on the decision grid — then turns into eyes
+// and pays a doubling bonus.
 function eatGhost( game, g ) {
+  g.x = Math.round( g.x );
+  g.y = Math.round( g.y );
   g.eaten = true;
   game.score += 200 * 2 ** game.frightChain;
   game.frightChain++;

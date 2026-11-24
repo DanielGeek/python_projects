@@ -1,6 +1,6 @@
 # SPEC 02 — Power pellets and frightened ghosts
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01
 > **Date:** 2026-11-23
 > **Objective:** Add four corner power pellets that frighten the ghosts for six seconds — they flee from Pac-Man, become edible, and eaten ones travel back to the pen as eyes before respawning.
@@ -81,7 +81,7 @@ Coordinates: cells with origin top-left, as today.
 - [x] An eaten ghost renders as eyes only, cannot kill or be re-eaten, and travels back to the pen.
 - [x] A returned ghost becomes normal and leaves the pen again.
 - [x] Losing a life while frightened starts the next round with no fright active.
-- [ ] Win still requires every dot and pellet; no console errors.
+- [x] Win still requires every dot and pellet; no console errors.
 
 ## Decisions
 
