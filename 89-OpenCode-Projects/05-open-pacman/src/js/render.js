@@ -113,10 +113,10 @@ function drawPacman( ctx, p, frame ) {
   ctx.fill();
 }
 
-function drawGhost( ctx, g, color ) {
+// Ghost body: dome head plus wavy skirt, filled with the state's color.
+function drawGhostBody( ctx, g, color ) {
   const { cx, cy } = cellCenter( g.x, g.y );
   const r = TILE / 2 - 1;
-  const top = cy - r;
   const bottom = cy + r;
   const left = cx - r;
   const right = cx + r;
@@ -132,8 +132,11 @@ function drawGhost( ctx, g, color ) {
   ctx.lineTo( left, bottom );
   ctx.closePath();
   ctx.fill();
+}
 
-  // eyes looking in the direction of travel
+// Eyes looking in the direction of travel — also the whole eaten ghost.
+function drawGhostEyes( ctx, g ) {
+  const { cx, cy } = cellCenter( g.x, g.y );
   const dir = DIRS[ g.dir ] || { x: 0, y: 0 };
   const ex = dir.x * 1.6;
   const ey = dir.y * 1.6;
@@ -147,6 +150,24 @@ function drawGhost( ctx, g, color ) {
     ctx.arc( cx + off + ex, cy - 1 + ey, 1.5, 0, Math.PI * 2 );
     ctx.fill();
   }
+}
+
+// Body color per ghost state: normal, frightened, or the final-seconds flash.
+function ghostBodyColor( game, frame, kind ) {
+  if ( game.frightSeconds <= 0 ) return GHOST_COLORS[ kind ];
+  const warn = game.frightSeconds <= FRIGHT_FLASH_SECONDS;
+  if ( warn && Math.floor( frame / 8 ) % 2 === 0 ) return FLASH_COLOR;
+  return FRIGHTENED_COLOR;
+}
+
+// One look per ghost state: normal, frightened (with flash), or eyes only.
+function drawGhost( ctx, g, game, frame ) {
+  if ( g.eaten ) {
+    drawGhostEyes( ctx, g );
+    return;
+  }
+  drawGhostBody( ctx, g, ghostBodyColor( game, frame, g.kind ) );
+  drawGhostEyes( ctx, g );
 }
 
 function drawHUD( ctx, game, W ) {
@@ -165,6 +186,8 @@ const GHOST_COLORS = {
   flanker:  '#00ffff', // Inky
   shy:      '#ffb852', // Clyde
 };
+const FRIGHTENED_COLOR = '#2121de'; // arcade frightened blue
+const FLASH_COLOR = '#ffffff';      // final-seconds warning flash
 
 function draw( ctx, game, frame ) {
   const grid = game.grid;
@@ -179,7 +202,7 @@ function draw( ctx, game, frame ) {
   drawDots( ctx, grid );
   drawEnergizers( ctx, grid, frame );
   drawPacman( ctx, game.pacman, frame );
-  game.ghosts.forEach( ( g ) => drawGhost( ctx, g, GHOST_COLORS[ g.kind ] || '#ff0000' ) );
+  game.ghosts.forEach( ( g ) => drawGhost( ctx, g, game, frame ) );
   drawHUD( ctx, game, W );
 }
 

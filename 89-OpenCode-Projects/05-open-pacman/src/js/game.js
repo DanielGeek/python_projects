@@ -18,6 +18,7 @@ const TICK_SECONDS = 1 / 60; // gameplay seconds added by each update() tick
 const SCATTER_SECONDS = 7;   // scatter phase length before each chase phase
 const CHASE_SECONDS = 20;    // chase phase length before each scatter phase
 const FRIGHT_SECONDS = 6;    // fright duration; a new energizer refreshes it
+const FRIGHT_FLASH_SECONDS = 2; // white flashing before the fright ends
 const EYES_SPEED = GHOST_SPEED * 2; // eaten ghosts race back to the pen
 
 // Creates a new game. Copies MAZE (pristine) into game.grid so dots can be
@@ -385,3 +386,4 @@ function update( game ) {
 window.createGame = createGame;
 window.update = update;
 window.DIRS = DIRS;
+window.FRIGHT_FLASH_SECONDS = FRIGHT_FLASH_SECONDS;
