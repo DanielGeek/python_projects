@@ -45,10 +45,11 @@ Open DayCare — a communication platform for a daycare: staff share each child'
 
 ## Skills
 
-Spec-driven workflow. Two commands, run in order: define first, implement later.
+Spec-driven workflow. Two commands, run in order: define first, implement later, then verify.
 
 - `/spec <feature>` — guided spec designer. Asks clarifying questions (scope, data, persistence, risks) before writing anything; never writes code. Saves the result as `specs/NN-slug.md` in `Draft` state and seeds `specs/.spec-config.yml` on first run. Use it when starting a large feature, before writing code. The user is the one who marks the spec as `Approved` after re-reading it.
 - `/spec-impl <NN-slug>` — implements an approved spec. Refuses to run unless the spec's state means "Approved" (any language). Creates/switches to the `spec-NN-slug` branch, then implements step by step, pausing after each step for diff review. Out-of-scope requests go into the next spec, not the current branch.
+- `spec-verify` subagent (`.opencode/agents/spec-verify.md`) — verifies a spec's acceptance criteria after `/spec-impl`: runs build/lint, checks screens with Playwright MCP (artifacts in `.playwright-mcp/`), validates Next.js practices with Context7, and compares screenshots visually with a vision model. Marks off the checklist, corrects criterion wording, and sets the state to `Implemented` when everything passes. Launch it from the main agent, e.g. "use spec-verify on 01-feed-home".
 
 Workflow config lives in `specs/.spec-config.yml`: `AutoCreateBranch` (default `true`, branch per spec) and `AutoCommitSteps` (default `false`, the user commits; `true` commits each step as `spec-NN-step-MM`).
 
