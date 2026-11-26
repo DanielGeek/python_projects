@@ -1,6 +1,6 @@
 # SPEC 01 — Staff feed as home (`/`)
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** —
 > **Date:** 2026-11-26
 > **Objective:** Implement `references/screens/feed.dc.html` as the home page `/`, visually identical to the mockup on desktop and responsive on mobile via a hamburger drawer, without authentication or database.
@@ -88,14 +88,14 @@ Conventions:
 
 ## Acceptance criteria
 
-- [ ] `npm run build` and `npm run lint` pass without errors.
-- [ ] Loading `/` produces no console errors or warnings.
-- [ ] On desktop (≥1024px) `/` replicates the mockup: sticky 248px sidebar with `#FFFDF9` background, general `#F6ECDF` background, "New post" button, "Feed" active, and the "Carol Gimenez · Teacher · Sunshine" card.
+- [x] `npm run build` and `npm run lint` pass without errors.
+- [x] Loading `/` produces no console errors or warnings.
+- [x] On desktop (≥1024px) `/` replicates the mockup: sticky 248px sidebar with `#FFFDF9` background, general `#F6ECDF` background, "New post" button, "Feed" active, and the "Carol Gimenez · Teacher · Sunshine" card.
 - [x] The 3 posts appear in order (14:20, 09:40, 07:50) with MILESTONE/ACTIVITY/ANNOUNCEMENT badges, correct audiences, and counters 3/1, 5/2, 8/0.
 - [x] The activity post shows the dashed placeholder "Photo · painting with tempera" linking to `/photo`.
 - [x] Fredoka and Nunito load self-hosted via `next/font/google`; there is no `<link>` to `fonts.googleapis.com`.
-- [ ] Desktop screenshot (1280×800) in `.playwright-mcp/` shows no perceptible differences in color, spacing, or typography against `references/screenshots/feed.png`.
-- [ ] At 390×844 there is no horizontal scroll; the hamburger opens the drawer with the full sidebar and closes via backdrop or Escape.
+- [x] Desktop screenshot (1280×800) in `.playwright-mcp/` shows no perceptible differences in color, spacing, or typography against `references/screenshots/feed.png`.
+- [x] At 390×844 there is no horizontal scroll; the hamburger opens the drawer with the full sidebar and closes via backdrop or Escape.
 - [x] The hamburger exposes `aria-expanded`/`aria-controls` and icon-only controls have `aria-label`.
 - [x] Shell and post links match the route mapping; every future route 404s today.
 - [x] No new or modified file touches authentication, cookies, sessions, or a database, and none uses `'use cache: private'` (there is no per-user data).
@@ -110,6 +110,7 @@ Conventions:
 - **Yes:** Tailwind with arbitrary values. Pixel-perfect fidelity within the project's stack.
 - **Yes:** removing `prefers-color-scheme: dark`. The mockup is light-only.
 - **Yes:** hamburger drawer below 1024px (user's decision). Reuses the exact `<Sidebar />`; minimal invented UI given no mobile mockup exists.
+- **Yes:** accepting the prefetch 404s in the console (user's decision, acceptance phase). The app logs zero errors or warnings; the only console output comes from `partialPrefetching` requesting the future routes that the route-mapping criterion itself defines as 404. It disappears as those routes land in future specs.
 - **No:** bottom nav and sidebar rail. Discarded during the question phase.
 - **No:** stubs for future routes. Discarded during the question phase.
 - **No:** likes, comments, editing, or sign-out interactivity. No backend; they stay static.

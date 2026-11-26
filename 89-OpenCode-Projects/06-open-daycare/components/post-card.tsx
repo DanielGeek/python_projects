@@ -58,7 +58,7 @@ export function PostCard({ post }: PostCardProps) {
 
   return (
     <article className="rounded-[20px] border border-line bg-surface px-[22px] py-5 shadow-[0_4px_16px_-12px_rgba(120,90,60,.5)]">
-      <header className="mb-[14px] flex items-center gap-3">
+      <header className="mb-[14px] flex flex-wrap items-center gap-3">
         <Avatar
           size={44}
           backgroundColor={typeStyle.avatarBackground}
@@ -67,7 +67,7 @@ export function PostCard({ post }: PostCardProps) {
         >
           {post.avatarInitial ? null : MEGAPHONE_ICON}
         </Avatar>
-        <div className="flex-1">
+        <div className="flex-auto">
           <div className="font-display text-[16.5px] font-semibold text-foreground">
             {post.authorName}
           </div>
