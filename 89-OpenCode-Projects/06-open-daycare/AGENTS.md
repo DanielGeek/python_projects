@@ -51,3 +51,6 @@ Spec-driven workflow. Two commands, run in order: define first, implement later.
 - `/spec-impl <NN-slug>` — implements an approved spec. Refuses to run unless the spec's state means "Approved" (any language). Creates/switches to the `spec-NN-slug` branch, then implements step by step, pausing after each step for diff review. Out-of-scope requests go into the next spec, not the current branch.
 
 Workflow config lives in `specs/.spec-config.yml`: `AutoCreateBranch` (default `true`, branch per spec) and `AutoCommitSteps` (default `false`, the user commits; `true` commits each step as `spec-NN-step-MM`).
+
+## Coding rules
+- Use clean code, names, functions and variables in english.
