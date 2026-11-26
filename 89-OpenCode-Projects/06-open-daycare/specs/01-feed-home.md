@@ -91,14 +91,14 @@ Conventions:
 - [ ] `npm run build` and `npm run lint` pass without errors.
 - [ ] Loading `/` produces no console errors or warnings.
 - [ ] On desktop (≥1024px) `/` replicates the mockup: sticky 248px sidebar with `#FFFDF9` background, general `#F6ECDF` background, "New post" button, "Feed" active, and the "Carol Gimenez · Teacher · Sunshine" card.
-- [ ] The 3 posts appear in order (14:20, 09:40, 07:50) with MILESTONE/ACTIVITY/ANNOUNCEMENT badges, correct audiences, and counters 3/1, 5/2, 8/0.
-- [ ] The activity post shows the dashed placeholder "Photo · painting with tempera" linking to `/photo`.
+- [x] The 3 posts appear in order (14:20, 09:40, 07:50) with MILESTONE/ACTIVITY/ANNOUNCEMENT badges, correct audiences, and counters 3/1, 5/2, 8/0.
+- [x] The activity post shows the dashed placeholder "Photo · painting with tempera" linking to `/photo`.
 - [x] Fredoka and Nunito load self-hosted via `next/font/google`; there is no `<link>` to `fonts.googleapis.com`.
 - [ ] Desktop screenshot (1280×800) in `.playwright-mcp/` shows no perceptible differences in color, spacing, or typography against `references/screenshots/feed.png`.
 - [ ] At 390×844 there is no horizontal scroll; the hamburger opens the drawer with the full sidebar and closes via backdrop or Escape.
-- [ ] The hamburger exposes `aria-expanded`/`aria-controls` and icon-only controls have `aria-label`.
-- [ ] Shell and post links match the route mapping; every future route 404s today.
-- [ ] No new or modified file touches authentication, cookies, sessions, or a database, and none uses `'use cache: private'` (there is no per-user data).
+- [x] The hamburger exposes `aria-expanded`/`aria-controls` and icon-only controls have `aria-label`.
+- [x] Shell and post links match the route mapping; every future route 404s today.
+- [x] No new or modified file touches authentication, cookies, sessions, or a database, and none uses `'use cache: private'` (there is no per-user data).
 
 ## Decisions
 
