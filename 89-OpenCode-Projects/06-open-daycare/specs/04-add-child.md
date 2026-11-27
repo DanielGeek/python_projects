@@ -87,7 +87,7 @@ Conventions:
 - [x] The form card is centered with `max-width: 520px`, `background: #FBF4EC`, `border: 1px solid #ECE0D0`, `border-radius: 24px`, `box-shadow: 0 20px 50px -24px rgba(63,54,46,.35)`.
 - [x] Header shows "Cancel" (left, `#94887B`), "Add child" (center, Fredoka 600 18px), "Save" (right, `#D9583C`), separated by `border-bottom: 1px solid #ECE0D0`.
 - [x] "Cancel" links to `/children`.
-- [ ] Full Name field has label "FULL NAME", placeholder "E.g. Martina Lopez", and updates `fullName` state on input.
+- [x] Full Name field has label "FULL NAME", placeholder "E.g. Martina Lopez", and updates `fullName` state on input.
 - [ ] Date of Birth field has label "DATE OF BIRTH", placeholder "mm/dd/yyyy", and updates `dateOfBirth` state on input.
 - [ ] Room field displays the selected room (default "Sunshine") with a chevron-down SVG icon.
 - [ ] Room field is clickable and opens a dropdown menu with three options: "Sunshine", "Rainbow", "Stars".
