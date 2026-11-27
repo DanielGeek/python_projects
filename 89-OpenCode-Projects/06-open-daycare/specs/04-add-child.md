@@ -88,12 +88,12 @@ Conventions:
 - [x] Header shows "Cancel" (left, `#94887B`), "Add child" (center, Fredoka 600 18px), "Save" (right, `#D9583C`), separated by `border-bottom: 1px solid #ECE0D0`.
 - [x] "Cancel" links to `/children`.
 - [x] Full Name field has label "FULL NAME", placeholder "E.g. Martina Lopez", and updates `fullName` state on input.
-- [ ] Date of Birth field has label "DATE OF BIRTH", placeholder "mm/dd/yyyy", and updates `dateOfBirth` state on input.
-- [ ] Room field displays the selected room (default "Sunshine") with a chevron-down SVG icon.
-- [ ] Room field is clickable and opens a dropdown menu with three options: "Sunshine", "Rainbow", "Stars".
-- [ ] Clicking a room option updates the displayed room and closes the dropdown.
-- [ ] Clicking outside the dropdown closes it without changing the selection.
-- [ ] Date of Birth and Room are side by side with `gap: 14px`.
+- [x] Date of Birth field has label "DATE OF BIRTH", placeholder "mm/dd/yyyy", and updates `dateOfBirth` state on input.
+- [x] Room field displays the selected room (default "Sunshine") with a chevron-down SVG icon.
+- [x] Room field is clickable and opens a dropdown menu with three options: "Sunshine", "Rainbow", "Stars".
+- [x] Clicking a room option updates the displayed room and closes the dropdown.
+- [x] Clicking outside the dropdown closes it without changing the selection.
+- [x] Date of Birth and Room are side by side with `gap: 14px`.
 - [ ] Allergies field has label "ALLERGIES (TAGS)", placeholder "E.g. Peanuts, Lactose".
 - [ ] Medical Notes field has label "MEDICAL NOTES", textarea with placeholder "Instructions, medication, contacts…", `min-height: 90px`, `resize: vertical`.
 - [ ] "Save" is disabled (`opacity: 0.5`, `cursor: not-allowed`, `pointer-events: none`) when Full Name or Date of Birth is empty.
