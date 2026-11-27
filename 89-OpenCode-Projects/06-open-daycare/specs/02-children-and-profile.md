@@ -1,6 +1,6 @@
 # SPEC 02 — Children listing and profile (`/children`, `/children/[id]`)
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01
 > **Date:** 2026-11-26
 > **Objective:** Implement the children listing (`/children`) and child profile (`/children/[id]`) pages, visually matching `references/screens/children.dc.html` and `references/screens/child-profile.dc.html`, reusing the staff shell from SPEC 01 without authentication or database.
