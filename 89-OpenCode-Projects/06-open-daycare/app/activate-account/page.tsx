@@ -43,7 +43,7 @@ export default function ActivateAccountPage() {
 
         {/* Subtitle */}
         <p className="mb-[26px] text-[#94887B] text-[15.5px] leading-[1.55]">
-          You've been invited to follow your child's day. Create a password to
+          You&apos;ve been invited to follow your child&apos;s day. Create a password to
           activate the account.
         </p>
 
@@ -60,7 +60,7 @@ export default function ActivateAccountPage() {
           </div>
           <div>
             <div className="text-[13px] text-[#94887B]">
-              You've been invited to follow
+              You&apos;ve been invited to follow
             </div>
             <div className="font-[var(--font-fredoka)] font-semibold text-[17px] text-[#3F362E]">
               {mockInvitation.childName} · {mockInvitation.roomName}

@@ -34,7 +34,7 @@ export default function LoginPage() {
         {/* Title and subtitle */}
         <div className="relative z-10">
           <h1 className="font-[var(--font-fredoka)] font-semibold text-[42px] leading-[1.12] mb-[18px]">
-            Every child's day,
+            Every child&apos;s day,
             <br />
             shared with their family.
           </h1>
