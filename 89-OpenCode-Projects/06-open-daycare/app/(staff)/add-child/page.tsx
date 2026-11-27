@@ -117,6 +117,18 @@ export default function AddChildPage() {
               )}
             </div>
           </div>
+
+          {/* Allergies field */}
+          <div className="mb-[18px]">
+            <div className="text-xs font-extrabold tracking-[0.7px] text-[#94887B] mb-2">
+              ALLERGIES (TAGS)
+            </div>
+            <input
+              type="text"
+              placeholder="E.g. Peanuts, Lactose"
+              className="w-full py-[13px] px-4 rounded-[14px] border-[1.5px] border-[#EADFD0] bg-white text-[15px] text-[#3F362E] placeholder:text-[#B6A99B] focus:outline-none"
+            />
+          </div>
         </div>
       </div>
     </div>

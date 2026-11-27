@@ -94,7 +94,7 @@ Conventions:
 - [x] Clicking a room option updates the displayed room and closes the dropdown.
 - [x] Clicking outside the dropdown closes it without changing the selection.
 - [x] Date of Birth and Room are side by side with `gap: 14px`.
-- [ ] Allergies field has label "ALLERGIES (TAGS)", placeholder "E.g. Peanuts, Lactose".
+- [x] Allergies field has label "ALLERGIES (TAGS)", placeholder "E.g. Peanuts, Lactose".
 - [ ] Medical Notes field has label "MEDICAL NOTES", textarea with placeholder "Instructions, medication, contacts…", `min-height: 90px`, `resize: vertical`.
 - [ ] "Save" is disabled (`opacity: 0.5`, `cursor: not-allowed`, `pointer-events: none`) when Full Name or Date of Birth is empty.
 - [ ] "Save" becomes enabled when both Full Name and Date of Birth are non-empty.
