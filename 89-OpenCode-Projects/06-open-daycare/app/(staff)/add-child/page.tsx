@@ -91,8 +91,17 @@ export default function AddChildPage() {
                 placeholder="mm/dd/yyyy"
                 value={dateOfBirth}
                 onChange={(e) => setDateOfBirth(e.target.value)}
-                className="w-full py-[13px] px-4 rounded-[14px] border-[1.5px] border-[#EADFD0] bg-white text-[15px] text-[#3F362E] placeholder:text-[#B6A99B] focus:outline-none"
+                className={`w-full py-[13px] px-4 rounded-[14px] border-[1.5px] bg-white text-[15px] text-[#3F362E] placeholder:text-[#B6A99B] focus:outline-none ${
+                  dateOfBirth.trim().length > 0 && !isValidDate(dateOfBirth)
+                    ? "border-[#E74C3C]"
+                    : "border-[#EADFD0]"
+                }`}
               />
+              {dateOfBirth.trim().length > 0 && !isValidDate(dateOfBirth) && (
+                <div className="mt-2 text-[12px] text-[#E74C3C]">
+                  Please enter a valid date (mm/dd/yyyy)
+                </div>
+              )}
             </div>
 
             {/* Room dropdown */}
