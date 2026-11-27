@@ -1,6 +1,6 @@
 # SPEC 03 — Login and account activation (`/login`, `/activate-account`)
 
-> **Status:** Implemented
+> **Status:** Completed
 > **Depends on:** SPEC 01
 > **Date:** 2026-11-27
 > **Objective:** Implement login and account activation screens, visually matching `references/screens/login.dc.html` and `references/screens/activate-account.dc.html`, without real authentication or database, reusing fonts and design tokens from SPEC 01.
