@@ -6,12 +6,17 @@ import HealthNote from "@/components/health-note";
 import InfoCard from "@/components/info-card";
 import ParentRow from "@/components/parent-row";
 
+export const instant = false;
+
 type ChildProfilePageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export default function ChildProfilePage({ params }: ChildProfilePageProps) {
-  const profile = mockChildProfiles[params.id];
+export default async function ChildProfilePage({
+  params,
+}: ChildProfilePageProps) {
+  const { id } = await params;
+  const profile = mockChildProfiles[id];
 
   if (!profile) {
     notFound();
