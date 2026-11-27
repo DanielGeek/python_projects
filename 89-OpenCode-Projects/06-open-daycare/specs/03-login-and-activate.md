@@ -1,6 +1,6 @@
 # SPEC 03 — Login and account activation (`/login`, `/activate-account`)
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01
 > **Date:** 2026-11-27
 > **Objective:** Implement login and account activation screens, visually matching `references/screens/login.dc.html` and `references/screens/activate-account.dc.html`, without real authentication or database, reusing fonts and design tokens from SPEC 01.
@@ -99,27 +99,27 @@ Conventions:
 
 ## Acceptance criteria
 
-- [ ] `npm run build` and `npm run lint` pass without errors.
-- [ ] Loading `/login` produces no console errors or warnings.
-- [ ] `/login` shows the split layout: hero on the left (coral gradient, logo, title, subtitle, footer) and form on the right.
-- [ ] Hero has the two absolute decorative circles (420×420 top-right, 300×300 bottom-left).
-- [ ] Form shows "Sign in" (Fredoka 30px), email field, password field, "Forgot your password?" link aligned right, "Sign in" button (coral gradient), "Activate your account" link.
-- [ ] "Sign in" button redirects to `/`.
-- [ ] "Forgot your password?" redirects to `/forgot-password` (404 today).
-- [ ] "Activate your account" redirects to `/activate-account`.
-- [ ] Loading `/activate-account` produces no console errors or warnings.
-- [ ] `/activate-account` shows the centered layout with logo, title, subtitle, invitation card, form, checkbox, and button.
-- [ ] Invitation card shows circular avatar "M" (bg `#A9D9E8`, color `#1F7A93`), "You've been invited to follow", "Matthew · Sunshine Room".
-- [ ] Fields show mock values: invitation code "7K4P9", email "lucy.fernandez@gmail.com".
-- [ ] Authorization checkbox is unchecked by default.
-- [ ] "Activate my account" button is disabled (`opacity: 0.5`, `cursor: not-allowed`) when checkbox is unchecked.
-- [ ] When checkbox is checked, button enables and redirects to `/login` on click.
-- [ ] "Sign in" link redirects to `/login`.
-- [ ] On mobile (`< 768px`), `/login` does not show the hero (only the form), no horizontal scroll.
-- [ ] On mobile, `/activate-account` adapts without horizontal scroll.
-- [ ] Both pages have `background: #FBF4EC`.
-- [ ] Fredoka and Nunito load correctly from root layout (SPEC 01).
-- [ ] No new files touch authentication, cookies, sessions, or database.
+- [x] `npm run build` and `npm run lint` pass without errors.
+- [x] Loading `/login` produces no console errors or warnings.
+- [x] `/login` shows the split layout: hero on the left (coral gradient, logo, title, subtitle, footer) and form on the right.
+- [x] Hero has the two absolute decorative circles (420×420 top-right, 300×300 bottom-left).
+- [x] Form shows "Sign in" (Fredoka 30px), email field, password field, "Forgot your password?" link aligned right, "Sign in" button (coral gradient), "Activate your account" link.
+- [x] "Sign in" button redirects to `/`.
+- [x] "Forgot your password?" redirects to `/forgot-password` (404 today).
+- [x] "Activate your account" redirects to `/activate-account`.
+- [x] Loading `/activate-account` produces no console errors or warnings.
+- [x] `/activate-account` shows the centered layout with logo, title, subtitle, invitation card, form, checkbox, and button.
+- [x] Invitation card shows circular avatar "M" (bg `#A9D9E8`, color `#1F7A93`), "You've been invited to follow", "Matthew · Sunshine Room".
+- [x] Fields show mock values: invitation code "7K4P9", email "lucy.fernandez@gmail.com".
+- [x] Authorization checkbox is unchecked by default.
+- [x] "Activate my account" button is disabled (`opacity: 0.5`, `cursor: not-allowed`) when checkbox is unchecked.
+- [x] When checkbox is checked, button enables and redirects to `/login` on click.
+- [x] "Sign in" link redirects to `/login`.
+- [x] On mobile (`< 768px`), `/login` does not show the hero (only the form), no horizontal scroll.
+- [x] On mobile, `/activate-account` adapts without horizontal scroll.
+- [x] Both pages have `background: #FBF4EC`.
+- [x] Fredoka and Nunito load correctly from root layout (SPEC 01).
+- [x] No new files touch authentication, cookies, sessions, or database.
 
 ## Decisions
 
