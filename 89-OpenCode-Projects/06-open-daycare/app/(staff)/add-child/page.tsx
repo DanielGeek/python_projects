@@ -5,6 +5,25 @@ import Link from "next/link";
 
 const ROOMS = ["Sunshine", "Rainbow", "Stars"];
 
+// Validates date format (mm/dd/yyyy) and ensures it's a real date
+function isValidDate(dateString: string): boolean {
+  const dateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
+  
+  if (!dateRegex.test(dateString)) {
+    return false;
+  }
+
+  const [month, day, year] = dateString.split("/").map(Number);
+  const date = new Date(year, month - 1, day);
+  
+  // Check if the date components match (catches invalid dates like 02/30/2023)
+  return (
+    date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day
+  );
+}
+
 export default function AddChildPage() {
   const [fullName, setFullName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
@@ -12,8 +31,8 @@ export default function AddChildPage() {
   const [isRoomDropdownOpen, setIsRoomDropdownOpen] = useState(false);
   const roomDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Save button validation
-  const isSaveEnabled = fullName.trim().length > 0 && dateOfBirth.trim().length > 0;
+  // Save button validation - requires valid date
+  const isSaveEnabled = fullName.trim().length > 0 && isValidDate(dateOfBirth);
 
   // Close dropdown when clicking outside
   useEffect(() => {
