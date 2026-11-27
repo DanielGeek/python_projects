@@ -120,21 +120,21 @@ Conventions:
 ## Acceptance criteria
 
 - [x] `npm run build` and `npm run lint` pass without errors.
-- [ ] Loading `/children` produces no console errors or warnings.
-- [ ] `/children` shows 8 child cards in a 2-column grid matching the mockup: eyebrow "MANAGEMENT", heading "Children", "Add child" button (gradient, plus icon), search input with magnifying glass icon, "SUNSHINE ROOM" divider with dynamic count.
-- [ ] The 8 cards show the correct names, initials, avatar colors (48×48), ages, parent counts, and tags (PEANUT for Matthew, LACTOSE for Thomas, LINK for Valentina).
-- [ ] ChildCard hover effect: `border-color: #F2A78E`, `translateY(-2px)`, smooth transition.
-- [ ] The search divider count is dynamic: typing "mat" shows "1 children", clearing shows "8 children".
-- [ ] Typing in the search input filters the grid in real time (case-insensitive match on name).
-- [ ] When the search yields 0 results, a "No children found" message appears in the grid area.
-- [ ] Clicking a child card navigates to `/children/[id]`.
-- [ ] `/children/matthew-fernandez` renders the full profile matching the mockup: back link (arrow icon, "Back to Children"), large avatar (84×84) + name (Fredoka 28px) + subtitle ("3 years · Sunshine Room"), outline "Edit" button (`border: 1.5px solid #ECE0D0`, `background: #FFFDF9`), health note box (red `#FBDAD6`, warning triangle icon), info card (DOB Mar 12 2022 / Room Sunshine / Enrolled Feb 2025), "Daily summary" dark button (`#3F362E`, sun icon), linked parents card (heading "LINKED PARENTS", Lucy ACTIVE `#CFEBD8`/`#3E9B6C`, Diego PENDING `#F7E7A6`/`#9A7B1E`, subtitle texts "active"/"invitation sent"), "Link another parent" link (dashed circle + plus icon).
-- [ ] `/children/[id]` with an unknown ID shows a "Child not found" fallback (not a crash).
-- [ ] `Nav` highlights "Children" as active on both `/children` and `/children/[id]`.
-- [ ] All future-route links (`/add-child`, `/daily-summary`, `/link-parent`) are `<Link>` components that 404 today.
-- [ ] Desktop screenshot (1280×800) in `.playwright-mcp/` for `/children` matches `references/screenshots/children.png` in color, spacing, and typography.
-- [ ] Desktop screenshot (1280×800) in `.playwright-mcp/` for `/children/matthew-fernandez` matches `references/screenshots/child-profile.png`.
-- [ ] At 390×844: listing shows a single column with no horizontal scroll; profile stacks sections vertically.
+- [x] Loading `/children` produces no console errors or warnings.
+- [x] `/children` shows 8 child cards in a 2-column grid matching the mockup: eyebrow "MANAGEMENT", heading "Children", "Add child" button (gradient, plus icon), search input with magnifying glass icon, "SUNSHINE ROOM" divider with dynamic count.
+- [x] The 8 cards show the correct names, initials, avatar colors (48×48), ages, parent counts, and tags (PEANUT for Matthew, LACTOSE for Thomas, LINK for Valentina).
+- [x] ChildCard hover effect: `border-color: #F2A78E`, `translateY(-2px)`, smooth transition.
+- [x] The search divider count is dynamic: typing "mat" shows "1 children", clearing shows "8 children".
+- [x] Typing in the search input filters the grid in real time (case-insensitive match on name).
+- [x] When the search yields 0 results, a "No children found" message appears in the grid area.
+- [x] Clicking a child card navigates to `/children/[id]`.
+- [x] `/children/matthew-fernandez` renders the full profile matching the mockup: back link (arrow icon, "Back to Children"), large avatar (84×84) + name (Fredoka 28px) + subtitle ("3 years · Sunshine Room"), outline "Edit" button (`border: 1.5px solid #ECE0D0`, `background: #FFFDF9`), health note box (red `#FBDAD6`, warning triangle icon), info card (DOB Mar 12 2022 / Room Sunshine / Enrolled Feb 2025), "Daily summary" dark button (`#3F362E`, sun icon), linked parents card (heading "LINKED PARENTS", Lucy ACTIVE `#CFEBD8`/`#3E9B6C`, Diego PENDING `#F7E7A6`/`#9A7B1E`, subtitle texts "active"/"invitation sent"), "Link another parent" link (dashed circle + plus icon).
+- [x] `/children/[id]` with an unknown ID shows a "Child not found" fallback (not a crash).
+- [x] `Nav` highlights "Children" as active on both `/children` and `/children/[id]`.
+- [x] All future-route links (`/add-child`, `/daily-summary`, `/link-parent`) are `<Link>` components that 404 today.
+- [x] Desktop screenshot (1280×800) in `.playwright-mcp/` for `/children` matches `references/screenshots/children.png` in color, spacing, and typography.
+- [x] Desktop screenshot (1280×800) in `.playwright-mcp/` for `/children/matthew-fernandez` matches `references/screenshots/child-profile.png`.
+- [x] At 390×844: listing shows a single column with no horizontal scroll; profile stacks sections vertically.
 - [x] No new file touches authentication, cookies, sessions, or a database.
 
 ## Decisions
