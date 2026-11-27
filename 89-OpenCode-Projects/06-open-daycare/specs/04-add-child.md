@@ -1,6 +1,6 @@
 # SPEC 04 — Add child (`/add-child`)
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01, SPEC 02
 > **Date:** 2026-11-27
 > **Objective:** Implement the add child form page at `/add-child`, visually matching `references/screens/add-child.dc.html`, with the staff shell, client-side validation that enables Save only when Full Name and Date of Birth are filled, and redirect to `/children` on Save without persistence.
@@ -81,7 +81,7 @@ Conventions:
 
 ## Acceptance criteria
 
-- [ ] `npm run build` and `npm run lint` pass without errors.
+- [x] `npm run build` and `npm run lint` pass without errors.
 - [x] Loading `/add-child` produces no console errors or warnings.
 - [x] `/add-child` is rendered inside the staff shell (sidebar visible on desktop ≥1024px).
 - [x] The form card is centered with `max-width: 520px`, `background: #FBF4EC`, `border: 1px solid #ECE0D0`, `border-radius: 24px`, `box-shadow: 0 20px 50px -24px rgba(63,54,46,.35)`.
@@ -100,8 +100,8 @@ Conventions:
 - [x] "Save" becomes enabled when both Full Name and Date of Birth are non-empty.
 - [x] Clicking "Save" when enabled navigates to `/children`.
 - [x] No new child appears in `/children` after Save (no persistence).
-- [ ] On mobile, no horizontal scroll; card and fields adapt to available width.
-- [ ] No new file touches authentication, cookies, sessions, or database.
+- [x] On mobile, no horizontal scroll; card and fields adapt to available width.
+- [x] No new file touches authentication, cookies, sessions, or database.
 
 ## Decisions
 
