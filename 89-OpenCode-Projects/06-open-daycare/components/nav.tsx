@@ -97,7 +97,10 @@ export function Nav() {
   return (
     <nav className="flex flex-1 flex-col gap-1">
       {NAV_ITEMS.map(({ label, href, icon }) => {
-        const isActive = pathname === href;
+        const isActive =
+          href === "/"
+            ? pathname === "/"
+            : pathname === href || pathname.startsWith(href + "/");
 
         return (
           <Link
