@@ -1,6 +1,6 @@
 # SPEC 04 — Add child (`/add-child`)
 
-> **Status:** Implemented
+> **Status:** Completed
 > **Depends on:** SPEC 01, SPEC 02
 > **Date:** 2026-11-27
 > **Objective:** Implement the add child form page at `/add-child`, visually matching `references/screens/add-child.dc.html`, with the staff shell, client-side validation that enables Save only when Full Name and Date of Birth are filled, and redirect to `/children` on Save without persistence.
