@@ -12,6 +12,9 @@ export default function AddChildPage() {
   const [isRoomDropdownOpen, setIsRoomDropdownOpen] = useState(false);
   const roomDropdownRef = useRef<HTMLDivElement>(null);
 
+  // Save button validation
+  const isSaveEnabled = fullName.trim().length > 0 && dateOfBirth.trim().length > 0;
+
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -34,9 +37,11 @@ export default function AddChildPage() {
           <span className="font-[var(--font-fredoka)] font-semibold text-lg text-[#3F362E]">
             Add child
           </span>
-          <Link href="/children" className="text-[#D9583C] font-extrabold text-[15px]">
-            Save
-          </Link>
+          <span className={!isSaveEnabled ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}>
+            <Link href="/children" className="text-[#D9583C] font-extrabold text-[15px]">
+              Save
+            </Link>
+          </span>
         </div>
 
         {/* Form fields */}

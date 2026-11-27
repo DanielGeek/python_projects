@@ -96,10 +96,10 @@ Conventions:
 - [x] Date of Birth and Room are side by side with `gap: 14px`.
 - [x] Allergies field has label "ALLERGIES (TAGS)", placeholder "E.g. Peanuts, Lactose".
 - [x] Medical Notes field has label "MEDICAL NOTES", textarea with placeholder "Instructions, medication, contacts…", `min-height: 90px`, `resize: vertical`.
-- [ ] "Save" is disabled (`opacity: 0.5`, `cursor: not-allowed`, `pointer-events: none`) when Full Name or Date of Birth is empty.
-- [ ] "Save" becomes enabled when both Full Name and Date of Birth are non-empty.
-- [ ] Clicking "Save" when enabled navigates to `/children`.
-- [ ] No new child appears in `/children` after Save (no persistence).
+- [x] "Save" is disabled (`opacity: 0.5`, `cursor: not-allowed`, `pointer-events: none`) when Full Name or Date of Birth is empty.
+- [x] "Save" becomes enabled when both Full Name and Date of Birth are non-empty.
+- [x] Clicking "Save" when enabled navigates to `/children`.
+- [x] No new child appears in `/children` after Save (no persistence).
 - [ ] On mobile, no horizontal scroll; card and fields adapt to available width.
 - [ ] No new file touches authentication, cookies, sessions, or database.
 
