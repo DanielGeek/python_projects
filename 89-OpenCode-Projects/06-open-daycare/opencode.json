@@ -1,4 +1,14 @@
 {
+  "command": {
+    "spec": {
+      "description": "Create screen and functionality specifications",
+      "template": "Load and follow the skill spec in .agents/skills/spec/SKILL.md.\n\nFeature: $ARGUMENTS"
+    },
+    "spec-impl": {
+      "description": "Implements screen and functionality specifications",
+      "template": "Load and follow the spec-impl skill in .agents/skills/spec-impl/SKILL.md.\n\nFeature: $ARGUMENTS"
+    }
+  },
   "mcp": {
     "servers": {
       "playwright": {
