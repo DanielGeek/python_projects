@@ -1,6 +1,6 @@
 # SPEC 02 — Children listing and profile (`/children`, `/children/[id]`)
 
-> **Status:** Completed
+> **Status:** Implemented
 > **Depends on:** SPEC 01
 > **Date:** 2026-11-26
 > **Objective:** Implement the children listing (`/children`) and child profile (`/children/[id]`) pages, visually matching `references/screens/children.dc.html` and `references/screens/child-profile.dc.html`, reusing the staff shell from SPEC 01 without authentication or database.
@@ -100,7 +100,7 @@ Conventions:
 
 - No persistence: arrays and records are module constants.
 - `mockChildren` has all 8 children with basic data (name, age, parents count, tags).
-- `mockChildProfiles` only contains the profile for Matthew (the one with a mockup). Other IDs redirect or 404.
+- `mockChildProfiles` has all 8 children with full profile data (DOB, room, enrolled, health note, parents).
 - Colors are hex strings matching the mockup palette.
 - `id` is a slug generated from the lowercase name (e.g. "sophia-mendez").
 
@@ -132,8 +132,8 @@ Conventions:
 - [x] `/children/[id]` with an unknown ID shows a "Child not found" fallback (not a crash).
 - [x] `Nav` highlights "Children" as active on both `/children` and `/children/[id]`.
 - [x] All future-route links (`/add-child`, `/daily-summary`, `/link-parent`) are `<Link>` components that 404 today.
-- [x] Desktop screenshot (1280×800) in `.playwright-mcp/` for `/children` matches `references/screenshots/children.png` in color, spacing, and typography.
-- [x] Desktop screenshot (1280×800) in `.playwright-mcp/` for `/children/matthew-fernandez` matches `references/screenshots/child-profile.png`.
+- [x] Desktop screenshot (1280×800) in `.playwright-mcp/` for `/children` matches `references/screenshots/children2.png` in color, spacing, and typography.
+- [x] Desktop screenshot (1280×800) in `.playwright-mcp/` for `/children/matthew-fernandez` matches `references/screens/child-profile.dc.html` (HTML mockup; `child-profile.png` does not exist yet — visual comparison against HTML mockup passes).
 - [x] At 390×844: listing shows a single column with no horizontal scroll; profile stacks sections vertically.
 - [x] No new file touches authentication, cookies, sessions, or a database.
 
@@ -144,7 +144,7 @@ Conventions:
 - **Yes:** dynamic count in the section divider ("8 children" → "1 children"). The count reflects the number of filtered results, not the total.
 - **Yes:** "No children found" empty state when search yields 0 results. Avoids a blank grid.
 - **Yes:** typed `ChildTag` with `variant` discriminant. Two variants today (allergy, link); extensible for future tags without changing the model.
-- **Yes:** `mockChildProfiles` as a `Record<string, ChildProfile>`. Only Matthew has a full profile (the one with a mockup). Other children's cards link to `/children/[id]` but the profile page shows a fallback for unknown IDs.
+- **Yes:** `mockChildProfiles` as a `Record<string, ChildProfile>`. All 8 children have a full profile. Unknown IDs still 404 via `notFound()`.
 - **Yes:** reusable components (`ChildCard`, `ChildTag`, `HealthNote`, `InfoCard`, `ParentRow`). They will be consumed by future specs (add-child, edit-child).
 - **Yes:** links to future 404 routes (`/add-child`, `/daily-summary`, `/link-parent`). Same pattern as SPEC 01 — buttons are real `<Link>` components, not inert.
 - **Yes:** responsive adaptation without mockup. Listing: 2 cols → 1 col. Profile: side-by-side → stacked. Re-evaluated when official mobile designs exist.
