@@ -82,9 +82,9 @@ Conventions:
 ## Acceptance criteria
 
 - [ ] `npm run build` and `npm run lint` pass without errors.
-- [ ] Loading `/add-child` produces no console errors or warnings.
-- [ ] `/add-child` is rendered inside the staff shell (sidebar visible on desktop ≥1024px).
-- [ ] The form card is centered with `max-width: 520px`, `background: #FBF4EC`, `border: 1px solid #ECE0D0`, `border-radius: 24px`, `box-shadow: 0 20px 50px -24px rgba(63,54,46,.35)`.
+- [x] Loading `/add-child` produces no console errors or warnings.
+- [x] `/add-child` is rendered inside the staff shell (sidebar visible on desktop ≥1024px).
+- [x] The form card is centered with `max-width: 520px`, `background: #FBF4EC`, `border: 1px solid #ECE0D0`, `border-radius: 24px`, `box-shadow: 0 20px 50px -24px rgba(63,54,46,.35)`.
 - [ ] Header shows "Cancel" (left, `#94887B`), "Add child" (center, Fredoka 600 18px), "Save" (right, `#D9583C`), separated by `border-bottom: 1px solid #ECE0D0`.
 - [ ] "Cancel" links to `/children`.
 - [ ] Full Name field has label "FULL NAME", placeholder "E.g. Martina Lopez", and updates `fullName` state on input.
