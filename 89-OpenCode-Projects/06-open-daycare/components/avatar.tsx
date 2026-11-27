@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 
-export type AvatarSize = 38 | 40 | 44;
+export type AvatarSize = 38 | 40 | 44 | 48 | 84;
 
 const initialFontSize: Record<AvatarSize, number> = {
   38: 16,
   40: 16,
   44: 17,
+  48: 19,
+  84: 34,
 };
 
 type AvatarProps = {
