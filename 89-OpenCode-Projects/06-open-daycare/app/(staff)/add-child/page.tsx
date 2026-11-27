@@ -129,6 +129,17 @@ export default function AddChildPage() {
               className="w-full py-[13px] px-4 rounded-[14px] border-[1.5px] border-[#EADFD0] bg-white text-[15px] text-[#3F362E] placeholder:text-[#B6A99B] focus:outline-none"
             />
           </div>
+
+          {/* Medical Notes field */}
+          <div>
+            <div className="text-xs font-extrabold tracking-[0.7px] text-[#94887B] mb-2">
+              MEDICAL NOTES
+            </div>
+            <textarea
+              placeholder="Instructions, medication, contacts…"
+              className="w-full min-h-[90px] resize-y py-[13px] px-4 rounded-[14px] border-[1.5px] border-[#EADFD0] bg-white text-[15px] text-[#3F362E] leading-[1.5] placeholder:text-[#B6A99B] focus:outline-none"
+            />
+          </div>
         </div>
       </div>
     </div>
