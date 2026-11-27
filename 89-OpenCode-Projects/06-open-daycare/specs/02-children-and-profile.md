@@ -106,7 +106,7 @@ Conventions:
 
 ## Implementation plan
 
-1. **Mock data.** `lib/mock-children.ts`: types and constants with the 8 children from the mockup and Matthew's full profile. `Child.avatarSize` is `48` for cards; `ChildProfile` overrides it to `84` for the profile page. Manual: import in a throwaway component and verify no type errors.
+1. **Mock data.** `lib/mock-children.ts`: types and constants with the 8 children from the mockup and Matthew's full profile. `Child.avatarSize` is `48` for cards; `ChildProfile` overrides it to `84` for the profile page. Manual: import in a throwaway component and verify no type errors. ✅ **COMPLETED**
 2. **ChildTag component.** `components/child-tag.tsx`: renders a small pill badge — allergy variant (`#FBD8CC` bg, `#D9684A` text), link variant (`#F9D2DE` bg, `#C56486` text). Consumed by `ChildCard`.
 3. **SearchBar component.** `components/search-bar.tsx`: client component with a magnifying glass icon (SVG) and an input. Props: `value` + `onChange`. Styling: `background: #FFFDF9`, `border: 1px solid #ECE0D0`, `border-radius: 14px`, `padding: 12px 16px`.
 4. **ChildCard component.** `components/child-card.tsx`: server component rendering one `Child` — `<Avatar />` at 48×48, name (Fredoka 600 16px), subtitle (`age · N linked parents`), and either a `<ChildTag />` or a right chevron icon (`#CBB89F`). Wrapped in a `Link` to `/children/[id]`. Hover styles: `border-color: #F2A78E`, `transform: translateY(-2px)`, `transition: 0.15s`. Card styling: `background: #FFFDF9`, `border: 1px solid #ECE0D0`, `border-radius: 18px`, `padding: 16px`, `box-shadow: 0 4px 14px -12px rgba(120,90,60,.5)`.
