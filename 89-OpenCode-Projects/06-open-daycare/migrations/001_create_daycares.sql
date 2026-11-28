@@ -5,7 +5,7 @@
 -- Create table
 CREATE TABLE IF NOT EXISTS daycares (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name text NOT NULL,
+  name text NOT NULL UNIQUE,
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
@@ -30,10 +30,10 @@ BEGIN
 END $$;
 
 -- Seed data: 4 example daycares for development
--- Uses ON CONFLICT DO NOTHING to prevent duplicates on re-run
+-- Uses ON CONFLICT (name) DO NOTHING to prevent duplicates on re-run
 INSERT INTO daycares (name) VALUES
   ('Sunshine Room Daycare'),
   ('Rainbow Kids Daycare'),
   ('Little Stars Daycare'),
   ('Happy Hearts Daycare')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (name) DO NOTHING;

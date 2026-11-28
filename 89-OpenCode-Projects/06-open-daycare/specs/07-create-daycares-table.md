@@ -36,7 +36,7 @@
 -- Create table
 CREATE TABLE IF NOT EXISTS daycares (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name text NOT NULL,
+  name text NOT NULL UNIQUE,
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
@@ -56,7 +56,7 @@ INSERT INTO daycares (name) VALUES
   ('Rainbow Kids Daycare'),
   ('Little Stars Daycare'),
   ('Happy Hearts Daycare')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (name) DO NOTHING;
 ```
 
 **Conventions (from schema reference):**
@@ -76,7 +76,7 @@ ON CONFLICT DO NOTHING;
    - `CREATE TABLE IF NOT EXISTS daycares` (idempotent)
    - Enable RLS
    - SELECT policy for authenticated users
-   - INSERT seed data for 4 daycares (idempotent with `ON CONFLICT DO NOTHING`)
+   - INSERT seed data for 4 daycares (idempotent with UNIQUE constraint on `name` + `ON CONFLICT (name) DO NOTHING`)
    - Comments explaining each section
 
 3. **Apply migration.** Use Supabase MCP tool `apply_migration` to execute the SQL against project `etwevmvxvqafbnqghskm`. Verify table exists and seed data inserted.
@@ -97,7 +97,7 @@ ON CONFLICT DO NOTHING;
 - [x] SELECT policy allows authenticated users to read all daycares
 - [x] No INSERT/UPDATE/DELETE policies exist yet (admin-only)
 - [x] 4 seed daycares exist: Sunshine Room Daycare, Rainbow Kids Daycare, Little Stars Daycare, Happy Hearts Daycare
-- [x] Migration file is idempotent (can be re-run without error or duplicate data)
+- [x] Migration file is idempotent (can be re-run without error or duplicate data) — UNIQUE constraint on `name` + `ON CONFLICT (name) DO NOTHING`
 
 ## Decisions
 
