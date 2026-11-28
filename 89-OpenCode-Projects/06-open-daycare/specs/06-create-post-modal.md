@@ -104,7 +104,7 @@ Conventions:
 - [x] "New post" in sidebar is a button (not a link) that opens the modal on click.
 - [x] "Share a moment…" in home feed is a button (not a link) that opens the modal on click.
 - [x] Modal displays with backdrop (black/40%) and centered card (max-width: 580px, background: #FBF4EC, border-radius: 24px, box-shadow).
-- [x] Close button (X icon, top-right) closes the modal.
+- [x] "Cancel" button (left, #94887B) closes the modal.
 - [x] Clicking backdrop closes the modal.
 - [x] Pressing Escape closes the modal.
 - [x] Header shows "Cancel" (left, #94887B), "New post" (center, Fredoka 600 18px), "Publish" (right, #D9583C).
