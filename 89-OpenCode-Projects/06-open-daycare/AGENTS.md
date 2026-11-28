@@ -58,5 +58,21 @@ Supabase skills (load when working with database):
 - `supabase` — use for ANY Supabase task: Database, Auth, Edge Functions, Realtime, Storage, Vectors, Cron, Queues, RLS, migrations, security audits, debugging, logs.
 - `supabase-postgres-best-practices` — load BEFORE writing or changing anything in Postgres: tables, columns, types, schema design, migrations, RLS policies, indexes, triggers, functions, queues, vector search, slow queries, EXPLAIN plans, connection issues, locking, bloat.
 
+## Database migrations
+
+**Every schema change MUST go through a migration file.** Never execute SQL directly in Supabase without creating a migration first.
+
+- Migration files live in `migrations/` with sequential numbering: `NNN_description.sql` (e.g., `001_create_daycares.sql`, `002_create_users.sql`)
+- Each migration must be **idempotent**: use `IF NOT EXISTS`, `ON CONFLICT (column) DO NOTHING`, or conditional blocks (`DO $$ ... $$`) so re-running is safe
+- Apply migrations via Supabase MCP tool `apply_migration` or copy-paste into SQL Editor
+- Document the migration pattern in `migrations/README.md`
+- See `specs/07-create-daycares-table.md` for the reference implementation
+
+**Workflow:**
+1. Write SQL in `migrations/NNN_description.sql`
+2. Test locally or apply via `apply_migration`
+3. Verify in Supabase (table exists, RLS enabled, seed data present)
+4. Commit the migration file alongside the spec that requires it
+
 ## Coding rules
 - Use clean code, names, functions and variables in english.
