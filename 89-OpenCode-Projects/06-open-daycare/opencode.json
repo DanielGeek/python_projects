@@ -1,4 +1,5 @@
 {
+  "lsp": true,
   "command": {
     "spec": {
       "description": "Create screen and functionality specifications",
@@ -7,6 +8,12 @@
     "spec-impl": {
       "description": "Implements screen and functionality specifications",
       "template": "Load and follow the spec-impl skill in .agents/skills/spec-impl/SKILL.md.\n\nFeature: $ARGUMENTS"
+    }
+  },
+  "references": {
+    "docs": {
+      "path": "../07-DB-Schema",
+      "description": "Database schema: tables, columns and references to create, this is not implemented in the database. It is for reference only."
     }
   },
   "mcp": {
