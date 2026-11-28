@@ -3,6 +3,18 @@
 import { useState } from "react";
 import { mockChildren } from "@/lib/mock-children";
 
+const POST_TYPES: { id: PostType; label: string; bg: string; text: string }[] = [
+  { id: "meal",         label: "Meal",        bg: "#9A7B1E",  text: "#fff" },
+  { id: "nap",          label: "Nap",         bg: "#E7DCF6",  text: "#7B5FC0" },
+  { id: "activity",     label: "Activity",    bg: "#2E89A6",  text: "#fff" },
+  { id: "milestone",    label: "Milestone",   bg: "#CFEBD8",  text: "#3E9B6C" },
+  { id: "mood",         label: "Mood",        bg: "#F9D2DE",  text: "#C56486" },
+  { id: "photo",        label: "Photo",       bg: "#FBD8CC",  text: "#D9684A" },
+  { id: "announcement", label: "Announcement",bg: "#CCD8F4",  text: "#4E72C8" },
+];
+
+type PostType = "meal" | "nap" | "activity" | "milestone" | "mood" | "photo" | "announcement";
+
 type CreatePostModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -14,6 +26,7 @@ export default function CreatePostModal({
 }: CreatePostModalProps) {
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
   const [isEntireRoom, setIsEntireRoom] = useState(true);
+  const [selectedType, setSelectedType] = useState<PostType>("activity");
 
   const handleChildClick = (childId: string) => {
     setIsEntireRoom(false);
@@ -122,6 +135,33 @@ export default function CreatePostModal({
               >
                 Entire room
               </button>
+            </div>
+          </div>
+
+          {/* TYPE selector */}
+          <div className="mb-[22px]">
+            <div className="text-xs font-extrabold tracking-[0.7px] text-[#94887B] mb-[10px]">
+              TYPE
+            </div>
+            <div className="flex flex-wrap gap-[9px]">
+              {POST_TYPES.map((type) => {
+                const isSelected = selectedType === type.id;
+                return (
+                  <button
+                    key={type.id}
+                    type="button"
+                    onClick={() => setSelectedType(type.id)}
+                    className="cursor-pointer rounded-full border-none px-4 py-2 font-extrabold text-[13.5px] transition-opacity"
+                    style={{
+                      backgroundColor: isSelected ? type.bg : "#FFFDF9",
+                      color: isSelected ? type.text : "#6E6359",
+                      border: isSelected ? "none" : "1.5px solid #ECE0D0",
+                    }}
+                  >
+                    {type.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
