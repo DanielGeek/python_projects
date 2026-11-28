@@ -1,6 +1,6 @@
 # SPEC 06 — New post modal (`/` — "New post" trigger)
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01, SPEC 02
 > **Date:** 2026-11-28
 > **Objective:** Implement a modal dialog that opens when clicking "New post" in the sidebar or "Share a moment…" in the home feed, with recipient chips (children + Entire room), post type selector, description textarea, and photo placeholders, closing on publish without persistence.
@@ -99,33 +99,33 @@ Conventions:
 
 ## Acceptance criteria
 
-- [ ] `npm run build` and `npm run lint` pass without errors.
-- [ ] Loading `/` produces no console errors or warnings.
-- [ ] "New post" in sidebar is a button (not a link) that opens the modal on click.
-- [ ] "Share a moment…" in home feed is a button (not a link) that opens the modal on click.
-- [ ] Modal displays with backdrop (black/40%) and centered card (max-width: 580px, background: #FBF4EC, border-radius: 24px, box-shadow).
-- [ ] Close button (X icon, top-right) closes the modal.
-- [ ] Clicking backdrop closes the modal.
-- [ ] Pressing Escape closes the modal.
-- [ ] Header shows "Cancel" (left, #94887B), "New post" (center, Fredoka 600 18px), "Publish" (right, #D9583C).
-- [ ] TO section shows one chip per child from mockChildren + "Entire room" chip.
-- [ ] Each child chip shows avatar (26×26, child's initial, avatarColor, textColor) + name.
-- [ ] "Entire room" is selected by default (dark bg, white text).
-- [ ] Selecting a child chip deselects "Entire room" and selects the child.
-- [ ] Selecting "Entire room" deselects all children.
-- [ ] Multiple children can be selected simultaneously.
-- [ ] TYPE section shows 7 pill buttons: Meal, Nap, Activity, Milestone, Mood, Photo, Announcement.
-- [ ] "Activity" is selected by default.
-- [ ] Clicking a type pill makes it active and deactivates others (single-select).
-- [ ] Description textarea has placeholder "Share how today went…" and min-height: 120px.
-- [ ] Photos section shows two 96×96 placeholders (camera icon + dashed "Add" button), non-interactive.
-- [ ] Publish button is disabled when no type is selected or description is empty.
-- [ ] Publish button becomes enabled when a type is selected AND description is non-empty.
-- [ ] Clicking Publish when enabled closes the modal.
-- [ ] No new post appears in the feed after Publish (no persistence).
-- [ ] Modal has `role="dialog"` and `aria-modal="true"`.
-- [ ] On mobile, modal adapts without horizontal scroll.
-- [ ] No new file touches authentication, cookies, sessions, or database.
+- [x] `npm run build` and `npm run lint` pass without errors.
+- [x] Loading `/` produces no console errors or warnings.
+- [x] "New post" in sidebar is a button (not a link) that opens the modal on click.
+- [x] "Share a moment…" in home feed is a button (not a link) that opens the modal on click.
+- [x] Modal displays with backdrop (black/40%) and centered card (max-width: 580px, background: #FBF4EC, border-radius: 24px, box-shadow).
+- [x] Close button (X icon, top-right) closes the modal.
+- [x] Clicking backdrop closes the modal.
+- [x] Pressing Escape closes the modal.
+- [x] Header shows "Cancel" (left, #94887B), "New post" (center, Fredoka 600 18px), "Publish" (right, #D9583C).
+- [x] TO section shows one chip per child from mockChildren + "Entire room" chip.
+- [x] Each child chip shows avatar (26×26, child's initial, avatarColor, textColor) + name.
+- [x] "Entire room" is selected by default (dark bg, white text).
+- [x] Selecting a child chip deselects "Entire room" and selects the child.
+- [x] Selecting "Entire room" deselects all children.
+- [x] Multiple children can be selected simultaneously.
+- [x] TYPE section shows 7 pill buttons: Meal, Nap, Activity, Milestone, Mood, Photo, Announcement.
+- [x] "Activity" is selected by default.
+- [x] Clicking a type pill makes it active and deactivates others (single-select).
+- [x] Description textarea has placeholder "Share how today went…" and min-height: 120px.
+- [x] Photos section shows two 96×96 placeholders (camera icon + dashed "Add" button), non-interactive.
+- [x] Publish button is disabled when no type is selected or description is empty.
+- [x] Publish button becomes enabled when a type is selected AND description is non-empty.
+- [x] Clicking Publish when enabled closes the modal.
+- [x] No new post appears in the feed after Publish (no persistence).
+- [x] Modal has `role="dialog"` and `aria-modal="true"`.
+- [x] On mobile, modal adapts without horizontal scroll.
+- [x] No new file touches authentication, cookies, sessions, or database.
 
 ## Decisions
 
