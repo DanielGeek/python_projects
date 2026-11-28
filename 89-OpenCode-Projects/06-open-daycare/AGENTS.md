@@ -42,6 +42,7 @@ Open DayCare — a communication platform for a daycare: staff share each child'
 ## MCPs
 - Playwright screenshots or any other relation with Playwight must be inside the .playwright-mcp folder. This is to avoid any confusion with the Playwright test runner.
 - Context7: use this MCP to retrieve the updated documentation of the framework. Prefer it over web search for library docs.
+- Supabase: use this MCP for all database operations (schema, migrations, RLS, queries, auth, edge functions, storage). Project ref: `etwevmvxvqafbnqghskm`. Before schema changes, inspect existing tables first. Prefer local development over remote changes when possible.
 
 ## Skills
 
@@ -52,6 +53,10 @@ Spec-driven workflow. Two commands, run in order: define first, implement later,
 - `spec-verify` subagent (`.opencode/agents/spec-verify.md`) — verifies a spec's acceptance criteria after `/spec-impl`: runs build/lint, checks screens with Playwright MCP (artifacts in `.playwright-mcp/`), validates Next.js practices with Context7, and compares screenshots visually with a vision model. Marks off the checklist, corrects criterion wording, and sets the state to `Implemented` when everything passes. Launch it from the main agent, e.g. "use spec-verify on 01-feed-home".
 
 Workflow config lives in `specs/.spec-config.yml`: `AutoCreateBranch` (default `true`, branch per spec) and `AutoCommitSteps` (default `false`, the user commits; `true` commits each step as `spec-NN-step-MM`).
+
+Supabase skills (load when working with database):
+- `supabase` — use for ANY Supabase task: Database, Auth, Edge Functions, Realtime, Storage, Vectors, Cron, Queues, RLS, migrations, security audits, debugging, logs.
+- `supabase-postgres-best-practices` — load BEFORE writing or changing anything in Postgres: tables, columns, types, schema design, migrations, RLS policies, indexes, triggers, functions, queues, vector search, slow queries, EXPLAIN plans, connection issues, locking, bloat.
 
 ## Coding rules
 - Use clean code, names, functions and variables in english.
