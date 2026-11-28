@@ -74,16 +74,18 @@ Modify `/app/(auth)/login/page.tsx`:
 
 ## Acceptance Criteria
 
-- [ ] Four photorealistic images exist in `/public/images/carousel/`
-- [ ] Each image clearly represents one of the four benefits
-- [ ] The `LoginCarousel` component exists at `/components/auth/LoginCarousel.tsx`
-- [ ] The carousel displays in the left panel of the login screen
-- [ ] Images transition automatically every 5 seconds
-- [ ] Transitions use smooth fade effect
-- [ ] Navigation dots indicate the active image
-- [ ] Existing login elements remain visible and unchanged
-- [ ] The login form on the right panel is unaffected
-- [ ] Build completes without errors
+- [x] Four photorealistic images exist in `/public/images/carousel/`
+- [x] Each image clearly represents one of the four benefits
+- [x] Four custom SVG illustrations complement the stock photos
+- [x] Carousel will alternate between stock photos and SVG illustrations
+- [x] The `LoginCarousel` component exists at `/components/auth/LoginCarousel.tsx`
+- [x] The carousel displays in the left panel of the login screen
+- [x] Images transition automatically every 5 seconds
+- [x] Transitions use smooth fade effect
+- [x] Navigation dots indicate the active image
+- [x] Existing login elements remain visible and unchanged
+- [x] The login form on the right panel is unaffected
+- [x] Build completes without errors
 
 ## Decisions Taken and Discarded
 
