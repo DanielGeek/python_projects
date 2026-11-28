@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" fill="none">
+  <!-- Background -->
+  <rect width="800" height="500" rx="20" fill="url(#bg1)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="650" cy="100" r="80" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="150" cy="400" r="60" fill="rgba(255,255,255,0.08)"/>
+  
+  <!-- Tablet/device -->
+  <rect x="280" y="140" width="240" height="180" rx="16" fill="#fff" stroke="#E8D5C4" stroke-width="2"/>
+  <rect x="295" y="155" width="210" height="130" rx="4" fill="#FFF5EE"/>
+  
+  <!-- Photo icon on screen -->
+  <rect x="320" y="175" width="70" height="55" rx="8" fill="#F6A98E"/>
+  <circle cx="340" cy="192" r="8" fill="#fff" opacity="0.8"/>
+  <path d="M325 220 L345 200 L365 215 L380 205 L385 220 Z" fill="#fff" opacity="0.6"/>
+  
+  <!-- Second photo -->
+  <rect x="405" y="175" width="70" height="55" rx="8" fill="#EC7E62"/>
+  <circle cx="425" cy="192" r="8" fill="#fff" opacity="0.8"/>
+  <path d="M410 220 L430 200 L450 215 L465 205 L470 220 Z" fill="#fff" opacity="0.6"/>
+  
+  <!-- Share button -->
+  <rect x="320" y="242" width="160" height="32" rx="16" fill="#F2937A"/>
+  <text x="400" y="263" text-anchor="middle" fill="#fff" font-family="system-ui" font-weight="600" font-size="13">Share Update</text>
+  
+  <!-- Heart/notification -->
+  <circle cx="540" cy="150" r="24" fill="#F2937A"/>
+  <path d="M532 150 C532 145 536 142 540 146 C544 142 548 145 548 150 C548 155 540 160 540 160 C540 160 532 155 532 150Z" fill="#fff"/>
+  
+  <!-- Child figures (simple) -->
+  <circle cx="190" cy="200" r="20" fill="#F6A98E"/>
+  <rect x="178" y="225" width="24" height="35" rx="12" fill="#F6A98E"/>
+  
+  <circle cx="240" cy="210" r="17" fill="#EC7E62"/>
+  <rect x="229" y="232" width="22" height="30" rx="11" fill="#EC7E62"/>
+  
+  <circle cx="580" cy="220" r="18" fill="#F4977E"/>
+  <rect x="569" y="243" width="22" height="30" rx="11" fill="#F4977E"/>
+  
+  <!-- Stars/sparkles -->
+  <path d="M160 160 L163 153 L166 160 L173 163 L166 166 L163 173 L160 166 L153 163 Z" fill="#FFD700" opacity="0.7"/>
+  <path d="M620 300 L623 293 L626 300 L633 303 L626 306 L623 313 L620 306 L613 303 Z" fill="#FFD700" opacity="0.7"/>
+  
+  <!-- Text -->
+  <text x="400" y="380" text-anchor="middle" fill="#fff" font-family="system-ui" font-weight="700" font-size="22">Daily Communication</text>
+  <text x="400" y="410" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="system-ui" font-size="14">Share photos, updates and milestones with families</text>
+  
+  <defs>
+    <linearGradient id="bg1" x1="0" y1="0" x2="800" y2="500">
+      <stop offset="0%" stop-color="#F6A98E"/>
+      <stop offset="50%" stop-color="#F2937A"/>
+      <stop offset="100%" stop-color="#EC7E62"/>
+    </linearGradient>
+  </defs>
+</svg>

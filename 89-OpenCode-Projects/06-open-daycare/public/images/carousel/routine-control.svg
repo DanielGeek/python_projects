@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" fill="none">
+  <!-- Background -->
+  <rect width="800" height="500" rx="20" fill="url(#bg3)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="700" cy="420" r="100" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="100" cy="100" r="70" fill="rgba(255,255,255,0.1)"/>
+  
+  <!-- Clipboard/schedule -->
+  <rect x="280" y="100" width="240" height="280" rx="16" fill="#fff" stroke="#E8D5C4" stroke-width="2"/>
+  
+  <!-- Clipboard clip -->
+  <rect x="360" y="88" width="80" height="24" rx="12" fill="#F2937A"/>
+  <rect x="380" y="84" width="40" height="12" rx="6" fill="#EC7E62"/>
+  
+  <!-- Schedule items -->
+  <!-- Morning -->
+  <rect x="300" y="130" width="200" height="44" rx="8" fill="#FFF5EE"/>
+  <circle cx="320" cy="152" r="12" fill="#F6A98E"/>
+  <text x="318" y="156" text-anchor="middle" fill="#fff" font-size="10">☀</text>
+  <rect x="342" y="142" width="80" height="7" rx="3.5" fill="#D4A89A"/>
+  <rect x="342" y="155" width="55" height="5" rx="2.5" fill="#E8D5C4"/>
+  <rect x="455" y="140" width="30" height="20" rx="10" fill="#22C55E"/>
+  <path d="M464 148 L467 152 L475 145" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Meal -->
+  <rect x="300" y="184" width="200" height="44" rx="8" fill="#FFF5EE"/>
+  <circle cx="320" cy="206" r="12" fill="#EC7E62"/>
+  <text x="318" y="210" text-anchor="middle" fill="#fff" font-size="10">🍽</text>
+  <rect x="342" y="196" width="90" height="7" rx="3.5" fill="#D4A89A"/>
+  <rect x="342" y="209" width="60" height="5" rx="2.5" fill="#E8D5C4"/>
+  <rect x="455" y="194" width="30" height="20" rx="10" fill="#22C55E"/>
+  <path d="M464 202 L467 206 L475 199" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Nap -->
+  <rect x="300" y="238" width="200" height="44" rx="8" fill="#FFF5EE"/>
+  <circle cx="320" cy="260" r="12" fill="#F4977E"/>
+  <text x="318" y="264" text-anchor="middle" fill="#fff" font-size="10">😴</text>
+  <rect x="342" y="250" width="70" height="7" rx="3.5" fill="#D4A89A"/>
+  <rect x="342" y="263" width="50" height="5" rx="2.5" fill="#E8D5C4"/>
+  <rect x="455" y="248" width="30" height="20" rx="10" fill="#22C55E"/>
+  <path d="M464 256 L467 260 L475 253" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Activity (in progress) -->
+  <rect x="300" y="292" width="200" height="44" rx="8" fill="#FFF5EE"/>
+  <circle cx="320" cy="314" r="12" fill="#F2937A"/>
+  <text x="318" y="318" text-anchor="middle" fill="#fff" font-size="10">🎨</text>
+  <rect x="342" y="304" width="85" height="7" rx="3.5" fill="#D4A89A"/>
+  <rect x="342" y="317" width="65" height="5" rx="2.5" fill="#E8D5C4"/>
+  <rect x="455" y="302" width="30" height="20" rx="10" fill="#FFC107" opacity="0.6"/>
+  <text x="470" y="316" text-anchor="middle" fill="#fff" font-size="9">...</text>
+  
+  <!-- Decorative elements -->
+  <path d="M180 250 L183 243 L186 250 L193 253 L186 256 L183 263 L180 256 L173 253 Z" fill="#FFD700" opacity="0.5"/>
+  <path d="M620 150 L623 143 L626 150 L633 153 L626 156 L623 163 L620 156 L613 153 Z" fill="#FFD700" opacity="0.5"/>
+  
+  <!-- Floating icons -->
+  <circle cx="200" cy="150" r="22" fill="rgba(255,255,255,0.15)"/>
+  <path d="M192 150 C192 144 196 140 200 143 C204 140 208 144 208 150 C208 156 200 162 200 162 C200 162 192 156 192 150Z" fill="#fff" opacity="0.6"/>
+  
+  <circle cx="600" cy="300" r="22" fill="rgba(255,255,255,0.15)"/>
+  <circle cx="600" cy="296" r="6" fill="#fff" opacity="0.6"/>
+  <path d="M590 310 C590 304 594 300 600 300 C606 300 610 304 610 310" fill="none" stroke="#fff" stroke-width="2" opacity="0.6"/>
+  
+  <!-- Text -->
+  <text x="400" y="430" text-anchor="middle" fill="#fff" font-family="system-ui" font-weight="700" font-size="22">Routine Control</text>
+  <text x="400" y="458" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="system-ui" font-size="14">Track meals, naps, activities and milestones</text>
+  
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="800" y2="500">
+      <stop offset="0%" stop-color="#EC7E62"/>
+      <stop offset="50%" stop-color="#F2937A"/>
+      <stop offset="100%" stop-color="#F6A98E"/>
+    </linearGradient>
+  </defs>
+</svg>
