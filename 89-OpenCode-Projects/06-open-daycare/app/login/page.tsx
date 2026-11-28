@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LoginCarousel from "@/components/auth/LoginCarousel";
 
 export default function LoginPage() {
   return (
@@ -42,6 +43,11 @@ export default function LoginPage() {
             Share moments, manage rooms, and keep families close, all in one
             place.
           </p>
+        </div>
+
+        {/* Carousel */}
+        <div className="relative z-10">
+          <LoginCarousel />
         </div>
 
         {/* Footer */}

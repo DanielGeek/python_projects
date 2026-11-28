@@ -1,6 +1,6 @@
 # Login Carousel Images
 
-**State:** Approved  
+**State:** Completed  
 **Date:** 2026-11-28  
 **Depends on:** —
 
@@ -11,7 +11,7 @@ Add an animated image carousel to the login screen's left panel showcasing the f
 ## Scope
 
 ### In scope
-- Generate 4 photorealistic images using AI, each representing one core benefit:
+- Create 4 custom SVG illustrations, each representing one core benefit:
   1. Daily communication (staff sharing photos/updates)
   2. Real-time tracking (parents viewing their child's day)
   3. Routine control (meals, naps, activities management)
@@ -33,25 +33,25 @@ Add an animated image carousel to the login screen's left panel showcasing the f
 No new data structures. This feature only adds static assets and UI components.
 
 - **Image assets:** 4 files stored in `/public/images/carousel/`
-  - `daily-communication.jpg`
-  - `real-time-tracking.jpg`
-  - `routine-control.jpg`
-  - `direct-contact.jpg`
+  - `daily-communication.svg`
+  - `real-time-tracking.svg`
+  - `routine-control.svg`
+  - `direct-contact.svg`
 
 ## Implementation Plan
 
-### Step 1: Generate carousel images
-Generate 4 photorealistic images using AI, one for each benefit:
-1. **Daily communication:** Staff member using a tablet to share photos of children playing
-2. **Real-time tracking:** Parent looking at phone showing child's activity feed
-3. **Routine control:** Caregiver logging meal/nap information on a device
-4. **Direct contact:** Staff and parent communicating via messaging app
+### Step 1: Create carousel SVG illustrations
+Create 4 custom SVG illustrations, one for each benefit:
+1. **Daily communication:** Tablet with photo sharing, child figures, warm colors
+2. **Real-time tracking:** Phone with activity feed, live indicator, notifications
+3. **Routine control:** Clipboard with schedule items, checkmarks, colorful icons
+4. **Direct contact:** Chat bubbles between parent and staff figures
 
-Save images to `/public/images/carousel/`.
+Save SVGs to `/public/images/carousel/`.
 
 ### Step 2: Create carousel component
 Create `/components/auth/LoginCarousel.tsx`:
-- Import the 4 images
+- Import the 4 SVG images
 - Implement automatic rotation every 5 seconds using `useState` and `useEffect`
 - Use CSS transitions for smooth fade effect between images
 - Add navigation dots at the bottom indicating active image
@@ -74,24 +74,24 @@ Modify `/app/(auth)/login/page.tsx`:
 
 ## Acceptance Criteria
 
-- [ ] Four photorealistic images exist in `/public/images/carousel/`
-- [ ] Each image clearly represents one of the four benefits
-- [ ] The `LoginCarousel` component exists at `/components/auth/LoginCarousel.tsx`
-- [ ] The carousel displays in the left panel of the login screen
-- [ ] Images transition automatically every 5 seconds
-- [ ] Transitions use smooth fade effect
-- [ ] Navigation dots indicate the active image
-- [ ] Existing login elements remain visible and unchanged
-- [ ] The login form on the right panel is unaffected
-- [ ] Build completes without errors
+- [x] Four custom SVG illustrations exist in `/public/images/carousel/`
+- [x] Each SVG clearly represents one of the four benefits
+- [x] The `LoginCarousel` component exists at `/components/auth/LoginCarousel.tsx`
+- [x] The carousel displays in the left panel of the login screen
+- [x] Images transition automatically every 5 seconds
+- [x] Transitions use smooth fade effect
+- [x] Navigation dots indicate the active image
+- [x] Existing login elements remain visible and unchanged
+- [x] The login form on the right panel is unaffected
+- [x] Build completes without errors
 
 ## Decisions Taken and Discarded
 
-**Decision:** 4 images (one per benefit)  
+**Decision:** 4 SVG illustrations (one per benefit)  
 **Discarded:** 3 images (less comprehensive coverage), 5-6 images (more generation time, diminishing returns), 7+ images (excessive, slows down the carousel experience)
 
-**Decision:** Photorealistic style  
-**Discarded:** Illustration/drawing (less professional appearance for a business tool), mixed styles (inconsistent visual experience)
+**Decision:** Custom SVG style with warm color palette  
+**Discarded:** Photorealistic images (file size, loading time), illustration/drawing style (less professional appearance), mixed styles (inconsistent visual experience)
 
 **Decision:** 5-second transition speed  
 **Discarded:** 3 seconds (too fast, users may not absorb the message), 7 seconds (too slow, loses engagement)
@@ -101,3 +101,6 @@ Modify `/app/(auth)/login/page.tsx`:
 
 **Decision:** Automatic rotation only (no user interaction)  
 **Discarded:** Clickable/swipeable carousel (adds complexity, users on login page have a single goal: sign in)
+
+**Decision:** SVG-only (no stock photos)  
+**Discarded:** Mix of stock photos and SVG (inconsistent visual style, larger file sizes, dependency on external images), stock photos only (less control over branding, slower loading)

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" fill="none">
+  <!-- Background -->
+  <rect width="800" height="500" rx="20" fill="url(#bg4)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="650" cy="100" r="90" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="130" cy="400" r="70" fill="rgba(255,255,255,0.1)"/>
+  
+  <!-- Left person (parent) -->
+  <circle cx="250" cy="180" r="35" fill="#F6A98E"/>
+  <rect x="222" y="222" width="56" height="70" rx="28" fill="#F6A98E"/>
+  
+  <!-- Right person (staff) -->
+  <circle cx="550" cy="180" r="35" fill="#EC7E62"/>
+  <rect x="522" y="222" width="56" height="70" rx="28" fill="#EC7E62"/>
+  
+  <!-- Chat bubbles between them -->
+  <!-- Parent bubble (going right) -->
+  <rect x="310" y="150" width="100" height="50" rx="16" fill="#fff"/>
+  <polygon points="310,185 295,195 310,175" fill="#fff"/>
+  <rect x="322" y="163" width="60" height="6" rx="3" fill="#D4A89A"/>
+  <rect x="322" y="175" width="40" height="5" rx="2.5" fill="#E8D5C4"/>
+  
+  <!-- Staff bubble (going left) -->
+  <rect x="390" y="220" width="110" height="50" rx="16" fill="rgba(255,255,255,0.85)"/>
+  <polygon points="500,255 515,265 500,245" fill="rgba(255,255,255,0.85)"/>
+  <rect x="402" y="233" width="70" height="6" rx="3" fill="#D4A89A"/>
+  <rect x="402" y="245" width="50" height="5" rx="2.5" fill="#E8D5C4"/>
+  
+  <!-- Parent second bubble -->
+  <rect x="330" y="290" width="80" height="40" rx="14" fill="#fff" opacity="0.9"/>
+  <polygon points="330,318 318,328 330,308" fill="#fff" opacity="0.9"/>
+  <rect x="342" y="303" width="50" height="6" rx="3" fill="#D4A89A"/>
+  <rect x="342" y="314" width="35" height="5" rx="2.5" fill="#E8D5C4"/>
+  
+  <!-- Connection line -->
+  <path d="M285 200 C350 170 450 170 515 200" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="6,4"/>
+  
+  <!-- Heart -->
+  <circle cx="400" cy="130" r="22" fill="rgba(255,255,255,0.2)"/>
+  <path d="M390 130 C390 124 394 121 398 125 C402 121 406 124 406 130 C406 136 398 142 398 142 C398 142 390 136 390 130Z" fill="#fff" opacity="0.8"/>
+  
+  <!-- Notification badges -->
+  <circle cx="280" cy="160" r="12" fill="#22C55E"/>
+  <text x="280" y="164" text-anchor="middle" fill="#fff" font-family="system-ui" font-weight="700" font-size="10">2</text>
+  
+  <circle cx="520" cy="160" r="12" fill="#22C55E"/>
+  <text x="520" y="164" text-anchor="middle" fill="#fff" font-family="system-ui" font-weight="700" font-size="10">1</text>
+  
+  <!-- Child figure (small, in middle-bottom) -->
+  <circle cx="400" cy="370" r="16" fill="#F4977E"/>
+  <rect x="390" y="390" width="20" height="28" rx="10" fill="#F4977E"/>
+  
+  <!-- Stars -->
+  <path d="M160 250 L163 243 L166 250 L173 253 L166 256 L163 263 L160 256 L153 253 Z" fill="#FFD700" opacity="0.5"/>
+  <path d="M640 320 L643 313 L646 320 L653 323 L646 326 L643 333 L640 326 L633 323 Z" fill="#FFD700" opacity="0.5"/>
+  <path d="M400 80 L403 73 L406 80 L413 83 L406 86 L403 93 L400 86 L393 83 Z" fill="#FFD700" opacity="0.4"/>
+  
+  <!-- Text -->
+  <text x="400" y="445" text-anchor="middle" fill="#fff" font-family="system-ui" font-weight="700" font-size="22">Direct Contact</text>
+  <text x="400" y="473" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="system-ui" font-size="14">Instant messaging between staff and families</text>
+  
+  <defs>
+    <linearGradient id="bg4" x1="0" y1="0" x2="800" y2="500">
+      <stop offset="0%" stop-color="#F2937A"/>
+      <stop offset="50%" stop-color="#EC7E62"/>
+      <stop offset="100%" stop-color="#F4977E"/>
+    </linearGradient>
+  </defs>
+</svg>
