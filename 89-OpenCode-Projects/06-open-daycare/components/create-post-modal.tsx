@@ -29,6 +29,17 @@ export default function CreatePostModal({
   const [selectedType, setSelectedType] = useState<PostType>("activity");
   const [description, setDescription] = useState("");
 
+  const isPublishEnabled = selectedType !== null && description.trim().length > 0;
+
+  const handlePublish = () => {
+    if (!isPublishEnabled) return;
+    setSelectedChildren([]);
+    setIsEntireRoom(true);
+    setSelectedType("activity");
+    setDescription("");
+    onClose();
+  };
+
   const handleChildClick = (childId: string) => {
     setIsEntireRoom(false);
     setSelectedChildren((prev) =>
@@ -85,7 +96,13 @@ export default function CreatePostModal({
           </span>
           <button
             type="button"
-            className="cursor-pointer bg-transparent border-none text-[#D9583C] font-extrabold text-[15px]"
+            onClick={handlePublish}
+            disabled={!isPublishEnabled}
+            className={`cursor-pointer border-none bg-transparent font-extrabold text-[15px] transition-opacity ${
+              !isPublishEnabled
+                ? "cursor-not-allowed opacity-50 pointer-events-none"
+                : ""
+            } text-[#D9583C]`}
           >
             Publish
           </button>
