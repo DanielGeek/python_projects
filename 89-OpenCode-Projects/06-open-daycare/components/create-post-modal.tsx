@@ -178,6 +178,48 @@ export default function CreatePostModal({
               className="w-full min-h-[120px] resize-y rounded-[14px] border-[1.5px] border-[#EADFD0] bg-white px-4 py-[14px] text-[15px] leading-[1.5] text-[#3F362E] placeholder:text-[#B6A99B] focus:outline-none"
             />
           </div>
+
+          {/* Photos section */}
+          <div>
+            <div className="text-xs font-extrabold tracking-[0.7px] text-[#94887B] mb-[10px]">
+              PHOTOS
+            </div>
+            <div className="flex gap-3">
+              {/* Existing photo placeholder */}
+              <div className="flex h-24 w-24 items-center justify-center rounded-[14px] border border-[#ECE0D0] bg-[#F4ECE1] text-[#CBB89F]">
+                <svg
+                  width="26"
+                  height="26"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <circle cx="9" cy="9" r="2" />
+                  <path d="m21 15-3.6-3.6a2 2 0 0 0-2.8 0L6 21" />
+                </svg>
+              </div>
+              {/* Add photo placeholder */}
+              <div className="flex h-24 w-24 flex-col items-center justify-center gap-1.5 rounded-[14px] border border-dashed border-[#DBCDBA] bg-[#F4ECE1] text-[#B0A290]">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#C5503A"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                <span className="text-[12px]">Add</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
