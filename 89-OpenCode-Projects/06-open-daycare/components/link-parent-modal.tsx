@@ -6,6 +6,12 @@ const INVITATION_CODE = "7K4P9";
 const RELATIONSHIPS = ["Mom", "Dad", "Guardian"] as const;
 type Relationship = (typeof RELATIONSHIPS)[number];
 
+// Validates email format
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
 type LinkParentModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -42,7 +48,9 @@ export default function LinkParentModal({
   }, [isOpen]);
 
   const isSendEnabled =
-    parentName.trim().length > 0 && email.trim().length > 0;
+    parentName.trim().length > 0 &&
+    email.trim().length > 0 &&
+    isValidEmail(email);
 
   const handleSend = () => {
     if (!isSendEnabled) return;
@@ -159,7 +167,7 @@ export default function LinkParentModal({
                     key={rel}
                     type="button"
                     onClick={() => setRelationship(rel)}
-                    className={`flex-1 py-[11px] rounded-full border-[1.5px] font-extrabold text-[14px] transition-colors ${
+                    className={`flex-1 cursor-pointer py-[11px] rounded-full border-[1.5px] font-extrabold text-[14px] transition-colors ${
                       isActive
                         ? "border-[#9FB8EC] bg-[#CCD8F4] text-[#4E72C8]"
                         : "border-[#ECE0D0] bg-[#FFFDF9] text-[#6E6359]"
