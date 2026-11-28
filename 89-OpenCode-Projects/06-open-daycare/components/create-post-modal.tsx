@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { mockChildren } from "@/lib/mock-children";
 
 type CreatePostModalProps = {
@@ -11,6 +12,23 @@ export default function CreatePostModal({
   isOpen,
   onClose,
 }: CreatePostModalProps) {
+  const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
+  const [isEntireRoom, setIsEntireRoom] = useState(true);
+
+  const handleChildClick = (childId: string) => {
+    setIsEntireRoom(false);
+    setSelectedChildren((prev) =>
+      prev.includes(childId)
+        ? prev.filter((id) => id !== childId)
+        : [...prev, childId]
+    );
+  };
+
+  const handleEntireRoomClick = () => {
+    setIsEntireRoom(true);
+    setSelectedChildren([]);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -59,7 +77,54 @@ export default function CreatePostModal({
           </button>
         </div>
 
-        {/* Form content will be added in next steps */}
+        {/* Form content */}
+        <div className="px-[26px] py-[22px]">
+          {/* TO selector */}
+          <div className="mb-[22px]">
+            <div className="text-xs font-extrabold tracking-[0.7px] text-[#94887B] mb-[10px]">
+              TO
+            </div>
+            <div className="flex flex-wrap gap-[9px]">
+              {mockChildren.map((child) => {
+                const isSelected = selectedChildren.includes(child.id);
+                return (
+                  <button
+                    key={child.id}
+                    type="button"
+                    onClick={() => handleChildClick(child.id)}
+                    className={`flex cursor-pointer items-center gap-2 rounded-full border-[1.5px] px-[14px] py-[6px] pl-[6px] font-bold text-[14px] transition-colors ${
+                      isSelected
+                        ? "border-[#3F362E] bg-[#3F362E] text-white"
+                        : "border-[#ECE0D0] bg-[#FFFDF9] text-[#6E6359]"
+                    }`}
+                  >
+                    <span
+                      className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full font-[var(--font-fredoka)] text-[13px] font-semibold"
+                      style={{
+                        backgroundColor: child.avatarColor,
+                        color: child.textColor,
+                      }}
+                    >
+                      {child.initial}
+                    </span>
+                    {child.name.split(" ")[0]}
+                  </button>
+                );
+              })}
+              <button
+                type="button"
+                onClick={handleEntireRoomClick}
+                className={`cursor-pointer rounded-full border-[1.5px] px-4 py-[6px] font-bold text-[14px] transition-colors ${
+                  isEntireRoom
+                    ? "border-[#3F362E] bg-[#3F362E] text-white"
+                    : "border-[#ECE0D0] bg-[#FFFDF9] text-[#6E6359]"
+                }`}
+              >
+                Entire room
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
