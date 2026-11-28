@@ -84,7 +84,7 @@ export default function CreatePostModal({
         role="dialog"
         aria-modal="true"
         aria-label="Create new post"
-        className="relative my-10 w-full max-w-[580px] rounded-3xl border border-[#ECE0D0] bg-[#FBF4EC] shadow-[0_20px_50px_-24px_rgba(63,54,46,0.35)]"
+        className="relative my-10 w-full max-w-[580px] max-w-[90%] rounded-3xl border border-[#ECE0D0] bg-[#FBF4EC] shadow-[0_20px_50px_-24px_rgba(63,54,46,0.35)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
