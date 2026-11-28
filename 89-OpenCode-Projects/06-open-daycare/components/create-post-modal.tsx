@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { mockChildren } from "@/lib/mock-children";
 
 const POST_TYPES: { id: PostType; label: string; bg: string; text: string }[] = [
@@ -40,6 +40,25 @@ export default function CreatePostModal({
     onClose();
   };
 
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   const handleChildClick = (childId: string) => {
     setIsEntireRoom(false);
     setSelectedChildren((prev) =>
@@ -57,9 +76,16 @@ export default function CreatePostModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-5 md:p-10 overflow-y-auto">
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-5 md:p-10 overflow-y-auto"
+      onClick={onClose}
+    >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Create new post"
         className="relative my-10 w-full max-w-[580px] rounded-3xl border border-[#ECE0D0] bg-[#FBF4EC] shadow-[0_20px_50px_-24px_rgba(63,54,46,0.35)]"
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
