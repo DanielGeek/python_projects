@@ -73,13 +73,17 @@ export default function LinkParentModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-5 md:p-10 overflow-y-auto">
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-5 md:p-10 overflow-y-auto"
+      onClick={onClose}
+    >
       <div
         ref={modalRef}
         role="dialog"
         aria-modal="true"
         aria-label="Link parent"
         className="relative my-10 w-full max-w-[480px] rounded-3xl border border-[#ECE0D0] bg-[#FBF4EC] shadow-[0_20px_50px_-24px_rgba(63,54,46,0.35)]"
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header with close button */}
         <div className="flex items-start justify-between px-[26px] pt-5 pb-4 border-b border-[#ECE0D0]">
@@ -240,13 +244,6 @@ export default function LinkParentModal({
           </button>
         </div>
       </div>
-
-      {/* Backdrop click to close */}
-      <div
-        className="fixed inset-0 -z-10"
-        onClick={onClose}
-        aria-hidden="true"
-      />
     </div>
   );
 }
