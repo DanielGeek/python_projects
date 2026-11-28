@@ -1,6 +1,6 @@
 # Login Carousel Images
 
-**State:** Approved  
+**State:** Implemented  
 **Date:** 2026-11-28  
 **Depends on:** —
 
