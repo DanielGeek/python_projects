@@ -34,6 +34,7 @@ Before the final response, run one reporting pass. If candidates remain, from th
 Open DayCare — a communication platform for a daycare: staff share each child's day (feed, posts, photos, notices, daily summaries) with their family. Early stage: the App Router scaffold is still mostly the default template.
 
 - Stack: Next.js 16 (App Router) + React 19 + TypeScript, Tailwind CSS 4 through `@tailwindcss/turbopack`, npm.
+- Supabase client: `@supabase/supabase-js` + `@supabase/ssr` for all database/auth interaction from the app. Three clients in `utils/supabase/`: `server.ts` (Server Components, cookie-based), `client.ts` (browser/Client Components), `middleware.ts` (session refresh in middleware). Always use these helpers instead of creating raw Supabase clients.
 - Commands: `npm run dev`, `npm run build`, `npm run start`, `npm run lint`. No test framework yet.
 - `references/screens/*.dc.html` are the design source of truth (login, feed, children, family account, notices, etc.); `references/screenshots/` holds PNG previews. Build UI against these files instead of inventing flows or styles.
 - `next.config.ts` enables `cacheComponents` and `partialPrefetching`; per-user data must be cached privately (`'use cache: private'`), never shared.
