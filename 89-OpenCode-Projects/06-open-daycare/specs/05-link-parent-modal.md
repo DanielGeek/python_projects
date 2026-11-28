@@ -1,6 +1,6 @@
 # SPEC 05 — Link parent modal
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 02
 > **Date:** 2026-11-28
 > **Objective:** Implement a modal dialog that opens when clicking "Link another parent" on the child profile page, with a form to invite a parent (name, email, relationship), display a fixed invitation code, and close the modal on send without persistence.
@@ -82,29 +82,29 @@ Conventions:
 
 ## Acceptance criteria
 
-- [ ] `npm run build` and `npm run lint` pass without errors.
-- [ ] Loading `/children/[id]` produces no console errors or warnings.
-- [ ] "Link another parent" is a button (not a link) that opens the modal on click.
-- [ ] Modal displays with backdrop (black/40%) and centered card (max-width: 480px, background: #FBF4EC, border-radius: 24px, box-shadow).
-- [ ] Close button (X icon, top-right) closes the modal.
-- [ ] Clicking backdrop closes the modal.
-- [ ] Pressing Escape closes the modal.
-- [ ] Header shows "Link parent" (Fredoka 600, 18px) and "to [child name]" (13px, #A89A8B).
-- [ ] Info banner displays with blue background, info icon, and explanatory text referencing the child's name.
-- [ ] Parent's Name field has label "PARENT'S NAME", placeholder "E.g. Diego Fernandez", and updates state on input.
-- [ ] Email field has label "EMAIL", placeholder "email@example.com", and updates state on input.
-- [ ] Relationship selector shows three pill buttons: Mom, Dad, Guardian.
-- [ ] Mom is selected by default (active state: #CCD8F4 bg, #4E72C8 text).
-- [ ] Clicking a relationship pill updates the active state.
-- [ ] Invitation code displays "7K4P9" with dashed border, yellow background, and "Expires in 7 days" text.
-- [ ] Send button is disabled (`opacity: 0.5`, `cursor: not-allowed`) when Name or Email is empty.
-- [ ] Send button becomes enabled when both Name and Email are non-empty.
-- [ ] Clicking Send when enabled closes the modal.
-- [ ] No new parent appears in the profile's parent list after Send (no persistence).
-- [ ] Modal has `role="dialog"` and `aria-modal="true"`.
-- [ ] Escape key closes the modal.
-- [ ] On mobile, modal adapts without horizontal scroll.
-- [ ] No new file touches authentication, cookies, sessions, or database.
+- [x] `npm run build` and `npm run lint` pass without errors.
+- [x] Loading `/children/[id]` produces no console errors or warnings.
+- [x] "Link another parent" is a button (not a link) that opens the modal on click.
+- [x] Modal displays with backdrop (black/40%) and centered card (max-width: 480px, background: #FBF4EC, border-radius: 24px, box-shadow).
+- [x] Close button (X icon, top-right) closes the modal.
+- [x] Clicking backdrop closes the modal.
+- [x] Pressing Escape closes the modal.
+- [x] Header shows "Link parent" (Fredoka 600, 18px) and "to [child name]" (13px, #A89A8B).
+- [x] Info banner displays with blue background, info icon, and explanatory text referencing the child's name.
+- [x] Parent's Name field has label "PARENT'S NAME", placeholder "E.g. Diego Fernandez", and updates state on input.
+- [x] Email field has label "EMAIL", placeholder "email@example.com", and updates state on input.
+- [x] Relationship selector shows three pill buttons: Mom, Dad, Guardian.
+- [x] Mom is selected by default (active state: #CCD8F4 bg, #4E72C8 text).
+- [x] Clicking a relationship pill updates the active state.
+- [x] Invitation code displays "7K4P9" with dashed border, yellow background, and "Expires in 7 days" text.
+- [x] Send button is disabled (`opacity: 0.5`, `cursor: not-allowed`) when Name or Email is empty.
+- [x] Send button becomes enabled when both Name and Email are non-empty.
+- [x] Clicking Send when enabled closes the modal.
+- [x] No new parent appears in the profile's parent list after Send (no persistence).
+- [x] Modal has `role="dialog"` and `aria-modal="true"`.
+- [x] Escape key closes the modal.
+- [x] On mobile, modal adapts without horizontal scroll.
+- [x] No new file touches authentication, cookies, sessions, or database.
 
 ## Decisions
 
