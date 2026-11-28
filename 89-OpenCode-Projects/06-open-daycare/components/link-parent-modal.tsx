@@ -75,7 +75,7 @@ export default function LinkParentModal({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-[#F0E6D8] text-[#94887B] transition-colors hover:bg-[#EADFD0]"
+            className="flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-[10px] bg-[#F0E6D8] text-[#94887B] transition-colors hover:bg-[#EADFD0]"
           >
             <svg
               width="18"
@@ -190,7 +190,7 @@ export default function LinkParentModal({
             type="button"
             onClick={handleSend}
             disabled={!isSendEnabled}
-            className={`flex items-center justify-center gap-[9px] w-full py-[14px] rounded-[14px] bg-gradient-to-b from-[#F4977E] to-[#EE8164] text-white font-extrabold text-[15.5px] shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)] transition-opacity ${
+            className={`flex items-center justify-center gap-[9px] w-full cursor-pointer py-[14px] rounded-[14px] bg-gradient-to-b from-[#F4977E] to-[#EE8164] text-white font-extrabold text-[15.5px] shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)] transition-opacity ${
               !isSendEnabled
                 ? "opacity-50 cursor-not-allowed pointer-events-none"
                 : ""
