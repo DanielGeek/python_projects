@@ -4,14 +4,10 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 const images = [
-  { src: '/images/carousel/daily-communication.jpg', alt: 'Daily Communication', type: 'photo' },
-  { src: '/images/carousel/daily-communication.svg', alt: 'Daily Communication Illustration', type: 'illustration' },
-  { src: '/images/carousel/real-time-tracking.jpg', alt: 'Real-Time Tracking', type: 'photo' },
-  { src: '/images/carousel/real-time-tracking.svg', alt: 'Real-Time Tracking Illustration', type: 'illustration' },
-  { src: '/images/carousel/routine-control.jpg', alt: 'Routine Control', type: 'photo' },
-  { src: '/images/carousel/routine-control.svg', alt: 'Routine Control Illustration', type: 'illustration' },
-  { src: '/images/carousel/direct-contact.jpg', alt: 'Direct Contact', type: 'photo' },
-  { src: '/images/carousel/direct-contact.svg', alt: 'Direct Contact Illustration', type: 'illustration' },
+  { src: '/images/carousel/daily-communication.svg', alt: 'Daily Communication' },
+  { src: '/images/carousel/real-time-tracking.svg', alt: 'Real-Time Tracking' },
+  { src: '/images/carousel/routine-control.svg', alt: 'Routine Control' },
+  { src: '/images/carousel/direct-contact.svg', alt: 'Direct Contact' },
 ];
 
 export default function LoginCarousel() {
@@ -41,7 +37,7 @@ export default function LoginCarousel() {
             fill
             className="object-cover"
             priority={index === 0}
-            unoptimized={image.type === 'illustration'}
+            unoptimized
           />
         </div>
       ))}
