@@ -39,6 +39,27 @@ export default function CreatePostModal({
             <path d="M6 6l12 12" />
           </svg>
         </button>
+        {/* Header */}
+        <div className="flex items-center justify-between px-[26px] py-5 border-b border-[#ECE0D0]">
+          <button
+            type="button"
+            onClick={onClose}
+            className="cursor-pointer bg-transparent border-none text-[#94887B] font-bold text-[15px]"
+          >
+            Cancel
+          </button>
+          <span className="font-[var(--font-fredoka)] font-semibold text-[18px] text-[#3F362E]">
+            New post
+          </span>
+          <button
+            type="button"
+            className="cursor-pointer bg-transparent border-none text-[#D9583C] font-extrabold text-[15px]"
+          >
+            Publish
+          </button>
+        </div>
+
+        {/* Form content will be added in next steps */}
       </div>
     </div>
   );
