@@ -27,6 +27,7 @@ export default function CreatePostModal({
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
   const [isEntireRoom, setIsEntireRoom] = useState(true);
   const [selectedType, setSelectedType] = useState<PostType>("activity");
+  const [description, setDescription] = useState("");
 
   const handleChildClick = (childId: string) => {
     setIsEntireRoom(false);
@@ -163,6 +164,19 @@ export default function CreatePostModal({
                 );
               })}
             </div>
+          </div>
+
+          {/* Description field */}
+          <div className="mb-[22px]">
+            <div className="text-xs font-extrabold tracking-[0.7px] text-[#94887B] mb-[10px]">
+              DESCRIPTION
+            </div>
+            <textarea
+              placeholder="Share how today went…"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full min-h-[120px] resize-y rounded-[14px] border-[1.5px] border-[#EADFD0] bg-white px-4 py-[14px] text-[15px] leading-[1.5] text-[#3F362E] placeholder:text-[#B6A99B] focus:outline-none"
+            />
           </div>
         </div>
       </div>
