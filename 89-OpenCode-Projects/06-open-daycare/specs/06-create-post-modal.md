@@ -1,6 +1,6 @@
 # SPEC 06 — New post modal (`/` — "New post" trigger)
 
-> **Status:** Implemented
+> **Status:** Completed
 > **Depends on:** SPEC 01, SPEC 02
 > **Date:** 2026-11-28
 > **Objective:** Implement a modal dialog that opens when clicking "New post" in the sidebar or "Share a moment…" in the home feed, with recipient chips (children + Entire room), post type selector, description textarea, and photo placeholders, closing on publish without persistence.

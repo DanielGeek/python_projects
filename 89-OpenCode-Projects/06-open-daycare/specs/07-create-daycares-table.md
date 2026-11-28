@@ -1,6 +1,6 @@
 # SPEC 07 — Create daycares table
 
-> **Status:** Implemented
+> **Status:** Completed
 > **Depends on:** None (first database spec)
 > **Date:** 2026-11-28
 > **Objective:** Create the `daycares` table as the root entity of the data model, with a versioned migration pattern for Supabase, including seed data with 4 example daycares.

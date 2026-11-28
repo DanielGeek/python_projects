@@ -1,6 +1,6 @@
 # SPEC 01 — Staff feed as home (`/`)
 
-> **Status:** Implemented
+> **Status:** Completed
 > **Depends on:** —
 > **Date:** 2026-11-26
 > **Objective:** Implement `references/screens/feed.dc.html` as the home page `/`, visually identical to the mockup on desktop and responsive on mobile via a hamburger drawer, without authentication or database.

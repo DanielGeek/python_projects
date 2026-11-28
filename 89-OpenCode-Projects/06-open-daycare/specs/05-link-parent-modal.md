@@ -1,6 +1,6 @@
 # SPEC 05 — Link parent modal
 
-> **Status:** Implemented
+> **Status:** Completed
 > **Depends on:** SPEC 02
 > **Date:** 2026-11-28
 > **Objective:** Implement a modal dialog that opens when clicking "Link another parent" on the child profile page, with a form to invite a parent (name, email, relationship), display a fixed invitation code, and close the modal on send without persistence.
