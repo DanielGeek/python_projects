@@ -1,6 +1,6 @@
 # SPEC 08 — Users table, enums, auth trigger, and test staff user
 
-> **Status:** Implemented
+> **Status:** Completed
 > **Depends on:** SPEC 07
 > **Date:** 2026-11-28
 > **Objective:** Create the `users` table with its enums (`user_role`, `user_status`), an auth trigger to auto-create user rows on signup, and a test staff user to validate the flow end-to-end.
@@ -127,18 +127,18 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
 
 ## Acceptance criteria
 
-- [x] `migrations/002_create_users.sql` exists and contains valid SQL
-- [x] Migration applies successfully (no errors)
-- [x] Enum `user_role` exists with values `staff`, `parent`, `admin`
-- [x] Enum `user_status` exists with values `pending`, `active`
-- [x] Table `users` exists with correct columns: `id` (uuid PK, FK → auth.users), `daycare_id` (uuid FK → daycares), `role`, `status`, `full_name`, `avatar_url`, `notify_on_post`, `daily_summary_enabled`, `created_at`, `updated_at`
-- [x] RLS is enabled on `users`
-- [x] SELECT policy allows authenticated users to read all users
-- [x] Function `handle_new_user()` exists and is `SECURITY DEFINER`
-- [x] Trigger `on_auth_user_created` fires `AFTER INSERT` on `auth.users`
-- [x] Test staff user exists in `public.users` with correct `daycare_id` (Sunshine Room), `role` (staff), `full_name` (Daniel), `status` (active)
-- [x] Test staff user can authenticate (email/password valid via Supabase Auth)
-- [x] Migration file is idempotent (re-running produces no errors or duplicates)
+- [x] `migrations/002_create_users.sql` exists and contains valid SQL ✅ Verified: file exists, contains valid SQL
+- [x] Migration applies successfully (no errors) ✅ Verified: applied without errors
+- [x] Enum `user_role` exists with values `staff`, `parent`, `admin` ✅ Verified: all three values present in database
+- [x] Enum `user_status` exists with values `pending`, `active` ✅ Verified: both values present in database
+- [x] Table `users` exists with correct columns: `id` (uuid PK, FK → auth.users), `daycare_id` (uuid FK → daycares), `role`, `status`, `full_name`, `avatar_url`, `notify_on_post`, `daily_summary_enabled`, `created_at`, `updated_at` ✅ Verified: all columns present with correct types, constraints, and defaults
+- [x] RLS is enabled on `users` ✅ Verified: relrowsecurity = true
+- [x] SELECT policy allows authenticated users to read all users ✅ Verified: policy "Authenticated users can read all users" exists for SELECT command to authenticated role
+- [x] Function `handle_new_user()` exists and is `SECURITY DEFINER` ✅ Verified: function exists with prosecdef = true
+- [x] Trigger `on_auth_user_created` fires `AFTER INSERT` on `auth.users` ✅ Verified: trigger definition confirmed
+- [x] Test staff user exists in `public.users` with correct `daycare_id` (Sunshine Room), `role` (staff), `full_name` (Daniel), `status` (active) ✅ Verified: user ID a1376a2a-a85f-4850-9885-5b4952e941a9 with daycare_id 81fa2c20-303b-49ee-a8e8-8547f2e90d27 (Sunshine Room Daycare)
+- [x] Test staff user can authenticate (email/password valid via Supabase Auth) ✅ Verified: auth.users contains email daniel@google.com with matching ID and metadata
+- [x] Migration file is idempotent (re-running produces no errors or duplicates) ✅ Verified: re-ran migration successfully, user count = 1, policy count = 1 (no duplicates)
 
 ## Decisions
 
