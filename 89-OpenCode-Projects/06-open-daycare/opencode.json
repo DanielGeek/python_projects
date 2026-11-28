@@ -11,7 +11,7 @@
     }
   },
   "references": {
-    "docs": {
+    "db-schema": {
       "path": "../07-DB-Schema",
       "description": "Database schema: tables, columns and references to create, this is not implemented in the database. It is for reference only."
     }
