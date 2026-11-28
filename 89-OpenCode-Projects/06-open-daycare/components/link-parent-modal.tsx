@@ -26,6 +26,7 @@ export default function LinkParentModal({
   const [parentName, setParentName] = useState("");
   const [email, setEmail] = useState("");
   const [relationship, setRelationship] = useState<Relationship>("Mom");
+  const [emailError, setEmailError] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Close on Escape
@@ -51,6 +52,15 @@ export default function LinkParentModal({
     parentName.trim().length > 0 &&
     email.trim().length > 0 &&
     isValidEmail(email);
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    if (value.trim().length > 0 && !isValidEmail(value)) {
+      setEmailError("Please enter a valid email address");
+    } else {
+      setEmailError("");
+    }
+  };
 
   const handleSend = () => {
     if (!isSendEnabled) return;
@@ -149,9 +159,18 @@ export default function LinkParentModal({
               type="email"
               placeholder="email@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full py-[13px] px-4 rounded-[14px] border-[1.5px] border-[#EADFD0] bg-white text-[15px] text-[#3F362E] placeholder:text-[#B6A99B] focus:outline-none"
+              onChange={(e) => handleEmailChange(e.target.value)}
+              className={`w-full py-[13px] px-4 rounded-[14px] border-[1.5px] bg-white text-[15px] text-[#3F362E] placeholder:text-[#B6A99B] focus:outline-none ${
+                emailError
+                  ? "border-[#E74C3C]"
+                  : "border-[#EADFD0]"
+              }`}
             />
+            {emailError && (
+              <div className="mt-2 text-[12px] text-[#E74C3C]">
+                {emailError}
+              </div>
+            )}
           </div>
 
           {/* Relationship */}
